@@ -385,15 +385,15 @@ function extractTeamNews(html, home, away) {
     if (text && text.length >= 18 && text.length <= 420) paras.push(text);
   }
 
-  const homeN = normalized(home);
-  const awayN = normalized(away);
+  const homeVars = teamVariants(home).map(normalized).filter(Boolean);
+  const awayVars = teamVariants(away).map(normalized).filter(Boolean);
   let activeTeam = null;
   const out = [];
 
   for (const p of paras) {
     const n = normalized(p);
-    const hasHome = homeN && n.includes(homeN);
-    const hasAway = awayN && n.includes(awayN);
+    const hasHome = homeVars.some((v) => n.includes(v));
+    const hasAway = awayVars.some((v) => n.includes(v));
     if (hasHome && !hasAway) activeTeam = home;
     if (hasAway && !hasHome) activeTeam = away;
 
