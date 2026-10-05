@@ -121,7 +121,7 @@ function model(g,hh,ah){
     if(e==null)return;
     const exact=odds??g.odds?.markets?.[normName(label)]??null;
     const modelProb=blendedProb(e,m,v,hr),score=conf(e,m,sample,v,hr),dec=decimalOdds(exact),ev=dec&&modelProb!=null?modelProb*dec-1:null;
-    c.push({label,category,score,stars:stars(score),odds:exact,provider:exact!=null?(g.odds?.provider||null):null,modelProb,marketProb:m,ev,bookExact:exact!=null})
+    c.push({label,category,score,modelScore:score,baseScore:score,stars:stars(score),odds:exact,provider:exact!=null?(g.odds?.provider||null):null,modelProb,marketProb:m,ev,bookExact:exact!=null,crossSources:0})
   };
 
   add("Over 1.5 Goals","Goals",avg([h.o15,a.o15]),avg([hv.o15,av.o15]),hc(x=>x.gf+x.ga>=2),shape.over15??null);
@@ -141,8 +141,25 @@ function model(g,hh,ah){
   add(`${g.home.name} ML`,"Match Result",avg([h.win,a.nonLoss==null?null:1-a.nonLoss]),avg([hv.win,av.nonLoss==null?null:1-av.nonLoss]),homeH2,g.odds.probs.home,g.odds.homeML);
   add(`${g.away.name} ML`,"Match Result",avg([a.win,h.nonLoss==null?null:1-h.nonLoss]),avg([av.win,hv.nonLoss==null?null:1-hv.nonLoss]),awayH2,g.odds.probs.away,g.odds.awayML);
 
+  const expHome=hLambda??rawHome,expAway=aLambda??rawAway,expTotal=expHome+expAway;
+  for(const x of c){
+    const label=normName(x.label);let d=0;
+    if(label.includes("over 1 5"))d+=expTotal>=1.9?1:expTotal<1.55?-3:0;
+    if(label.includes("over 2 5"))d+=expTotal>=2.65?2:expTotal<2.15?-4:0;
+    if(label.includes("under 2 5"))d+=expTotal<=2.35?2:expTotal>2.85?-4:0;
+    if(label.includes("under 3 5"))d+=expTotal<=3.05?1:expTotal>3.55?-3:0;
+    if(label.includes("under 4 5"))d+=expTotal<=4.05?1:expTotal>4.55?-2:0;
+    if(x.category==="BTTS"&&label.includes("yes"))d+=(expHome>=.95&&expAway>=.95)?2:(Math.min(expHome,expAway)<.7?-4:0);
+    if(x.category==="BTTS"&&label.includes("no"))d+=Math.min(expHome,expAway)<.8?2:(expHome>1.2&&expAway>1.2?-3:0);
+    if(x.category==="Team Goals")d+=label.includes(normName(g.home.name))?(expHome>=1.05?2:expHome<.75?-4:0):(expAway>=1.05?2:expAway<.75?-4:0);
+    if(x.category==="Match Result"&&label.includes(normName(g.home.name)))d+=expHome>=expAway+.25?2:expHome<expAway?-4:0;
+    if(x.category==="Match Result"&&label.includes(normName(g.away.name)))d+=expAway>=expHome+.25?2:expAway<expHome?-4:0;
+    if(x.category==="Double Chance"&&label.includes(normName(g.home.name)))d+=expHome>=expAway-.1?1:-2;
+    if(x.category==="Double Chance"&&label.includes(normName(g.away.name)))d+=expAway>=expHome-.1?1:-2;
+    x.internalDelta=d;x.modelScore=Math.max(55,Math.min(96,x.score+d));x.score=x.modelScore;x.baseScore=x.modelScore;x.stars=stars(x.score);
+  }
   c.sort((x,y)=>y.score-x.score||(y.ev??-99)-(x.ev??-99));
-  return{top:c.find(x=>x.score>=80)||null,top3:c.slice(0,3),candidates:c,home:h,away:a,displayHome:hAll,displayAway:aAll,sample:{home:h.n,away:a.n,h2:h2.length}}
+  return{top:c.find(x=>x.score>=80)||null,top3:c.slice(0,3),candidates:c,home:h,away:a,displayHome:hAll,displayAway:aAll,expectedGoals:{home:expHome,away:expAway,total:expTotal},sample:{home:h.n,away:a.n,h2:h2.length}}
 }
 
 function marketKey(v){
@@ -157,37 +174,102 @@ function sameMarket(a,b){
   if(/btts/.test(x)&&/btts/.test(y)&&((/yes/.test(x)&&/yes/.test(y))||(/no/.test(x)&&/no/.test(y))))return true;
   return false;
 }
+function correctScoreSignals(g,value){
+  const m=String(value||"").match(/(\d+)\s*[-–:]\s*(\d+)/);if(!m)return[];
+  const h=Number(m[1]),a=Number(m[2]),t=h+a,out=[];
+  if(t>=2)out.push("Over 1.5 Goals");if(t>=3)out.push("Over 2.5 Goals");if(t<=2)out.push("Under 2.5 Goals");if(t<=3)out.push("Under 3.5 Goals");
+  out.push(h>0&&a>0?"BTTS — Yes":"BTTS — No");
+  if(h>a)out.push(g.home.name+" ML");else if(a>h)out.push(g.away.name+" ML");else{out.push(g.home.name+" or Draw");out.push(g.away.name+" or Draw")}
+  return out
+}
+function contextSignals(g){
+  const c=g?.context||{},out=[c.hotTip,c.matchResult,c.btts].filter(Boolean);
+  return [...out,...correctScoreSignals(g,c.correctScore)]
+}
+function apiPredictionSignals(g){
+  const r=Array.isArray(g?.apiPrediction?.response)?g.apiPrediction.response[0]:g?.apiPrediction?.response;if(!r)return[];
+  const p=r.predictions||r,out=[],winner=p?.winner?.name||p?.winner,advice=normName(p?.advice||"");
+  if(winner){
+    if(normName(winner)===normName(g.home.name)||normName(winner)==="home")out.push(g.home.name+" ML");
+    if(normName(winner)===normName(g.away.name)||normName(winner)==="away")out.push(g.away.name+" ML");
+  }
+  if(advice.includes("home or draw")||advice.includes("double chance home"))out.push(g.home.name+" or Draw");
+  if(advice.includes("away or draw")||advice.includes("double chance away"))out.push(g.away.name+" or Draw");
+  if((advice.includes("both teams")||advice.includes("btts"))&&advice.includes("yes"))out.push("BTTS — Yes");
+  if((advice.includes("both teams")||advice.includes("btts"))&&advice.includes("no"))out.push("BTTS — No");
+  for(const line of ["1 5","2 5","3 5","4 5"]){
+    if(advice.includes("over "+line))out.push("Over "+line.replace(" ",".")+" Goals");
+    if(advice.includes("under "+line))out.push("Under "+line.replace(" ",".")+" Goals");
+  }
+  const uo=String(p?.under_over||p?.underOver||"");
+  if(/^[+-]?\d(?:\.\d)?$/.test(uo)){const n=uo.replace(/^[-+]/,"");out.push((uo.startsWith("-")?"Under ":"Over ")+n+" Goals")}
+  return [...new Set(out)]
+}
 function applyContextCrossCheck(g){
-  if(!g?.model?.candidates?.length||!g.context?.hotTip)return;
-  for(const c of g.model.candidates)c.contextAgree=sameMarket(c.label,g.context.hotTip);
-  g.model.candidates.sort((a,b)=>b.score-a.score||Number(b.contextAgree)-Number(a.contextAgree)||(b.ev??-99)-(a.ev??-99));
-  g.model.top=g.model.candidates.find(x=>x.score>=80)||null;
-  g.model.top3=g.model.candidates.slice(0,3);
+  if(!g?.model?.candidates?.length)return;
+  const fw=contextSignals(g),api=apiPredictionSignals(g);
+  for(const c of g.model.candidates){
+    const fwAgree=fw.some(x=>sameMarket(c.label,x)),apiAgree=api.some(x=>sameMarket(c.label,x)),sources=Number(fwAgree)+Number(apiAgree);
+    c.contextAgree=fwAgree;c.apiAgree=apiAgree;c.crossSources=sources;
+    c.score=Math.max(55,Math.min(96,(c.modelScore??c.baseScore??c.score)+sources*2));c.stars=stars(c.score);
+  }
+  g.model.candidates.sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
+  g.model.top=g.model.candidates.find(x=>x.score>=80)||null;g.model.top3=g.model.candidates.slice(0,3);
 }
 async function matchContext(g){
   try{return await json('/api/whispers?home='+encodeURIComponent(g.home.name)+'&away='+encodeURIComponent(g.away.name)+'&date='+encodeURIComponent(S.date))}catch{return null}
 }
+async function matchApiPrediction(g){
+  if(!g?.apiFixtureId)return null;
+  try{return await json('/api/football?endpoint=predictions&fixture='+encodeURIComponent(g.apiFixtureId))}catch{return null}
+}
+function parseInjuries(payload){
+  return (payload?.response||[]).map(x=>({team:x?.team?.name||null,type:"availability",source:"api",player:x?.player?.name||"",reason:x?.player?.reason||x?.player?.type||"",text:[x?.player?.name,x?.player?.reason||x?.player?.type].filter(Boolean).join(" — ")})).filter(x=>x.text)
+}
+async function matchInjuries(g){
+  if(!g?.apiFixtureId)return[];
+  try{return parseInjuries(await json('/api/football?endpoint=injuries&fixture='+encodeURIComponent(g.apiFixtureId)))}catch{return[]}
+}
 async function matchAvailability(g){
-  if(!g?.apiFixtureId)return{lineups:[],injuries:[]};
-  const id=encodeURIComponent(g.apiFixtureId);
+  if(!g?.apiFixtureId)return{lineups:[],injuries:g?.availability?.injuries||[]};
+  const id=encodeURIComponent(g.apiFixtureId),existing=g?.availability?.injuries||[];
   const [lineupPayload,injuryPayload]=await Promise.all([
     json('/api/football?endpoint=fixtures/lineups&fixture='+id).catch(()=>null),
-    json('/api/football?endpoint=injuries&fixture='+id).catch(()=>null)
+    existing.length?Promise.resolve(null):json('/api/football?endpoint=injuries&fixture='+id).catch(()=>null)
   ]);
   const lineups=(lineupPayload?.response||[]).map(x=>({team:x?.team?.name||"",formation:x?.formation||"",startXI:(x?.startXI||[]).map(y=>y?.player?.name).filter(Boolean)})).filter(x=>x.team&&x.startXI.length);
-  const injuries=(injuryPayload?.response||[]).map(x=>({team:x?.team?.name||null,type:"availability",text:[x?.player?.name,x?.player?.reason||x?.player?.type].filter(Boolean).join(" — ")})).filter(x=>x.text);
+  const injuries=existing.length?existing:parseInjuries(injuryPayload);
   return{lineups,injuries}
 }
 function lineupNewsItems(g){
   const a=g?.availability;if(!a)return[];
   const out=[...(a.injuries||[])];
-  for(const lineup of a.lineups||[])if(lineup.startXI.length>=8){const names=lineup.startXI.slice(0,6).join(", ");out.push({team:lineup.team,type:"confirmed",text:lineup.team+" confirmed XI"+(lineup.formation?" ("+lineup.formation+")":"")+": "+names+(lineup.startXI.length>6?"…":"")})}
+  for(const lineup of a.lineups||[])if(lineup.startXI.length>=8){out.push({team:lineup.team,type:"confirmed",source:"api",text:lineup.team+" confirmed XI"+(lineup.formation?" ("+lineup.formation+")":"")+": "+lineup.startXI.join(", ")})}
   return out
 }
 function latestNewsItems(g){
-  const c=g?.context,verified=lineupNewsItems(g),preview=Array.isArray(c?.teamNews)?c.teamNews.filter(x=>x?.text):[],fallback=c?.squadNews?[{team:null,type:"availability",text:c.squadNews}]:[],seen=new Set();
-  const rank=x=>x.type==="availability"?3:x.type==="confirmed"?2:x.type==="projected"?1:0;
-  return [...verified,...preview,...fallback].filter(item=>{const k=normName(item?.text||"");if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>rank(b)-rank(a)).slice(0,6)
+  const c=g?.context,verified=lineupNewsItems(g),preview=Array.isArray(c?.teamNews)?c.teamNews.filter(x=>x?.text).map(x=>({...x,source:"preview"})):[],fallback=c?.squadNews?[{team:null,type:"availability",source:"preview",text:c.squadNews}]:[],seen=new Set();
+  const rank=x=>x.source==="api"&&x.type==="availability"?5:x.type==="confirmed"?4:x.type==="availability"?3:x.type==="projected"?2:1;
+  return [...verified,...preview,...fallback].filter(item=>{const k=normName(item?.text||"");if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>rank(b)-rank(a)).slice(0,10)
+}
+function peopleFromNews(g,text){
+  const blocked=[normName(g.home.name),normName(g.away.name),"team news","squad news","nations league","world cup"];
+  const m=String(text||"").match(/\b[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+){1,2}\b/g)||[];
+  return [...new Set(m)].filter(x=>!blocked.some(b=>normName(x)===b)).slice(0,4)
+}
+function displayNewsText(g,item){
+  if(!item)return"";
+  if(item.type==="confirmed")return String(item.text||"");
+  if(item.source==="api"){
+    const player=item.player||String(item.text||"").split(" — ")[0],reason=item.reason||String(item.text||"").split(" — ").slice(1).join(" — ");
+    return player+(reason?" is listed with "+reason.toLowerCase()+".":" is listed as unavailable.")
+  }
+  const raw=String(item.text||""),team=item.team?item.team+" — ":"",names=peopleFromNews(g,raw);
+  if(/suspend|sent off|yellow card/i.test(raw))return team+(names.length?names.join(", ")+" "+(names.length>1?"are":"is")+" unavailable because of suspension/disciplinary status.":"a suspension or disciplinary absence is flagged before kickoff.");
+  if(/injur|fitness|knee|hamstring|muscle|ankle|illness|ruled out|will miss|without|unavailable|doubt/i.test(raw))return team+(names.length?names.join(", ")+" "+(names.length>1?"are":"is")+" carrying an injury or availability concern.":"the latest preview flags an injury or availability concern.");
+  if(/same lineup|same lineups|continuity/i.test(raw))return team+"the projected XI is expected to remain largely unchanged.";
+  if(/set to play|expected to|likely to|partnered by|projected/i.test(raw))return team+(names.length?names.join(", ")+" "+(names.length>1?"are":"is")+" expected to feature in the projected XI.":"the projected XI points to selection continuity.");
+  return team+"the latest pre-match reporting includes a squad-selection update."
 }
 function newsImpact(g,p,item){
   const text=String(item?.text||"");if(!text)return"";
@@ -200,7 +282,14 @@ function newsImpact(g,p,item){
   if(projected)return"Impact: projected XI continuity supports keeping the recent-form weighting unchanged.";
   return""
 }
-function teamNewsSummary(g,p){const item=latestNewsItems(g)[0];if(!item)return"";const impact=newsImpact(g,p,item);return String(item.text||"")+(impact?" "+impact:"")}
+function itemBelongsToTeam(g,item,team){
+  const t=normName(item?.team||""),name=normName(team.name),raw=normName(item?.text||"");
+  return t?(t.includes(name)||name.includes(t)):raw.includes(name)
+}
+function teamNewsSummary(g,p){
+  const item=latestNewsItems(g)[0];if(!item)return null;
+  return{text:displayNewsText(g,item),impact:newsImpact(g,p,item)}
+}
 
 function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`}
 function statusOK(g){return S.status==="all"||(S.status==="upcoming"&&!g.done&&!g.live)||(S.status==="live"&&g.live)||(S.status==="completed"&&g.done)}
@@ -246,7 +335,7 @@ function renderGames(){
     html+='</div>';
     if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>'<div class="top3Pick"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(x.label)+'</b><em>'+x.score+'%</em></div>').join("")+'</div>';
     const news=teamNewsSummary(g,p);
-    if(news)html+='<div class="teamNewsLine"><span>TEAM NEWS</span>'+esc(news)+'</div>';
+    if(news)html+='<div class="teamNewsLine"><span>TEAM NEWS</span><div class="newsText">'+esc(news.text)+'</div>'+(news.impact?'<div class="newsImpact">'+esc(news.impact)+'</div>':'')+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
       '<div class="statStrip"><div class="statCell"><b>'+(h?.gf||0).toFixed(1)+'</b><small>HOME GF AVG</small></div>'+
       '<div class="statCell"><b>'+(a?.gf||0).toFixed(1)+'</b><small>AWAY GF AVG</small></div>'+
@@ -287,10 +376,15 @@ async function load(date=S.date){
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
       const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
       const base=marketOdds(c.odds?.[0]||{}),extra=oddsFromFootball(oddsEntries.get(apiFixtureId)||oddsEntries.get(String(e.id)),homeName,awayName);
-      return{id:String(e.id),apiFixtureId,date:e.date,year:Number(e.season?.year||S.date.slice(0,4)),league:l,leagueName:leagueNames[l]||apiFixture?.league?.name||l||"Soccer",leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:h?.team?.logo||apiFixture?.teams?.home?.logo||null,score:scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:a?.team?.logo||apiFixture?.teams?.away?.logo||null,score:scoreVal(a?.score)},odds:mergeOdds(base,extra),live:String(st.name||"").includes("IN_PROGRESS"),done:!!st.completed,detail:st.detail||"",model:null,availability:null,availabilityLoaded:false}
+      const apiPrimary=Boolean(apiFixture)&&!fixturesPayload?._footyedgeFallback,apiStatus=apiFixture?.fixture?.status||{},apiShort=String(apiStatus.short||"");
+      const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
+      return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:apiFixture?.league?.name||leagueNames[l]||l||"Soccer",leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false}
     }).filter(g=>isMajorLeague(g.league));
     await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date))}));
-    await Promise.all(games.map(async g=>{g.context=await matchContext(g);applyContextCrossCheck(g)}));
+    const crossPool=games.filter(g=>g.model?.top?.score>=76).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,16);
+    await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
+    const newsPool=games.filter(g=>g.model?.top?.score>=80).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,5);
+    await Promise.all(newsPool.map(async g=>{const injuries=await matchInjuries(g);if(injuries.length)g.availability={lineups:[],injuries}}));
     S.games=games;S.dataSource=oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
@@ -298,10 +392,15 @@ async function load(date=S.date){
 function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
   const top3=(g.model?.candidates||[]).slice(0,3);
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">${xp.oddsLabel} <b>${xp.odds}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(ourReason(g,x))}</p></section>`}).join(""):'<div class="pass">Model pass.</div>';
-  const news=latestNewsItems(g).slice(0,4);
-  const newsHtml=news.length?news.map(item=>'<div class="teamNewsLine"><span>'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</span>'+esc(item.text)+(newsImpact(g,g.model?.top,item)?' '+esc(newsImpact(g,g.model?.top,item)):'')+'</div>').join(""):'<div class="teamNewsLine"><span>TEAM NEWS</span>No verified lineup or availability update has been found yet.</div>';
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model remains the primary ranking. Latest lineup and availability information is used as a cross-check and to explain game-impact risk; it does not replace the model. Confidence is a ranking signal, not a guarantee.</p>`
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">${xp.oddsLabel} <b>${xp.odds}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">Model pass.</div>';
+  const allNews=latestNewsItems(g);
+  const teamCard=team=>{
+    const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,3);
+    const body=items.length?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,g.model?.top,item)?'<div class="newsImpact">'+esc(newsImpact(g,g.model?.top,item))+'</div>':'')+'</div>').join(""):'<div class="teamNewsItem"><div class="newsText mutedNews">No verified absence or lineup change has been reported yet.</div></div>';
+    return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
+  };
+  const newsHtml=teamCard(g.home)+teamCard(g.away);
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Current market data, lineup/availability information and independent pre-match analysis are used only as cross-checks. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
