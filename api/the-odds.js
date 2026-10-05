@@ -1,5 +1,5 @@
 const API_BASE="https://api.the-odds-api.com/v4";
-const CACHE_SECONDS=120;
+const CACHE_SECONDS=60;
 
 const LEAGUE_HINTS={
   "uefa.nations":{keys:["soccer_uefa_nations_league"],aliases:["uefa nations league","nations league"]},
@@ -183,7 +183,7 @@ export default async function handler(req,res){
       }
     }
 
-    res.setHeader("Cache-Control",`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=120`);
+    res.setHeader("Cache-Control",`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`);
     return res.status(200).json({
       enabled:true,region:"ca",markets:["h2h","totals"],events,
       sports:resolved.map(x=>({league:x.league,key:x.sport.key,title:x.sport.title})),
