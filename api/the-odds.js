@@ -28,6 +28,11 @@ const LEAGUE_HINTS={
 function norm(v=""){
   return String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 }
+function torontoDate(){
+  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+  const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+  return p.year+"-"+p.month+"-"+p.day;
+}
 function median(nums){
   const a=nums.filter(Number.isFinite).sort((x,y)=>x-y);
   if(!a.length)return null;
@@ -140,6 +145,7 @@ export default async function handler(req,res){
 
     const date=String(req.query.date||"");
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return res.status(400).json({error:"Invalid date"});
+    if(date!==torontoDate())return res.status(200).json({enabled:false,reason:"live_date_only",events:[]});
     const leagues=[...new Set(String(req.query.leagues||"").split(",").map(x=>x.trim()).filter(Boolean))].slice(0,12);
     if(!leagues.length)return res.status(200).json({enabled:true,events:[],sports:[]});
 
