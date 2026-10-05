@@ -543,7 +543,7 @@ function renderBest(){
   if(!a.length){el.innerHTML='<div class="empty">No pick has cleared the 80 confidence threshold for this view.</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.model.top,px=priceInfo(p);
-    return '<article class="bestRow" onclick="openGame(\''+g.id+'\')">'+
+    return '<article class="bestRow" data-game-id="'+esc(g.id)+'" onclick="openGame(\''+g.id+'\')">'+
       '<div class="rankBadge">'+(i+1)+'</div>'+
       '<div class="bestFlags">'+teamImgTag(g.home)+teamImgTag(g.away)+'</div>'+
       '<div class="bestCore"><div class="bestFixture">'+esc(g.home.name)+' <span>vs</span> '+esc(g.away.name)+'</div>'+
@@ -593,6 +593,24 @@ function renderLeagues(){
   row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":leagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
   row.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{S.league=b.dataset.league;renderLeagues();renderBest();renderGames()})
 }
+function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
+function perfMark(result){if(result==="hit")return"✓";if(result==="miss")return"✕";if(result==="push")return"—";return"•"}
+function renderPerformance(){
+  const p=S.performance||{},month=p.month||{},week=p.week||{},previous=p.previousTop5||[];
+  document.getElementById("perfMonthLabel").textContent=month.label?String(month.label).toUpperCase()+" HIT RATE":"MONTH HIT RATE";
+  document.getElementById("perfHitRate").textContent=pctRate(month.hitRate);
+  document.getElementById("perfRecord").textContent=(month.hits||0)+"-"+(month.misses||0);
+  document.getElementById("perfWeekRate").textContent=pctRate(week.hitRate);
+  document.getElementById("perfWeekRecord").textContent=(week.hits||0)+"-"+(week.misses||0);
+  document.getElementById("previousDate").textContent=p.previousDate?niceDate(p.previousDate):"Tracking starts with the next published board";
+  const el=document.getElementById("previousList");
+  if(!previous.length){el.innerHTML='<span class="previousEmpty">No graded picks yet</span>';return}
+  el.innerHTML=previous.slice(0,5).map((x,i)=>{
+    const result=x.result||"pending",score=x.finalScore?(" · "+esc(x.finalScore)):"";
+    return '<div class="previousPick '+esc(result)+'"><span class="resultMark">'+perfMark(result)+'</span><div class="previousPickText"><b>#'+(i+1)+' '+esc(x.selection||"Pick")+'</b><small>'+esc(x.home||"")+(x.away?" vs "+esc(x.away):"")+score+'</small></div></div>'
+  }).join("")
+}
+
 function renderMeta(){
   const today=etDate();
   document.getElementById("dayTitle").textContent=S.date===today?"Today":new Date(S.date+"T12:00:00Z").toLocaleDateString("en-US",{weekday:"long",timeZone:"UTC"});
@@ -602,7 +620,7 @@ function renderMeta(){
   document.getElementById("source").textContent="";
 }
 function render(){
-  renderMeta();renderLeagues();renderBest();renderGames();
+  renderMeta();renderPerformance();renderLeagues();renderBest();renderGames();
   if(S.openGameId&&document.getElementById("drawer").classList.contains("on")){
     const open=S.games.find(x=>x.id===String(S.openGameId));
     if(open)renderModal(open)
@@ -613,11 +631,13 @@ async function load(date=S.date){
   document.getElementById("best").innerHTML='<div class="loading"><div class="spin"></div>Ranking today’s best plays…</div>';
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
-    const [p,fixturesPayload,oddsPayload]=await Promise.all([
+    const [p,fixturesPayload,oddsPayload,performancePayload]=await Promise.all([
       json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?json("/data/latest-scoreboard.json"):Promise.reject(new Error("Scoreboard unavailable"))),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-fixtures.json").catch(()=>null):null),
-      json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null)
+      json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
+      json("/data/performance/summary.json?v=1").catch(()=>null)
     ]);
+    S.performance=performancePayload;
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     let games=(p.events||[]).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
