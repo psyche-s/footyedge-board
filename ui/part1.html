@@ -439,6 +439,27 @@
   .analysisContent .statCell{min-height:38px!important}
   .analysisContent .statCell small{font-size:5px!important}
 }
+
+/* v15 alignment, flag crop and compact stat boxes */
+.gameTop{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:36px!important}
+.gameTop>span:last-child{display:flex!important;align-items:center!important;justify-content:flex-end!important;min-height:24px!important;line-height:1!important;white-space:nowrap!important;text-align:right!important}
+.countryFlag{object-fit:cover!important;object-position:center!important;padding:0!important;background:#0c1810!important}
+.clubCrest{object-fit:contain!important;object-position:center!important;padding:4px!important;background:#f7fbf8!important}
+.bestFlags .countryFlag,.modalTeam .countryFlag{padding:0!important;object-fit:cover!important}
+.statCell{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;min-height:42px!important;height:42px!important;padding:4px 3px!important}
+.statCell b,.statCell small{line-height:1.05!important}
+.bestMetric.oddsMetric small{display:block!important;margin-top:2px!important;font-size:6px!important;color:#789083!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.teamNewsLine{margin:0 13px 9px;padding:8px 9px;border:1px solid #1e3a29;background:#09170f;border-radius:8px;color:#a9bcae;font-size:9px;line-height:1.45}
+.teamNewsLine span{display:inline-block;margin-right:7px;color:#59e69a;font-size:7px;font-weight:900;letter-spacing:.1em;vertical-align:baseline}
+@media(max-width:500px){
+  .gameTop{min-height:32px!important;padding-top:5px!important;padding-bottom:5px!important}
+  .gameTop>span:last-child{min-height:20px!important}
+  .statCell{min-height:31px!important;height:31px!important;padding:3px 2px!important}
+  .statCell b{font-size:8.5px!important}
+  .statCell small{font-size:4.8px!important;margin-top:1px!important}
+  .teamNewsLine{margin:0 9px 7px;padding:6px 7px;font-size:7.2px}
+  .teamNewsLine span{font-size:5.6px;margin-right:5px}
+}
 </style>
 </head>
 <body>
@@ -524,8 +545,17 @@ function probAmerican(v){if(v==null)return null;const n=Number(String(v).replace
 function noVig(a){const v=a.map(x=>x||0),s=v.reduce((x,y)=>x+y,0);return s?v.map(x=>x/s):v.map(()=>0)}function americanFromProb(p){if(!(p>0&&p<1))return null;return p>=.5?Math.round(-100*p/(1-p)):Math.round(100*(1-p)/p)}
 function poissonCDF(k,l){let term=Math.exp(-l),sum=term;for(let i=1;i<=k;i++){term*=l/i;sum+=term}return sum}
 function totalMarketShape(over25){if(!(over25>0&&over25<1))return{};let lo=.15,hi=6;for(let i=0;i<48;i++){const mid=(lo+hi)/2,p=1-poissonCDF(2,mid);if(p<over25)lo=mid;else hi=mid}const l=(lo+hi)/2;return{lambda:l,over15:1-poissonCDF(1,l),under35:poissonCDF(3,l),under45:poissonCDF(4,l)}}
-function priceInfo(p){if(!p)return{oddsLabel:"Odds",odds:"N/A",evLabel:"EV",ev:"N/A",cls:"fair"};if(p.odds!=null)return{oddsLabel:"Odds",odds:oddsText(p.odds),evLabel:"EV",ev:evText(p.ev),cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg"};if(p.marketProb!=null&&p.marketProb>0&&p.marketProb<1){const ev=p.modelProb!=null?p.modelProb*(1/p.marketProb)-1:null;return{oddsLabel:"Est. odds",odds:oddsText(americanFromProb(p.marketProb)),evLabel:"Est. EV",ev:evText(ev),cls:`estimate ${ev==null?"":ev>=0?"evPos":"evNeg"}`}}return{oddsLabel:"Fair odds",odds:oddsText(americanFromProb(p.modelProb)),evLabel:"EV",ev:"N/A",cls:"fair"}}
-
+function priceInfo(p){
+  if(!p)return{oddsLabel:"Live odds",odds:"—",evLabel:"EV",ev:"—",cls:"fair"};
+  if(p.odds!=null)return{
+    oddsLabel:p.provider||"Live odds",
+    odds:oddsText(p.odds),
+    evLabel:"EV",
+    ev:evText(p.ev),
+    cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg"
+  };
+  return{oddsLabel:"No live line",odds:"—",evLabel:"EV",ev:"—",cls:"fair"};
+}
 
 function stars(s){return s>=92?"★★★★★":s>=88?"★★★★½":s>=83?"★★★★":s>=78?"★★★½":"★★★"}
 async function json(url){
