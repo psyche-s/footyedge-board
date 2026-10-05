@@ -50,7 +50,8 @@ function mergeOdds(base,extra){
     over25:keep(b.over25,extra.over25),
     under25:keep(b.under25,extra.under25),
     probs,
-    markets:{...markets,...(extra.markets||{})}
+    markets:{...markets,...(extra.markets||{})},
+    marketBooks:{...(b.marketBooks||{}),...(extra.marketBooks||{})}
   };
 }
 function oddsFromFootball(entry,homeName,awayName){
@@ -105,23 +106,19 @@ function oddsFromFootball(entry,homeName,awayName){
 }
 function oddsFromDaily(entry,homeName,awayName){
   if(!entry)return null;
-  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
-  if(out.homeML!=null)out.markets[normName(homeName+" ML")]=out.homeML;
-  if(out.awayML!=null)out.markets[normName(awayName+" ML")]=out.awayML;
+  const mlKey=entry.mlBook?.key||null;
+  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},marketBooks:{},probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
+  if(out.homeML!=null){const k=normName(homeName+" ML");out.markets[k]=out.homeML;if(mlKey)out.marketBooks[k]=mlKey}
+  if(out.awayML!=null){const k=normName(awayName+" ML");out.markets[k]=out.awayML;if(mlKey)out.marketBooks[k]=mlKey}
   for(const [line,t] of Object.entries(entry.totals||{})){
-    if(t?.over!=null)out.markets[normName("Over "+line+" Goals")]=t.over;
-    if(t?.under!=null)out.markets[normName("Under "+line+" Goals")]=t.under;
+    const bk=t?.book?.key||null;
+    if(t?.over!=null){const k=normName("Over "+line+" Goals");out.markets[k]=t.over;if(bk)out.marketBooks[k]=bk}
+    if(t?.under!=null){const k=normName("Under "+line+" Goals");out.markets[k]=t.under;if(bk)out.marketBooks[k]=bk}
     if(line==="2.5"){
       out.over25=t?.over??null;out.under25=t?.under??null;
-      out.probs.over25=t?.probs?.over??entry.probs?.over??null;out.probs.under25=t?.probs?.under??entry.probs?.under??null;
+      out.probs.over25=t?.probs?.over??null;out.probs.under25=t?.probs?.under??null;
     }
   }
-  const total=entry.total||{},lineFrom=v=>{const m=String(v||"").match(/([0-9]+(?:\.[0-9]+)?)/);return m?m[1]:null};
-  const ol=lineFrom(total.overLine),ul=lineFrom(total.underLine);
-  if(ol&&total.overOdds!=null&&!out.markets[normName("Over "+ol+" Goals")])out.markets[normName("Over "+ol+" Goals")]=total.overOdds;
-  if(ul&&total.underOdds!=null&&!out.markets[normName("Under "+ul+" Goals")])out.markets[normName("Under "+ul+" Goals")]=total.underOdds;
-  if(ol==="2.5"&&out.over25==null){out.over25=total.overOdds??null;out.probs.over25=entry.probs?.over??null}
-  if(ul==="2.5"&&out.under25==null){out.under25=total.underOdds??null;out.probs.under25=entry.probs?.under??null}
   return out
 }
 function buildDailyOddsMap(payload){
@@ -134,20 +131,20 @@ function buildDailyOddsMap(payload){
 function buildOddsMap(payload){const map=new Map();for(const entry of payload?.response||[])map.set(String(entry?.fixture?.id||""),entry);return map}
 function oddsFromTheOdds(entry,homeName,awayName){
   if(!entry)return null;
-  const out={provider:entry.provider||"The Odds API · CA market median",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:entry.over25??null,under25:entry.under25??null,markets:{},probs:{...(entry.probs||{})}};
-  if(out.homeML!=null)out.markets[normName(homeName+" ML")]=out.homeML;
-  if(out.awayML!=null)out.markets[normName(awayName+" ML")]=out.awayML;
+  const mlKey=entry.mlBook?.key||null;
+  const out={provider:entry.provider||null,homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:entry.over25??null,under25:entry.under25??null,markets:{},marketBooks:{},probs:{...(entry.probs||{})}};
+  if(out.homeML!=null){const k=normName(homeName+" ML");out.markets[k]=out.homeML;if(mlKey)out.marketBooks[k]=mlKey}
+  if(out.awayML!=null){const k=normName(awayName+" ML");out.markets[k]=out.awayML;if(mlKey)out.marketBooks[k]=mlKey}
   for(const [line,t] of Object.entries(entry.totals||{})){
-    if(t?.over!=null)out.markets[normName("Over "+line+" Goals")]=t.over;
-    if(t?.under!=null)out.markets[normName("Under "+line+" Goals")]=t.under;
+    const bk=t?.book?.key||null;
+    if(t?.over!=null){const k=normName("Over "+line+" Goals");out.markets[k]=t.over;if(bk)out.marketBooks[k]=bk}
+    if(t?.under!=null){const k=normName("Under "+line+" Goals");out.markets[k]=t.under;if(bk)out.marketBooks[k]=bk}
     if(line==="2.5"){
       out.over25=t?.over??out.over25;out.under25=t?.under??out.under25;
       if(t?.probs?.over!=null)out.probs.over25=t.probs.over;
       if(t?.probs?.under!=null)out.probs.under25=t.probs.under;
     }
   }
-  if(out.over25!=null)out.markets[normName("Over 2.5 Goals")]=out.over25;
-  if(out.under25!=null)out.markets[normName("Under 2.5 Goals")]=out.under25;
   return out
 }
 function buildTheOddsMap(payload){
@@ -185,9 +182,9 @@ function model(g,hh,ah){
 
   const add=(label,category,e,v,hr,m,odds=null)=>{
     if(e==null)return;
-    const exact=odds??g.odds?.markets?.[normName(label)]??null;
+    const key=normName(label),exact=odds??g.odds?.markets?.[key]??null,bookKey=exact!=null?(g.odds?.marketBooks?.[key]||null):null;
     const modelProb=blendedProb(e,m,v,hr),score=conf(e,m,sample,v,hr),dec=decimalOdds(exact),ev=dec&&modelProb!=null?modelProb*dec-1:null;
-    c.push({label,category,score,modelScore:score,baseScore:score,stars:stars(score),odds:exact,provider:exact!=null?(g.odds?.provider||null):null,modelProb,marketProb:m,ev,bookExact:exact!=null,crossSources:0})
+    c.push({label,category,score,modelScore:score,baseScore:score,stars:stars(score),odds:exact,provider:exact!=null?(bookMeta(bookKey)?.name||g.odds?.provider||null):null,bookKey,modelProb,marketProb:m,ev,bookExact:exact!=null,crossSources:0})
   };
 
   add("Over 1.5 Goals","Goals",avg([h.o15,a.o15]),avg([hv.o15,av.o15]),hc(x=>x.gf+x.ga>=2),shape.over15??null);
@@ -552,7 +549,7 @@ function renderBest(){
       '<div class="bestCore"><div class="bestFixture">'+esc(g.home.name)+' <span>vs</span> '+esc(g.away.name)+'</div>'+
       '<div class="bestLeague">'+esc(g.leagueName)+' · '+timeET(g.date)+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(p.label)+'</div></div>'+
-      '<div class="bestMetric oddsMetric"><b>'+px.odds+'</b><small>'+px.oddsLabel+'</small></div>'+
+      '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>'+px.oddsLabel+'</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="bestMetric bestConfidence"><b>'+p.score+'%</b><small>CONF</small></div><div class="rowChev">›</div></article>';
   }).join("")
@@ -572,7 +569,7 @@ function renderGames(){
       '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(g.away.name)+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
     if(p){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.category)+'</small><strong>'+esc(p.label)+'</strong></div>'+
-      '<div class="pickMetrics"><div class="pickMetric oddsBlock"><b>'+px.odds+'</b><small>'+px.oddsLabel+'</small></div>'+
+      '<div class="pickMetrics"><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>'+px.oddsLabel+'</small></div>'+
       '<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>CONF</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">PASS — no market cleared the model threshold.</div></div>';
@@ -633,20 +630,10 @@ async function load(date=S.date){
         for(const g of games){
           const entry=dailyMap.get(fixtureMatchKey(g.home.name,g.away.name));
           const posted=oddsFromDaily(entry,g.home.name,g.away.name);
-          if(posted)g.odds=mergeOdds(g.odds,posted);
+          if(posted)g.odds=posted;
         }
       }else{
-        const now=Date.now(),nearGames=games.filter(g=>!g.done&&Math.abs(new Date(g.date).getTime()-now)<=12*60*60*1000);
-        const liveLeagues=[...new Set(nearGames.map(g=>g.league).filter(Boolean))];
-        if(liveLeagues.length){
-          liveOddsPayload=await json('/api/the-odds?live=1&date='+encodeURIComponent(S.date)+'&leagues='+encodeURIComponent(liveLeagues.join(','))).catch(()=>null);
-          const liveOddsMap=buildTheOddsMap(liveOddsPayload);
-          for(const g of games){
-            const entry=liveOddsMap.get(fixtureMatchKey(g.home.name,g.away.name));
-            const liveOdds=oddsFromTheOdds(entry,g.home.name,g.away.name);
-            if(liveOdds)g.odds=mergeOdds(g.odds,liveOdds);
-          }
-        }
+        for(const g of games)g.odds={provider:null,homeML:null,drawML:null,awayML:null,over25:null,under25:null,markets:{},marketBooks:{},probs:{home:null,draw:null,away:null,over25:null,under25:null}};
       }
     }
 
@@ -663,7 +650,7 @@ async function load(date=S.date){
 function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
   const top3=(g.model?.top3||g.model?.rankedCandidates?.slice(0,3)||[]);
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">${xp.oddsLabel} <b>${xp.odds}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">Model pass.</div>';
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">${xp.oddsLabel} <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">Model pass.</div>';
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,3);
@@ -671,7 +658,7 @@ function renderModal(g){
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Projected team news provides the baseline; confirmed lineup/injury data, current market consensus and independent pre-match analysis refine it. Lineup effects are bounded by team strength, the number and role of absences, projected-score impact and live market context so one absence does not automatically overturn a clear matchup edge. Your historical selection pattern is used only as a small tie-breaker after the research layers. Picks priced worse than -500 are excluded. Exact posted prices are shown where available; MODEL FAIR is clearly labeled when the book feed does not publish that alternate line. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Projected team news provides the baseline; confirmed lineup/injury data, current market consensus and independent pre-match analysis refine it. Lineup effects are bounded by team strength, the number and role of absences, projected-score impact and live market context so one absence does not automatically overturn a clear matchup edge. Your historical selection pattern is used only as a small tie-breaker after the research layers. Picks priced worse than -500 are excluded. Odds use DraftKings first, then FanDuel, then ESPN BET. If none of those books posts the exact market, the app shows No line available. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
