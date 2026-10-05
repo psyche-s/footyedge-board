@@ -17,14 +17,14 @@ function flagCode(name){return FLAG_CODES[String(name||"").toLowerCase().trim()]
 function teamImage(t){const code=flagCode(t&&t.name);return code?"https://flagcdn.com/w160/"+code+".png":((t&&t.logo)||"")}
 function teamImgTag(t,cls){cls=cls||"";const src=teamImage(t),fallback=(t&&t.logo)||"";const err=fallback&&src!==fallback?' onerror="this.onerror=null;this.src=\''+esc(fallback)+'\'"':"";return '<img class="'+cls+'" src="'+esc(src)+'" alt="'+esc((t&&t.name)||"")+'"'+err+'>'}
 function leagueIconHtml(id){
-  const map={
-    "uefa.champions":'<span class="leagueIcon ucl">✦</span>',
-    "eng.1":'<span class="leagueIcon premier">♛</span>',
-    "esp.1":'<span class="leagueIcon laliga">L</span>',
-    "ita.1":'<span class="leagueIcon seriea">A</span>',
-    "uefa.nations":'<span class="leagueIcon nations">◆</span>'
+  const icons={
+    "uefa.champions":'<span class="leagueIcon ucl" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#111a16"/><g fill="#f3f7f4"><path d="M16 3l3 6 7-1-4 6 4 6-7-1-3 6-3-6-7 1 4-6-4-6 7 1z"/></g></svg></span>',
+    "eng.1":'<span class="leagueIcon premier" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#4b2758"/><path d="M9 20c2-5 4-9 7-12 3 2 5 5 7 9-3-2-5-2-7-1-2 1-4 2-7 4zm5-13l2-4 2 4-2 2z" fill="#eadcf2"/></svg></span>',
+    "esp.1":'<span class="leagueIcon laliga" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#101916"/><path d="M10 23l5-16h6l-4 11h7l-2 5z" fill="#f14354"/></svg></span>',
+    "ita.1":'<span class="leagueIcon seriea" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#eef5f1"/><path d="M8 23l6-15h6l5 15h-5l-1-3h-6l-1 3zm7-7h3l-1.5-5z" fill="#1678c8"/></svg></span>',
+    "uefa.nations":'<span class="leagueIcon nations" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#153126"/><path d="M8 16l8-9 8 9-8 9z" fill="#54e697"/></svg></span>'
   };
-  return map[id]||"";
+  return icons[id]||""
 }
 function decimalOdds(a){if(a==null)return null;const n=Number(String(a).replace("+",""));if(!Number.isFinite(n)||n===0)return null;return n>0?1+n/100:1+100/Math.abs(n)}
 function oddsText(a){if(a==null)return "—";const n=Number(String(a).replace("+",""));return Number.isFinite(n)?(n>0?`+${n}`:`${n}`):String(a)}
