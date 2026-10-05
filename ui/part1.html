@@ -684,6 +684,18 @@
   .top3Pick .top3Odds{font-size:6.8px;margin-top:4px}
   .top3Pick .top3Odds small{font-size:4.4px;margin-left:2px}
 }
+
+/* v30 sportsbook price branding */
+.oddsWithLogo{display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.bookLogo{width:18px;height:18px;object-fit:contain;flex:0 0 18px;border-radius:3px}
+.noLine{font-size:8px;color:#81988a;font-weight:800;white-space:nowrap}
+.top3Odds .bookLogo{width:14px;height:14px;flex-basis:14px}
+.priceTag .bookLogo{width:15px;height:15px;flex-basis:15px}
+@media(max-width:500px){
+  .bookLogo{width:14px;height:14px;flex-basis:14px}
+  .top3Odds .bookLogo{width:12px;height:12px;flex-basis:12px}
+  .noLine{font-size:6px}
+}
 </style>
 </head>
 <body>
@@ -837,25 +849,30 @@ function priceAllowed(p){
   const n=candidateAmerican(p);
   return n==null||n>=-500
 }
+const BOOK_META={
+  draftkings:{name:"DraftKings",logo:"https://a.espncdn.com/i/betting/Draftkings_Dark.svg"},
+  fanduel:{name:"FanDuel",logo:"https://www.google.com/s2/favicons?domain=sportsbook.fanduel.com&sz=64"},
+  espnbet:{name:"ESPN BET",logo:"https://www.google.com/s2/favicons?domain=espnbet.com&sz=64"}
+};
+function bookMeta(key){return BOOK_META[key]||null}
+function bookLogoHtml(key){
+  const m=bookMeta(key);return m?'<img class="bookLogo" src="'+esc(m.logo)+'" alt="'+esc(m.name)+'" loading="lazy">':""
+}
+function oddsWithLogo(px){
+  if(!px||px.odds==="—")return '<span class="noLine">No line available</span>';
+  return '<span class="oddsWithLogo">'+bookLogoHtml(px.bookKey)+'<span>'+esc(px.odds)+'</span></span>'
+}
 function priceInfo(p){
-  if(!p)return{oddsLabel:"Odds",odds:"—",evLabel:"EV",ev:"—",cls:"fair",estimated:false};
+  if(!p)return{oddsLabel:"No line available",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
   if(p.odds!=null)return{
-    oddsLabel:p.provider||"Posted odds",
+    oddsLabel:bookMeta(p.bookKey)?.name||p.provider||"Posted odds",
     odds:oddsText(p.odds),
     evLabel:"EV",
     ev:evText(p.ev),
     cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg",
-    estimated:false
+    bookKey:p.bookKey||null
   };
-  const fair=p.modelProb!=null?americanFromProb(p.modelProb):null;
-  return{
-    oddsLabel:"MODEL FAIR",
-    odds:fair==null?"—":oddsText(fair),
-    evLabel:"EV",
-    ev:"—",
-    cls:"fair",
-    estimated:true
-  };
+  return{oddsLabel:"No line available",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
 }
 
 function stars(s){return s>=92?"★★★★★":s>=88?"★★★★½":s>=83?"★★★★":s>=78?"★★★½":"★★★"}
