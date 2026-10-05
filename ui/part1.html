@@ -737,7 +737,7 @@
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script>
 const TZ="America/Toronto";
-const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map()};
+const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null};
 const leagueNames={
   "eng.1":"Premier League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
   "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
@@ -861,8 +861,9 @@ function candidateAmerican(p){
   return p.modelProb!=null?americanFromProb(p.modelProb):null
 }
 function priceAllowed(p){
-  const n=candidateAmerican(p);
-  return n==null||n>=-500
+  if(!p||p.odds==null)return true;
+  const n=Number(String(p.odds).replace("+",""));
+  return !Number.isFinite(n)||n>=-500
 }
 const BOOK_META={
   draftkings:{name:"DraftKings",logo:"https://a.espncdn.com/i/betting/Draftkings_Dark.svg"},
