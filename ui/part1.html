@@ -696,6 +696,22 @@
   .top3Odds .bookLogo{width:12px;height:12px;flex-basis:12px}
   .noLine{font-size:6px}
 }
+
+/* v36 compact sportsbook odds */
+.oddsWithLogo{gap:5px!important}
+.bookLogo{width:11px!important;height:11px!important;flex:0 0 11px!important;border-radius:2px!important}
+.top3Odds .bookLogo,.priceTag .bookLogo{width:9px!important;height:9px!important;flex-basis:9px!important}
+.noLineDash{display:inline-block;color:#43df88;font-weight:900;font-size:1.05em;line-height:1}
+.oddsMetric small,.oddsBlock small,.top3Odds small{
+  display:block!important;margin:4px 0 0!important;color:#6f8d7a!important;font-size:6px!important;font-weight:800!important;letter-spacing:.12em!important;text-align:center!important
+}
+.priceTag.oddsPriceTag{display:inline-flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:3px!important}
+.priceTag.oddsPriceTag small{display:block;color:#6f8d7a;font-size:6px;font-weight:800;letter-spacing:.1em}
+@media(max-width:500px){
+  .bookLogo{width:8px!important;height:8px!important;flex-basis:8px!important}
+  .top3Odds .bookLogo,.priceTag .bookLogo{width:7px!important;height:7px!important;flex-basis:7px!important}
+  .oddsMetric small,.oddsBlock small,.top3Odds small,.priceTag.oddsPriceTag small{font-size:5px!important}
+}
 </style>
 </head>
 <body>
@@ -882,7 +898,7 @@ function bookLogoHtml(key){
   const m=bookMeta(key);return m?'<img class="bookLogo" src="'+esc(m.logo)+'" alt="'+esc(m.name)+'" title="'+esc(m.name)+'" loading="lazy">':""
 }
 function oddsWithLogo(px){
-  if(!px||px.odds==="—"||!px.bookKey)return '<span class="noLine">No line available</span>';
+  if(!px||px.odds==="—"||!px.bookKey)return '<span class="noLineDash">—</span>';
   return '<span class="oddsWithLogo">'+bookLogoHtml(px.bookKey)+'<span>'+esc(px.odds)+'</span></span>'
 }
 function priceInfo(p){
