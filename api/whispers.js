@@ -360,6 +360,64 @@ function extractKeyStats(html) {
   return [...new Set(candidates)].slice(0, 5);
 }
 
+
+function limitWords(value = "", maxWords = 24) {
+  const words = cleanText(value).split(/\s+/).filter(Boolean);
+  return words.length <= maxWords ? words.join(" ") : words.slice(0, maxWords).join(" ") + "…";
+}
+
+function extractSquadNews(text) {
+  const value = captureAfter(
+    text,
+    ["Squad News", "Team news"],
+    ["Head-to-head", "H2H", "Form:", "Team Form", "Top tip", "Key stats", "Preview:"],
+    260
+  );
+  return value ? limitWords(value, 28) : null;
+}
+
+function extractTeamNews(html, home, away) {
+  const paras = [];
+  const rx = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let m;
+  while ((m = rx.exec(html))) {
+    const text = stripTags(m[1]);
+    if (text && text.length >= 18 && text.length <= 420) paras.push(text);
+  }
+
+  const homeN = normalized(home);
+  const awayN = normalized(away);
+  let activeTeam = null;
+  const out = [];
+
+  for (const p of paras) {
+    const n = normalized(p);
+    const hasHome = homeN && n.includes(homeN);
+    const hasAway = awayN && n.includes(awayN);
+    if (hasHome && !hasAway) activeTeam = home;
+    if (hasAway && !hasHome) activeTeam = away;
+
+    const availability = /\b(suspend|suspended|suspension|injur|injured|injury|ruled out|miss out|misses out|will miss|without|unavailable|doubt|doubtful|sent off|yellow cards?|fitness issue|knee issue)\b/i.test(p);
+    const projected = /\b(set to play|expected to (?:start|play|see)|likely to (?:start|play)|same lineups?|name the same lineups?|partnered by|could be replaced by|absence(?:s)? could be filled by)\b/i.test(p);
+
+    if (availability || projected) {
+      out.push({
+        team: activeTeam,
+        type: availability ? "availability" : "projected",
+        text: limitWords(p, 24),
+      });
+    }
+  }
+
+  const seen = new Set();
+  return out.filter((item) => {
+    const key = normalized(item.text);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 5);
+}
+
 function pageContainsFixture(html, home, away) {
   const text = normalized(stripTags(html));
   const homeVars = teamVariants(home).map(normalized);
@@ -371,7 +429,7 @@ function pageContainsFixture(html, home, away) {
   );
 }
 
-function parseArticle(html, url) {
+function parseArticle(html, url, home, away) {
   const text = stripTags(html);
 
   return {
@@ -381,6 +439,8 @@ function parseArticle(html, url) {
     matchResult: extractMatchResult(text),
     btts: extractBTTS(text),
     keyStats: extractKeyStats(html),
+    squadNews: extractSquadNews(text),
+    teamNews: extractTeamNews(html, home, away),
     title: extractTitle(html),
     url,
     source: "Football Whispers",
@@ -431,6 +491,8 @@ async function getWhispers(home, away, date) {
       matchResult: null,
       btts: null,
       keyStats: [],
+      squadNews: null,
+      teamNews: [],
       url: null,
       title: null,
       source: "Football Whispers",
@@ -456,7 +518,7 @@ async function getWhispers(home, away, date) {
       };
     }
 
-    const parsed = parseArticle(article.html, article.url || url);
+    const parsed = parseArticle(article.html, article.url || url, home, away);
 
     // Only mark it verified if we extracted at least one useful prediction.
     parsed.found = Boolean(
@@ -476,6 +538,8 @@ async function getWhispers(home, away, date) {
       matchResult: null,
       btts: null,
       keyStats: [],
+      squadNews: null,
+      teamNews: [],
       url: null,
       title: null,
       source: "Football Whispers",
@@ -518,6 +582,8 @@ module.exports = async function handler(req, res) {
       matchResult: null,
       btts: null,
       keyStats: [],
+      squadNews: null,
+      teamNews: [],
       url: null,
       title: null,
       source: "Football Whispers",
