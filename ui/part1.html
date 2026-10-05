@@ -750,6 +750,53 @@
 .previousPickText b{max-width:112px;font-size:7px}
 .previousPickText small{font-size:5.5px}
 }
+
+/* v39 Top Picks breathing room + price-only odds */
+.bestList{gap:10px!important}
+.bestRow{
+  padding:15px 16px!important;
+  min-height:104px!important;
+  column-gap:12px!important;
+}
+.bestCore{padding:2px 0!important}
+.bestFixture{
+  line-height:1.18!important;
+  margin-bottom:5px!important;
+}
+.bestLeague{
+  margin-top:0!important;
+  line-height:1.3!important;
+}
+.bestCategory{
+  margin-top:9px!important;
+  line-height:1.2!important;
+}
+.bestSelection{
+  margin-top:6px!important;
+  line-height:1.18!important;
+}
+.oddsPlain{display:inline-block;color:#54e593;font-weight:900}
+.oddsMetric .bookLogo,.oddsBlock .bookLogo,.top3Odds .bookLogo,.oddsPriceTag .bookLogo{display:none!important}
+@media(max-width:760px){
+  .bestList{gap:8px!important}
+  .bestRow{padding:13px 12px!important;min-height:94px!important;column-gap:9px!important}
+  .bestFixture{margin-bottom:4px!important}
+  .bestCategory{margin-top:7px!important}
+  .bestSelection{margin-top:5px!important}
+}
+@media(max-width:500px){
+  .bestList{gap:7px!important}
+  .bestRow{
+    padding:10px 8px!important;
+    min-height:76px!important;
+    column-gap:5px!important;
+  }
+  .bestCore{padding:1px 0!important}
+  .bestFixture{line-height:1.18!important;margin-bottom:3px!important}
+  .bestLeague{line-height:1.25!important}
+  .bestCategory{margin-top:5px!important;line-height:1.15!important}
+  .bestSelection{margin-top:4px!important;line-height:1.16!important}
+}
 </style>
 </head>
 <body>
@@ -940,8 +987,8 @@ function bookLogoHtml(key){
   const m=bookMeta(key);return m?'<img class="bookLogo" src="'+esc(m.logo)+'" alt="'+esc(m.name)+'" title="'+esc(m.name)+'" loading="lazy">':""
 }
 function oddsWithLogo(px){
-  if(!px||px.odds==="—"||!px.bookKey)return '<span class="noLineDash">—</span>';
-  return '<span class="oddsWithLogo">'+bookLogoHtml(px.bookKey)+'<span>'+esc(px.odds)+'</span></span>'
+  if(!px||px.odds==="—")return '<span class="noLineDash">—</span>';
+  return '<span class="oddsPlain">'+esc(px.odds)+'</span>'
 }
 function priceInfo(p){
   if(!p)return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
