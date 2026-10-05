@@ -38,7 +38,20 @@ function mergeOdds(base,extra){
   if(b.over25!=null)markets[normName("Over 2.5 Goals")]=b.over25;
   if(b.under25!=null)markets[normName("Under 2.5 Goals")]=b.under25;
   if(!extra)return {...b,markets};
-  return {...b,...extra,provider:extra.provider||b.provider,probs:{...b.probs,...extra.probs},markets:{...markets,...(extra.markets||{})}};
+  const keep=(x,y)=>y!=null?y:x;
+  const probs={...(b.probs||{})};
+  for(const [k,v] of Object.entries(extra.probs||{}))if(v!=null)probs[k]=v;
+  return {
+    ...b,
+    provider:extra.provider||b.provider,
+    homeML:keep(b.homeML,extra.homeML),
+    drawML:keep(b.drawML,extra.drawML),
+    awayML:keep(b.awayML,extra.awayML),
+    over25:keep(b.over25,extra.over25),
+    under25:keep(b.under25,extra.under25),
+    probs,
+    markets:{...markets,...(extra.markets||{})}
+  };
 }
 function oddsFromFootball(entry,homeName,awayName){
   if(!entry)return null;
