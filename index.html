@@ -16,37 +16,18 @@ html,body{margin:0;min-height:100%;background:#031008;color:#fff;font-family:sys
 <body>
 <div id="boot"><div><div class="spinner"></div>Loading FootyEdge…</div></div>
 <script>
-const SOURCE="https://footyedge-board-77758a-routes-psyche8.vercel.app";
-const CHUNKS=["https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/0?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/1?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/2?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/3?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/4?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/5?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/6?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/7?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/8?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/9?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/10?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/11?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/12?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/13?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/14?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/15?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/16?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/17?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/18?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/19?v=20261005-mockup-v7","https://footyedge-board-77758a-routes-psyche8.vercel.app/__uiv5/20?v=20261005-mockup-v7"];
-Promise.all(CHUNKS.map(url=>fetch(url,{cache:"no-store"}).then(r=>{
-  if(!r.ok) throw new Error("UI chunk "+r.status);
+const PARTS=["/ui/part0.html?v=8","/ui/part1.html?v=8","/ui/part2.html?v=8"];
+Promise.all(PARTS.map(url=>fetch(url,{cache:"no-store"}).then(r=>{
+  if(!r.ok) throw new Error("UI bundle "+r.status);
   return r.text();
 }))).then(parts=>{
-  let html=parts.join("");
-
-  // Keep production visually identical to the routed Vercel mockup build,
-  // with the one requested product change: remove Legends.
-  html=html.replace(/<div class="legends"><span>♛<\/span>\s*LEGENDS<\/div>/gi,"");
-  html=html.replace(/<div class="legends">[\s\S]*?<\/div>/gi,"");
-
-  // The routed build owns the live ESPN adapters. Point the copied UI at
-  // those same adapters so both URLs render from the same data contract.
-  html=html.replaceAll("/espn-scoreboard",SOURCE+"/espn-scoreboard");
-  html=html.replaceAll("/espn-schedule/",SOURCE+"/espn-schedule/");
-
-  // Safety: hide any remaining Legends node without affecting layout.
-  html=html.replace("</head>",`<style>
-    .legends{display:none!important}
-    .heroBrand>.legends{display:none!important}
-  </style></head>`);
-
+  const html=parts.join("");
   document.open();
   document.write(html);
   document.close();
 }).catch(err=>{
-  document.getElementById("boot").innerHTML=
-    '<div style="padding:28px;text-align:center"><b style="color:#fff">FootyEdge is refreshing.</b><br><span style="color:#7f9388">Please reload in a moment.</span></div>';
   console.error(err);
+  document.getElementById("boot").innerHTML='<div style="padding:28px;text-align:center"><b style="color:#fff">Unable to load FootyEdge.</b><br><span style="color:#7f9388">Please refresh the page.</span></div>';
 });
 </script>
 </body>
