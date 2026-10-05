@@ -1,5 +1,31 @@
 ate),ms);document.getElementById("source").textContent=`Live data · refresh ${ms===60000?"60s":"5m"} · history cached 6h`}
 
+
+S.search="";S.sort="time";
+const FLAG_CODES={
+"albania":"al","andorra":"ad","armenia":"am","austria":"at","azerbaijan":"az","belarus":"by","belgium":"be",
+"bosnia and herzegovina":"ba","bosnia-herzegovina":"ba","bulgaria":"bg","croatia":"hr","cyprus":"cy","czechia":"cz","czech republic":"cz",
+"denmark":"dk","england":"gb-eng","estonia":"ee","faroe islands":"fo","finland":"fi","france":"fr","georgia":"ge","germany":"de","gibraltar":"gi",
+"greece":"gr","hungary":"hu","iceland":"is","ireland":"ie","republic of ireland":"ie","israel":"il","italy":"it","kazakhstan":"kz","kosovo":"xk",
+"latvia":"lv","liechtenstein":"li","lithuania":"lt","luxembourg":"lu","malta":"mt","moldova":"md","montenegro":"me","netherlands":"nl",
+"north macedonia":"mk","northern ireland":"gb-nir","norway":"no","poland":"pl","portugal":"pt","romania":"ro","san marino":"sm","scotland":"gb-sct",
+"serbia":"rs","slovakia":"sk","slovenia":"si","spain":"es","sweden":"se","switzerland":"ch","turkey":"tr","türkiye":"tr","turkiye":"tr",
+"ukraine":"ua","wales":"gb-wls","united states":"us","usa":"us","canada":"ca","mexico":"mx","argentina":"ar","brazil":"br","uruguay":"uy",
+"colombia":"co","chile":"cl","peru":"pe","paraguay":"py","ecuador":"ec","venezuela":"ve","japan":"jp","south korea":"kr","australia":"au","morocco":"ma"
+};
+function flagCode(name){return FLAG_CODES[String(name||"").toLowerCase().trim()]||null}
+function teamImage(t){const code=flagCode(t&&t.name);return code?"https://flagcdn.com/w160/"+code+".png":((t&&t.logo)||"")}
+function teamImgTag(t,cls){cls=cls||"";const src=teamImage(t),fallback=(t&&t.logo)||"";const err=fallback&&src!==fallback?' onerror="this.onerror=null;this.src=\''+esc(fallback)+'\'"':"";return '<img class="'+cls+'" src="'+esc(src)+'" alt="'+esc((t&&t.name)||"")+'"'+err+'>'}
+function leagueIconHtml(id){
+  const map={
+    "uefa.champions":'<span class="leagueIcon ucl">✦</span>',
+    "eng.1":'<span class="leagueIcon premier">♛</span>',
+    "esp.1":'<span class="leagueIcon laliga">L</span>',
+    "ita.1":'<span class="leagueIcon seriea">A</span>',
+    "uefa.nations":'<span class="leagueIcon nations">◆</span>'
+  };
+  return map[id]||"";
+}
 function decimalOdds(a){if(a==null)return null;const n=Number(String(a).replace("+",""));if(!Number.isFinite(n)||n===0)return null;return n>0?1+n/100:1+100/Math.abs(n)}
 function oddsText(a){if(a==null)return "—";const n=Number(String(a).replace("+",""));return Number.isFinite(n)?(n>0?`+${n}`:`${n}`):String(a)}
 function evText(v){return v==null||!Number.isFinite(v)?"—":`${v>=0?"+":""}${(v*100).toFixed(1)}%`}
