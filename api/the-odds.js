@@ -161,33 +161,43 @@ export default async function handler(req,res){
     const from=new Date(date+"T00:00:00Z");
     const to=new Date(from.getTime()+36*60*60*1000);
     const fromIso=from.toISOString(),toIso=to.toISOString();
-    const events=[];
+    const events=[],attempts=[];
     let remaining=null,used=null,last=null;
+    const publish=String(req.query.publish||"")==="1";
 
     for(const {league,sport} of resolved){
-      // Events are free, so check the requested date before spending odds credits.
-      const eventsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/events?apiKey="+encodeURIComponent(key)+"&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
-      let eventCheck;
-      try{eventCheck=await getJson(eventsUrl)}catch{continue}
-      if(!Array.isArray(eventCheck.data)||!eventCheck.data.length)continue;
+      let eventCount=null,skipped=false;
+      if(!publish){
+        // Normal browsing conserves credits by checking the free events endpoint first.
+        const eventsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/events?apiKey="+encodeURIComponent(key)+"&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
+        try{
+          const eventCheck=await getJson(eventsUrl);
+          eventCount=Array.isArray(eventCheck.data)?eventCheck.data.length:0;
+          if(!eventCount){skipped=true;attempts.push({league,sportKey:sport.key,paidRequest:false,eventCount:0,reason:"no_free_events"});continue}
+        }catch(error){
+          attempts.push({league,sportKey:sport.key,paidRequest:false,eventCount:null,reason:"event_check_failed"});
+          continue
+        }
+      }
 
       const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&regions=ca&markets=h2h,totals&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
       try{
-        const result=await getJson(oddsUrl);
+        const result=await getJson(oddsUrl),data=Array.isArray(result.data)?result.data:[];
         remaining=result.headers.get("x-requests-remaining")??remaining;
         used=result.headers.get("x-requests-used")??used;
         last=result.headers.get("x-requests-last")??last;
-        for(const event of Array.isArray(result.data)?result.data:[])events.push(summarizeEvent(event,league));
+        attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:data.length,requestsLast:result.headers.get("x-requests-last")||null});
+        for(const event of data)events.push(summarizeEvent(event,league));
       }catch(error){
-        // Leave this league on the existing odds fallback rather than failing the whole live board.
+        attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:0,error:error instanceof Error?error.message:String(error)});
       }
     }
 
-    res.setHeader("Cache-Control",`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`);
+    res.setHeader("Cache-Control",publish?"no-store":`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`);
     return res.status(200).json({
-      enabled:true,region:"ca",markets:["h2h","totals"],events,
+      enabled:true,publish,region:"ca",markets:["h2h","totals"],events,
       sports:resolved.map(x=>({league:x.league,key:x.sport.key,title:x.sport.title})),
-      quota:{remaining,used,last},fetchedAt:new Date().toISOString()
+      attempts,quota:{remaining,used,last},fetchedAt:new Date().toISOString()
     });
   }catch(error){
     return res.status(200).json({enabled:true,events:[],error:error instanceof Error?error.message:String(error)});
