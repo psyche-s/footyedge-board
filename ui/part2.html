@@ -221,16 +221,23 @@ function apiPredictionSignals(g){
   if(/^[+-]?\d(?:\.\d)?$/.test(uo)){const n=uo.replace(/^[-+]/,"");out.push((uo.startsWith("-")?"Under ":"Over ")+n+" Goals")}
   return [...new Set(out)]
 }
+function finalizeCandidateScores(g){
+  if(!g?.model?.candidates?.length)return;
+  for(const c of g.model.candidates){
+    const base=c.modelScore??c.baseScore??c.score,external=(c.crossSources||0)*2,lineup=c.lineupDelta||0;
+    c.score=Math.max(55,Math.min(96,Math.round(base+external+lineup)));c.stars=stars(c.score);
+  }
+  g.model.candidates.sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
+  g.model.top=g.model.candidates.find(x=>x.score>=80)||null;g.model.top3=g.model.candidates.slice(0,3);
+}
 function applyContextCrossCheck(g){
   if(!g?.model?.candidates?.length)return;
   const fw=contextSignals(g),api=apiPredictionSignals(g);
   for(const c of g.model.candidates){
     const fwAgree=fw.some(x=>sameMarket(c.label,x)),apiAgree=api.some(x=>sameMarket(c.label,x)),sources=Number(fwAgree)+Number(apiAgree);
     c.contextAgree=fwAgree;c.apiAgree=apiAgree;c.crossSources=sources;
-    c.score=Math.max(55,Math.min(96,(c.modelScore??c.baseScore??c.score)+sources*2));c.stars=stars(c.score);
   }
-  g.model.candidates.sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
-  g.model.top=g.model.candidates.find(x=>x.score>=80)||null;g.model.top3=g.model.candidates.slice(0,3);
+  finalizeCandidateScores(g);
 }
 async function matchContext(g){
   try{return await json('/api/whispers?home='+encodeURIComponent(g.home.name)+'&away='+encodeURIComponent(g.away.name)+'&date='+encodeURIComponent(S.date))}catch{return null}
@@ -249,8 +256,10 @@ async function matchInjuries(g){
 async function matchAvailability(g){
   if(!g?.apiFixtureId)return{lineups:[],injuries:g?.availability?.injuries||[]};
   const id=encodeURIComponent(g.apiFixtureId),existing=g?.availability?.injuries||[];
+  const kick=new Date(g.date).getTime(),hoursToKick=(kick-Date.now())/3600000;
+  const fetchLineups=g.live||g.done||(hoursToKick<=5&&hoursToKick>=-2);
   const [lineupPayload,injuryPayload]=await Promise.all([
-    json('/api/football?endpoint=fixtures/lineups&fixture='+id).catch(()=>null),
+    fetchLineups?json('/api/football?endpoint=fixtures/lineups&fixture='+id).catch(()=>null):Promise.resolve(null),
     existing.length?Promise.resolve(null):json('/api/football?endpoint=injuries&fixture='+id).catch(()=>null)
   ]);
   const lineups=(lineupPayload?.response||[]).map(x=>({team:x?.team?.name||"",formation:x?.formation||"",startXI:(x?.startXI||[]).map(y=>y?.player?.name).filter(Boolean)})).filter(x=>x.team&&x.startXI.length);
@@ -268,6 +277,92 @@ function latestNewsItems(g){
   const rank=x=>x.source==="api"&&x.type==="availability"?5:x.type==="confirmed"?4:x.type==="availability"?3:x.type==="projected"?2:1;
   return [...verified,...preview,...fallback].filter(item=>{const k=normName(item?.text||"");if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>rank(b)-rank(a)).slice(0,10)
 }
+function teamSideForItem(g,item){
+  const team=normName(item?.team||""),raw=normName(item?.text||""),hn=normName(g.home.name),an=normName(g.away.name);
+  if(team&&(team.includes(hn)||hn.includes(team)))return"home";
+  if(team&&(team.includes(an)||an.includes(team)))return"away";
+  if(raw.includes(hn)&&!raw.includes(an))return"home";
+  if(raw.includes(an)&&!raw.includes(hn))return"away";
+  return null
+}
+function lineupSeverity(item){
+  const text=String(item?.text||"");
+  let s=item?.source==="api"?1:.72;
+  if(/doubt|fitness test|late test|questionable/i.test(text))s*=.5;
+  if(/ruled out|will miss|suspend|sent off|unavailable/i.test(text))s*=1.08;
+  if(/captain|top scorer|leading scorer|first[- ]choice|key player|star player|talisman/i.test(text))s*=1.28;
+  return Math.min(1.45,s)
+}
+function teamLineupSignal(g,side){
+  const team=g[side],items=latestNewsItems(g).filter(x=>teamSideForItem(g,x)===side),opp=side==="home"?"away":"home";
+  let attack=0,defense=0,midfield=0,generic=0,absences=0,major=0,continuity=0;
+  for(const item of items){
+    const text=String(item?.text||"");
+    const negative=/suspend|injur|ruled out|will miss|without|unavailable|doubt|sent off|yellow card|fitness issue|knee|hamstring|muscle|ankle|illness/i.test(text);
+    if(item?.type==="confirmed"){continuity+=.2;continue}
+    if(!negative){if(/same lineup|same lineups|continuity|expected to|likely to|set to play|projected/i.test(text))continuity+=.12;continue}
+    const sev=lineupSeverity(item);absences+=1;if(sev>=1.2)major+=1;
+    if(/goalkeeper|keeper|centre-back|center-back|defender|full-back|left-back|right-back/i.test(text))defense+=sev;
+    else if(/striker|forward|winger|attacker|playmaker|number 10|number ten/i.test(text))attack+=sev;
+    else if(/midfielder|midfield|pivot/i.test(text))midfield+=sev;
+    else generic+=sev;
+  }
+  const marketProb=g.odds?.probs?.[side]??null,base=g.model?.preLineupExpectedGoals||g.model?.expectedGoals||{},own=base[side]||0,other=base[opp]||0,edge=own-other;
+  const clearFavorite=(marketProb!=null&&marketProb>=.62)||edge>=.55;
+  const heavyFavorite=(marketProb!=null&&marketProb>=.72)||edge>=.85;
+  let protection=1;
+  if(absences<3&&!major){if(heavyFavorite)protection=.55;else if(clearFavorite)protection=.72}
+  else if(absences<3&&major&&heavyFavorite)protection=.78;
+  const attackLoss=Math.min(.34,(attack*.11+midfield*.055+generic*.045)*protection);
+  const defenseLeak=Math.min(.34,(defense*.11+midfield*.035+generic*.04)*protection);
+  return{team:team.name,side,items,attack,defense,midfield,generic,absences,major,continuity,marketProb,edge,clearFavorite,heavyFavorite,protection,attackLoss,defenseLeak}
+}
+function applyLineupImpact(g){
+  if(!g?.model?.expectedGoals||!g.model?.candidates?.length)return;
+  if(!g.model.preLineupExpectedGoals)g.model.preLineupExpectedGoals={...g.model.expectedGoals};
+  const base=g.model.preLineupExpectedGoals,home=teamLineupSignal(g,"home"),away=teamLineupSignal(g,"away");
+  let hx=Math.max(.05,base.home-home.attackLoss+away.defenseLeak),ax=Math.max(.05,base.away-away.attackLoss+home.defenseLeak);
+  // Small continuity lift only reduces uncertainty; it never outweighs a material absence.
+  if(home.absences===0&&home.continuity>=.2)hx+=.02;
+  if(away.absences===0&&away.continuity>=.2)ax+=.02;
+  hx=Math.min(5,hx);ax=Math.min(5,ax);
+  g.model.expectedGoals={home:hx,away:ax,total:hx+ax};
+  g.lineupImpact={home,away,base:{...base},adjusted:{home:hx,away:ax,total:hx+ax}};
+  const baseDiff=base.home-base.away,newDiff=hx-ax,totalShift=(hx+ax)-(base.home+base.away);
+  for(const p of g.model.candidates){
+    const label=normName(p.label);let d=0;
+    if(p.category==="Match Result"){
+      if(label.includes(normName(g.home.name)))d+=(newDiff-baseDiff)*5;
+      if(label.includes(normName(g.away.name)))d+=((ax-hx)-(base.away-base.home))*5;
+    }else if(p.category==="Double Chance"){
+      if(label.includes(normName(g.home.name)))d+=(newDiff-baseDiff)*3;
+      if(label.includes(normName(g.away.name)))d+=((ax-hx)-(base.away-base.home))*3;
+    }else if(p.category==="Team Goals"){
+      d+=label.includes(normName(g.home.name))?(hx-base.home)*5:(ax-base.away)*5;
+    }else if(p.category==="Goals"){
+      d+=(label.includes("under")?-totalShift:totalShift)*5;
+    }else if(p.category==="BTTS"){
+      const minShift=Math.min(hx,ax)-Math.min(base.home,base.away);
+      d+=(label.includes("no")?-minShift:minShift)*6;
+    }
+    // A clearly superior side should be trimmed, not automatically flipped, by one ordinary absence.
+    if(p.category==="Match Result"&&label.includes(normName(g.home.name))&&home.clearFavorite&&hx-ax>=.4&&home.absences<3)d=Math.max(d,-1.5);
+    if(p.category==="Match Result"&&label.includes(normName(g.away.name))&&away.clearFavorite&&ax-hx>=.4&&away.absences<3)d=Math.max(d,-1.5);
+    p.lineupDelta=Math.max(-4,Math.min(3,d));
+  }
+  finalizeCandidateScores(g)
+}
+function lineupCommentary(g,p){
+  if(!g?.lineupImpact||!p)return"";
+  const label=normName(p.label),side=label.includes(normName(g.home.name))?"home":label.includes(normName(g.away.name))?"away":null;
+  if(!side)return"";
+  const s=g.lineupImpact[side],opp=side==="home"?"away":"home",edge=g.model.expectedGoals[side]-g.model.expectedGoals[opp];
+  if(!s?.absences)return"";
+  if(s.clearFavorite&&edge>=.4)return" Lineup news trims the edge but the side still rates as a clear favorite after the adjustment.";
+  if(s.absences>=3||s.major)return" Lineup availability creates a meaningful downgrade and is reflected in the projected score and confidence.";
+  return" Lineup availability causes a modest confidence adjustment rather than overriding the underlying matchup edge."
+}
+
 function peopleFromNews(g,text){
   const blocked=[normName(g.home.name),normName(g.away.name),"team news","squad news","nations league","world cup"];
   const m=String(text||"").match(/\b[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+){1,2}\b/g)||[];
@@ -289,13 +384,23 @@ function displayNewsText(g,item){
 }
 function newsImpact(g,p,item){
   const text=String(item?.text||"");if(!text)return"";
+  const side=teamSideForItem(g,item),signal=side?teamLineupSignal(g,side):null,opp=side==="home"?"away":"home";
   const negative=/suspend|injur|ruled out|will miss|without|unavailable|doubt|sent off|yellow card|fitness issue|knee issue|hamstring|muscle|ankle|illness/i.test(text);
   const attacker=/attack|forward|striker|winger|playmaker/i.test(text),defender=/defen|centre-back|center-back|full-back|goalkeeper|keeper/i.test(text),projected=/set to play|expected to|likely to|same lineup|same lineups|partnered by|projected/i.test(text);
-  if(item?.type==="confirmed")return"Impact: confirmed starters reduce lineup uncertainty; the statistical ranking remains primary.";
-  if(negative&&attacker)return"Impact: reduced attacking depth lowers that side’s scoring ceiling and strengthens protected-result or under angles.";
+  if(item?.type==="confirmed")return"Impact: confirmed starters reduce uncertainty; the model still weighs the team’s underlying strength, opponent and market position.";
+  if(negative&&signal){
+    const adjusted=g?.model?.expectedGoals,edge=adjusted&&side?adjusted[side]-adjusted[opp]:signal.edge;
+    if(signal.clearFavorite&&edge>=.4&&signal.absences<3){
+      if(attacker)return"Impact: the attacking ceiling is trimmed, but the team still projects as a clear favorite; the win angle is downgraded slightly rather than discarded.";
+      if(defender)return"Impact: defensive risk rises modestly, but the team still holds a clear post-lineup edge; result confidence is trimmed rather than flipped.";
+      return"Impact: a modest lineup downgrade is applied, but the team remains a clear favorite after strength, projected score and market context are considered.";
+    }
+    if(signal.absences>=3||signal.major)return"Impact: this is a meaningful availability downgrade and the projected score/result confidence are reduced accordingly.";
+  }
+  if(negative&&attacker)return"Impact: reduced attacking depth lowers that side’s scoring ceiling and weakens aggressive scoring or win angles.";
   if(negative&&defender)return"Impact: a defensive absence raises scoring volatility and slightly weakens clean-sheet or under angles.";
-  if(negative)return"Impact: the availability change adds lineup risk, so confidence is not boosted by the preview layer.";
-  if(projected)return"Impact: projected XI continuity supports keeping the recent-form weighting unchanged.";
+  if(negative)return"Impact: the availability change adds lineup risk and is reflected as a bounded confidence adjustment.";
+  if(projected)return"Impact: projected XI continuity supports keeping the recent-form weighting broadly unchanged.";
   return""
 }
 function itemBelongsToTeam(g,item,team){
@@ -414,8 +519,8 @@ async function load(date=S.date){
     await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date))}));
     const crossPool=games.filter(g=>g.model?.top?.score>=76).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,16);
     await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
-    const newsPool=games.filter(g=>g.model?.top?.score>=80).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,5);
-    await Promise.all(newsPool.map(async g=>{const injuries=await matchInjuries(g);if(injuries.length)g.availability={lineups:[],injuries}}));
+    const newsPool=games.filter(g=>g.model?.top?.score>=78).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,6);
+    await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
     S.games=games;S.dataSource=liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
@@ -431,12 +536,12 @@ function renderModal(g){
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Current market data, lineup/availability information and independent pre-match analysis are used only as cross-checks. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Projected team news provides the baseline; confirmed lineup/injury data, current market consensus and independent pre-match analysis refine it. Lineup effects are bounded by team strength and replacement depth signals so one absence does not automatically overturn a clear matchup edge. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
   renderModal(g);document.getElementById("drawer").classList.add("on");
-  if(!g.availabilityLoaded){g.availabilityLoaded=true;matchAvailability(g).then(data=>{g.availability=data;if(document.getElementById("drawer").classList.contains("on")&&document.getElementById("modalTitle").textContent===g.home.name+" vs "+g.away.name)renderModal(g)}).catch(()=>{})}
+  if(!g.availabilityLoaded){g.availabilityLoaded=true;matchAvailability(g).then(data=>{g.availability=data;applyLineupImpact(g);renderBest();renderGames();if(document.getElementById("drawer").classList.contains("on")&&document.getElementById("modalTitle").textContent===g.home.name+" vs "+g.away.name)renderModal(g)}).catch(()=>{})}
 }
 
 document.getElementById("prev").onclick=()=>load(addDate(S.date,-1));document.getElementById("next").onclick=()=>load(addDate(S.date,1));document.getElementById("todayShortcut").onclick=()=>load(etDate());document.getElementById("settingsBtn").onclick=()=>document.getElementById("filters").scrollIntoView({behavior:"smooth",block:"start"});document.getElementById("searchBtn").onclick=()=>{const b=document.getElementById("searchBar");b.classList.toggle("on");if(b.classList.contains("on"))document.getElementById("searchInput").focus()};document.getElementById("searchInput").oninput=e=>{S.search=e.target.value;renderGames()};document.getElementById("sortBtn").onclick=()=>{S.sort=S.sort==="time"?"confidence":"time";document.getElementById("sortBtn").textContent=S.sort==="confidence"?"★ Confidence":"☷ Sort";renderGames()};document.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-status]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.status=b.dataset.status;renderBest();renderGames()});document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.filter=b.dataset.filter;renderGames()});document.getElementById("close").onclick=()=>document.getElementById("drawer").classList.remove("on");document.getElementById("drawer").onclick=e=>{if(e.target.id==="drawer")e.currentTarget.classList.remove("on")};window.openGame=openGame;S.date=etDate();load();
