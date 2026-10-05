@@ -160,7 +160,7 @@ export default async function handler(req,res){
 
     const from=new Date(date+"T00:00:00Z");
     const to=new Date(from.getTime()+36*60*60*1000);
-    const fromIso=from.toISOString(),toIso=to.toISOString();
+    const fromIso=from.toISOString().replace(/\.000Z$/,"Z"),toIso=to.toISOString().replace(/\.000Z$/,"Z");
     const events=[],attempts=[];
     let remaining=null,used=null,last=null;
     const publish=String(req.query.publish||"")==="1";
