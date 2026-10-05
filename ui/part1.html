@@ -168,6 +168,194 @@
   .teamCompact{align-items:center}
 }
 
+
+/* Mockup card-grid alignment pass */
+.close{
+  width:28px!important;height:28px!important;min-width:28px!important;
+  padding:0!important;border-radius:50%!important;
+  display:grid!important;place-items:center!important;
+  font-size:18px!important;line-height:1!important;font-weight:500!important;
+}
+.filterPill{
+  flex-direction:row!important;
+  white-space:nowrap!important;
+}
+.leagueIcon{
+  width:20px!important;height:20px!important;flex:0 0 20px!important;
+  margin:0!important;
+}
+.leagueIcon svg{width:100%;height:100%;display:block}
+.gameBody{
+  grid-template-columns:minmax(170px,.8fr) minmax(170px,.75fr) minmax(250px,1.2fr)!important;
+  gap:12px!important;
+  align-items:center!important;
+}
+.teamStack{display:grid;gap:12px!important}
+.teamCompact{
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:10px!important;
+}
+.teamLogo{width:44px!important;height:44px!important}
+.teamName{font-size:14px!important;line-height:1.15!important}
+.formStack{
+  display:grid;
+  grid-template-rows:44px 44px;
+  gap:12px;
+  align-items:center;
+}
+.formStack .form{
+  margin:0!important;
+  display:flex!important;
+  gap:5px!important;
+  flex-wrap:nowrap!important;
+  align-items:center!important;
+}
+.formChip{
+  width:24px!important;height:24px!important;
+  border-radius:7px!important;
+  display:grid!important;place-items:center!important;
+  font-size:11px!important;font-weight:900!important;
+  color:#eef6f1!important;
+}
+.formChip.W{
+  background:#1ca363!important;border:1px solid #28b975!important;color:#eafff2!important;
+}
+.formChip.D{
+  background:#56645e!important;border:1px solid #66756e!important;color:#f2f5f3!important;
+}
+.formChip.L{
+  background:#e64251!important;border:1px solid #ef5966!important;color:#fff!important;
+}
+.pickSide{
+  border:0!important;
+  padding:0!important;
+  min-width:0!important;
+}
+.pickSideTop{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 66px!important;
+  gap:10px!important;
+  align-items:start!important;
+}
+.pickTitle{min-width:0!important}
+.pickTitle small{
+  display:inline-block!important;
+  margin-right:4px!important;
+  color:#5ae59a!important;
+  font-size:9px!important;
+}
+.pickTitle strong{
+  display:inline!important;
+  margin:0!important;
+  font-size:16px!important;
+  line-height:1.15!important;
+}
+.confBox{text-align:right!important}
+.confBox b{font-size:18px!important}
+.compactPrices{display:flex!important;align-items:center!important;gap:10px!important;margin-top:12px!important}
+.oddsBlock{
+  min-width:74px!important;
+  min-height:48px!important;
+  border-radius:10px!important;
+  padding:8px 10px!important;
+  display:grid!important;place-items:center!important;
+  background:#123a2a!important;
+}
+.oddsBlock b{font-size:17px!important;color:#56e69a!important}
+.evBlock b{font-size:16px!important}
+.evBlock small{font-size:8px!important}
+.analysisLower{
+  display:grid!important;
+  grid-template-columns:minmax(170px,.8fr) minmax(0,2fr)!important;
+  gap:12px!important;
+  padding:0 13px 12px!important;
+}
+.analysisContent{min-width:0!important}
+.commentaryLine{
+  margin:0!important;
+  padding:10px 0!important;
+  border-top:1px solid #123120!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+.analysisContent .statStrip{
+  padding:0!important;
+  gap:7px!important;
+}
+.details{display:none!important}
+
+@media(max-width:500px){
+  .leagueIcon{width:18px!important;height:18px!important;flex-basis:18px!important}
+  .gameBody{
+    grid-template-columns:94px 94px minmax(0,1fr)!important;
+    gap:6px!important;
+    padding:7px 9px 6px!important;
+  }
+  .teamStack{gap:9px!important}
+  .teamCompact{
+    grid-template-columns:34px minmax(0,1fr)!important;
+    gap:6px!important;
+    min-height:40px!important;
+  }
+  .teamLogo{width:33px!important;height:33px!important}
+  .teamName{font-size:10.5px!important;line-height:1.1!important}
+  .formStack{
+    grid-template-rows:40px 40px!important;
+    gap:9px!important;
+  }
+  .formStack .form{gap:3px!important}
+  .formChip{
+    width:17px!important;height:17px!important;
+    border-radius:5px!important;
+    font-size:7.5px!important;
+  }
+  .pickSideTop{
+    grid-template-columns:minmax(0,1fr) 38px!important;
+    gap:4px!important;
+  }
+  .pickTitle small{
+    font-size:6px!important;
+    letter-spacing:.06em!important;
+  }
+  .pickTitle strong{
+    font-size:10.7px!important;
+    line-height:1.15!important;
+  }
+  .confBox b{font-size:12px!important}
+  .confBox span{font-size:6px!important}
+  .compactPrices{gap:6px!important;margin-top:6px!important}
+  .oddsBlock{
+    min-width:52px!important;min-height:31px!important;
+    padding:4px 6px!important;border-radius:7px!important;
+  }
+  .oddsBlock b{font-size:11px!important}
+  .evBlock b{font-size:10px!important}
+  .evBlock small{font-size:5.5px!important}
+  .analysisLower{
+    grid-template-columns:94px minmax(0,1fr)!important;
+    gap:6px!important;
+    padding:0 9px 8px!important;
+  }
+  .commentaryLine{
+    padding:6px 0!important;
+    font-size:7.8px!important;
+    line-height:1.42!important;
+  }
+  .analysisContent .statStrip{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:4px!important;
+  }
+  .analysisContent .statCell{
+    min-width:0!important;
+    min-height:38px!important;
+    padding:4px 2px!important;
+  }
+  .analysisContent .statCell b{font-size:9px!important}
+  .analysisContent .statCell small{font-size:5.5px!important}
+}
+
 </style>
 </head>
 <body>
@@ -205,7 +393,7 @@
   <section class="games" id="games"><div class="loading"><div class="spin"></div>Loading live games…</div></section>
   <footer class="foot"><span>FootyEdge · live soccer intelligence</span><span>Model confidence is a ranking signal, not a guarantee</span></footer>
 </div>
-<div class="drawer" id="drawer"><div class="modal"><div class="modalHead"><b id="modalTitle">Match Breakdown</b><button class="close" id="close">Close</button></div><div class="modalBody" id="modalBody"></div></div></div>
+<div class="drawer" id="drawer"><div class="modal"><div class="modalHead"><b id="modalTitle">Match Breakdown</b><button class="close" id="close" aria-label="Close">×</button></div><div class="modalBody" id="modalBody"></div></div></div>
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script>
 const TZ="America/Toronto";
