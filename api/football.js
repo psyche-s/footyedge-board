@@ -176,6 +176,8 @@ export default async function handler(req, res) {
     if(unusable){
       data=await fallback(endpoint,query);
       status=200;
+    }else if(data&&typeof data==="object"){
+      data._footyedgeSource="API-SPORTS";
     }
 
     const ttl=endpoint==="odds"?600:120; res.setHeader("Cache-Control",`public, s-maxage=${ttl}, stale-while-revalidate=${ttl}`);
