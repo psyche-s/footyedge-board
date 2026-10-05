@@ -96,9 +96,12 @@ async function getJson(url){
 }
 function summarizeEvent(event,league){
   const home=event.home_team,away=event.away_team;
-  const books=event.bookmakers||[];
-  const h=[],d=[],a=[],o25=[],u25=[];
-  const used=new Set();
+  const books=event.bookmakers||[],h=[],d=[],a=[],totalBuckets=new Map(),used=new Set();
+  const bucket=line=>{
+    const key=String(Number(line));
+    if(!totalBuckets.has(key))totalBuckets.set(key,{over:[],under:[]});
+    return totalBuckets.get(key)
+  };
   for(const book of books){
     let contributed=false;
     for(const market of book.markets||[]){
@@ -112,25 +115,30 @@ function summarizeEvent(event,league){
         }
       }else if(market.key==="totals"){
         for(const outcome of market.outcomes||[]){
-          if(Number(outcome.point)!==2.5)continue;
-          const price=Number(outcome.price);if(!Number.isFinite(price))continue;
-          if(norm(outcome.name)==="over"){o25.push(price);contributed=true}
-          if(norm(outcome.name)==="under"){u25.push(price);contributed=true}
+          const line=Number(outcome.point),price=Number(outcome.price);
+          if(!Number.isFinite(line)||!Number.isFinite(price))continue;
+          const b=bucket(line),n=norm(outcome.name);
+          if(n==="over"){b.over.push(price);contributed=true}
+          if(n==="under"){b.under.push(price);contributed=true}
         }
       }
     }
     if(contributed)used.add(book.title||book.key);
   }
-  const homeML=medianAmerican(h),drawML=medianAmerican(d),awayML=medianAmerican(a),over25=medianAmerican(o25),under25=medianAmerican(u25);
-  const ml=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
-  const totals=noVig([impliedAmerican(over25),impliedAmerican(under25)]);
+  const totals={};
+  for(const [line,b] of totalBuckets.entries()){
+    const over=medianAmerican(b.over),under=medianAmerican(b.under),nv=noVig([impliedAmerican(over),impliedAmerican(under)]);
+    totals[line]={over,under,probs:{over:nv[0],under:nv[1]}}
+  }
+  const homeML=medianAmerican(h),drawML=medianAmerican(d),awayML=medianAmerican(a),ml=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
+  const t25=totals["2.5"]||{};
   return {
     id:event.id,league,sportKey:event.sport_key,sportTitle:event.sport_title,
     commenceTime:event.commence_time,home,away,
     provider:"The Odds API · CA market median",
     bookmakers:[...used],
-    homeML,drawML,awayML,over25,under25,
-    probs:{home:ml[0],draw:ml[1],away:ml[2],over25:totals[0],under25:totals[1]}
+    homeML,drawML,awayML,over25:t25.over??null,under25:t25.under??null,totals,
+    probs:{home:ml[0],draw:ml[1],away:ml[2],over25:t25.probs?.over??null,under25:t25.probs?.under??null}
   };
 }
 
