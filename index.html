@@ -24,12 +24,44 @@ button,select,input{font:inherit}
 button{cursor:pointer}
 a{color:inherit}
 header{
-  position:sticky;top:0;z-index:50;background:rgba(2,5,3,.9);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--line);padding:calc(10px + env(safe-area-inset-top)) 14px 10px
+  position:relative;z-index:20;overflow:hidden;
+  background:linear-gradient(180deg,rgba(2,5,3,.94),rgba(2,5,3,.88));
+  border-bottom:1px solid var(--line);
+  padding:calc(12px + env(safe-area-inset-top)) 14px 12px;
+  min-height:138px;
 }
-.head{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:9px}
-.mark{width:31px;height:31px;border-radius:9px;background:var(--green);display:grid;place-items:center;color:#001f0f;font-weight:950}
+.headerLegends{
+  position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);
+  opacity:.34;pointer-events:none
+}
+.headerLegends img{width:100%;height:100%;object-fit:cover}
+.headerLegends::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(180deg,rgba(2,5,3,.36),rgba(2,5,3,.78) 58%,rgba(2,5,3,.96)),
+    linear-gradient(90deg,rgba(2,5,3,.86),rgba(2,5,3,.28) 40%,rgba(2,5,3,.82));
+}
+.head{position:relative;z-index:2;max-width:1180px;margin:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:72px}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{
+  width:38px;height:38px;position:relative;flex:0 0 38px;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.25));
+}
+.mark .ball{
+  width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#ffffff 0 36%,#dbe7df 37% 60%,#b9c8bf 61% 100%);
+  border:2px solid #0f1d16;position:absolute;left:4px;top:2px;
+  box-shadow:0 2px 10px rgba(0,0,0,.18)
+}
+.mark .edge{
+  position:absolute;right:2px;bottom:5px;width:21px;height:4px;border-radius:999px;
+  background:linear-gradient(90deg,var(--green),#7cffb3);transform:rotate(-28deg);
+  box-shadow:0 0 0 1px rgba(0,0,0,.16)
+}
+.mark .ground{
+  position:absolute;left:2px;right:0;bottom:1px;height:2px;border-radius:999px;
+  background:linear-gradient(90deg,transparent,rgba(45,223,139,.22),transparent)
+}
 .brandTitle{font-size:20px;font-weight:900;letter-spacing:-.7px}
 .brandTitle b{color:var(--green)}
 .brandSub{font-size:10px;color:var(--muted);letter-spacing:.9px;text-transform:uppercase}
@@ -47,11 +79,7 @@ main{max-width:1180px;margin:auto;padding:14px;display:grid;gap:14px}
 .dateLabel{min-width:132px;text-align:center;font-weight:800}
 .spacer{flex:1}
 .small{font-size:11px;color:var(--muted)}
-.refresh{display:flex;align-items:center;gap:6px}
-.hero{overflow:hidden;position:relative;min-height:184px}
-.legends{height:184px;display:grid;grid-template-columns:repeat(6,1fr);position:absolute;inset:0;opacity:.42;filter:grayscale(.25) contrast(1.05)}
-.legends img{width:100%;height:100%;object-fit:cover}
-.legends::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,5,3,.88),rgba(2,5,3,.43) 48%,rgba(2,5,3,.8)),linear-gradient(0deg,#020503 0%,transparent 65%)}
+.hero{overflow:hidden;position:relative;min-height:170px}
 .heroText{position:relative;z-index:2;padding:24px;max-width:680px}
 .eyebrow{color:var(--green);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1.2px}
 .hero h1{font-size:31px;line-height:1.04;letter-spacing:-1.5px;margin:7px 0 9px}
@@ -123,6 +151,16 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 .pickRow{border:1px solid var(--line);background:#07110b;border-radius:12px;padding:10px;display:flex;gap:9px;align-items:center}
 .pickRank{width:25px;height:25px;border-radius:8px;background:rgba(45,223,139,.1);color:var(--green);display:grid;place-items:center;font-weight:900}
 .pickRow .grow{flex:1}.pickRow small{display:block;color:var(--muted);font-size:9px}
+.pickValues{display:flex;gap:6px;align-items:stretch;margin-left:auto}
+.valueBox{min-width:60px;border:1px solid var(--line);background:#09150e;border-radius:10px;padding:6px 7px;text-align:center}
+.valueBox span{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.55px}
+.valueBox b{display:block;font-size:12px;margin-top:1px}
+.valueBox.ev.pos b{color:var(--green)}.valueBox.ev.neg b{color:var(--red)}
+.crossBox{margin-top:10px;border:1px solid #244633;background:rgba(45,223,139,.055);border-radius:13px;padding:11px}
+.crossHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.crossVerdict{font-size:9px;font-weight:900;border:1px solid #315d42;border-radius:999px;padding:3px 6px;color:var(--green)}
+.statList{display:grid;gap:6px;margin-top:8px}
+.statItem{border-left:2px solid #294936;padding:4px 0 4px 8px;color:#a8b9af;font-size:10px}
 .news{margin-top:13px;border-top:1px solid var(--line);padding-top:12px}
 .news h3{font-size:12px;margin:0 0 8px}
 .newsText{color:#a8b9af;font-size:11px}
@@ -136,18 +174,22 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 .mobileNav button{flex:1;border:0;background:transparent;color:var(--muted);padding:7px;border-radius:11px;font-size:10px;font-weight:800}
 .mobileNav button.on{color:var(--green);background:rgba(45,223,139,.08)}
 @media(max-width:760px){
-  .status .copy{display:none}.hero{min-height:205px}.heroText{padding:20px}.hero h1{font-size:27px}
+  header{min-height:122px}
+  .head{padding-top:58px}
+  .status .copy{display:none}.hero{min-height:185px}.heroText{padding:20px}.hero h1{font-size:27px}
   .kpis{grid-template-columns:repeat(2,1fr)}.bestGrid,.games{grid-template-columns:1fr}
   .topbar{gap:7px}.dateLabel{min-width:104px}.spacer{display:none}
   .leagueSelect{min-width:135px}.mobileNav{display:flex}.playerGrid{grid-template-columns:1fr}
+  .pickRow{align-items:flex-start;flex-wrap:wrap}.pickValues{width:100%;margin-left:34px}.valueBox{flex:1}
 }
 </style>
 </head>
 <body>
 <header>
+  <div class="headerLegends" id="legends"></div>
   <div class="head">
     <div class="brand">
-      <div class="mark">FE</div>
+      <div class="mark"><div class="ball"></div><div class="edge"></div><div class="ground"></div></div>
       <div><div class="brandTitle">Footy<b>Edge</b></div><div class="brandSub">Soccer Intelligence</div></div>
     </div>
     <div class="status"><span class="dot"></span><span class="copy" id="statusText">Vercel · API-Football</span></div>
@@ -164,11 +206,9 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
     <div class="dateLabel" id="dateLabel"></div>
     <div class="spacer"></div>
     <div class="small" id="nextRefresh"></div>
-    <button class="btn refresh" id="refreshBtn"><span id="refreshIcon">↻</span> Refresh</button>
   </section>
 
   <section class="card hero">
-    <div class="legends" id="legends"></div>
     <div class="heroText">
       <div class="eyebrow">Daily model board</div>
       <h1>Find the safest edge<br>without repeating the same bet.</h1>
@@ -218,7 +258,8 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 <script>
 const TZ="America/Toronto";
 const API="/api/football";
-const state={date:null,fixtures:[],odds:new Map(),games:[],filter:"all",league:"all",loading:false,predCache:new Map(),detailCache:new Map(),timers:[]};
+const WHISPERS="/api/whispers";
+const state={date:null,fixtures:[],odds:new Map(),games:[],filter:"all",league:"all",loading:false,predCache:new Map(),detailCache:new Map(),whisperCache:new Map(),timers:[]};
 
 const TODAY_PLAYBOOK={
   "2026-10-05":[
@@ -425,7 +466,6 @@ async function loadOdds(date){
 }
 async function loadBoard(){
   if(state.loading)return;state.loading=true;
-  const ri=document.getElementById("refreshIcon");ri.innerHTML='<span class="loading"></span>';
   document.getElementById("statusText").textContent="Loading live board…";
   try{
     const [fx,od]=await Promise.all([rawApi("fixtures",{date:state.date,timezone:TZ}),loadOdds(state.date)]);
@@ -443,8 +483,8 @@ async function loadBoard(){
   }catch(e){
     console.error(e);
     document.getElementById("statusText").textContent="Data connection error";
-    document.getElementById("games").innerHTML=`<div class="card empty" style="grid-column:1/-1">Could not load the board. Tap Refresh in a moment.<br><span class="small">${String(e.message||e).slice(0,180)}</span></div>`;
-  }finally{state.loading=false;ri.textContent="↻"}
+    document.getElementById("games").innerHTML=`<div class="card empty" style="grid-column:1/-1">Could not load the board. Please reopen the page in a moment.<br><span class="small">${String(e.message||e).slice(0,180)}</span></div>`;
+  }finally{state.loading=false}
 }
 function scoreClass(s){return s>=90?"green":s>=82?"amber":"red"}
 function pickWhy(g,c){
@@ -455,7 +495,7 @@ function pickWhy(g,c){
   return p?`${model}. Prediction layer included${p.advice?` · ${p.advice}`:""}.`:`${model}. Market layer shown while deeper prediction data loads.`;
 }
 function bestGames(){
-  return state.games.filter(g=>g.topPick&&g.topPick.score>=82).sort((a,b)=>b.topPick.score-a.topPick.score||(b.topPick.ev??-99)-(a.topPick.ev??-99)).slice(0,3);
+  return state.games.filter(g=>isFeaturedCompetition(g)&&g.topPick&&g.topPick.score>=82).sort((a,b)=>b.topPick.score-a.topPick.score||(b.topPick.ev??-99)-(a.topPick.ev??-99)).slice(0,3);
 }
 function renderBest(){
   const best=bestGames(),el=document.getElementById("bestGrid");
@@ -472,7 +512,36 @@ function timeET(d){return new Date(d).toLocaleTimeString("en-US",{timeZone:TZ,ho
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function logo(t,cls=""){return `<img class="logo ${cls}" src="${esc(t.logo)}" alt="${esc(t.name)}" onerror="this.style.visibility='hidden'">`}
 function statusText(g){if(g.status.live)return `${g.status.elapsed||""}' LIVE`;if(g.status.done)return `${g.goals.home??0}-${g.goals.away??0} FT`;return timeET(g.kickoff)}
+const FEATURED_COMPETITION_PATTERNS=[
+  /premier league/i,
+  /la liga/i,
+  /primera division/i,
+  /serie a/i,
+  /bundesliga/i,
+  /ligue 1/i,
+  /uefa champions league/i,
+  /champions league/i,
+  /uefa europa league/i,
+  /europa league/i,
+  /uefa nations league/i,
+  /nations league/i,
+  /world cup/i,
+  /world cup.*qual/i,
+  /euro.*qual/i,
+  /uefa european championship/i,
+  /euro 20/i,
+  /copa america/i,
+  /international friendlies/i,
+  /friendlies/i
+];
+
+function isFeaturedCompetition(g){
+  const name=String(g?.league?.name||"");
+  return FEATURED_COMPETITION_PATTERNS.some(rx=>rx.test(name));
+}
+
 function gameVisible(g){
+  if(!isFeaturedCompetition(g))return false;
   if(state.league!=="all"&&String(g.league.id)!==state.league)return false;
   const c=g.topPick;
   if(state.filter==="qualified"&&(!c||c.score<82))return false;
@@ -498,12 +567,13 @@ function renderGames(){
 }
 function renderLeague(){
   const sel=document.getElementById("leagueSelect"),cur=state.league;
-  const leagues=[...new Map(state.games.map(g=>[g.league.id,g.league])).values()].sort((a,b)=>a.name.localeCompare(b.name));
+  const leagues=[...new Map(state.games.filter(isFeaturedCompetition).map(g=>[g.league.id,g.league])).values()].sort((a,b)=>a.name.localeCompare(b.name));
   sel.innerHTML=`<option value="all">All competitions</option>`+leagues.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join("");sel.value=cur;
 }
 function renderKpis(){
-  const q=state.games.filter(g=>g.topPick?.score>=82),b=bestGames();
-  document.getElementById("kGames").textContent=state.games.length;
+  const featured=state.games.filter(isFeaturedCompetition);
+  const q=featured.filter(g=>g.topPick?.score>=82),b=bestGames();
+  document.getElementById("kGames").textContent=featured.length;
   document.getElementById("kQual").textContent=q.length;
   document.getElementById("kTop").textContent=b.length;
   document.getElementById("kScore").textContent=b[0]?.topPick?.score??"—";
@@ -515,49 +585,101 @@ async function ensurePrediction(g){
   if(!p){try{const r=await rawApi("predictions",{fixture:g.id});p=r.response?.[0]||null;if(p)state.predCache.set(g.id,p)}catch{}}
   if(p&&!g.playbook)applyPrediction(g,p);return p;
 }
+
+function whisperVerdict(modelPick,fwTip){
+  const m=norm(modelPick||""),f=norm(fwTip||"");
+  if(!f)return {label:"No verified preview",tone:"neutral",text:"Football Whispers did not return a matching preview for this fixture."};
+  const mu=/\bunder\b/.test(m),fu=/\bunder\b/.test(f),mo=/\bover\b/.test(m),fo=/\bover\b/.test(f);
+  if((mu&&fu)||(mo&&fo))return {label:"Aligned",tone:"aligned",text:`Football Whispers independently leans the same goals direction: ${fwTip}.`};
+  const mb=/btts/.test(m),fb=/both teams|btts/.test(f);
+  if(mb&&fb){
+    const my=/yes/.test(m),fy=/yes/.test(f),mn=/no/.test(m),fn=/no/.test(f);
+    if((my&&fy)||(mn&&fn))return {label:"Aligned",tone:"aligned",text:`Football Whispers independently matches the BTTS direction: ${fwTip}.`};
+  }
+  if((m.includes("draw")&&f.includes("draw")) || (m.includes(norm(modelPick).split(" ")[0])&&f.includes(norm(modelPick).split(" ")[0]))){
+    return {label:"Aligned",tone:"aligned",text:`Football Whispers independently supports the same result angle: ${fwTip}.`};
+  }
+  return {label:"Different angle",tone:"neutral",text:`Football Whispers' lead angle is ${fwTip}; our model currently prefers ${modelPick}.`};
+}
+async function loadWhispers(g){
+  if(state.whisperCache.has(g.id))return state.whisperCache.get(g.id);
+  try{
+    const q=new URLSearchParams({home:g.home.name,away:g.away.name,date:state.date});
+    const r=await fetch(`${WHISPERS}?${q}`,{cache:"force-cache"});
+    if(!r.ok)throw new Error("Whispers lookup failed");
+    const data=await r.json();
+    state.whisperCache.set(g.id,data);
+    return data;
+  }catch(e){
+    const data={found:false,error:String(e)};
+    state.whisperCache.set(g.id,data);
+    return data;
+  }
+}
+function statMetric(v){return v==null||v===""?"—":String(v)}
 function formatComp(pred){
   const c=pred?.comparison;if(!c)return"";
-  return `<div class="detailGrid">
-    <div class="metric"><b>${esc(c.form?.home||"—")}</b><span>Home form</span></div>
-    <div class="metric"><b>${esc(c.form?.away||"—")}</b><span>Away form</span></div>
-    <div class="metric"><b>${esc(c.h2h?.home||"—")} / ${esc(c.h2h?.away||"—")}</b><span>H2H edge</span></div>
-  </div>`;
+  return `<div class="news"><h3>Model stats</h3><div class="detailGrid">
+    <div class="metric"><b>${esc(statMetric(c.form?.home))}</b><span>Home form</span></div>
+    <div class="metric"><b>${esc(statMetric(c.form?.away))}</b><span>Away form</span></div>
+    <div class="metric"><b>${esc(statMetric(c.h2h?.home))} / ${esc(statMetric(c.h2h?.away))}</b><span>H2H edge</span></div>
+    <div class="metric"><b>${esc(statMetric(c.att?.home))} / ${esc(statMetric(c.att?.away))}</b><span>Attack</span></div>
+    <div class="metric"><b>${esc(statMetric(c.def?.home))} / ${esc(statMetric(c.def?.away))}</b><span>Defence</span></div>
+    <div class="metric"><b>${esc(statMetric(c.poisson_distribution?.home))} / ${esc(statMetric(c.poisson_distribution?.away))}</b><span>Poisson</span></div>
+  </div></div>`;
 }
+
 async function openMatch(id){
   const g=state.games.find(x=>x.id===id);if(!g)return;
   document.getElementById("modalWrap").classList.add("on");
   const body=document.getElementById("modalBody");
-  body.innerHTML=`<div class="modalTeams"><div class="modalTeam">${logo(g.home,"lg")}${esc(g.home.name)}</div><b>${statusText(g)}</b><div class="modalTeam">${logo(g.away,"lg")}${esc(g.away.name)}</div></div><div class="empty"><span class="loading"></span><br>Loading match intelligence…</div>`;
+  body.innerHTML=`<div class="modalTeams"><div class="modalTeam">${logo(g.home,"lg")}${esc(g.home.name)}</div><b>${statusText(g)}</b><div class="modalTeam">${logo(g.away,"lg")}${esc(g.away.name)}</div></div><div class="empty"><span class="loading"></span><br>Applying model, then cross-checking Football Whispers…</div>`;
+
+  // Model first. The external cross-check only runs after the model layer is applied.
+  const pred=await ensurePrediction(g);
+  renderAll();
+
   let detail=state.detailCache.get(id);
   if(!detail){
-    const [pr,li,inj]=await Promise.allSettled([
-      ensurePrediction(g),
-      rawApi("fixtures/lineups",{fixture:id}),
-      rawApi("injuries",{fixture:id})
-    ]);
-    detail={pred:pr.status==="fulfilled"?pr.value:null,lineups:li.status==="fulfilled"?(li.value.response||[]):[],injuries:inj.status==="fulfilled"?(inj.value.response||[]):[]};
+    const inj=await Promise.allSettled([rawApi("injuries",{fixture:id})]);
+    detail={pred,injuries:inj[0].status==="fulfilled"?(inj[0].value.response||[]):[]};
     state.detailCache.set(id,detail);
+  }else{
+    detail.pred=pred||detail.pred;
   }
-  renderAll();
+
+  const fw=await loadWhispers(g);
   const picks=diversified(g);
-  const starters=new Set;
-  detail.lineups.forEach(t=>(t.startXI||[]).forEach(x=>starters.add(norm(x.player?.name))));
-  const playerCandidates=(g.candidates||[]).filter(c=>family(c).startsWith("player-"));
-  const confirmedPlayers=detail.lineups.length?playerCandidates.filter(c=>starters.has(norm(c.player))):[];
-  const watch=detail.lineups.length?confirmedPlayers:playerCandidates.slice(0,6);
-  const lineupPlayers=detail.lineups.flatMap(t=>(t.startXI||[]).slice(0,5).map(x=>({...x.player,team:t.team?.name}))).slice(0,10);
+  const verdict=whisperVerdict(g.topPick?.label,fw?.hotTip);
+
   body.innerHTML=`<div class="modalTeams"><div class="modalTeam">${logo(g.home,"lg")}${esc(g.home.name)}</div><b>${statusText(g)}</b><div class="modalTeam">${logo(g.away,"lg")}${esc(g.away.name)}</div></div>
-    ${formatComp(detail.pred)}
-    <div class="pickList">${picks.map((c,i)=>`<div class="pickRow"><div class="pickRank">${i+1}</div><div class="grow"><small>${esc(c.category)}</small><b>${esc(c.label)}</b><small>${esc(pickWhy(g,c))}</small></div><div style="text-align:right"><b>${c.score}</b><small>${c.american!=null?(c.american>0?"+":"")+c.american:oddText(c.decimal)}</small></div></div>`).join("")||`<div class="newsText">No qualified markets returned.</div>`}</div>
-    <div class="news"><h3>Game script</h3><div class="newsText">${esc(g.topPick?.commentary||detail.pred?.predictions?.advice||"The board is leaning on current market probability and API-Football prediction inputs. Recheck near kickoff for lineup changes.")}</div></div>
-    <div class="news"><h3>Injuries</h3><div class="newsText">${detail.injuries.length?detail.injuries.slice(0,10).map(x=>`${esc(x.player?.name)} — ${esc(x.player?.reason||"listed")}`).join("<br>"):"No injury entries returned for this fixture."}</div></div>
-    <div class="news"><h3>${detail.lineups.length?"Confirmed XI / player layer":"Player watchlist"}</h3>
-      <div class="newsText" style="margin-bottom:8px">${detail.lineups.length?"Player bets are only promoted when the player appears in the confirmed starting XI.":"Lineups are not confirmed yet, so player picks remain watchlist-only."}</div>
-      ${watch.length?`<div class="pickList">${watch.map(c=>`<div class="pickRow"><div class="grow"><small>${esc(c.category)}</small><b>${esc(c.label)}</b></div><span class="pill green">${detail.lineups.length?"STARTER ✓":"WATCH"}</span></div>`).join("")}</div>`:
-      lineupPlayers.length?`<div class="playerGrid">${lineupPlayers.map(p=>`<div class="player"><img src="https://media.api-sports.io/football/players/${p.id}.png" onerror="this.style.display='none'"><div><b>${esc(p.name)}</b><small>${esc(p.team||"")}</small></div></div>`).join("")}</div>`:
-      `<div class="newsText">No player market/lineup data returned yet.</div>`}
+    <div class="news"><h3>Our model</h3>
+      <div class="pickList">${picks.map((c,i)=>`<div class="pickRow">
+        <div class="pickRank">${i+1}</div>
+        <div class="grow"><small>${esc(c.category)}</small><b>${esc(c.label)}</b><small>${esc(pickWhy(g,c))}</small></div>
+        <div class="pickValues">
+          <div class="valueBox"><span>Odds</span><b>${c.american!=null?(c.american>0?"+":"")+c.american:oddText(c.decimal)}</b></div>
+          <div class="valueBox ev ${c.ev!=null&&c.ev>=0?"pos":"neg"}"><span>EV</span><b>${c.ev!=null?evText(c.ev):"—"}</b></div>
+          <div class="valueBox"><span>Score</span><b>${c.score}</b></div>
+        </div>
+      </div>`).join("")||`<div class="newsText">No qualified markets returned.</div>`}</div>
     </div>
-    ${g.topPick?.cross?`<div class="news"><h3>Independent cross-check</h3><div class="newsText">${esc(g.topPick.cross)}</div></div>`:""}`;
+
+    ${formatComp(detail.pred)}
+
+    <div class="news"><h3>Commentary</h3><div class="newsText">${esc(g.topPick?.commentary||detail.pred?.predictions?.advice||"Current market probability and API-Football prediction inputs support the model lean. Recheck price movement closer to kickoff.")}</div></div>
+
+    <div class="news"><h3>Football Whispers cross-check</h3>
+      <div class="crossBox">
+        <div class="crossHead"><b>${fw?.found?"Football Whispers":"Cross-check unavailable"}</b><span class="crossVerdict">${esc(verdict.label)}</span></div>
+        <div class="newsText">${esc(verdict.text)}</div>
+        ${fw?.hotTip?`<div class="pillRow" style="margin-top:8px"><span class="pill green">FW: ${esc(fw.hotTip)}</span>${fw.correctScore?`<span class="pill">Score: ${esc(fw.correctScore)}</span>`:""}</div>`:""}
+        ${fw?.keyStats?.length?`<div class="statList">${fw.keyStats.slice(0,3).map(s=>`<div class="statItem">${esc(s)}</div>`).join("")}</div>`:""}
+        ${fw?.url?`<div class="sourceLine">Verified Football Whispers preview found for this matchup.</div>`:""}
+      </div>
+    </div>
+
+    <div class="news"><h3>Injuries</h3><div class="newsText">${detail.injuries.length?detail.injuries.slice(0,8).map(x=>`${esc(x.player?.name)} — ${esc(x.player?.reason||"listed")}`).join("<br>"):"No injury entries returned for this fixture."}</div></div>`;
 }
 function scheduleRefreshes(){
   state.timers.forEach(clearTimeout);state.timers=[];
@@ -567,11 +689,10 @@ function scheduleRefreshes(){
   targets.forEach(t=>state.timers.push(setTimeout(loadBoard,t-now)));
   el.textContent=targets.length?`Pregame refresh ${new Date(targets[0]).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})} ET`:"Pregame refresh window passed";
 }
-function setDate(d){state.date=d;state.predCache.clear();state.detailCache.clear();loadBoard()}
+function setDate(d){state.date=d;state.predCache.clear();state.detailCache.clear();state.whisperCache.clear();loadBoard()}
 document.getElementById("prevBtn").onclick=()=>setDate(dateAdd(state.date,-1));
 document.getElementById("nextBtn").onclick=()=>setDate(dateAdd(state.date,1));
 document.getElementById("todayBtn").onclick=()=>setDate(etDate());
-document.getElementById("refreshBtn").onclick=()=>loadBoard();
 document.getElementById("leagueSelect").onchange=e=>{state.league=e.target.value;renderGames()};
 document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("on"));b.classList.add("on");state.filter=b.dataset.filter;renderGames()});
 document.getElementById("closeModal").onclick=()=>document.getElementById("modalWrap").classList.remove("on");
