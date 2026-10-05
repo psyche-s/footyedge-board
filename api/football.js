@@ -178,7 +178,7 @@ export default async function handler(req, res) {
       status=200;
     }
 
-    res.setHeader("Cache-Control","public, s-maxage=120, stale-while-revalidate=180");
+    const ttl=endpoint==="odds"?600:120; res.setHeader("Cache-Control",`public, s-maxage=${ttl}, stale-while-revalidate=${ttl}`);
     return res.status(status).json(data);
   } catch (error) {
     try{
