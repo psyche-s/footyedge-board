@@ -249,6 +249,28 @@ const BOOK_ODDS={"2026-10-05":{
 "romania|sweden|sweden ml":-138
 }};
 function bookOddsFor(g,label){const d=BOOK_ODDS[S.date];if(!d)return null;const h=normName(g.home.name),a=normName(g.away.name),l=normName(label);return d[`${h}|${a}|${l}`]??d[`${a}|${h}|${l}`]??null}
+const USER_PICKS={"2026-10-05":{
+"cyprus|latvia":"Under 3.5 Goals",
+"ukraine|hungary":"Under 3.5 Goals",
+"northern ireland|georgia":"Under 2.5 Goals",
+"france|belgium":"France ML",
+"italy|turkiye":"Italy ML",
+"montenegro|armenia":"Montenegro ML",
+"romania|sweden":"Sweden ML"
+}};
+function preferredPickLabel(g){
+  const d=USER_PICKS[S.date];if(!d)return null;
+  const h=normName(g.home.name),a=normName(g.away.name);
+  return d[h+"|"+a]||d[a+"|"+h]||null
+}
+function applyUserPick(g){
+  if(!g?.model)return;
+  const label=preferredPickLabel(g);if(!label)return;
+  const target=normName(label);
+  const found=(g.model.candidates||[]).find(x=>normName(x.label)===target);
+  if(found){g.model.top=found;g.userPick=true}
+}
+
 
 function etDate(d=new Date()){const p=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return `${o.year}-${o.month}-${o.day}`}
 function addDate(s,n){const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
