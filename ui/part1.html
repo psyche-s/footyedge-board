@@ -1,0 +1,127 @@
+:.04em}.details{font-size:9px}.bestRow,.game{box-shadow:none}
+@media(max-width:760px){.heroHeader{min-height:170px}.heroTitle{font-size:38px}.bestRow{grid-template-columns:30px 52px minmax(0,1fr) 60px 58px 54px 12px;gap:7px;padding:11px 10px}.bestFlags img{width:30px;height:30px}.bestFixture{font-size:11px}.bestSelection{font-size:13px}.bestMetric b{font-size:11px}.bestConfidence b{font-size:13px}.gameBody{grid-template-columns:1fr}.pickSide{border-left:0;border-top:1px solid #143020;padding:10px 0 0}.statStrip{grid-template-columns:repeat(5,82px);overflow-x:auto;scrollbar-width:none}.statStrip::-webkit-scrollbar{display:none}}
+@media(max-width:500px){.heroHeader{min-height:158px;background-position:58% 58%;padding-left:18px;padding-right:18px}.heroTitle{font-size:35px}.heroSub{font-size:9px;letter-spacing:3px}.filterPill{height:40px;padding:0 14px;font-size:12px}.bestRow{grid-template-columns:28px 45px minmax(0,1fr) 55px 52px 49px 9px}.bestFlags img{width:28px;height:28px}.bestLeague{font-size:8px}.bestMetric small{font-size:7px}.bestMetric b{font-size:10px}.bestConfidence b{font-size:12px}.rowChev{font-size:16px}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="heroHeader">
+    <div class="heroBrand">
+      <div class="heroTitle">Footy<span>Edge</span></div>
+      <div class="heroSub">Soccer Intelligence</div>
+      
+    </div>
+    <div class="liveDot" aria-label="Live data"></div>
+  </header>
+
+  <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="navBtn" id="next">›</button></section>
+
+  <section class="filters" id="filters">
+    <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
+    <div class="filterGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill active" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Completed</button><button class="filterPill" data-status="all">All Games</button></div></div>
+    <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button></div></div>
+  </section>
+
+  <section class="modelNote"><span class="infoIcon">i</span><p><b>How the picks are made:</b> FootyEdge blends recent form, home/away performance, head-to-head results when available, scoring and conceding rates, BTTS/goal-total trends, market pricing and expected value. The highest-confidence qualifying market is shown first. <strong>Picks are not guaranteed. Bet responsibly and only wager what you can afford to lose.</strong></p></section>
+
+  <div class="sectionHead" id="topAnchor"><div><h2>★ Today’s Top Picks</h2><p id="topSub">Max 5 · 85%+ confidence</p></div><div class="stamp" id="stamp"></div></div>
+  <section class="bestList" id="best"><div class="loading"><div class="spin"></div>Ranking today’s best plays…</div></section>
+
+  <div class="sectionHead" id="matchesAnchor"><div><h2 id="gamesTitle">⚽ Today’s Games</h2><p>Major competitions only · form, odds, EV and model commentary.</p></div><div class="stamp" id="source">Refreshing automatically</div></div>
+  <section class="games" id="games"><div class="loading"><div class="spin"></div>Loading live games…</div></section>
+  <footer class="foot"><span>FootyEdge · live soccer intelligence</span><span>Model confidence is a ranking signal, not a guarantee</span></footer>
+</div>
+<div class="drawer" id="drawer"><div class="modal"><div class="modalHead"><b id="modalTitle">Match Breakdown</b><button class="close" id="close">Close</button></div><div class="modalBody" id="modalBody"></div></div></div>
+<nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
+<script>
+const TZ="America/Toronto";
+const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map()};
+const leagueNames={
+  "eng.1":"Premier League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
+  "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
+  "uefa.champions":"UEFA Champions League","uefa.europa":"UEFA Europa League","uefa.europa.conf":"UEFA Conference League",
+  "uefa.nations":"UEFA Nations League","uefa.euro":"UEFA Euro","uefa.euroq":"Euro Qualifying",
+  "fifa.world":"FIFA World Cup","fifa.worldq.uefa":"World Cup Qualifying","fifa.worldq.conmebol":"World Cup Qualifying","fifa.worldq.concacaf":"World Cup Qualifying",
+  "fifa.friendly":"International Friendly","concacaf.nations.league":"CONCACAF Nations League","conmebol.copa_america":"Copa América"
+};
+const uidLeague={2395:"uefa.nations",3922:"fifa.friendly",19267:"concacaf.nations.league"};
+const MAJOR_LEAGUES=new Set(Object.keys(leagueNames).filter(x=>x!=="fifa.friendly"));
+function isMajorLeague(id){return !!id&&MAJOR_LEAGUES.has(id)};
+const MATCH_CONTEXT={"2026-10-05":{
+"cyprus|latvia":"Recent meetings between these sides have leaned low-scoring, and Latvia's attacking output has been limited. That reinforces a cautious total rather than an aggressive over.",
+"bosnia-herzegovina|poland":"Poland have shown some vulnerability to conceding first, while Bosnia-Herzegovina's recent group form has been resilient. The overall matchup still profiles tighter than a wide-open shootout.",
+"france|belgium":"France carry the home edge, but Belgium retain enough attacking quality to keep both-teams-to-score and goal markets in play.",
+"italy|turkiye":"Italy's home attack projects as the stronger unit, while Türkiye's recent Nations League scoring output has been modest. That supports Italy-focused and protected goal markets.",
+"montenegro|armenia":"Montenegro's recent results and the reverse-fixture profile favour the home side, while Armenia's defensive form keeps protected Montenegro markets attractive.",
+"northern ireland|georgia":"Georgia's scoring output has been limited and Northern Ireland have been difficult to break down. That reinforces the lower-total side of the board.",
+"romania|sweden":"Sweden bring the higher attacking ceiling, while Romania have allowed enough chances for Sweden and goal-related markets to stay live.",
+"ukraine|hungary":"Both sides have produced low-event group matches with limited scoring, so protected under markets rate ahead of aggressive overs."}};
+function normName(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/turkey/g,"turkiye").replace(/[^a-z0-9]+/g," ").trim()}
+function contextFor(g){const d=MATCH_CONTEXT[S.date];if(!d)return"";const direct=`${normName(g.home.name)}|${normName(g.away.name)}`,reverse=`${normName(g.away.name)}|${normName(g.home.name)}`;return d[direct]||d[reverse]||""}
+function pctInt(v){return typeof v==="number"?`${Math.round(v*100)}%`:"—"}
+function projectedScore(g){const h=g.model?.home,a=g.model?.away;if(!h||!a)return"—";const hg=Math.max(0,Math.min(4,Math.round((h.gf+a.ga)/2))),ag=Math.max(0,Math.min(4,Math.round((a.gf+h.ga)/2)));return `${hg}-${ag}`}
+function ourReason(g,p){if(!p||!g.model)return"No qualifying market yet.";const h=g.model.home,a=g.model.away,homeTot=h.gf+h.ga,awayTot=a.gf+a.ga,label=String(p.label).toLowerCase();if(label.includes("under"))return `The current-season profiles are low enough for this safety line: ${g.home.name} matches average ${homeTot.toFixed(2)} total goals and ${g.away.name} ${awayTot.toFixed(2)}. Venue splits and H2H, where available, keep it highest in our ranking.`;if(label.includes("over"))return `The scoring profile supports goals: ${g.home.name} matches average ${homeTot.toFixed(2)} total goals and ${g.away.name} ${awayTot.toFixed(2)}. Our venue/H2H layers keep this above the alternatives.`;if(p.category==="BTTS")return `Scoring and conceding rates drive this pick: ${g.home.name} scored in ${pctInt(h.scored)} of the sample and ${g.away.name} in ${pctInt(a.scored)}, with BTTS rates of ${pctInt(h.btts)} and ${pctInt(a.btts)}.`;if(p.category==="Team Goals")return `This is a team-floor play built from the side's scoring rate and the opponent's concession rate, then adjusted for home/away form and sample size.`;if(p.category==="Double Chance")return `The protected result grades best because the selected side's non-loss profile is stronger than the opponent's win profile after venue weighting.`;if(p.category==="Match Result")return `The straight result grades highest from recent wins, opponent losses and home/away performance; market price is used as an agreement check, not as the model itself.`;return `This market ranks highest after recent form, venue splits, H2H, scoring/conceding rates and market agreement are blended together.`}
+function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
+
+
+
+const BOOK_ODDS={"2026-10-05":{
+"cyprus|latvia|under 3.5 goals":-350,
+"ukraine|hungary|under 3.5 goals":-450,
+"northern ireland|georgia|under 2.5 goals":-211,
+"france|belgium|france ml":-209,
+"italy|türkiye|italy ml":-239,
+"montenegro|armenia|montenegro ml":-188,
+"romania|sweden|sweden ml":-138
+}};
+function bookOddsFor(g,label){const d=BOOK_ODDS[S.date];if(!d)return null;const h=normName(g.home.name),a=normName(g.away.name),l=normName(label);return d[`${h}|${a}|${l}`]??d[`${a}|${h}|${l}`]??null}
+
+function etDate(d=new Date()){const p=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return `${o.year}-${o.month}-${o.day}`}
+function addDate(s,n){const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
+function dateKey(s){return s.replaceAll("-","")}
+function timeET(s){return new Intl.DateTimeFormat("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"}).format(new Date(s))}
+function niceDate(s){return new Date(s+"T12:00:00Z").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"})}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function avg(a){const v=a.filter(x=>typeof x==="number"&&Number.isFinite(x));return v.length?v.reduce((x,y)=>x+y,0)/v.length:null}
+function rate(a,fn){return a.length?a.filter(fn).length/a.length:null}
+function scoreVal(v){const n=Number(typeof v==="object"&&v? v.value??v.displayValue:v);return Number.isFinite(n)?n:null}
+function probAmerican(v){if(v==null)return null;const n=Number(String(v).replace("+",""));if(!n)return null;return n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100)}
+function noVig(a){const v=a.map(x=>x||0),s=v.reduce((x,y)=>x+y,0);return s?v.map(x=>x/s):v.map(()=>0)}function americanFromProb(p){if(!(p>0&&p<1))return null;return p>=.5?Math.round(-100*p/(1-p)):Math.round(100*(1-p)/p)}
+function poissonCDF(k,l){let term=Math.exp(-l),sum=term;for(let i=1;i<=k;i++){term*=l/i;sum+=term}return sum}
+function totalMarketShape(over25){if(!(over25>0&&over25<1))return{};let lo=.15,hi=6;for(let i=0;i<48;i++){const mid=(lo+hi)/2,p=1-poissonCDF(2,mid);if(p<over25)lo=mid;else hi=mid}const l=(lo+hi)/2;return{lambda:l,over15:1-poissonCDF(1,l),under35:poissonCDF(3,l),under45:poissonCDF(4,l)}}
+function priceInfo(p){if(!p)return{oddsLabel:"Odds",odds:"N/A",evLabel:"EV",ev:"N/A",cls:"fair"};if(p.odds!=null)return{oddsLabel:"Odds",odds:oddsText(p.odds),evLabel:"EV",ev:evText(p.ev),cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg"};if(p.marketProb!=null&&p.marketProb>0&&p.marketProb<1){const ev=p.modelProb!=null?p.modelProb*(1/p.marketProb)-1:null;return{oddsLabel:"Est. odds",odds:oddsText(americanFromProb(p.marketProb)),evLabel:"Est. EV",ev:evText(ev),cls:`estimate ${ev==null?"":ev>=0?"evPos":"evNeg"}`}}return{oddsLabel:"Fair odds",odds:oddsText(americanFromProb(p.modelProb)),evLabel:"EV",ev:"N/A",cls:"fair"}}
+
+
+function stars(s){return s>=92?"★★★★★":s>=88?"★★★★½":s>=83?"★★★★":s>=78?"★★★½":"★★★"}
+async function json(url){
+  const r=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
+  if(!r.ok){const e=new Error(r.status===429?"Data provider request limit reached. Using cached data when available.":`Data request failed (${r.status})`);e.status=r.status;throw e}
+  return r.json();
+}
+function leagueOf(e){
+  const o=e?.competitions?.[0]?.odds?.[0];
+  const x=o?.moneyline?.home?.close?.link?.tracking?.tags?.league||o?.moneyline?.away?.close?.link?.tracking?.tags?.league||o?.total?.over?.close?.link?.tracking?.tags?.league||o?.pointSpread?.home?.close?.link?.tracking?.tags?.league;
+  if(x)return x; const m=String(e?.uid||"").match(/~l:(\d+)/); return m?uidLeague[m[1]]||null:null;
+}
+function marketOdds(o){
+  const ml=o?.moneyline||{},t=o?.total||{};
+  const hp=probAmerican(ml?.home?.close?.odds),dp=probAmerican(ml?.draw?.close?.odds),ap=probAmerican(ml?.away?.close?.odds),m=noVig([hp,dp,ap]);
+  const op=probAmerican(t?.over?.close?.odds),up=probAmerican(t?.under?.close?.odds),tot=noVig([op,up]);
+  return{provider:o?.provider?.displayName||o?.provider?.name||null,homeML:ml?.home?.close?.odds??null,drawML:ml?.draw?.close?.odds??null,awayML:ml?.away?.close?.odds??null,over25:t?.over?.close?.odds??null,under25:t?.under?.close?.odds??null,probs:{home:m[0]||null,draw:m[1]||null,away:m[2]||null,over25:tot[0]||null,under25:tot[1]||null}};
+}
+function history(payload,teamId,before){
+  const out=[];for(const e of payload?.events||[]){if(!e?.date||new Date(e.date)>=new Date(before))continue;const cs=e?.competitions?.[0]?.competitors||[],me=cs.find(c=>String(c?.id??c?.team?.id)===String(teamId)),op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));if(!me||!op)continue;const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;out.push({id:String(e.id),date:e.date,venue:me.homeAway==="away"?"away":"home",gf,ga,result:gf>ga?"W":gf<ga?"L":"D",opp:String(op?.id??op?.team?.id??"")})}
+  const seen=new Set;return out.sort((a,b)=>new Date(b.date)-new Date(a.date)).filter(x=>!seen.has(x.id)&&seen.add(x.id)).slice(0,10);
+}
+function stats(g){return{n:g.length,form:g.slice(0,5).map(x=>x.result).join(" ")||"—",gf:avg(g.map(x=>x.gf))||0,ga:avg(g.map(x=>x.ga))||0,o15:rate(g,x=>x.gf+x.ga>=2),o25:rate(g,x=>x.gf+x.ga>=3),u25:rate(g,x=>x.gf+x.ga<=2),u35:rate(g,x=>x.gf+x.ga<=3),u45:rate(g,x=>x.gf+x.ga<=4),btts:rate(g,x=>x.gf>0&&x.ga>0),scored:rate(g,x=>x.gf>0),conceded:rate(g,x=>x.ga>0),win:rate(g,x=>x.result==="W"),nonLoss:rate(g,x=>x.result!=="L"),nonWin:rate(g,x=>x.result!=="W")}}
+const SCHEDULE_TTL=6*60*60*1000;
+async function schedule(league,id,year){
+  const key=`fe:schedule:${league}:${id}:${year}`,now=Date.now();
+  const mem=S.cache.get(key);if(mem&&now-mem.t<SCHEDULE_TTL)return mem.v;
+  let stored=null;try{stored=JSON.parse(localStorage.getItem(key)||"null")}catch{}
+  if(stored&&now-stored.t<SCHEDULE_TTL){S.cache.set(key,stored);return stored.v}
+  try{const v=await json(`/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(id)}&season=${year}`);const rec={t:now,v};S.cache.set(key,rec);try{localStorage.setItem(key,JSON.stringify(rec))}catch{}return v}catch(e){if(stored?.v)return stored.v;throw e}
+}
+let refreshTimer=null;
+function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const ms=S.games.some(g=>g.live)?60000:300000;refreshTimer=setTimeout(()=>load(S.d
