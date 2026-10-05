@@ -91,6 +91,22 @@ function oddsFromFootball(entry,homeName,awayName){
   return out;
 }
 function buildOddsMap(payload){const map=new Map();for(const entry of payload?.response||[])map.set(String(entry?.fixture?.id||""),entry);return map}
+function oddsFromTheOdds(entry,homeName,awayName){
+  if(!entry)return null;
+  const out={provider:entry.provider||"The Odds API · CA market median",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:entry.over25??null,under25:entry.under25??null,markets:{},probs:{...(entry.probs||{})}};
+  if(out.homeML!=null)out.markets[normName(homeName+" ML")]=out.homeML;
+  if(out.awayML!=null)out.markets[normName(awayName+" ML")]=out.awayML;
+  if(out.over25!=null)out.markets[normName("Over 2.5 Goals")]=out.over25;
+  if(out.under25!=null)out.markets[normName("Under 2.5 Goals")]=out.under25;
+  return out
+}
+function buildTheOddsMap(payload){
+  const map=new Map();
+  for(const entry of payload?.events||[]){
+    if(entry?.home&&entry?.away)map.set(fixtureMatchKey(entry.home,entry.away),entry)
+  }
+  return map
+}
 function fixtureMatchKey(home,away){return normName(home)+"|"+normName(away)}
 function buildFixtureMap(payload){const map=new Map();for(const entry of payload?.response||[]){const home=entry?.teams?.home?.name,away=entry?.teams?.away?.name;if(home&&away)map.set(fixtureMatchKey(home,away),entry)}return map}
 function leagueIconHtml(id,fallback){const src=fallback||LEAGUE_LOGOS[id]||"";return src?'<span class="leagueIcon" aria-hidden="true"><img class="leagueLogoImg" src="'+esc(src)+'" alt="" loading="lazy"></span>':'<span class="leagueFallback" aria-hidden="true">⚽</span>'}
@@ -380,12 +396,27 @@ async function load(date=S.date){
       const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:apiFixture?.league?.name||leagueNames[l]||l||"Soccer",leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false}
     }).filter(g=>isMajorLeague(g.league));
+
+    let liveOddsPayload=null;
+    if(S.date===etDate()&&games.length){
+      const liveLeagues=[...new Set(games.map(g=>g.league).filter(Boolean))];
+      if(liveLeagues.length){
+        liveOddsPayload=await json('/api/the-odds?live=1&date='+encodeURIComponent(S.date)+'&leagues='+encodeURIComponent(liveLeagues.join(','))).catch(()=>null);
+        const liveOddsMap=buildTheOddsMap(liveOddsPayload);
+        for(const g of games){
+          const entry=liveOddsMap.get(fixtureMatchKey(g.home.name,g.away.name));
+          const liveOdds=oddsFromTheOdds(entry,g.home.name,g.away.name);
+          if(liveOdds)g.odds=mergeOdds(g.odds,liveOdds);
+        }
+      }
+    }
+
     await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date))}));
     const crossPool=games.filter(g=>g.model?.top?.score>=76).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,16);
     await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
     const newsPool=games.filter(g=>g.model?.top?.score>=80).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,5);
     await Promise.all(newsPool.map(async g=>{const injuries=await matchInjuries(g);if(injuries.length)g.availability={lineups:[],injuries}}));
-    S.games=games;S.dataSource=oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
+    S.games=games;S.dataSource=liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
 
