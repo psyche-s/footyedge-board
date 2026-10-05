@@ -171,7 +171,7 @@ function latestNewsItems(g){
   const c=g?.context;
   if(!c)return[];
   const items=Array.isArray(c.teamNews)?c.teamNews.filter(x=>x?.text):[];
-  if(items.length)return items;
+  if(items.length)return [...items].sort((a,b)=>Number(b.type==="availability")-Number(a.type==="availability"));
   if(c.squadNews)return[{team:null,type:"availability",text:c.squadNews}];
   return[];
 }
