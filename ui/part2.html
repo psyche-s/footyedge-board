@@ -208,7 +208,9 @@ function model(g,hh,ah){
     x.internalDelta=d;x.modelScore=Math.max(55,Math.min(96,x.score+d));x.score=x.modelScore;x.baseScore=x.modelScore;x.stars=stars(x.score);
   }
   c.sort((x,y)=>y.score-x.score||(y.ev??-99)-(x.ev??-99));
-  return{top:c.find(x=>x.score>=80)||null,top3:c.slice(0,3),candidates:c,home:h,away:a,displayHome:hAll,displayAway:aAll,expectedGoals:{home:expHome,away:expAway,total:expTotal},sample:{home:h.n,away:a.n,h2:h2.length}}
+  const m={top:null,top3:[],rankedCandidates:[],candidates:c,home:h,away:a,displayHome:hAll,displayAway:aAll,expectedGoals:{home:expHome,away:expAway,total:expTotal},sample:{home:h.n,away:a.n,h2:h2.length}};
+  const gg={...g,model:m};setRankedTop(gg);
+  return m
 }
 
 function marketKey(v){
@@ -254,14 +256,37 @@ function apiPredictionSignals(g){
   if(/^[+-]?\d(?:\.\d)?$/.test(uo)){const n=uo.replace(/^[-+]/,"");out.push((uo.startsWith("-")?"Under ":"Over ")+n+" Goals")}
   return [...new Set(out)]
 }
+function marketCandidate(g,label){
+  return g?.model?.candidates?.find(x=>normName(x.label)===normName(label))||null
+}
+function orderedQualifiedCandidates(g){
+  const all=(g?.model?.candidates||[]).filter(x=>x.score>=78&&priceAllowed(x));
+  const expected=g?.model?.expectedGoals?.total;
+  const u25=marketCandidate(g,"Under 2.5 Goals"),u35=marketCandidate(g,"Under 3.5 Goals");
+  const underProfile=Number.isFinite(expected)&&expected<=2.8&&u25?.score>=78&&u35?.score>=78&&priceAllowed(u25)&&priceAllowed(u35);
+  if(underProfile){
+    const rest=all.filter(x=>x!==u25&&x!==u35).sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
+    return [u25,u35,...rest]
+  }
+  return [...all].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99))
+}
+function setRankedTop(g){
+  const ranked=orderedQualifiedCandidates(g);
+  g.model.rankedCandidates=ranked;
+  g.model.top=ranked.find(x=>x.score>=80)||null;
+  g.model.top3=ranked.slice(0,3);
+}
+
 function finalizeCandidateScores(g){
   if(!g?.model?.candidates?.length)return;
   for(const c of g.model.candidates){
     const base=c.modelScore??c.baseScore??c.score,external=(c.crossSources||0)*2,lineup=c.lineupDelta||0,userFit=c.userFitDelta||0;
     c.score=Math.max(55,Math.min(96,Math.round(base+external+lineup+userFit)));c.stars=stars(c.score);
+    c.displayOdds=candidateAmerican(c);
+    c.priceEligible=priceAllowed(c);
   }
   g.model.candidates.sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
-  g.model.top=g.model.candidates.find(x=>x.score>=80)||null;g.model.top3=g.model.candidates.slice(0,3);
+  setRankedTop(g);
 }
 function applyContextCrossCheck(g){
   if(!g?.model?.candidates?.length)return;
@@ -497,7 +522,7 @@ function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return
 function statusOK(g){return S.status==="all"||(S.status==="upcoming"&&!g.done&&!g.live)||(S.status==="live"&&g.live)||(S.status==="completed"&&g.done)}
 function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="qualified")return !!p;if(S.filter==="core")return p?.score>=88;if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
-function topPicks(){return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&g.model.top.score>=80&&statusOK(g)).sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5)}
+function topPicks(){return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top)&&statusOK(g)).sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5)}
 function renderBest(){
   const a=topPicks(),el=document.getElementById("best");
   document.getElementById("topSub").textContent="Highest confidence · one pick per match";
@@ -535,7 +560,7 @@ function renderGames(){
       '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>CONF</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">PASS — no market cleared the model threshold.</div></div>';
     html+='</div>';
-    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>'<div class="top3Pick"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(x.label)+'</b><em>'+x.score+'%</em></div>').join("")+'</div>';
+    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(x.label)+'</b><em>'+x.score+'%</em><div class="top3Odds">'+esc(tx.odds)+'<small>'+esc(tx.oddsLabel)+'</small></div></div>'}).join("")+'</div>';
     const news=teamNewsSummary(g,p);
     if(news)html+='<div class="teamNewsLine"><span>TEAM NEWS</span><div class="newsText">'+esc(news.text)+'</div>'+(news.impact?'<div class="newsImpact">'+esc(news.impact)+'</div>':'')+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
@@ -620,7 +645,7 @@ async function load(date=S.date){
 
 function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
-  const top3=(g.model?.candidates||[]).slice(0,3);
+  const top3=(g.model?.top3||g.model?.rankedCandidates?.slice(0,3)||[]);
   const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">${xp.oddsLabel} <b>${xp.odds}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">Model pass.</div>';
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
@@ -629,7 +654,7 @@ function renderModal(g){
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Projected team news provides the baseline; confirmed lineup/injury data, current market consensus and independent pre-match analysis refine it. Lineup effects are bounded by team strength, the number and role of absences, projected-score impact and live market context so one absence does not automatically overturn a clear matchup edge. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">The statistical model is ranked first. Projected team news provides the baseline; confirmed lineup/injury data, current market consensus and independent pre-match analysis refine it. Lineup effects are bounded by team strength, the number and role of absences, projected-score impact and live market context so one absence does not automatically overturn a clear matchup edge. Your historical selection pattern is used only as a small tie-breaker after the research layers. Picks priced worse than -500 are excluded. Exact posted prices are shown where available; MODEL FAIR is clearly labeled when the book feed does not publish that alternate line. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
