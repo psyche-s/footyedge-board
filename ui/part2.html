@@ -65,34 +65,55 @@ function renderGames(){
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">No matches fit this filter.</div>';return}
+
   el.innerHTML=list.map(g=>{
     const p=g.model?.top,px=priceInfo(p),h=g.model?.home,a=g.model?.away,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
+
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       '<div class="gameTop"><span>⚽ &nbsp;'+esc(g.leagueName)+'</span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody">'+
         '<div class="teamStack">'+
-          '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div><div class="teamName">'+esc(g.home.name)+'</div><div class="form">'+formHTML(h?.form)+'</div></div></div>'+
-          '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div><div class="teamName">'+esc(g.away.name)+'</div><div class="form">'+formHTML(a?.form)+'</div></div></div>'+
+          '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div class="teamName">'+esc(g.home.name)+'</div></div>'+
+          '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamName">'+esc(g.away.name)+'</div></div>'+
+        '</div>'+
+        '<div class="formStack">'+
+          '<div class="form">'+formHTML(h?.form)+'</div>'+
+          '<div class="form">'+formHTML(a?.form)+'</div>'+
         '</div>';
+
     if(p){
       html+='<div class="pickSide">'+
-        '<div class="pickSideTop"><div><small>'+esc(p.category)+'</small><strong>'+esc(p.label)+'</strong></div><div class="confBox"><b>'+p.score+'%</b><span>CONF</span></div></div>'+
-        '<div class="compactPrices"><div class="oddsBlock"><b>'+px.odds+'</b><small>'+px.oddsLabel+'</small></div><div class="evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div></div>'+
+        '<div class="pickSideTop">'+
+          '<div class="pickTitle"><small>'+esc(p.category)+'</small><strong>'+esc(p.label)+'</strong></div>'+
+          '<div class="confBox"><b>'+p.score+'%</b><span>CONF</span></div>'+
+        '</div>'+
+        '<div class="compactPrices">'+
+          '<div class="oddsBlock"><b>'+px.odds+'</b><small>'+px.oddsLabel+'</small></div>'+
+          '<div class="evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
+        '</div>'+
       '</div>';
     }else{
       html+='<div class="pickSide"><div class="pass">PASS — no market cleared the model threshold.</div></div>';
     }
+
     html+='</div>';
+
     if(p){
-      html+='<div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
-        '<div class="statStrip">'+
-          '<div class="statCell"><b>'+(h?.gf||0).toFixed(1)+'</b><small>xG (H)</small></div>'+
-          '<div class="statCell"><b>'+(a?.gf||0).toFixed(1)+'</b><small>xG (A)</small></div>'+
-          '<div class="statCell"><b>'+pctInt(btts)+'</b><small>BTTS</small></div>'+
-          '<div class="statCell"><b>'+pctInt(o25)+'</b><small>Over 2.5</small></div>'+
-          '<div class="statCell"><b>'+projectedScore(g)+'</b><small>Proj. Score</small></div>'+
-        '</div>';
+      html+='<div class="analysisLower">'+
+        '<div class="analysisSpacer"></div>'+
+        '<div class="analysisContent">'+
+          '<div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
+          '<div class="statStrip">'+
+            '<div class="statCell"><b>'+(h?.gf||0).toFixed(1)+'</b><small>xG (H)</small></div>'+
+            '<div class="statCell"><b>'+(a?.gf||0).toFixed(1)+'</b><small>xG (A)</small></div>'+
+            '<div class="statCell"><b>'+pctInt(btts)+'</b><small>BTTS</small></div>'+
+            '<div class="statCell"><b>'+pctInt(o25)+'</b><small>Over 2.5</small></div>'+
+            '<div class="statCell"><b>'+projectedScore(g)+'</b><small>Proj. Score</small></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
     }
+
     html+='<button class="details" onclick="event.stopPropagation();openGame(\''+g.id+'\')">VIEW FULL ANALYSIS →</button></article>';
     return html;
   }).join("")
