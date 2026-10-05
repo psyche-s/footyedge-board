@@ -182,11 +182,196 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
   .mobileNav{display:flex}.playerGrid{grid-template-columns:1fr}
   .pickRow{align-items:flex-start;flex-wrap:wrap}.pickValues{width:100%;margin-left:34px}.valueBox{flex:1}
 }
+
+/* FootyEdge UI refinement — mockup-aligned */
+.headerLegends{display:none!important}
+header{
+  min-height:auto;
+  padding:calc(8px + env(safe-area-inset-top)) 14px 8px;
+  background:linear-gradient(180deg,#061009,#040a06);
+}
+.head{
+  min-height:54px;
+  padding-top:0;
+  align-items:center;
+}
+.status{
+  align-self:center;
+  min-height:34px;
+  padding:0 10px;
+  border:1px solid #1f3829;
+  border-radius:999px;
+  background:#08150d;
+}
+.bestGrid{grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.best{
+  min-height:178px;
+  padding:13px;
+  display:flex;
+  flex-direction:column;
+}
+.bestTeams{
+  display:flex;
+  align-items:center;
+  gap:0;
+  min-height:34px;
+  margin:3px 0 8px;
+}
+.logo.mini{
+  width:32px;
+  height:32px;
+  flex-basis:32px;
+  margin-right:-7px;
+  border:2px solid #0a160f;
+}
+.matchMini{
+  line-height:1.35;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+.pickName{
+  white-space:normal;
+  overflow:visible;
+  word-break:normal;
+}
+.filterPanel{
+  display:grid;
+  grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);
+  gap:10px;
+  padding:11px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(180deg,#07130b,#061009);
+}
+.filterGroup{min-width:0}
+.filterTitle{
+  margin:0 0 7px;
+  color:#6f8277;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.filterRow{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.filterRow::-webkit-scrollbar{display:none}
+.filterSelect{
+  min-width:0;
+  height:42px;
+  flex:1 1 0;
+  border:1px solid #24402f;
+  border-radius:12px;
+  padding:0 34px 0 12px;
+  background:#07110b;
+  color:var(--text);
+  font-size:11px;
+  font-weight:800;
+}
+.marketRow .filter{
+  min-height:42px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 13px;
+  line-height:1;
+}
+.gameTop{
+  align-items:flex-start;
+}
+.comp{
+  max-width:74%;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.3;
+}
+.time{white-space:nowrap;flex:0 0 auto}
+.teams{
+  grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr);
+  min-height:54px;
+}
+.team{
+  align-items:center;
+  min-width:0;
+}
+.team span{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.18;
+  word-break:normal;
+}
+.team.r span{text-align:right}
+.logo{
+  padding:0!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  background:#0d1b12!important;
+  border:1px solid #31503b;
+  clip-path:circle(50%);
+  transform:scale(1.06);
+}
+.logo.lg{
+  width:58px;
+  height:58px;
+  flex-basis:58px;
+}
+.topPick{
+  align-items:flex-start;
+}
+.pickMeta b{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.25;
+}
+.pillRow{
+  align-items:center;
+}
+.pill{
+  min-height:24px;
+  display:inline-flex;
+  align-items:center;
+  line-height:1;
+}
+.btn.filter{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+@media(max-width:980px){
+  .bestGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  header{min-height:auto}
+  .head{min-height:50px;padding-top:0}
+  .filterPanel{grid-template-columns:1fr;padding:10px}
+  .filterRow{overflow-x:auto}
+  .filterSelect{min-width:148px;flex:1 0 148px;font-size:12px;padding:0 32px 0 11px}
+  .marketRow .filter{min-height:40px;padding:0 14px;font-size:12px}
+  .bestGrid{grid-template-columns:1fr}
+  .best{min-height:auto}
+  .teams{grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);gap:7px}
+  .team{gap:7px;font-size:12px}
+  .logo{width:40px;height:40px;flex-basis:40px}
+  .game{padding:12px}
+  .sectionHead h2{font-size:18px}
+  .sectionHead{align-items:flex-start}
+  .sectionHead .small{white-space:nowrap;padding-top:3px}
+}
+
 </style>
 </head>
 <body>
 <header>
-  <div class="headerLegends" id="legends"></div>
   <div class="head">
     <div class="brand">
       <div class="mark"><div class="ball"></div><div class="edge"></div><div class="ground"></div></div>
@@ -230,7 +415,7 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
       <div class="filterRow marketRow">
         <button class="btn filter on" data-filter="all">All Games</button>
         <button class="btn filter" data-filter="qualified">Qualified</button>
-        <button class="btn filter" data-filter="core">Core A</button>
+        <button class="btn filter" data-filter="core">4.5★+</button>
         <button class="btn filter" data-filter="Goals">Goals</button>
         <button class="btn filter" data-filter="BTTS">BTTS</button>
         <button class="btn filter" data-filter="Result">ML / Double Chance</button>
@@ -419,7 +604,7 @@ function applyPrediction(g,pred){
     c.ev=c.decimal?c.modelProb*c.decimal-1:null;
   }
   g.candidates.sort((a,b)=>b.score-a.score||(b.ev??-99)-(a.ev??-99));
-  if(!g.playbook)g.topPick=g.candidates.find(c=>c.decimal>=1.14)||g.candidates[0]||null;
+  if(!g.playbook)g.topPick=g.candidates[0]||null;
   g.topThree=diversified(g);
 }
 function overlayFor(g){
@@ -433,7 +618,7 @@ function applyPlaybook(g){
   if(!c)c={category:p.category,label:p.label,decimal:d,american:p.american,marketProb:1/d,book:"bet365 reference",teamSide:null,player:null};
   Object.assign(c,{modelProb:p.modelProb,score:p.score,ev:p.modelProb*d-1,crossChecked:true,commentary:p.commentary,cross:p.cross,decimal:d,american:p.american});
   g.candidates=g.candidates.filter(x=>x!==c);
-  g.candidates.unshift(c);g.topPick=c;g.playbook=true;g.topThree=diversified(g);
+  g.candidates.unshift(c);g.candidates.sort((a,b)=>b.score-a.score||(b.ev??-99)-(a.ev??-99));g.topPick=g.candidates[0]||null;g.playbook=true;g.topThree=diversified(g);
 }
 function fixtureStatus(f){
   const s=f.fixture.status||{};return {short:s.short||"NS",long:s.long||"",elapsed:s.elapsed,live:["1H","2H","HT","ET","P","BT"].includes(s.short),done:["FT","AET","PEN"].includes(s.short)}
@@ -450,7 +635,7 @@ function buildGames(fixtures,oddsItems){
     const g={id:f.fixture.id,kickoff:f.fixture.date,league:f.league,home:f.teams.home,away:f.teams.away,goals:f.goals,status:st,candidates:cands,prediction:null,playbook:false};
     cands.forEach(c=>{c.ev=c.decimal?c.modelProb*c.decimal-1:null});
     cands.sort((a,b)=>b.score-a.score||(b.ev??-99)-(a.ev??-99));
-    g.topPick=cands.find(c=>c.decimal>=1.14)||cands[0]||null;
+    g.topPick=cands[0]||null;
     g.topThree=diversified(g);applyPlaybook(g);return g;
   }).sort((a,b)=>new Date(a.kickoff)-new Date(b.kickoff));
 }
@@ -505,7 +690,7 @@ function renderBest(){
   sub.textContent=best.length?`${best.length} pick${best.length===1?"":"s"} above 85 confidence.`:"No picks above 85 confidence for this date.";
   if(!best.length){el.innerHTML=`<div class="card empty" style="grid-column:1/-1">No picks have cleared the 85-confidence threshold yet.</div>`;return}
   el.innerHTML=best.map((g,i)=>{const c=g.topPick;return `<article class="card best" onclick="openMatch(${g.id})">
-    <div class="bestNum">0${i+1}</div><div class="matchMini">${g.home.name} vs ${g.away.name} · ${timeET(g.kickoff)}</div>
+    <div class="bestNum">0${i+1}</div><div class="bestTeams">${logo(g.home,"mini")}${logo(g.away,"mini")}</div><div class="matchMini">${g.home.name} vs ${g.away.name} · ${timeET(g.kickoff)}</div>
     <div class="pickName">${esc(c.label)}</div><div class="pillRow">
       <span class="pill ${scoreClass(c.score)}">${c.score}/100</span><span class="pill">${stars(c.score)}</span>
       <span class="pill">${c.american!=null?(c.american>0?"+":"")+c.american:oddText(c.decimal)}</span>
@@ -535,8 +720,6 @@ const FEATURED_COMPETITION_PATTERNS=[
   /uefa european championship/i,
   /euro 20/i,
   /copa america/i,
-  /international friendlies/i,
-  /friendlies/i
 ];
 
 function isFeaturedCompetition(g){
@@ -555,8 +738,8 @@ function gameVisible(g){
   if(state.league!=="all"&&String(g.league.id)!==state.league)return false;
   if(!gameVisibleByStatus(g))return false;
   const c=g.topPick;
-  if(state.filter==="qualified"&&(!c||c.score<82))return false;
-  if(state.filter==="core"&&(!c||c.score<88))return false;
+  if(state.filter==="qualified"&&(!c||c.score<85))return false;
+  if(state.filter==="core"&&(!c||c.score<90))return false;
   if(state.filter==="Goals"&&c?.category!=="Goals"&&c?.category!=="Team Goals")return false;
   if(state.filter==="BTTS"&&c?.category!=="BTTS")return false;
   if(state.filter==="Result"&&c?.category!=="Match Result"&&c?.category!=="Double Chance")return false;
@@ -730,7 +913,7 @@ document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySel
 document.getElementById("closeModal").onclick=()=>document.getElementById("modalWrap").classList.remove("on");
 document.getElementById("modalWrap").onclick=e=>{if(e.target.id==="modalWrap")e.currentTarget.classList.remove("on")};
 
-state.date=etDate();loadLegends();loadBoard();
+state.date=etDate();loadBoard();
 window.openMatch=openMatch;
 </script>
 </body>
