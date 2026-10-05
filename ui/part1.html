@@ -374,6 +374,71 @@
   .pickTitle strong{font-size:10.7px!important;line-height:1.16!important}
   .teamLogo,.bestFlags img,.modalTeam img{padding:1px!important}
 }
+
+/* Production model + imagery pass v14 */
+.leagueBrand{display:inline-flex;align-items:center;gap:8px;min-width:0}
+.leagueBrand>span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leagueIcon{width:24px!important;height:24px!important;flex:0 0 24px!important;border-radius:0!important;background:transparent!important;overflow:visible!important}
+.leagueLogoImg{width:100%;height:100%;display:block;object-fit:contain;background:transparent!important}
+.leagueFallback{font-size:15px;line-height:1}
+.bestCategory{margin-top:4px;color:#57e69a;font-size:7px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.gameBody{grid-template-columns:minmax(220px,.9fr) minmax(290px,1.15fr)!important;gap:16px!important}
+.teamStack{gap:12px!important}
+.teamCompact{grid-template-columns:48px minmax(0,1fr)!important;gap:10px!important;align-items:center!important}
+.teamInfo{min-width:0}
+.teamLogo{width:44px!important;height:44px!important;object-fit:contain!important;padding:4px!important;background:#f7fbf8!important}
+.teamInfo .form{margin-top:6px!important;display:flex!important;gap:4px!important}
+.formStack{display:none!important}
+.pickTitle small{display:block!important;margin:0 0 5px!important;color:#58e59a!important;font-size:8px!important;letter-spacing:.14em!important;text-transform:uppercase!important;font-weight:900!important}
+.pickTitle strong{display:block!important;margin:0!important;font-size:16px!important;line-height:1.15!important}
+.pickMetrics{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;margin-top:10px!important}
+.pickMetric{min-width:0!important;min-height:46px!important;border-radius:9px!important;padding:7px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+.pickMetric b{font-size:14px!important;line-height:1!important}
+.pickMetric small{display:block!important;margin-top:4px!important;font-size:6.5px!important;letter-spacing:.08em!important;color:#7f9488!important}
+.confMetric{background:#0c1d13;border:1px solid #234331}
+.confMetric b{color:#dff9e8!important}
+.oddsBlock{background:#123a2a!important;border:1px solid rgba(85,230,154,.18)!important}
+.evBlock{background:#0c1d13!important;border:1px solid #234331!important;padding:7px!important}
+.top3Strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:0 13px 10px}
+.top3Pick{position:relative;min-width:0;padding:8px 9px;border:1px solid #1d3828;background:#08170e;border-radius:9px}
+.top3Pick span{display:block;color:#58e59a;font-size:6.5px;font-weight:900;letter-spacing:.08em}
+.top3Pick b{display:block;margin-top:3px;color:#e9f3ed;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top3Pick em{position:absolute;right:7px;top:7px;color:#a7c0b0;font-size:7px;font-style:normal}
+.analysisLower{display:block!important;padding:0 13px 12px!important}
+.analysisContent .statStrip{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px!important;padding:0!important;overflow:visible!important}
+.commentaryLine{margin:0!important;padding:8px 0 9px!important}
+.modalLeague{display:flex;align-items:center;justify-content:center;gap:8px;margin:-2px 0 12px;color:#8ba095;font-size:10px}
+.modalPick{padding:12px 0;border-top:1px solid #173020}
+.modalPickHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.modalPickHead span{font-size:8px;color:#58e59a;font-weight:900;letter-spacing:.11em}
+.modalPickHead strong{font-size:10px;color:#bdeed0}
+.modalPick h4{margin:5px 0 8px;font-size:15px}
+.candidateCommentary{margin:9px 0 0;color:#91a69a;font-size:10.5px;line-height:1.55}
+.modelFootnote{color:#657b70;font-size:9.5px;line-height:1.5;margin:13px 0 2px}
+@media(max-width:500px){
+  .leagueIcon{width:20px!important;height:20px!important;flex-basis:20px!important}
+  .gameBody{grid-template-columns:minmax(116px,.9fr) minmax(0,1.1fr)!important;gap:8px!important;padding:8px 9px 7px!important}
+  .teamCompact{grid-template-columns:34px minmax(0,1fr)!important;gap:6px!important}
+  .teamLogo{width:33px!important;height:33px!important;padding:3px!important}
+  .teamName{font-size:10.5px!important}
+  .teamInfo .form{margin-top:4px!important;gap:2px!important}
+  .formChip{width:14px!important;height:14px!important;border-radius:4px!important;font-size:6.5px!important}
+  .pickTitle small{font-size:6px!important;margin-bottom:3px!important}
+  .pickTitle strong{font-size:10.5px!important}
+  .pickMetrics{gap:4px!important;margin-top:6px!important}
+  .pickMetric{min-height:33px!important;border-radius:6px!important;padding:4px 3px!important}
+  .pickMetric b{font-size:9.5px!important}
+  .pickMetric small{font-size:5px!important;margin-top:2px!important}
+  .top3Strip{gap:4px;padding:0 9px 7px}
+  .top3Pick{padding:6px 5px;border-radius:6px}
+  .top3Pick span{font-size:5px}
+  .top3Pick b{font-size:7px;padding-right:20px}
+  .top3Pick em{font-size:5.5px;right:5px;top:5px}
+  .analysisLower{padding:0 9px 8px!important}
+  .analysisContent .statStrip{gap:4px!important}
+  .analysisContent .statCell{min-height:38px!important}
+  .analysisContent .statCell small{font-size:5px!important}
+}
 </style>
 </head>
 <body>
@@ -402,7 +467,7 @@
     <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button></div></div>
   </section>
 
-  <section class="modelNote"><span class="infoIcon">i</span><p>Picks are based on our statistical model using recent form, attacking/defensive data, home/away splits, head-to-head, market pricing and value. These are not guaranteed. <strong>Bet responsibly.</strong></p></section>
+  <section class="modelNote"><span class="infoIcon">i</span><p>FootyEdge ranks each match using current-season form, home/away splits, H2H when available, scoring/conceding trends, live market pricing, EV and sample-size controls. The highest-confidence market becomes the match pick; no manual pick override is applied. <strong>Bet responsibly.</strong></p></section>
 
   <div class="sectionHead" id="topAnchor"><div class="sectionTitle"><span class="sectionIcon starIcon">★</span><h2>Today’s Top Picks</h2></div><div class="sectionMeta" id="topSub">Max 5 · 85%+ confidence</div><span id="stamp" hidden></span></div>
   <section class="bestList" id="best"><div class="loading"><div class="spin"></div>Ranking today’s best plays…</div></section>
@@ -437,63 +502,15 @@ const MATCH_CONTEXT={"2026-10-05":{
 "ukraine|hungary":"Both teams have scored only once through their opening three Nations League matches, and Ukraine won the reverse fixture 1-0. The matchup remains a strong fit for protected unders rather than an aggressive over."
 }};
 function normName(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/turkey/g,"turkiye").replace(/[^a-z0-9]+/g," ").trim()}
-function contextFor(g){const d=MATCH_CONTEXT[S.date];if(!d)return"";const direct=`${normName(g.home.name)}|${normName(g.away.name)}`,reverse=`${normName(g.away.name)}|${normName(g.home.name)}`;return d[direct]||d[reverse]||""}
+function contextFor(g){return ""}
 function pctInt(v){return typeof v==="number"?`${Math.round(v*100)}%`:"—"}
 function projectedScore(g){const h=g.model?.home,a=g.model?.away;if(!h||!a)return"—";const hg=Math.max(0,Math.min(4,Math.round((h.gf+a.ga)/2))),ag=Math.max(0,Math.min(4,Math.round((a.gf+h.ga)/2)));return `${hg}-${ag}`}
 function ourReason(g,p){if(!p||!g.model)return"No qualifying market yet.";const h=g.model.home,a=g.model.away,homeTot=h.gf+h.ga,awayTot=a.gf+a.ga,label=String(p.label).toLowerCase();if(label.includes("under"))return `The current-season profiles are low enough for this safety line: ${g.home.name} matches average ${homeTot.toFixed(2)} total goals and ${g.away.name} ${awayTot.toFixed(2)}. Venue splits and H2H, where available, keep it highest in our ranking.`;if(label.includes("over"))return `The scoring profile supports goals: ${g.home.name} matches average ${homeTot.toFixed(2)} total goals and ${g.away.name} ${awayTot.toFixed(2)}. Our venue/H2H layers keep this above the alternatives.`;if(p.category==="BTTS")return `Scoring and conceding rates drive this pick: ${g.home.name} scored in ${pctInt(h.scored)} of the sample and ${g.away.name} in ${pctInt(a.scored)}, with BTTS rates of ${pctInt(h.btts)} and ${pctInt(a.btts)}.`;if(p.category==="Team Goals")return `This is a team-floor play built from the side's scoring rate and the opponent's concession rate, then adjusted for home/away form and sample size.`;if(p.category==="Double Chance")return `The protected result grades best because the selected side's non-loss profile is stronger than the opponent's win profile after venue weighting.`;if(p.category==="Match Result")return `The straight result grades highest from recent wins, opponent losses and home/away performance; market price is used as an agreement check, not as the model itself.`;return `This market ranks highest after recent form, venue splits, H2H, scoring/conceding rates and market agreement are blended together.`}
 function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
-const CARD_CONTEXT={"2026-10-05":{
-"cyprus|latvia":"All four recent H2Hs have stayed under 2.5, while Latvia have scored only once through three group matches.",
-"ukraine|hungary":"Both sides have scored just once through three group games, and the reverse meeting finished 1-0 to Ukraine.",
-"northern ireland|georgia":"Georgia are yet to score in the group, and the reverse meeting finished 1-0.",
-"france|belgium":"France have won nine of their last twelve and carry the home edge, though Belgium remain dangerous going forward.",
-"italy|turkiye":"Italy have scored two or more in four of their last six at home, while Türkiye have lost five of their last six.",
-"montenegro|armenia":"Montenegro are three-for-three in the group and already beat Armenia 3-2 in the reverse fixture.",
-"romania|sweden":"Sweden have won the last three H2Hs, while Romania enter on a three-match losing run."
-}};
-function cardCommentary(g,p){
-  const d=CARD_CONTEXT[S.date]||{},h=normName(g.home.name),a=normName(g.away.name);
-  const x=d[h+"|"+a]||d[a+"|"+h];
-  if(x)return x;
-  return ourReason(g,p);
-}
-
-
-
-
-const BOOK_ODDS={"2026-10-05":{
-"cyprus|latvia|under 3.5 goals":-350,
-"ukraine|hungary|under 3.5 goals":-450,
-"northern ireland|georgia|under 2.5 goals":-211,
-"france|belgium|france ml":-209,
-"italy|turkiye|italy ml":-239,
-"montenegro|armenia|montenegro ml":-188,
-"romania|sweden|sweden ml":-138
-}};
-function bookOddsFor(g,label){const d=BOOK_ODDS[S.date];if(!d)return null;const h=normName(g.home.name),a=normName(g.away.name),l=normName(label);return d[`${h}|${a}|${l}`]??d[`${a}|${h}|${l}`]??null}
-const USER_PICKS={"2026-10-05":{
-"cyprus|latvia":"Under 3.5 Goals",
-"ukraine|hungary":"Under 3.5 Goals",
-"northern ireland|georgia":"Under 2.5 Goals",
-"france|belgium":"France ML",
-"italy|turkiye":"Italy ML",
-"montenegro|armenia":"Montenegro ML",
-"romania|sweden":"Sweden ML"
-}};
-function preferredPickLabel(g){
-  const d=USER_PICKS[S.date];if(!d)return null;
-  const h=normName(g.home.name),a=normName(g.away.name);
-  return d[h+"|"+a]||d[a+"|"+h]||null
-}
-function applyUserPick(g){
-  if(!g?.model)return;
-  const label=preferredPickLabel(g);if(!label)return;
-  const target=normName(label);
-  const found=(g.model.candidates||[]).find(x=>normName(x.label)===target);
-  if(found){g.model.top=found;g.userPick=true}
-}
-
-
+function cardCommentary(g,p){return ourReason(g,p)}
+function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
+function preferredPickLabel(){return null}
+function applyUserPick(g){return g}
 function etDate(d=new Date()){const p=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return `${o.year}-${o.month}-${o.day}`}
 function addDate(s,n){const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
 function dateKey(s){return s.replaceAll("-","")}
