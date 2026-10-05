@@ -460,6 +460,99 @@
   .teamNewsLine{margin:0 9px 7px;padding:6px 7px;font-size:7.2px}
   .teamNewsLine span{font-size:5.6px;margin-right:5px}
 }
+
+/* v18 visual alignment */
+.countryFlag{
+  object-fit:cover!important;
+  object-position:center!important;
+  padding:0!important;
+  background:transparent!important;
+  clip-path:circle(50% at 50% 50%)!important;
+  transform:scale(1.08);
+}
+.bestFlags .countryFlag,.modalTeam .countryFlag,.teamLogo.countryFlag{
+  object-fit:cover!important;
+  padding:0!important;
+  clip-path:circle(50% at 50% 50%)!important;
+}
+.clubCrest{object-fit:contain!important;transform:none!important}
+
+.gameTop{
+  height:36px!important;
+  min-height:36px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+}
+.gameTop .leagueBrand{align-self:center!important;min-height:0!important}
+.gameTop>span:last-child{
+  align-self:center!important;
+  display:flex!important;
+  align-items:center!important;
+  height:100%!important;
+  min-height:0!important;
+  line-height:1!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+.analysisContent .statStrip{
+  align-items:stretch!important;
+}
+.statCell{
+  height:36px!important;
+  min-height:36px!important;
+  padding:2px 3px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+.statCell b{line-height:1!important;margin:0!important}
+.statCell small{
+  line-height:1!important;
+  margin-top:3px!important;
+  display:block!important;
+  text-align:center!important;
+}
+
+.metrics{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+  align-items:stretch!important;
+}
+.metric{
+  min-width:0!important;
+  min-height:58px!important;
+  height:58px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:8px!important;
+}
+.metric small{display:block!important;line-height:1!important;margin:0 0 6px!important}
+.metric b{line-height:1!important;margin:0!important}
+.metric .form{display:flex!important;align-items:center!important;justify-content:center!important;min-height:24px!important}
+
+@media(max-width:500px){
+  .gameTop{height:30px!important;min-height:30px!important;padding-left:9px!important;padding-right:9px!important}
+  .gameTop>span:last-child{height:30px!important;font-size:7.5px!important}
+  .statCell{height:29px!important;min-height:29px!important;padding:1px 2px!important}
+  .statCell b{font-size:8px!important}
+  .statCell small{font-size:4.5px!important;margin-top:2px!important}
+  .metrics{gap:6px!important}
+  .metric{height:50px!important;min-height:50px!important;padding:5px!important}
+  .metric small{font-size:6px!important;margin-bottom:4px!important}
+  .metric b{font-size:10px!important}
+  .modalBody .formChip{width:15px!important;height:15px!important;font-size:6.5px!important}
+}
+
 </style>
 </head>
 <body>
