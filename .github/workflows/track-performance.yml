@@ -1,0 +1,55 @@
+name: Track FootyEdge Performance
+
+on:
+  schedule:
+    # Run at both possible UTC offsets; the script proceeds only when Toronto local hour is 07.
+    - cron: "20 11 * * *"
+    - cron: "20 12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-performance
+  cancel-in-progress: false
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install browser runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Archive and grade Top 5
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          MIN_UI_VERSION: "38"
+          FORCE_TRACK: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+        run: node scripts/track-performance.mjs
+
+      - name: Commit performance data
+        run: |
+          if git diff --quiet -- data/performance; then
+            echo "No performance changes to commit."
+            exit 0
+          fi
+          git config user.name "FootyEdge Tracker"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/performance
+          git commit -m "Update FootyEdge Top 5 performance"
+          git pull --rebase origin main
+          git push origin HEAD:main
