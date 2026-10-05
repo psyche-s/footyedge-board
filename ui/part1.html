@@ -222,14 +222,14 @@ const uidLeague={2395:"uefa.nations",3922:"fifa.friendly",19267:"concacaf.nation
 const MAJOR_LEAGUES=new Set(Object.keys(leagueNames).filter(x=>x!=="fifa.friendly"));
 function isMajorLeague(id){return !!id&&MAJOR_LEAGUES.has(id)};
 const MATCH_CONTEXT={"2026-10-05":{
-"cyprus|latvia":"Recent meetings between these sides have leaned low-scoring, and Latvia's attacking output has been limited. That reinforces a cautious total rather than an aggressive over.",
-"bosnia-herzegovina|poland":"Poland have shown some vulnerability to conceding first, while Bosnia-Herzegovina's recent group form has been resilient. The overall matchup still profiles tighter than a wide-open shootout.",
-"france|belgium":"France carry the home edge, but Belgium retain enough attacking quality to keep both-teams-to-score and goal markets in play.",
-"italy|turkiye":"Italy's home attack projects as the stronger unit, while Türkiye's recent Nations League scoring output has been modest. That supports Italy-focused and protected goal markets.",
-"montenegro|armenia":"Montenegro's recent results and the reverse-fixture profile favour the home side, while Armenia's defensive form keeps protected Montenegro markets attractive.",
-"northern ireland|georgia":"Georgia's scoring output has been limited and Northern Ireland have been difficult to break down. That reinforces the lower-total side of the board.",
-"romania|sweden":"Sweden bring the higher attacking ceiling, while Romania have allowed enough chances for Sweden and goal-related markets to stay live.",
-"ukraine|hungary":"Both sides have produced low-event group matches with limited scoring, so protected under markets rate ahead of aggressive overs."}};
+"cyprus|latvia":"This matchup continues to profile as a low-event game. Cyprus are unbeaten across the last four meetings, all four recent H2Hs have stayed under 2.5, and Latvia have managed only one goal through their opening three Nations League matches. That keeps the safer under markets near the top.",
+"france|belgium":"France bring the stronger recent results and home edge, while Belgium still have enough attacking quality to threaten. France have won nine of their last twelve overall, but Belgium's attack keeps the matchup from being a pure shutout profile.",
+"italy|turkiye":"Italy's home attack has been reliable, scoring two or more in four of their last six home matches, while Türkiye have lost five of their last six. That strengthens Italy-focused result and team-goal markets.",
+"montenegro|armenia":"Montenegro have opened the group with three straight wins and already beat Armenia 3-2 in the reverse fixture. Armenia enter after consecutive defeats, so the home/result side grades strongly.",
+"northern ireland|georgia":"Georgia are still searching for their first Nations League goal, and the reverse meeting finished 1-0. Northern Ireland's defensive profile keeps the lower-total side of the matchup attractive.",
+"romania|sweden":"Sweden have won the last three H2Hs and remain unbeaten through their first three group matches, while Romania arrive on a three-match losing run. Sweden-focused result markets carry the stronger form signal.",
+"ukraine|hungary":"Both teams have scored only once through their opening three Nations League matches, and Ukraine won the reverse fixture 1-0. The matchup remains a strong fit for protected unders rather than an aggressive over."
+}};
 function normName(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/turkey/g,"turkiye").replace(/[^a-z0-9]+/g," ").trim()}
 function contextFor(g){const d=MATCH_CONTEXT[S.date];if(!d)return"";const direct=`${normName(g.home.name)}|${normName(g.away.name)}`,reverse=`${normName(g.away.name)}|${normName(g.home.name)}`;return d[direct]||d[reverse]||""}
 function pctInt(v){return typeof v==="number"?`${Math.round(v*100)}%`:"—"}
