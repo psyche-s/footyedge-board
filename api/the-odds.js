@@ -1,5 +1,6 @@
 const API_BASE="https://api.the-odds-api.com/v4";
 const CACHE_SECONDS=60;
+const BUILD_TAG="v31";
 
 const LEAGUE_HINTS={
   "uefa.nations":{keys:["soccer_uefa_nations_league"],aliases:["uefa nations league","nations league"]},
