@@ -785,10 +785,21 @@ function leagueOf(e){
   if(x)return x; const m=String(e?.uid||"").match(/~l:(\d+)/); return m?uidLeague[m[1]]||null:null;
 }
 function marketOdds(o){
-  const ml=o?.moneyline||{},t=o?.total||{};
-  const hp=probAmerican(ml?.home?.close?.odds),dp=probAmerican(ml?.draw?.close?.odds),ap=probAmerican(ml?.away?.close?.odds),m=noVig([hp,dp,ap]);
-  const op=probAmerican(t?.over?.close?.odds),up=probAmerican(t?.under?.close?.odds),tot=noVig([op,up]);
-  return{provider:o?.provider?.displayName||o?.provider?.name||null,homeML:ml?.home?.close?.odds??null,drawML:ml?.draw?.close?.odds??null,awayML:ml?.away?.close?.odds??null,over25:t?.over?.close?.odds??null,under25:t?.under?.close?.odds??null,probs:{home:m[0]||null,draw:m[1]||null,away:m[2]||null,over25:tot[0]||null,under25:tot[1]||null}};
+  const ml=o?.moneyline||{},t=o?.total||{},markets={};
+  const homeML=ml?.home?.close?.odds??ml?.home?.current?.odds??ml?.home?.open?.odds??null;
+  const drawML=ml?.draw?.close?.odds??ml?.draw?.current?.odds??ml?.draw?.open?.odds??o?.drawOdds?.moneyLine??null;
+  const awayML=ml?.away?.close?.odds??ml?.away?.current?.odds??ml?.away?.open?.odds??null;
+  const hp=probAmerican(homeML),dp=probAmerican(drawML),ap=probAmerican(awayML),m=noVig([hp,dp,ap]);
+  const overLine=t?.over?.close?.line??t?.over?.current?.line??t?.over?.open?.line??null;
+  const underLine=t?.under?.close?.line??t?.under?.current?.line??t?.under?.open?.line??null;
+  const overOdd=t?.over?.close?.odds??t?.over?.current?.odds??t?.over?.open?.odds??null;
+  const underOdd=t?.under?.close?.odds??t?.under?.current?.odds??t?.under?.open?.odds??null;
+  const lineNum=v=>{const x=String(v||"").match(/([0-9]+(?:\.[0-9]+)?)/);return x?x[1]:null};
+  const ol=lineNum(overLine),ul=lineNum(underLine);
+  if(ol&&overOdd!=null)markets[normName("Over "+ol+" Goals")]=overOdd;
+  if(ul&&underOdd!=null)markets[normName("Under "+ul+" Goals")]=underOdd;
+  const op=probAmerican(overOdd),up=probAmerican(underOdd),tot=noVig([op,up]);
+  return{provider:o?.provider?.displayName||o?.provider?.name||null,homeML,drawML,awayML,over25:ol==="2.5"?overOdd:null,under25:ul==="2.5"?underOdd:null,markets,probs:{home:m[0]||null,draw:m[1]||null,away:m[2]||null,over25:ol==="2.5"?(tot[0]||null):null,under25:ul==="2.5"?(tot[1]||null):null}};
 }
 function history(payload,teamId,before){
   const out=[];for(const e of payload?.events||[]){if(!e?.date||new Date(e.date)>=new Date(before))continue;const cs=e?.competitions?.[0]?.competitors||[],me=cs.find(c=>String(c?.id??c?.team?.id)===String(teamId)),op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));if(!me||!op)continue;const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;out.push({id:String(e.id),date:e.date,venue:me.homeAway==="away"?"away":"home",gf,ga,result:gf>ga?"W":gf<ga?"L":"D",opp:String(op?.id??op?.team?.id??"")})}
