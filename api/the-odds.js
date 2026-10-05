@@ -94,51 +94,57 @@ async function getJson(url){
   }
   return {data,headers:r.headers};
 }
+const BOOK_PRIORITY=["draftkings","fanduel","espnbet"];
+const BOOK_LABELS={draftkings:"DraftKings",fanduel:"FanDuel",espnbet:"ESPN BET"};
+function selectBook(books,key){return (books||[]).find(b=>b.key===key)}
+function h2hFromBook(book,home,away){
+  const m=(book?.markets||[]).find(x=>x.key==="h2h");if(!m)return null;
+  const get=n=>{const o=(m.outcomes||[]).find(x=>norm(x.name)===norm(n));return o&&Number.isFinite(Number(o.price))?Number(o.price):null};
+  const homeML=get(home),drawML=get("draw"),awayML=get(away);
+  return homeML!=null&&awayML!=null?{homeML,drawML,awayML}:null
+}
+function totalsFromBook(book){
+  const m=(book?.markets||[]).find(x=>x.key==="totals");if(!m)return{};
+  const by={};
+  for(const o of m.outcomes||[]){
+    const line=Number(o.point),price=Number(o.price),side=norm(o.name);
+    if(!Number.isFinite(line)||!Number.isFinite(price)||(side!=="over"&&side!=="under"))continue;
+    const k=String(line);by[k]=by[k]||{};by[k][side]=price;
+  }
+  return by
+}
 function summarizeEvent(event,league){
-  const home=event.home_team,away=event.away_team;
-  const books=event.bookmakers||[],h=[],d=[],a=[],totalBuckets=new Map(),used=new Set();
-  const bucket=line=>{
-    const key=String(Number(line));
-    if(!totalBuckets.has(key))totalBuckets.set(key,{over:[],under:[]});
-    return totalBuckets.get(key)
-  };
-  for(const book of books){
-    let contributed=false;
-    for(const market of book.markets||[]){
-      if(market.key==="h2h"){
-        for(const outcome of market.outcomes||[]){
-          const n=norm(outcome.name),price=Number(outcome.price);
-          if(!Number.isFinite(price))continue;
-          if(n===norm(home)){h.push(price);contributed=true}
-          else if(n===norm(away)){a.push(price);contributed=true}
-          else if(n==="draw"){d.push(price);contributed=true}
-        }
-      }else if(market.key==="totals"){
-        for(const outcome of market.outcomes||[]){
-          const line=Number(outcome.point),price=Number(outcome.price);
-          if(!Number.isFinite(line)||!Number.isFinite(price))continue;
-          const b=bucket(line),n=norm(outcome.name);
-          if(n==="over"){b.over.push(price);contributed=true}
-          if(n==="under"){b.under.push(price);contributed=true}
-        }
-      }
-    }
-    if(contributed)used.add(book.title||book.key);
+  const home=event.home_team,away=event.away_team,books=event.bookmakers||[];
+  let ml=null,mlBook=null;
+  for(const key of BOOK_PRIORITY){
+    const book=selectBook(books,key),x=h2hFromBook(book,home,away);
+    if(x){ml=x;mlBook={key,name:BOOK_LABELS[key]};break}
+  }
+  const lines=new Set();
+  for(const key of BOOK_PRIORITY){
+    const book=selectBook(books,key),t=totalsFromBook(book);
+    Object.keys(t).forEach(line=>lines.add(line));
   }
   const totals={};
-  for(const [line,b] of totalBuckets.entries()){
-    const over=medianAmerican(b.over),under=medianAmerican(b.under),nv=noVig([impliedAmerican(over),impliedAmerican(under)]);
-    totals[line]={over,under,probs:{over:nv[0],under:nv[1]}}
+  for(const line of [...lines].sort((a,b)=>Number(a)-Number(b))){
+    for(const key of BOOK_PRIORITY){
+      const book=selectBook(books,key),t=totalsFromBook(book)[line];
+      if(t?.over!=null&&t?.under!=null){
+        const nv=noVig([impliedAmerican(t.over),impliedAmerican(t.under)]);
+        totals[line]={over:t.over,under:t.under,book:{key,name:BOOK_LABELS[key]},probs:{over:nv[0],under:nv[1]}};
+        break
+      }
+    }
   }
-  const homeML=medianAmerican(h),drawML=medianAmerican(d),awayML=medianAmerican(a),ml=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
+  const homeML=ml?.homeML??null,drawML=ml?.drawML??null,awayML=ml?.awayML??null;
+  const mlp=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
   const t25=totals["2.5"]||{};
   return {
     id:event.id,league,sportKey:event.sport_key,sportTitle:event.sport_title,
     commenceTime:event.commence_time,home,away,
-    provider:"The Odds API · CA market median",
-    bookmakers:[...used],
+    provider:mlBook?.name||null,bookPriority:BOOK_PRIORITY,mlBook,
     homeML,drawML,awayML,over25:t25.over??null,under25:t25.under??null,totals,
-    probs:{home:ml[0],draw:ml[1],away:ml[2],over25:t25.probs?.over??null,under25:t25.probs?.under??null}
+    probs:{home:mlp[0],draw:mlp[1],away:mlp[2],over25:t25.probs?.over??null,under25:t25.probs?.under??null}
   };
 }
 
@@ -188,7 +194,7 @@ export default async function handler(req,res){
         }
       }
 
-      const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&regions=ca&markets=h2h,totals&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
+      const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&bookmakers=draftkings,fanduel,espnbet&markets=h2h,totals&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
       try{
         const result=await getJson(oddsUrl),data=Array.isArray(result.data)?result.data:[];
         remaining=result.headers.get("x-requests-remaining")??remaining;
@@ -203,7 +209,7 @@ export default async function handler(req,res){
 
     res.setHeader("Cache-Control",publish?"no-store":`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`);
     return res.status(200).json({
-      enabled:true,publish,region:"ca",markets:["h2h","totals"],events,
+      enabled:true,publish,bookmakerPriority:["draftkings","fanduel","espnbet"],markets:["h2h","totals"],events,
       sports:resolved.map(x=>({league:x.league,key:x.sport.key,title:x.sport.title})),
       attempts,quota:{remaining,used,last},fetchedAt:new Date().toISOString()
     });
