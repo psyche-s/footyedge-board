@@ -102,6 +102,72 @@
   .mobileNav{display:none}
 }
 
+
+/* Alignment + interaction polish */
+.filterPill{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  line-height:1!important;
+  vertical-align:middle!important;
+}
+.filterPill>span{display:block;line-height:1!important}
+.leagueIcon{align-self:center;line-height:1}
+.bestRow,.game{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.bestRow:active,.game:active{transform:scale(.998)}
+.bestMetric.oddsMetric{
+  background:rgba(55,222,131,.13);
+  border:1px solid rgba(55,222,131,.12);
+  border-radius:9px;
+  padding:6px 4px;
+}
+.bestMetric.oddsMetric b{color:#5ce79a}
+.bestMetric.oddsMetric small{display:none}
+.bestMetric.evMetric{padding-top:2px}
+.oddsBlock{
+  background:rgba(55,222,131,.13)!important;
+  border:1px solid rgba(55,222,131,.14)!important;
+  color:#5ce79a!important;
+}
+.oddsBlock b{color:#5ce79a!important}
+.oddsBlock small{display:none}
+.evBlock{
+  background:transparent!important;
+  border:0!important;
+  min-width:0!important;
+  padding:4px 2px!important;
+}
+.evBlock b{color:#54e593!important}
+.evBlock small{display:block;color:#697f73!important;margin-top:2px}
+.teamLogo,.bestFlags img,.modalTeam img{
+  border-radius:50%!important;
+  clip-path:none!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  padding:0!important;
+  overflow:hidden!important;
+  background:#fff!important;
+  display:block!important;
+}
+.pickSide{min-width:0}
+.pickSideTop>div:first-child{min-width:0}
+.pickSide strong{white-space:normal;overflow:visible;text-overflow:clip}
+.commentaryLine{white-space:normal;overflow:visible}
+@media(max-width:500px){
+  .filterPill{gap:6px!important}
+  .leagueIcon{width:17px;height:17px;flex-basis:17px;font-size:10px}
+  .bestMetric.oddsMetric{padding:5px 3px;border-radius:7px}
+  .bestMetric.evMetric{padding-top:1px}
+  .gameBody{align-items:center}
+  .pickSide{display:grid;grid-template-columns:minmax(0,1fr);align-content:center}
+  .pickSideTop{display:grid;grid-template-columns:minmax(0,1fr) 35px;gap:4px;align-items:start}
+  .compactPrices{align-items:center}
+  .oddsBlock{min-width:48px!important;padding:5px 6px!important;border-radius:7px!important;text-align:center}
+  .evBlock{padding:3px 1px!important}
+  .teamCompact{align-items:center}
+}
+
 </style>
 </head>
 <body>
