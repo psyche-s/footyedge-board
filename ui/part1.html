@@ -870,24 +870,32 @@ const BOOK_META={
   espnbet:{name:"ESPN BET",logo:"https://www.google.com/s2/favicons?domain=espnbet.com&sz=64"}
 };
 function bookMeta(key){return BOOK_META[key]||null}
+function inferBookKey(provider){
+  const p=String(provider||"").toLowerCase();
+  if(p.includes("draftkings"))return"draftkings";
+  if(p.includes("fanduel"))return"fanduel";
+  if(p.includes("espn bet")||p.includes("espnbet"))return"espnbet";
+  return null
+}
 function bookLogoHtml(key){
-  const m=bookMeta(key);return m?'<img class="bookLogo" src="'+esc(m.logo)+'" alt="'+esc(m.name)+'" loading="lazy">':""
+  const m=bookMeta(key);return m?'<img class="bookLogo" src="'+esc(m.logo)+'" alt="'+esc(m.name)+'" title="'+esc(m.name)+'" loading="lazy">':""
 }
 function oddsWithLogo(px){
-  if(!px||px.odds==="—")return '<span class="noLine">No line available</span>';
+  if(!px||px.odds==="—"||!px.bookKey)return '<span class="noLine">No line available</span>';
   return '<span class="oddsWithLogo">'+bookLogoHtml(px.bookKey)+'<span>'+esc(px.odds)+'</span></span>'
 }
 function priceInfo(p){
-  if(!p)return{oddsLabel:"No line available",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
-  if(p.odds!=null)return{
-    oddsLabel:bookMeta(p.bookKey)?.name||p.provider||"Posted odds",
+  if(!p)return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
+  const bookKey=p.bookKey||inferBookKey(p.provider);
+  if(p.odds!=null&&bookKey)return{
+    oddsLabel:"",
     odds:oddsText(p.odds),
     evLabel:"EV",
     ev:evText(p.ev),
     cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg",
-    bookKey:p.bookKey||null
+    bookKey
   };
-  return{oddsLabel:"No line available",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
+  return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
 }
 
 function stars(s){return s>=92?"★★★★★":s>=88?"★★★★½":s>=83?"★★★★":s>=78?"★★★½":"★★★"}
