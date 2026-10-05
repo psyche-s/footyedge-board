@@ -797,6 +797,134 @@
   .bestCategory{margin-top:5px!important;line-height:1.15!important}
   .bestSelection{margin-top:4px!important;line-height:1.16!important}
 }
+
+/* v40 Top-3 right-column alignment + even stat spacing */
+.top3Pick{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:start!important;
+  gap:12px!important;
+  min-height:72px!important;
+  padding:10px 11px!important;
+}
+.top3PickMain{min-width:0!important}
+.top3PickMain span{
+  display:block!important;
+  color:#58e59a!important;
+  font-size:6.5px!important;
+  font-weight:900!important;
+  letter-spacing:.08em!important;
+}
+.top3PickMain b{
+  display:block!important;
+  margin-top:6px!important;
+  padding-right:0!important;
+  color:#e9f3ed!important;
+  font-size:10px!important;
+  line-height:1.18!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+.top3Right{
+  min-width:58px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+}
+.top3Pick .top3Right em{
+  position:static!important;
+  display:block!important;
+  color:#a7c0b0!important;
+  font-size:8px!important;
+  line-height:1!important;
+  font-style:normal!important;
+}
+.top3Pick .top3Odds{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  margin:0!important;
+  color:#54e593!important;
+  font-size:9px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.top3Pick .top3Odds small{
+  display:block!important;
+  margin:5px 0 0!important;
+  color:#6f8d7a!important;
+  font-size:5.5px!important;
+  font-weight:800!important;
+  letter-spacing:.1em!important;
+  line-height:1!important;
+}
+.analysisContent .statCell{
+  min-height:50px!important;
+  height:50px!important;
+  padding:6px 4px!important;
+  gap:7px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+.analysisContent .statCell b{
+  margin:0!important;
+  line-height:1!important;
+}
+.analysisContent .statCell small{
+  margin:0!important;
+  line-height:1!important;
+}
+.priceRow .priceTag{
+  min-height:34px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  padding:7px 10px!important;
+}
+.priceRow .priceTag b{
+  display:inline-block!important;
+  line-height:1!important;
+}
+@media(max-width:500px){
+  .top3Pick{
+    min-height:58px!important;
+    padding:7px 7px!important;
+    gap:7px!important;
+  }
+  .top3PickMain span{font-size:5px!important}
+  .top3PickMain b{
+    margin-top:4px!important;
+    font-size:7.5px!important;
+    line-height:1.16!important;
+  }
+  .top3Right{
+    min-width:42px!important;
+    gap:8px!important;
+  }
+  .top3Pick .top3Right em{font-size:6px!important}
+  .top3Pick .top3Odds{font-size:7px!important}
+  .top3Pick .top3Odds small{font-size:4.5px!important;margin-top:3px!important}
+  .analysisContent .statCell{
+    min-height:43px!important;
+    height:43px!important;
+    padding:5px 3px!important;
+    gap:5px!important;
+  }
+  .analysisContent .statCell b{font-size:8.5px!important}
+  .analysisContent .statCell small{font-size:5px!important}
+  .priceRow .priceTag{
+    min-height:30px!important;
+    padding:6px 8px!important;
+    gap:4px!important;
+  }
+}
 </style>
 </head>
 <body>
