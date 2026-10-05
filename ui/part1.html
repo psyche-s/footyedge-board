@@ -661,6 +661,29 @@
   .newsLabel{font-size:5.7px;margin-bottom:3px}
   .teamNewsCard .newsImpact{font-size:6.5px;margin-top:5px;padding-top:5px}
 }
+
+/* v26 visible top-3 prices */
+.top3Pick{padding-bottom:9px!important}
+.top3Pick .top3Odds{
+  display:block;
+  margin-top:5px;
+  color:#f3fff7;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.02em;
+}
+.top3Pick .top3Odds small{
+  display:inline;
+  margin-left:4px;
+  color:#6f8d7a;
+  font-size:5.5px;
+  font-weight:800;
+  letter-spacing:.06em;
+}
+@media(max-width:500px){
+  .top3Pick .top3Odds{font-size:6.8px;margin-top:4px}
+  .top3Pick .top3Odds small{font-size:4.4px;margin-left:2px}
+}
 </style>
 </head>
 <body>
@@ -761,16 +784,34 @@ function probAmerican(v){if(v==null)return null;const n=Number(String(v).replace
 function noVig(a){const v=a.map(x=>x||0),s=v.reduce((x,y)=>x+y,0);return s?v.map(x=>x/s):v.map(()=>0)}function americanFromProb(p){if(!(p>0&&p<1))return null;return p>=.5?Math.round(-100*p/(1-p)):Math.round(100*(1-p)/p)}
 function poissonCDF(k,l){let term=Math.exp(-l),sum=term;for(let i=1;i<=k;i++){term*=l/i;sum+=term}return sum}
 function totalMarketShape(over25){if(!(over25>0&&over25<1))return{};let lo=.15,hi=6;for(let i=0;i<48;i++){const mid=(lo+hi)/2,p=1-poissonCDF(2,mid);if(p<over25)lo=mid;else hi=mid}const l=(lo+hi)/2;return{lambda:l,over15:1-poissonCDF(1,l),under35:poissonCDF(3,l),under45:poissonCDF(4,l)}}
+function candidateAmerican(p){
+  if(!p)return null;
+  if(p.odds!=null){const n=Number(String(p.odds).replace("+",""));return Number.isFinite(n)?n:null}
+  return p.modelProb!=null?americanFromProb(p.modelProb):null
+}
+function priceAllowed(p){
+  const n=candidateAmerican(p);
+  return n==null||n>=-500
+}
 function priceInfo(p){
-  if(!p)return{oddsLabel:"Live odds",odds:"—",evLabel:"EV",ev:"—",cls:"fair"};
+  if(!p)return{oddsLabel:"Odds",odds:"—",evLabel:"EV",ev:"—",cls:"fair",estimated:false};
   if(p.odds!=null)return{
-    oddsLabel:p.provider||"Live odds",
+    oddsLabel:p.provider||"Posted odds",
     odds:oddsText(p.odds),
     evLabel:"EV",
     ev:evText(p.ev),
-    cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg"
+    cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg",
+    estimated:false
   };
-  return{oddsLabel:"No live line",odds:"—",evLabel:"EV",ev:"—",cls:"fair"};
+  const fair=p.modelProb!=null?americanFromProb(p.modelProb):null;
+  return{
+    oddsLabel:"MODEL FAIR",
+    odds:fair==null?"—":oddsText(fair),
+    evLabel:"EV",
+    ev:"—",
+    cls:"fair",
+    estimated:true
+  };
 }
 
 function stars(s){return s>=92?"★★★★★":s>=88?"★★★★½":s>=83?"★★★★":s>=78?"★★★½":"★★★"}
