@@ -25,23 +25,26 @@ button{cursor:pointer}
 a{color:inherit}
 header{
   position:relative;z-index:20;overflow:hidden;
-  background:linear-gradient(180deg,rgba(2,5,3,.94),rgba(2,5,3,.88));
+  background:linear-gradient(180deg,rgba(2,5,3,.94),rgba(2,5,3,.9));
   border-bottom:1px solid var(--line);
-  padding:calc(12px + env(safe-area-inset-top)) 14px 12px;
-  min-height:138px;
+  padding:calc(6px + env(safe-area-inset-top)) 14px 7px;
+  min-height:92px;
 }
 .headerLegends{
   position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);
   opacity:.34;pointer-events:none
 }
-.headerLegends img{width:100%;height:100%;object-fit:cover}
+.headerLegends img{
+  width:100%;height:118%;object-fit:cover;object-position:center 24%;
+  transform:translateY(-8%);filter:saturate(.9) contrast(1.06)
+}
 .headerLegends::after{
   content:"";position:absolute;inset:0;
   background:
-    linear-gradient(180deg,rgba(2,5,3,.36),rgba(2,5,3,.78) 58%,rgba(2,5,3,.96)),
-    linear-gradient(90deg,rgba(2,5,3,.86),rgba(2,5,3,.28) 40%,rgba(2,5,3,.82));
+    linear-gradient(180deg,rgba(2,5,3,.32),rgba(2,5,3,.66) 48%,rgba(2,5,3,.95)),
+    linear-gradient(90deg,rgba(2,5,3,.84),rgba(2,5,3,.24) 42%,rgba(2,5,3,.82));
 }
-.head{position:relative;z-index:2;max-width:1180px;margin:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:72px}
+.head{position:relative;z-index:2;max-width:1180px;margin:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:34px}
 .brand{display:flex;align-items:center;gap:10px}
 .mark{
   width:38px;height:38px;position:relative;flex:0 0 38px;
@@ -174,8 +177,8 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 .mobileNav button{flex:1;border:0;background:transparent;color:var(--muted);padding:7px;border-radius:11px;font-size:10px;font-weight:800}
 .mobileNav button.on{color:var(--green);background:rgba(45,223,139,.08)}
 @media(max-width:760px){
-  header{min-height:122px}
-  .head{padding-top:58px}
+  header{min-height:84px}
+  .head{padding-top:27px}
   .status .copy{display:none}.hero{min-height:185px}.heroText{padding:20px}.hero h1{font-size:27px}
   .kpis{grid-template-columns:repeat(2,1fr)}.bestGrid,.games{grid-template-columns:1fr}
   .topbar{gap:7px}.dateLabel{min-width:104px}.spacer{display:none}
@@ -258,8 +261,7 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 <script>
 const TZ="America/Toronto";
 const API="/api/football";
-const WHISPERS="/api/whispers";
-const state={date:null,fixtures:[],odds:new Map(),games:[],filter:"all",league:"all",loading:false,predCache:new Map(),detailCache:new Map(),whisperCache:new Map(),timers:[]};
+const state={date:null,fixtures:[],odds:new Map(),games:[],filter:"all",league:"all",loading:false,predCache:new Map(),detailCache:new Map(),timers:[]};
 
 const TODAY_PLAYBOOK={
   "2026-10-05":[
@@ -561,7 +563,7 @@ function renderGames(){
       <div class="teams"><div class="team">${logo(g.home)}<span>${esc(g.home.name)}</span></div><div class="vs">VS</div><div class="team r"><span>${esc(g.away.name)}</span>${logo(g.away)}</div></div>
       ${c?`<div class="topPick"><div class="pickMeta"><small>${esc(c.category)} · Pick #1</small><b>${esc(c.label)}</b></div><div class="score">${c.score}</div></div>
       <div class="altRow">${alts.map((a,i)=>`<span class="alt">#${i+2} ${esc(a.label)}</span>`).join("")}</div>
-      <div class="sourceLine">${c.crossChecked?"Independent cross-check ✓ · ":""}${esc(c.book||"Model market")} · ${c.american!=null?(c.american>0?"+":"")+c.american:oddText(c.decimal)}</div>`:
+      <div class="sourceLine">${esc(c.book||"Model market")} · ${c.american!=null?(c.american>0?"+":"")+c.american:oddText(c.decimal)}</div>`:
       `<div class="noPick">No qualified market price returned yet.</div>`}
     </article>`}).join("");
 }
@@ -586,35 +588,68 @@ async function ensurePrediction(g){
   if(p&&!g.playbook)applyPrediction(g,p);return p;
 }
 
-function whisperVerdict(modelPick,fwTip){
-  const m=norm(modelPick||""),f=norm(fwTip||"");
-  if(!f)return {label:"No verified preview",tone:"neutral",text:"Football Whispers did not return a matching preview for this fixture."};
-  const mu=/\bunder\b/.test(m),fu=/\bunder\b/.test(f),mo=/\bover\b/.test(m),fo=/\bover\b/.test(f);
-  if((mu&&fu)||(mo&&fo))return {label:"Aligned",tone:"aligned",text:`Football Whispers independently leans the same goals direction: ${fwTip}.`};
-  const mb=/btts/.test(m),fb=/both teams|btts/.test(f);
-  if(mb&&fb){
-    const my=/yes/.test(m),fy=/yes/.test(f),mn=/no/.test(m),fn=/no/.test(f);
-    if((my&&fy)||(mn&&fn))return {label:"Aligned",tone:"aligned",text:`Football Whispers independently matches the BTTS direction: ${fwTip}.`};
-  }
-  if((m.includes("draw")&&f.includes("draw")) || (m.includes(norm(modelPick).split(" ")[0])&&f.includes(norm(modelPick).split(" ")[0]))){
-    return {label:"Aligned",tone:"aligned",text:`Football Whispers independently supports the same result angle: ${fwTip}.`};
-  }
-  return {label:"Different angle",tone:"neutral",text:`Football Whispers' lead angle is ${fwTip}; our model currently prefers ${modelPick}.`};
+function numericPct(v){
+  if(v==null)return null;
+  const n=parseFloat(String(v).replace("%",""));
+  return Number.isFinite(n)?n:null;
 }
-async function loadWhispers(g){
-  if(state.whisperCache.has(g.id))return state.whisperCache.get(g.id);
-  try{
-    const q=new URLSearchParams({home:g.home.name,away:g.away.name,date:state.date});
-    const r=await fetch(`${WHISPERS}?${q}`,{cache:"force-cache"});
-    if(!r.ok)throw new Error("Whispers lookup failed");
-    const data=await r.json();
-    state.whisperCache.set(g.id,data);
-    return data;
-  }catch(e){
-    const data={found:false,error:String(e)};
-    state.whisperCache.set(g.id,data);
-    return data;
+function supportingCommentary(g,pred){
+  const pick=g.topPick, parts=[];
+  if(pick?.commentary)parts.push(pick.commentary);
+
+  const label=String(pick?.label||"");
+  const goals=pred?.predictions?.goals||{};
+  const gh=goals.home!=null?Number(goals.home):null;
+  const ga=goals.away!=null?Number(goals.away):null;
+  const projected=(Number.isFinite(gh)?gh:null)!==null||(Number.isFinite(ga)?ga:null)!==null;
+
+  if(projected){
+    const hs=Number.isFinite(gh)?gh:"—",as=Number.isFinite(ga)?ga:"—";
+    parts.push(`Projected scoring profile: ${g.home.name} ${hs} · ${g.away.name} ${as}.`);
   }
+
+  const comp=pred?.comparison||{};
+  const formH=numericPct(comp.form?.home),formA=numericPct(comp.form?.away);
+  const attH=numericPct(comp.att?.home),attA=numericPct(comp.att?.away);
+  const defH=numericPct(comp.def?.home),defA=numericPct(comp.def?.away);
+  const poiH=numericPct(comp.poisson_distribution?.home),poiA=numericPct(comp.poisson_distribution?.away);
+
+  if(/under/i.test(label)){
+    parts.push("The model favors the protected under when the scoring projection, defensive inputs and market-implied total point in the same lower-event direction.");
+  }else if(/over/i.test(label)){
+    parts.push("The goals angle is supported when the attacking profile and projected scoring output clear the selected total with enough margin.");
+  }else if(/btts/i.test(label)){
+    parts.push(/yes/i.test(label)
+      ?"Both teams' scoring and conceding profiles support chances at each end."
+      :"The cleaner edge comes from at least one attack being projected to stay below a reliable scoring level.");
+  }else if(/draw no bet|double chance| or draw/i.test(label)){
+    parts.push("The protected result market is preferred because the stronger side has the form/matchup edge without requiring a full moneyline win.");
+  }else if(/\bml\b|moneyline| win/i.test(label)){
+    parts.push("The result pick is backed by the stronger overall form, matchup and model win profile.");
+  }
+
+  if(formH!=null&&formA!=null&&Math.abs(formH-formA)>=8){
+    const side=formH>formA?g.home.name:g.away.name;
+    parts.push(`${side} holds the clearer recent-form edge in the prediction comparison.`);
+  }
+  if(attH!=null&&attA!=null&&Math.abs(attH-attA)>=10){
+    const side=attH>attA?g.home.name:g.away.name;
+    parts.push(`${side} rates better on the attacking comparison.`);
+  }
+  if(defH!=null&&defA!=null&&Math.abs(defH-defA)>=10){
+    const side=defH>defA?g.home.name:g.away.name;
+    parts.push(`${side} carries the stronger defensive comparison.`);
+  }
+  if(poiH!=null&&poiA!=null&&Math.abs(poiH-poiA)>=10){
+    const side=poiH>poiA?g.home.name:g.away.name;
+    parts.push(`The Poisson layer also leans toward ${side}.`);
+  }
+
+  const advice=pred?.predictions?.advice;
+  if(advice&&!parts.some(x=>String(x).includes(advice)))parts.push(String(advice));
+
+  const unique=[...new Set(parts.map(x=>String(x).trim()).filter(Boolean))];
+  return unique.slice(0,4).join(" ");
 }
 function statMetric(v){return v==null||v===""?"—":String(v)}
 function formatComp(pred){
@@ -633,9 +668,8 @@ async function openMatch(id){
   const g=state.games.find(x=>x.id===id);if(!g)return;
   document.getElementById("modalWrap").classList.add("on");
   const body=document.getElementById("modalBody");
-  body.innerHTML=`<div class="modalTeams"><div class="modalTeam">${logo(g.home,"lg")}${esc(g.home.name)}</div><b>${statusText(g)}</b><div class="modalTeam">${logo(g.away,"lg")}${esc(g.away.name)}</div></div><div class="empty"><span class="loading"></span><br>Applying model, then cross-checking Football Whispers…</div>`;
+  body.innerHTML=`<div class="modalTeams"><div class="modalTeam">${logo(g.home,"lg")}${esc(g.home.name)}</div><b>${statusText(g)}</b><div class="modalTeam">${logo(g.away,"lg")}${esc(g.away.name)}</div></div><div class="empty"><span class="loading"></span><br>Applying the model and building the match analysis…</div>`;
 
-  // Model first. The external cross-check only runs after the model layer is applied.
   const pred=await ensurePrediction(g);
   renderAll();
 
@@ -648,9 +682,8 @@ async function openMatch(id){
     detail.pred=pred||detail.pred;
   }
 
-  const fw=await loadWhispers(g);
   const picks=diversified(g);
-  const verdict=whisperVerdict(g.topPick?.label,fw?.hotTip);
+  const commentary=supportingCommentary(g,detail.pred);
 
   body.innerHTML=`<div class="modalTeams"><div class="modalTeam">${logo(g.home,"lg")}${esc(g.home.name)}</div><b>${statusText(g)}</b><div class="modalTeam">${logo(g.away,"lg")}${esc(g.away.name)}</div></div>
     <div class="news"><h3>Our model</h3>
@@ -667,16 +700,8 @@ async function openMatch(id){
 
     ${formatComp(detail.pred)}
 
-    <div class="news"><h3>Commentary</h3><div class="newsText">${esc(g.topPick?.commentary||detail.pred?.predictions?.advice||"Current market probability and API-Football prediction inputs support the model lean. Recheck price movement closer to kickoff.")}</div></div>
-
-    <div class="news"><h3>Football Whispers cross-check</h3>
-      <div class="crossBox">
-        <div class="crossHead"><b>${fw?.found?"Football Whispers":"Cross-check unavailable"}</b><span class="crossVerdict">${esc(verdict.label)}</span></div>
-        <div class="newsText">${esc(verdict.text)}</div>
-        ${fw?.hotTip?`<div class="pillRow" style="margin-top:8px"><span class="pill green">FW: ${esc(fw.hotTip)}</span>${fw.correctScore?`<span class="pill">Score: ${esc(fw.correctScore)}</span>`:""}</div>`:""}
-        ${fw?.keyStats?.length?`<div class="statList">${fw.keyStats.slice(0,3).map(s=>`<div class="statItem">${esc(s)}</div>`).join("")}</div>`:""}
-        ${fw?.url?`<div class="sourceLine">Verified Football Whispers preview found for this matchup.</div>`:""}
-      </div>
+    <div class="news"><h3>Why this pick</h3>
+      <div class="newsText">${esc(commentary||"The current model probability, matchup inputs and market price support this as the highest-ranked angle for the fixture. Recheck line movement and confirmed lineups closer to kickoff.")}</div>
     </div>
 
     <div class="news"><h3>Injuries</h3><div class="newsText">${detail.injuries.length?detail.injuries.slice(0,8).map(x=>`${esc(x.player?.name)} — ${esc(x.player?.reason||"listed")}`).join("<br>"):"No injury entries returned for this fixture."}</div></div>`;
@@ -689,7 +714,7 @@ function scheduleRefreshes(){
   targets.forEach(t=>state.timers.push(setTimeout(loadBoard,t-now)));
   el.textContent=targets.length?`Pregame refresh ${new Date(targets[0]).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})} ET`:"Pregame refresh window passed";
 }
-function setDate(d){state.date=d;state.predCache.clear();state.detailCache.clear();state.whisperCache.clear();loadBoard()}
+function setDate(d){state.date=d;state.predCache.clear();state.detailCache.clear();loadBoard()}
 document.getElementById("prevBtn").onclick=()=>setDate(dateAdd(state.date,-1));
 document.getElementById("nextBtn").onclick=()=>setDate(dateAdd(state.date,1));
 document.getElementById("todayBtn").onclick=()=>setDate(etDate());
