@@ -805,56 +805,49 @@ function projectionText(g){
 }
 function ourReason(g,p){
   if(!p||!g.model)return"No qualifying market yet.";
-  const h=g.model.home,a=g.model.away,hv=stats((g.model?.homeVenueHistory||[])),av=stats((g.model?.awayVenueHistory||[]));
+  const h=g.model.home,a=g.model.away;
   const label=String(p.label||"").toLowerCase(),proj=projectionText(g),price=p.odds!=null?oddsText(p.odds):null;
-  const market=p.marketProb!=null?Math.round(p.marketProb*100)+"%":null;
   const sample=`${g.home.name} last ${h.n}: ${h.gf.toFixed(2)} scored / ${h.ga.toFixed(2)} allowed; ${g.away.name} last ${a.n}: ${a.gf.toFixed(2)} / ${a.ga.toFixed(2)}.`;
 
   if(label.includes("under 2.5")){
-    return `This is mainly a low-total play. ${g.home.name} stayed under 2.5 in ${statPct(h.u25)} of the sample and ${g.away.name} in ${statPct(a.u25)}. ${sample}${proj?" The adjusted goal projection is "+proj+".":""}${price?" The posted price is "+price+".":""}`
+    return `This sets up as a low-total game. ${g.home.name} stayed under 2.5 in ${statPct(h.u25)} of the sample and ${g.away.name} in ${statPct(a.u25)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
   }
   if(label.includes("under 3.5")){
-    return `There is a bit more cushion here. ${g.home.name} finished under 3.5 in ${statPct(h.u35)} of the sample and ${g.away.name} in ${statPct(a.u35)}. ${sample}${proj?" The adjusted projection is "+proj+", which still sits comfortably below four goals.":""}${price?" Posted price: "+price+".":""}`
+    return `The under has some room here. ${g.home.name} finished under 3.5 in ${statPct(h.u35)} of the sample and ${g.away.name} in ${statPct(a.u35)}. ${sample}${proj?" The adjusted projection is "+proj+", which still lands below four goals.":""}${price?" Posted price: "+price+".":""}`
   }
   if(label.includes("under 4.5")){
-    return `This is the safety version of the under. ${g.home.name} stayed under 4.5 in ${statPct(h.u45)} of the sample and ${g.away.name} in ${statPct(a.u45)}. ${sample}${proj?" Our adjusted projection is "+proj+".":""}`
+    return `This is the safer under angle. ${g.home.name} stayed under 4.5 in ${statPct(h.u45)} of the sample and ${g.away.name} in ${statPct(a.u45)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}`
   }
   if(label.includes("over 1.5")){
-    return `Two goals is the target here, not a shootout. Over 1.5 landed in ${statPct(h.o15)} of ${g.home.name}'s sample and ${statPct(a.o15)} of ${g.away.name}'s. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    return `Two goals is the target here. Over 1.5 landed in ${statPct(h.o15)} of ${g.home.name}'s sample and ${statPct(a.o15)} of ${g.away.name}'s. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
   }
   if(label.includes("over 2.5")){
-    return `The numbers support three or more goals: ${g.home.name} went over 2.5 in ${statPct(h.o25)} of the sample and ${g.away.name} in ${statPct(a.o25)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    return `The scoring trend points toward three or more goals. ${g.home.name} went over 2.5 in ${statPct(h.o25)} of the sample and ${g.away.name} in ${statPct(a.o25)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
   }
   if(p.category==="BTTS"){
     const yes=label.includes("yes");
-    return `${yes?"Both sides have enough scoring evidence for BTTS":"The weaker scoring side is the key reason to fade BTTS"}. ${g.home.name} scored in ${statPct(h.scored)} of the sample and conceded in ${statPct(h.conceded)}; ${g.away.name} scored in ${statPct(a.scored)} and conceded in ${statPct(a.conceded)}. Their BTTS rates are ${statPct(h.btts)} and ${statPct(a.btts)}.${proj?" Projection: "+proj+".":""}`
+    return `${yes?"Both teams have enough scoring evidence for BTTS":"The weaker scoring side is the main reason to fade BTTS"}. ${g.home.name} scored in ${statPct(h.scored)} of the sample and conceded in ${statPct(h.conceded)}; ${g.away.name} scored in ${statPct(a.scored)} and conceded in ${statPct(a.conceded)}. Their BTTS rates are ${statPct(h.btts)} and ${statPct(a.btts)}.${proj?" The adjusted projection is "+proj+".":""}`
   }
   if(p.category==="Team Goals"){
     const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
-    return `${team} scored in ${statPct(s.scored)} of the sample, while the opponent conceded in ${statPct(opp.conceded)}. They are averaging ${s.gf.toFixed(2)} goals per match in this sample.${proj?" Adjusted projection: "+proj+".":""}`
+    return `${team} has scored in ${statPct(s.scored)} of the sample, while the opponent has conceded in ${statPct(opp.conceded)}. ${team} is averaging ${s.gf.toFixed(2)} goals per match in this sample.${proj?" The adjusted projection is "+proj+".":""}`
   }
   if(p.category==="Double Chance"){
     const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
-    return `The protection matters here. ${team} avoided defeat in ${statPct(s.nonLoss)} of the sample, while the opponent failed to win in ${statPct(opp.nonWin)}.${proj?" The adjusted projection is "+proj+".":""}${market?" The market has the protected side in a strong position as well.":""}`
+    return `The protection makes sense here. ${team} avoided defeat in ${statPct(s.nonLoss)} of the sample, while the opponent failed to win in ${statPct(opp.nonWin)}.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
   }
   if(p.category==="Match Result"){
     const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
-    return `${team} is the side I trust more here. They have won ${statPct(s.win)} of the sample, while the opponent has failed to win ${statPct(opp.nonWin)}. ${team} is scoring ${s.gf.toFixed(2)} per match and allowing ${s.ga.toFixed(2)}.${proj?" The adjusted projection is "+proj+".":""}${market?" The no-vig market makes this roughly a "+market+" side.":""}${price?" Posted price: "+price+".":""}`
+    return `${team} is the side we trust more here. They have won ${statPct(s.win)} of the sample, while the opponent has failed to win ${statPct(opp.nonWin)}. ${team} is averaging ${s.gf.toFixed(2)} goals scored and ${s.ga.toFixed(2)} allowed per match.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
   }
-  return `${sample}${proj?" Adjusted projection: "+proj+".":""} This is the market that lines up best with those numbers.`
+  return `${sample}${proj?" The adjusted projection is "+proj+".":""} This is the market that lines up best with the recent trend and matchup data.`
 }
 function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
-function instinctFitReason(g,p){
-  if(!p||!p.userFitDelta)return"";
-  if(p.userFitDelta>0){
-    if(p.category==="Match Result")return" It also fits the way you've been strongest so far: trust the clearly better side when the matchup actually backs it.";
-    if(p.category==="Goals"||p.category==="Double Chance"||p.category==="Team Goals")return" This is also the kind of protected angle you've read well so far, but only because the numbers support it.";
-    return" It also lines up with the better part of your recent reads."
-  }
-  if(p.category==="Match Result")return" One caution: your weaker results have come when forcing a marginal plus-money 3-way ML, so I don't want to overrate that type of spot.";
-  return" I would keep a little more caution on this one based on how similar spots have gone for you."
+function instinctFitReason(g,p){return""}
+function cardCommentary(g,p){
+  const base=ourReason(g,p),lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
+  return base+lineup
 }
-function cardCommentary(g,p){const base=ourReason(g,p),cross=p?.crossSources?" Independent pre-match checks also support this market.":"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"",fit=instinctFitReason(g,p);return base+cross+lineup+fit}
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
 function applyUserPick(g){return g}
