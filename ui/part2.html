@@ -204,7 +204,7 @@ async function load(date=S.date){
   document.getElementById("best").innerHTML='<div class="loading"><div class="spin"></div>Ranking today’s best plays…</div>';
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
-    const [p,oddsPayload]=await Promise.all([json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`),json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>null)]);
+    const [p,oddsPayload]=await Promise.all([json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?json("/data/latest-scoreboard.json"):Promise.reject(new Error("Scoreboard unavailable"))),json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null)]);
     const oddsEntries=buildOddsMap(oddsPayload);
     let games=(p.events||[]).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{},base=marketOdds(c.odds?.[0]||{}),extra=oddsFromFootball(oddsEntries.get(String(e.id)),h?.team?.displayName||"Home",a?.team?.displayName||"Away");
