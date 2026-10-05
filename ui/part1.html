@@ -2,6 +2,106 @@
 @media(max-width:760px){.heroHeader{min-height:170px}.heroTitle{font-size:38px}.bestRow{grid-template-columns:30px 52px minmax(0,1fr) 60px 58px 54px 12px;gap:7px;padding:11px 10px}.bestFlags img{width:30px;height:30px}.bestFixture{font-size:11px}.bestSelection{font-size:13px}.bestMetric b{font-size:11px}.bestConfidence b{font-size:13px}.gameBody{grid-template-columns:1fr}.pickSide{border-left:0;border-top:1px solid #143020;padding:10px 0 0}.statStrip{grid-template-columns:repeat(5,82px);overflow-x:auto;scrollbar-width:none}.statStrip::-webkit-scrollbar{display:none}}
 @media(max-width:500px){.heroHeader{min-height:158px;background-position:58% 58%;padding-left:18px;padding-right:18px}.heroTitle{font-size:35px}.heroSub{font-size:9px;letter-spacing:3px}.filterPill{height:40px;padding:0 14px;font-size:12px}.bestRow{grid-template-columns:28px 45px minmax(0,1fr) 55px 52px 49px 9px}.bestFlags img{width:28px;height:28px}.bestLeague{font-size:8px}.bestMetric small{font-size:7px}.bestMetric b{font-size:10px}.bestConfidence b{font-size:12px}.rowChev{font-size:16px}}
 
+
+/* Pixel-scale match to supplied 390x844 mobile mockup */
+.heroActions{position:relative;z-index:2;display:flex;gap:8px;align-self:flex-start}
+.heroIcon{width:34px;height:34px;border-radius:50%;border:1px solid #244436;background:rgba(3,19,12,.80);color:white;display:grid;place-items:center;padding:0}
+.heroIcon svg{width:16px;height:16px}
+.todayBtn{height:36px;padding:0 16px;border-radius:11px;border:1px solid #1d3b2a;background:#07140d;color:#f0f5f2;font-weight:800}
+.searchBar{display:none;margin:-3px 0 8px}
+.searchBar.on{display:block}
+.searchBar input{width:100%;height:34px;border-radius:10px;border:1px solid #1d3b2a;background:#06130b;color:white;padding:0 11px;font-size:11px}
+.sectionTitle{display:flex;align-items:center;gap:7px}
+.sectionIcon{font-size:16px;line-height:1}
+.starIcon{color:var(--green)}
+.sectionMeta{font-size:9px;color:#8ca095;white-space:nowrap}
+.gamesMeta{display:flex;align-items:center;gap:8px;color:#9aaca2;font-size:9px}
+.sortBtn{height:30px;padding:0 10px;border-radius:9px;border:1px solid #1d3b2a;background:#07140d;color:#eef4f0;font-size:9px;font-weight:800}
+.leagueIcon{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:900;flex:0 0 18px}
+.leagueIcon.ucl{background:#101512;color:#fff}
+.leagueIcon.premier{background:#472552;color:#eee0ff}
+.leagueIcon.laliga{background:#101814;color:#f14452;font-style:italic}
+.leagueIcon.seriea{background:#eaf3ef;color:#1375c9}
+.leagueIcon.nations{background:#153126;color:#51e697}
+@media(max-width:500px){
+  body{padding-bottom:calc(54px + env(safe-area-inset-bottom))}
+  .wrap{padding:0 12px 14px}
+  .heroHeader{
+    min-height:114px;height:114px;margin:0 -12px 7px;
+    padding:calc(17px + env(safe-area-inset-top)) 18px 12px;
+    background-position:58% 56%;
+    align-items:flex-start;
+  }
+  .heroHeader:after{background:linear-gradient(90deg,rgba(2,10,6,.86) 0%,rgba(2,10,6,.40) 46%,rgba(2,10,6,.03) 74%)}
+  .heroTitle{font-size:34px;letter-spacing:-1.8px;line-height:.94}
+  .heroSub{margin-top:6px;font-size:8px;letter-spacing:3px}
+  .heroActions{margin-top:2px}
+  .heroIcon{width:34px;height:34px}
+  .datebar{
+    grid-template-columns:36px 1fr auto 36px;
+    gap:7px;padding:7px 0 10px
+  }
+  .navBtn{width:36px;height:36px;border-radius:10px;font-size:17px}
+  .todayBtn{height:36px;padding:0 14px;font-size:11px}
+  .dateCenter strong{font-size:14px}
+  .dateCenter small{font-size:9px;margin-top:2px}
+  .filters{gap:9px;margin:5px 0 10px;padding-bottom:0}
+  .filterGroup{gap:5px}
+  .filterTitle{font-size:8px;letter-spacing:2px}
+  .filterScroll{gap:7px}
+  .filterPill{height:29px;padding:0 12px;border-radius:9px;font-size:10px}
+  .modelNote{margin:7px 0 14px;padding:9px 10px;border-radius:11px;gap:8px}
+  .modelNote p{font-size:8.5px;line-height:1.5}
+  .infoIcon{width:18px;height:18px;font-size:9px}
+  .sectionHead{margin:10px 0 7px;align-items:center}
+  .sectionHead h2{font-size:16px;letter-spacing:-.35px}
+  .sectionMeta{font-size:8.5px}
+  .bestList{gap:3px}
+  .bestRow{
+    grid-template-columns:22px 49px minmax(0,1fr) 46px 40px 37px 7px;
+    gap:4px;padding:6px 7px;min-height:56px;border-radius:10px
+  }
+  .rankBadge{width:22px;height:22px;border-radius:7px;font-size:8px}
+  .bestFlags img{width:27px;height:27px;transform:none;border:1px solid #597064;object-fit:cover!important;padding:0!important}
+  .bestFlags img+img{margin-left:-6px}
+  .bestFixture{font-size:9.7px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.13}
+  .bestLeague{font-size:7.2px;margin-top:2px;white-space:normal;overflow:visible;text-overflow:clip;line-height:1.1}
+  .bestSelection{font-size:10.6px;margin-top:3px;white-space:normal;line-height:1.1}
+  .bestMetric b{font-size:9.5px}
+  .bestMetric.green b{font-size:9.5px}
+  .bestMetric small{font-size:6.2px;margin-top:1px}
+  .bestConfidence b{font-size:10.5px}
+  .rowChev{font-size:14px}
+  .games{gap:7px}
+  .game{border-radius:11px}
+  .gameTop{padding:7px 9px;font-size:7.5px;letter-spacing:0;text-transform:none}
+  .gameBody{grid-template-columns:minmax(0,.95fr) minmax(0,1.22fr)!important;gap:7px;padding:7px 9px 6px}
+  .teamStack{gap:5px}
+  .teamCompact{grid-template-columns:31px minmax(0,1fr);gap:6px}
+  .teamLogo{width:30px;height:30px;transform:none;object-fit:cover!important;padding:0!important}
+  .teamName{font-size:10px}
+  .form{gap:2px;margin-top:2px}
+  .formChip{width:12px;height:12px;border-radius:4px;font-size:6px}
+  .pickSide{border-left:0;padding-left:0;justify-content:flex-start}
+  .pickSideTop{gap:4px}
+  .pickSide small{font-size:5.8px;letter-spacing:.04em}
+  .pickSide strong{font-size:10px;margin-top:2px;line-height:1.15}
+  .confBox b{font-size:11px}
+  .confBox span{font-size:5.8px}
+  .compactPrices{gap:4px;margin-top:5px}
+  .oddsBlock,.evBlock{min-width:44px;padding:4px 5px;border-radius:6px}
+  .oddsBlock b,.evBlock b{font-size:9px}
+  .oddsBlock small,.evBlock small{font-size:5.5px}
+  .commentaryLine{margin:0 9px;padding:6px 0;font-size:7.8px;line-height:1.4}
+  .statStrip{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:0 9px 8px;overflow:visible}
+  .statCell{padding:4px 2px;border-radius:6px}
+  .statCell b{font-size:8.5px}
+  .statCell small{font-size:5.3px;margin-top:1px}
+  .details{display:none}
+  .foot{display:none}
+  .mobileNav{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -10,12 +110,19 @@
     <div class="heroBrand">
       <div class="heroTitle">Footy<span>Edge</span></div>
       <div class="heroSub">Soccer Intelligence</div>
-      
     </div>
-    <div class="liveDot" aria-label="Live data"></div>
+    <div class="heroActions">
+      <button class="heroIcon" id="searchBtn" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
+      </button>
+      <button class="heroIcon" id="settingsBtn" aria-label="Filters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>
+      </button>
+    </div>
   </header>
 
-  <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="navBtn" id="next">›</button></section>
+  <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="todayBtn" id="todayShortcut">Today</button><button class="navBtn" id="next">›</button></section>
+  <div class="searchBar" id="searchBar"><input id="searchInput" type="search" placeholder="Search team or competition…"></div>
 
   <section class="filters" id="filters">
     <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
@@ -23,12 +130,12 @@
     <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button></div></div>
   </section>
 
-  <section class="modelNote"><span class="infoIcon">i</span><p><b>How the picks are made:</b> FootyEdge blends recent form, home/away performance, head-to-head results when available, scoring and conceding rates, BTTS/goal-total trends, market pricing and expected value. The highest-confidence qualifying market is shown first. <strong>Picks are not guaranteed. Bet responsibly and only wager what you can afford to lose.</strong></p></section>
+  <section class="modelNote"><span class="infoIcon">i</span><p>Picks are based on our statistical model using recent form, attacking/defensive data, home/away splits, head-to-head, market pricing and value. These are not guaranteed. <strong>Bet responsibly.</strong></p></section>
 
-  <div class="sectionHead" id="topAnchor"><div><h2>★ Today’s Top Picks</h2><p id="topSub">Max 5 · 85%+ confidence</p></div><div class="stamp" id="stamp"></div></div>
+  <div class="sectionHead" id="topAnchor"><div class="sectionTitle"><span class="sectionIcon starIcon">★</span><h2>Today’s Top Picks</h2></div><div class="sectionMeta" id="topSub">Max 5 · 85%+ confidence</div><span id="stamp" hidden></span></div>
   <section class="bestList" id="best"><div class="loading"><div class="spin"></div>Ranking today’s best plays…</div></section>
 
-  <div class="sectionHead" id="matchesAnchor"><div><h2 id="gamesTitle">⚽ Today’s Games</h2><p>Major competitions only · form, odds, EV and model commentary.</p></div><div class="stamp" id="source">Refreshing automatically</div></div>
+  <div class="sectionHead" id="matchesAnchor"><div class="sectionTitle"><span class="sectionIcon">⚽</span><h2 id="gamesTitle">Today’s Games</h2></div><div class="gamesMeta"><span id="gamesCount">0 games</span><button class="sortBtn" id="sortBtn">☷ Sort</button></div><span id="source" hidden></span></div>
   <section class="games" id="games"><div class="loading"><div class="spin"></div>Loading live games…</div></section>
   <footer class="foot"><span>FootyEdge · live soccer intelligence</span><span>Model confidence is a ranking signal, not a guarantee</span></footer>
 </div>
