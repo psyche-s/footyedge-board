@@ -549,7 +549,7 @@ function renderBest(){
       '<div class="bestCore"><div class="bestFixture">'+esc(g.home.name)+' <span>vs</span> '+esc(g.away.name)+'</div>'+
       '<div class="bestLeague">'+esc(g.leagueName)+' · '+timeET(g.date)+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(p.label)+'</div></div>'+
-      '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>'+(px.odds==="—"?"NO LINE":"")+'</small></div>'+
+      '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="bestMetric bestConfidence"><b>'+p.score+'%</b><small>CONF</small></div><div class="rowChev">›</div></article>';
   }).join("")
@@ -569,12 +569,12 @@ function renderGames(){
       '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(g.away.name)+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
     if(p){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.category)+'</small><strong>'+esc(p.label)+'</strong></div>'+
-      '<div class="pickMetrics"><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>'+(px.odds==="—"?"NO LINE":"")+'</small></div>'+
+      '<div class="pickMetrics"><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>CONF</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">PASS — no market cleared the model threshold.</div></div>';
     html+='</div>';
-    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(x.label)+'</b><em>'+x.score+'%</em><div class="top3Odds">'+esc(tx.odds)+'<small>'+(tx.odds==="—"?"NO LINE":"")+'</small></div></div>'}).join("")+'</div>';
+    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(x.label)+'</b><em>'+x.score+'%</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>ODDS</small></div></div>'}).join("")+'</div>';
     const news=teamNewsSummary(g,p);
     if(news)html+='<div class="teamNewsLine"><span>TEAM NEWS</span><div class="newsText">'+esc(news.text)+'</div>'+(news.impact?'<div class="newsImpact">'+esc(news.impact)+'</div>':'')+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
@@ -656,7 +656,7 @@ async function load(date=S.date){
 function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
   const top3=g.model?.top?(g.model?.top3||[]):[];
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}"><b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag oddsPriceTag ${xp.cls}"><b>${oddsWithLogo(xp)}</b><small>ODDS</small></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,3);
