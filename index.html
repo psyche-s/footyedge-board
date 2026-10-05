@@ -6,6 +6,7 @@
 <title>FootyEdge</title>
 <meta name="theme-color" content="#020503">
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap");
 :root{
   --bg:#020503;--panel:#061009;--panel2:#0a160f;--panel3:#0d1b12;
   --text:#edf7f0;--muted:#8da197;--green:#2ddf8b;--green2:#1ebd72;
@@ -17,7 +18,7 @@ html{background:var(--bg);scroll-behavior:smooth}
 body{
   margin:0;background:
   radial-gradient(circle at 70% -10%,rgba(45,223,139,.08),transparent 28rem),
-  var(--bg);color:var(--text);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  var(--bg);color:var(--text);font:14px/1.45 Manrope,Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   padding-bottom:calc(84px + env(safe-area-inset-bottom))
 }
 button,select,input{font:inherit}
@@ -72,30 +73,23 @@ header{
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px rgba(45,223,139,.08)}
 main{max-width:1180px;margin:auto;padding:14px;display:grid;gap:14px}
 .card{background:linear-gradient(180deg,rgba(9,21,14,.98),rgba(5,14,9,.98));border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
-.topbar{padding:12px;display:flex;flex-wrap:wrap;align-items:center;gap:9px}
-.dateNav{display:flex;gap:6px;align-items:center}
+.topbar{padding:8px 0 10px;display:grid;grid-template-columns:52px 1fr 52px;align-items:center;gap:10px;background:transparent;border:0;box-shadow:none}
 .btn{
-  border:1px solid var(--line);background:#08120c;color:var(--text);border-radius:11px;padding:8px 10px;font-weight:750
+  border:1px solid #24402f;background:#07110b;color:var(--text);border-radius:16px;padding:10px 12px;font-weight:800
 }
-.btn:hover,.btn.on{border-color:#2a6145;background:#0c1a12;color:var(--green)}
-.btn.ghost{color:var(--muted)}
-.dateLabel{min-width:132px;text-align:center;font-weight:800}
-.spacer{flex:1}
+.btn:hover,.btn.on{border-color:#44e892;background:#102217;color:var(--green)}
+.btn.ghost{color:#c7d4cd;background:#08120c}
+.navArrow{width:52px;height:52px;padding:0;display:grid;place-items:center;font-size:22px;line-height:1}
+.dateCenter{border:0;background:transparent;color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px 0}
+.dateDay{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.dateDate{font-size:11px;color:var(--muted);font-weight:700}
 .small{font-size:11px;color:var(--muted)}
-.hero{overflow:hidden;position:relative;min-height:170px}
-.heroText{position:relative;z-index:2;padding:24px;max-width:680px}
-.eyebrow{color:var(--green);font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:1.2px}
-.hero h1{font-size:31px;line-height:1.04;letter-spacing:-1.5px;margin:7px 0 9px}
-.hero p{margin:0;color:#aabbb1;max-width:580px}
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:17px}
-.kpi{background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:8px}
-.kpi b{display:block;font-size:17px;color:white}.kpi span{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
-.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px}
-.sectionHead h2{font-size:17px;margin:0}.sectionHead p{margin:2px 0 0;color:var(--muted);font-size:11px}
+.sectionHead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:6px;padding:0 1px}
+.sectionHead h2{font-size:20px;letter-spacing:-.6px;margin:0}.sectionHead p{margin:3px 0 0;color:#71837a;font-size:11px}
 .bestGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.best{padding:15px;position:relative;overflow:hidden}
-.best:before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--green)}
-.bestNum{position:absolute;top:12px;right:13px;color:#31433a;font-size:32px;font-weight:950}
+.best{padding:14px 14px 13px;position:relative;overflow:hidden;border-radius:15px;background:linear-gradient(180deg,#08140c,#061009);box-shadow:none}
+.best:before{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,var(--green),transparent 78%)}
+.bestNum{position:absolute;top:12px;right:13px;color:#23372c;font-size:28px;font-weight:900}
 .matchMini{font-size:11px;color:var(--muted);padding-right:35px}
 .pickName{font-size:17px;font-weight:900;line-height:1.15;margin:8px 0}
 .pillRow{display:flex;flex-wrap:wrap;gap:6px}
@@ -107,9 +101,8 @@ main{max-width:1180px;margin:auto;padding:14px;display:grid;gap:14px}
 .filters{padding:10px;display:flex;gap:7px;overflow-x:auto;align-items:center}
 .filters::-webkit-scrollbar{display:none}
 .filter{white-space:nowrap}
-.leagueSelect{min-width:150px;border:1px solid var(--line);background:#08120c;color:var(--text);border-radius:11px;padding:8px 10px}
 .games{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.game{padding:14px;transition:.16s;border-color:var(--line)}
+.game{padding:13px;transition:.16s;border-color:#16271d;background:linear-gradient(180deg,#07130b,#061009);box-shadow:none}
 .game:hover{border-color:#2b5941;transform:translateY(-1px)}
 .gameTop{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .comp{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -179,10 +172,14 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 @media(max-width:760px){
   header{min-height:84px}
   .head{padding-top:27px}
-  .status .copy{display:none}.hero{min-height:185px}.heroText{padding:20px}.hero h1{font-size:27px}
-  .kpis{grid-template-columns:repeat(2,1fr)}.bestGrid,.games{grid-template-columns:1fr}
-  .topbar{gap:7px}.dateLabel{min-width:104px}.spacer{display:none}
-  .leagueSelect{min-width:135px}.mobileNav{display:flex}.playerGrid{grid-template-columns:1fr}
+  .status .copy{display:none}
+  .bestGrid,.games{grid-template-columns:1fr}
+  .topbar{grid-template-columns:48px 1fr 48px;padding:7px 0 9px}
+  .navArrow{width:48px;height:48px}
+  .dateDay{font-size:19px}.dateDate{font-size:10px}
+  .filterSelect{min-width:154px;font-size:14px;padding:13px 18px}
+  .filter{padding:13px 20px;font-size:14px}
+  .mobileNav{display:flex}.playerGrid{grid-template-columns:1fr}
   .pickRow{align-items:flex-start;flex-wrap:wrap}.pickValues{width:100%;margin-left:34px}.valueBox{flex:1}
 }
 </style>
@@ -200,45 +197,45 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 </header>
 
 <main>
-  <section class="card topbar">
-    <div class="dateNav">
-      <button class="btn ghost" id="prevBtn">‹</button>
-      <button class="btn" id="todayBtn">Today</button>
-      <button class="btn ghost" id="nextBtn">›</button>
-    </div>
-    <div class="dateLabel" id="dateLabel"></div>
-    <div class="spacer"></div>
-    <div class="small" id="nextRefresh"></div>
-  </section>
-
-  <section class="card hero">
-    <div class="heroText">
-      <div class="eyebrow">Daily model board</div>
-      <h1>Find the safest edge<br>without repeating the same bet.</h1>
-      <p>Fixture data, market prices and prediction signals are screened into one primary pick per match. Alternate picks must come from different market families.</p>
-      <div class="kpis">
-        <div class="kpi"><b id="kGames">—</b><span>Games</span></div>
-        <div class="kpi"><b id="kQual">—</b><span>Qualified</span></div>
-        <div class="kpi"><b id="kTop">—</b><span>Top 3</span></div>
-        <div class="kpi"><b id="kScore">—</b><span>Best score</span></div>
-      </div>
-    </div>
+  <section class="topbar">
+    <button class="btn ghost navArrow" id="prevBtn" aria-label="Previous day">‹</button>
+    <button class="dateCenter" id="todayBtn" type="button" aria-label="Jump to today">
+      <span class="dateDay" id="dayTitle">Today</span>
+      <span class="dateDate" id="dateLabel"></span>
+    </button>
+    <button class="btn ghost navArrow" id="nextBtn" aria-label="Next day">›</button>
   </section>
 
   <div class="sectionHead" id="topAnchor">
-    <div><h2>Today’s Best 3</h2><p>Highest-confidence pick from three different matches.</p></div>
+    <div><h2>Today’s Top Picks</h2><p id="topSub">Up to 5 picks at 85+ confidence.</p></div>
     <div class="small" id="dataStamp"></div>
   </div>
   <section class="bestGrid" id="bestGrid"></section>
 
-  <section class="card filters" id="filters">
-    <button class="btn filter on" data-filter="all">All Games</button>
-    <button class="btn filter" data-filter="qualified">Qualified</button>
-    <button class="btn filter" data-filter="core">Core A</button>
-    <button class="btn filter" data-filter="Goals">Goals</button>
-    <button class="btn filter" data-filter="BTTS">BTTS</button>
-    <button class="btn filter" data-filter="Result">ML / DC</button>
-    <select class="leagueSelect" id="leagueSelect"><option value="all">All competitions</option></select>
+  <section class="filterPanel" id="filters">
+    <div class="filterGroup">
+      <div class="filterTitle">League</div>
+      <div class="filterRow">
+        <select class="filterSelect" id="leagueSelect"><option value="all">All Leagues</option></select>
+        <select class="filterSelect" id="statusSelect">
+          <option value="upcoming">Upcoming</option>
+          <option value="all">All Games</option>
+          <option value="live">Live</option>
+          <option value="completed">Completed</option>
+        </select>
+      </div>
+    </div>
+    <div class="filterGroup">
+      <div class="filterTitle">Market</div>
+      <div class="filterRow marketRow">
+        <button class="btn filter on" data-filter="all">All Games</button>
+        <button class="btn filter" data-filter="qualified">Qualified</button>
+        <button class="btn filter" data-filter="core">Core A</button>
+        <button class="btn filter" data-filter="Goals">Goals</button>
+        <button class="btn filter" data-filter="BTTS">BTTS</button>
+        <button class="btn filter" data-filter="Result">ML / Double Chance</button>
+      </div>
+    </div>
   </section>
 
   <section class="games" id="games"></section>
@@ -254,14 +251,14 @@ footer{max-width:1180px;margin:16px auto 0;padding:0 14px 28px;color:#62736a;fon
 </div>
 
 <nav class="mobileNav">
-  <button class="on" onclick="document.getElementById('topAnchor').scrollIntoView()">★ Top 3</button>
+  <button class="on" onclick="document.getElementById('topAnchor').scrollIntoView()">★ Top Picks</button>
   <button onclick="document.getElementById('filters').scrollIntoView()">⚽ Matches</button>
 </nav>
 
 <script>
 const TZ="America/Toronto";
 const API="/api/football";
-const state={date:null,fixtures:[],odds:new Map(),games:[],filter:"all",league:"all",loading:false,predCache:new Map(),detailCache:new Map(),timers:[]};
+const state={date:null,fixtures:[],odds:new Map(),games:[],filter:"all",league:"all",statusMode:"upcoming",loading:false,predCache:new Map(),detailCache:new Map(),timers:[]};
 
 const TODAY_PLAYBOOK={
   "2026-10-05":[
@@ -497,11 +494,16 @@ function pickWhy(g,c){
   return p?`${model}. Prediction layer included${p.advice?` · ${p.advice}`:""}.`:`${model}. Market layer shown while deeper prediction data loads.`;
 }
 function bestGames(){
-  return state.games.filter(g=>isFeaturedCompetition(g)&&g.topPick&&g.topPick.score>=82).sort((a,b)=>b.topPick.score-a.topPick.score||(b.topPick.ev??-99)-(a.topPick.ev??-99)).slice(0,3);
+  return state.games
+    .filter(g=>isFeaturedCompetition(g)&&g.topPick&&g.topPick.score>=85&&gameVisibleByStatus(g))
+    .sort((a,b)=>b.topPick.score-a.topPick.score||(b.topPick.ev??-99)-(a.topPick.ev??-99))
+    .slice(0,5);
 }
 function renderBest(){
   const best=bestGames(),el=document.getElementById("bestGrid");
-  if(!best.length){el.innerHTML=`<div class="card empty" style="grid-column:1/-1">No 3.5★+ picks yet for this date.</div>`;return}
+  const sub=document.getElementById("topSub");
+  sub.textContent=best.length?`${best.length} pick${best.length===1?"":"s"} above 85 confidence.`:"No picks above 85 confidence for this date.";
+  if(!best.length){el.innerHTML=`<div class="card empty" style="grid-column:1/-1">No picks have cleared the 85-confidence threshold yet.</div>`;return}
   el.innerHTML=best.map((g,i)=>{const c=g.topPick;return `<article class="card best" onclick="openMatch(${g.id})">
     <div class="bestNum">0${i+1}</div><div class="matchMini">${g.home.name} vs ${g.away.name} · ${timeET(g.kickoff)}</div>
     <div class="pickName">${esc(c.label)}</div><div class="pillRow">
@@ -542,9 +544,16 @@ function isFeaturedCompetition(g){
   return FEATURED_COMPETITION_PATTERNS.some(rx=>rx.test(name));
 }
 
+function gameVisibleByStatus(g){
+  if(state.statusMode==="upcoming")return !g.status.done && !g.status.live;
+  if(state.statusMode==="live")return g.status.live;
+  if(state.statusMode==="completed")return g.status.done;
+  return true;
+}
 function gameVisible(g){
   if(!isFeaturedCompetition(g))return false;
   if(state.league!=="all"&&String(g.league.id)!==state.league)return false;
+  if(!gameVisibleByStatus(g))return false;
   const c=g.topPick;
   if(state.filter==="qualified"&&(!c||c.score<82))return false;
   if(state.filter==="core"&&(!c||c.score<88))return false;
@@ -570,18 +579,20 @@ function renderGames(){
 function renderLeague(){
   const sel=document.getElementById("leagueSelect"),cur=state.league;
   const leagues=[...new Map(state.games.filter(isFeaturedCompetition).map(g=>[g.league.id,g.league])).values()].sort((a,b)=>a.name.localeCompare(b.name));
-  sel.innerHTML=`<option value="all">All competitions</option>`+leagues.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join("");sel.value=cur;
+  sel.innerHTML=`<option value="all">All Leagues</option>`+leagues.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join("");sel.value=cur;
 }
 function renderKpis(){
-  const featured=state.games.filter(isFeaturedCompetition);
-  const q=featured.filter(g=>g.topPick?.score>=82),b=bestGames();
-  document.getElementById("kGames").textContent=featured.length;
-  document.getElementById("kQual").textContent=q.length;
-  document.getElementById("kTop").textContent=b.length;
-  document.getElementById("kScore").textContent=b[0]?.topPick?.score??"—";
+  const best=bestGames();
   document.getElementById("dataStamp").textContent=`Updated ${new Date().toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})} ET`;
+  return best;
 }
-function renderAll(){document.getElementById("dateLabel").textContent=niceDate(state.date);renderKpis();renderBest();renderLeague();renderGames()}
+function renderAll(){
+  const today=etDate();
+  const d=new Date(state.date+"T12:00:00Z");
+  document.getElementById("dayTitle").textContent=state.date===today?"Today":d.toLocaleDateString("en-US",{weekday:"long",timeZone:"UTC"});
+  document.getElementById("dateLabel").textContent=d.toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"});
+  renderKpis();renderBest();renderLeague();renderGames();
+}
 async function ensurePrediction(g){
   if(g.prediction)return g.prediction;let p=state.predCache.get(g.id);
   if(!p){try{const r=await rawApi("predictions",{fixture:g.id});p=r.response?.[0]||null;if(p)state.predCache.set(g.id,p)}catch{}}
@@ -708,17 +719,13 @@ async function openMatch(id){
 }
 function scheduleRefreshes(){
   state.timers.forEach(clearTimeout);state.timers=[];
-  const now=Date.now(),first=state.games.filter(g=>!g.status.done&&new Date(g.kickoff).getTime()>now).map(g=>new Date(g.kickoff).getTime()).sort((a,b)=>a-b)[0];
-  const el=document.getElementById("nextRefresh");if(!first){el.textContent="No pregame refresh scheduled";return}
-  const targets=[first-120*60000,first-60*60000].filter(t=>t>now);
-  targets.forEach(t=>state.timers.push(setTimeout(loadBoard,t-now)));
-  el.textContent=targets.length?`Pregame refresh ${new Date(targets[0]).toLocaleTimeString("en-US",{timeZone:TZ,hour:"numeric",minute:"2-digit"})} ET`:"Pregame refresh window passed";
 }
 function setDate(d){state.date=d;state.predCache.clear();state.detailCache.clear();loadBoard()}
 document.getElementById("prevBtn").onclick=()=>setDate(dateAdd(state.date,-1));
 document.getElementById("nextBtn").onclick=()=>setDate(dateAdd(state.date,1));
 document.getElementById("todayBtn").onclick=()=>setDate(etDate());
-document.getElementById("leagueSelect").onchange=e=>{state.league=e.target.value;renderGames()};
+document.getElementById("leagueSelect").onchange=e=>{state.league=e.target.value;renderGames();renderBest()};
+document.getElementById("statusSelect").onchange=e=>{state.statusMode=e.target.value;renderGames();renderBest();renderKpis()};
 document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("on"));b.classList.add("on");state.filter=b.dataset.filter;renderGames()});
 document.getElementById("closeModal").onclick=()=>document.getElementById("modalWrap").classList.remove("on");
 document.getElementById("modalWrap").onclick=e=>{if(e.target.id==="modalWrap")e.currentTarget.classList.remove("on")};
