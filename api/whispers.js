@@ -363,7 +363,7 @@ function extractKeyStats(html) {
 
 function limitWords(value = "", maxWords = 24) {
   const words = cleanText(value).split(/\s+/).filter(Boolean);
-  return words.length <= maxWords ? words.join(" ") : words.slice(0, maxWords).join(" ") + "…";
+  return words.length <= maxWords ? words.join(" ") : words.slice(0, maxWords).join(" ");
 }
 
 function extractSquadNews(text) {
@@ -373,7 +373,7 @@ function extractSquadNews(text) {
     ["Head-to-head", "H2H", "Form:", "Team Form", "Top tip", "Key stats", "Preview:"],
     260
   );
-  return value ? limitWords(value, 28) : null;
+  return value ? limitWords(value, 60) : null;
 }
 
 function extractTeamNews(html, home, away) {
@@ -404,7 +404,7 @@ function extractTeamNews(html, home, away) {
       out.push({
         team: activeTeam,
         type: availability ? "availability" : "projected",
-        text: limitWords(p, 24),
+        text: limitWords(p, 60),
       });
     }
   }
