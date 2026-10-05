@@ -746,6 +746,21 @@ const leagueNames={
   "fifa.world":"FIFA World Cup","fifa.worldq.uefa":"World Cup Qualifying","fifa.worldq.conmebol":"World Cup Qualifying","fifa.worldq.concacaf":"World Cup Qualifying",
   "fifa.friendly":"International Friendly","concacaf.nations.league":"CONCACAF Nations League","conmebol.copa_america":"Copa América"
 };
+function displayLeagueName(id,raw){
+  const key=String(id||"").trim(),source=String(raw||"").trim();
+  if(leagueNames[key])return leagueNames[key];
+  if(leagueNames[source])return leagueNames[source];
+  const slug=source||key;
+  if(!slug)return"Soccer";
+  return slug.split(/[._-]+/).filter(Boolean).map(w=>{
+    const low=w.toLowerCase();
+    if(low==="uefa")return"UEFA";
+    if(low==="concacaf")return"CONCACAF";
+    if(low==="fifa")return"FIFA";
+    if(low==="mls")return"MLS";
+    return w.charAt(0).toUpperCase()+w.slice(1);
+  }).join(" ");
+}
 const uidLeague={2395:"uefa.nations",3922:"fifa.friendly",19267:"concacaf.nations.league"};
 const MAJOR_LEAGUES=new Set(Object.keys(leagueNames).filter(x=>x!=="fifa.friendly"));
 function isMajorLeague(id){return !!id&&MAJOR_LEAGUES.has(id)};
