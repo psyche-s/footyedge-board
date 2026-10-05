@@ -734,7 +734,17 @@ function projectedScore(g){
 }
 function ourReason(g,p){if(!p||!g.model)return"No qualifying market yet.";const h=g.model.home,a=g.model.away,homeTot=h.gf+h.ga,awayTot=a.gf+a.ga,label=String(p.label).toLowerCase();if(label.includes("under"))return `The current-season profiles are low enough for this safety line: ${g.home.name} matches average ${homeTot.toFixed(2)} total goals and ${g.away.name} ${awayTot.toFixed(2)}. Venue splits and H2H, where available, keep it highest in our ranking.`;if(label.includes("over"))return `The scoring profile supports goals: ${g.home.name} matches average ${homeTot.toFixed(2)} total goals and ${g.away.name} ${awayTot.toFixed(2)}. Our venue/H2H layers keep this above the alternatives.`;if(p.category==="BTTS")return `Scoring and conceding rates drive this pick: ${g.home.name} scored in ${pctInt(h.scored)} of the sample and ${g.away.name} in ${pctInt(a.scored)}, with BTTS rates of ${pctInt(h.btts)} and ${pctInt(a.btts)}.`;if(p.category==="Team Goals")return `This is a team-floor play built from the side's scoring rate and the opponent's concession rate, then adjusted for home/away form and sample size.`;if(p.category==="Double Chance")return `The protected result grades best because the selected side's non-loss profile is stronger than the opponent's win profile after venue weighting.`;if(p.category==="Match Result")return `The straight result grades highest from recent wins, opponent losses and home/away performance; market price is used as an agreement check, not as the model itself.`;return `This market ranks highest after recent form, venue splits, H2H, scoring/conceding rates and market agreement are blended together.`}
 function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
-function cardCommentary(g,p){const base=ourReason(g,p),cross=p?.crossSources?" Independent pre-match checks also support this market.":"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";return base+cross+lineup}
+function instinctFitReason(g,p){
+  if(!p||!p.userFitDelta)return"";
+  if(p.userFitDelta>0){
+    if(p.category==="Match Result")return" This also fits your stronger historical pattern: clear favorites with a real matchup edge rather than marginal plus-money 3-way sides.";
+    if(p.category==="Goals"||p.category==="Double Chance"||p.category==="Team Goals")return" This also fits your stronger historical pattern with protected lines when the underlying matchup supports them.";
+    return" This also matches the stronger side of your historical selection profile."
+  }
+  if(p.category==="Match Result")return" Your historical results make us more cautious with marginal plus-money 3-way MLs, so this receives a small personal-fit downgrade.";
+  return" Your historical selection profile adds a small caution flag here."
+}
+function cardCommentary(g,p){const base=ourReason(g,p),cross=p?.crossSources?" Independent pre-match checks also support this market.":"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"",fit=instinctFitReason(g,p);return base+cross+lineup+fit}
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
 function applyUserPick(g){return g}
@@ -794,4 +804,4 @@ async function schedule(league,id,year){
   try{const v=await json(`/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(id)}&season=${year}`);const rec={t:now,v};S.cache.set(key,rec);try{localStorage.setItem(key,JSON.stringify(rec))}catch{}return v}catch(e){if(stored?.v)return stored.v;throw e}
 }
 let refreshTimer=null;
-function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const ms=S.games.some(g=>g.live)?60000:300000;refreshTimer=setTimeout(()=>load(S.d
+function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const now=Date.now(),live=S.games.some(g=>g.live),near=S.games.some(g=>!g.done&&!g.live&&new Date(g.date).getTime()-now<=3*60*60*1000&&new Date(g.date).getTime()>=now-5*60*1000);const ms=live?60000:near?120000:300000;refreshTimer=setTimeout(()=>load(S.d
