@@ -1,4 +1,4 @@
-ate),ms);document.getElementById("source").textContent=`Live data · refresh ${ms===60000?"60s":ms===120000?"2m":"5m"} · history cached 6h`}
+ate),ms);document.getElementById("source").textContent=S.dataSource?.startsWith("Daily posted odds")?`${S.dataSource} · scores/news refresh ${ms===60000?"60s":ms===120000?"2m":"5m"}`:`Live data · refresh ${ms===60000?"60s":ms===120000?"2m":"5m"} · history cached 6h`}
 
 
 S.search="";S.sort="time";
@@ -89,6 +89,26 @@ function oddsFromFootball(entry,homeName,awayName){
   const t25=totals["2.5"]||{},tg=noVig([t25.over?.prob||null,t25.under?.prob||null]);out.probs.over25=tg[0]||null;out.probs.under25=tg[1]||null;
   if(bttsYesP!=null&&bttsNoP!=null){const bg=noVig([bttsYesP,bttsNoP]);out.probs.bttsYes=bg[0]||null;out.probs.bttsNo=bg[1]||null}
   return out;
+}
+function oddsFromDaily(entry,homeName,awayName){
+  if(!entry)return null;
+  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
+  if(out.homeML!=null)out.markets[normName(homeName+" ML")]=out.homeML;
+  if(out.awayML!=null)out.markets[normName(awayName+" ML")]=out.awayML;
+  const total=entry.total||{},lineFrom=v=>{const m=String(v||"").match(/([0-9]+(?:\.[0-9]+)?)/);return m?m[1]:null};
+  const ol=lineFrom(total.overLine),ul=lineFrom(total.underLine);
+  if(ol&&total.overOdds!=null)out.markets[normName("Over "+ol+" Goals")]=total.overOdds;
+  if(ul&&total.underOdds!=null)out.markets[normName("Under "+ul+" Goals")]=total.underOdds;
+  if(ol==="2.5"){out.over25=total.overOdds??null;out.probs.over25=entry.probs?.over??null}
+  if(ul==="2.5"){out.under25=total.underOdds??null;out.probs.under25=entry.probs?.under??null}
+  return out
+}
+function buildDailyOddsMap(payload){
+  const map=new Map();
+  for(const entry of payload?.events||[]){
+    if(entry?.home&&entry?.away)map.set(fixtureMatchKey(entry.home,entry.away),entry)
+  }
+  return map
 }
 function buildOddsMap(payload){const map=new Map();for(const entry of payload?.response||[])map.set(String(entry?.fixture?.id||""),entry);return map}
 function oddsFromTheOdds(entry,homeName,awayName){
@@ -550,17 +570,27 @@ async function load(date=S.date){
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:apiFixture?.league?.name||leagueNames[l]||l||"Soccer",leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false}
     }).filter(g=>isMajorLeague(g.league));
 
-    let liveOddsPayload=null;
+    let liveOddsPayload=null,dailyOddsPayload=null;
     if(S.date===etDate()&&games.length){
-      const now=Date.now(),nearGames=games.filter(g=>!g.done&&Math.abs(new Date(g.date).getTime()-now)<=12*60*60*1000);
-      const liveLeagues=[...new Set(nearGames.map(g=>g.league).filter(Boolean))];
-      if(liveLeagues.length){
-        liveOddsPayload=await json('/api/the-odds?live=1&date='+encodeURIComponent(S.date)+'&leagues='+encodeURIComponent(liveLeagues.join(','))).catch(()=>null);
-        const liveOddsMap=buildTheOddsMap(liveOddsPayload);
+      dailyOddsPayload=await json('/data/daily-odds-'+S.date+'.json?v=1').catch(()=>null);
+      if(dailyOddsPayload?.events?.length){
+        const dailyMap=buildDailyOddsMap(dailyOddsPayload);
         for(const g of games){
-          const entry=liveOddsMap.get(fixtureMatchKey(g.home.name,g.away.name));
-          const liveOdds=oddsFromTheOdds(entry,g.home.name,g.away.name);
-          if(liveOdds)g.odds=mergeOdds(g.odds,liveOdds);
+          const entry=dailyMap.get(fixtureMatchKey(g.home.name,g.away.name));
+          const posted=oddsFromDaily(entry,g.home.name,g.away.name);
+          if(posted)g.odds=mergeOdds(g.odds,posted);
+        }
+      }else{
+        const now=Date.now(),nearGames=games.filter(g=>!g.done&&Math.abs(new Date(g.date).getTime()-now)<=12*60*60*1000);
+        const liveLeagues=[...new Set(nearGames.map(g=>g.league).filter(Boolean))];
+        if(liveLeagues.length){
+          liveOddsPayload=await json('/api/the-odds?live=1&date='+encodeURIComponent(S.date)+'&leagues='+encodeURIComponent(liveLeagues.join(','))).catch(()=>null);
+          const liveOddsMap=buildTheOddsMap(liveOddsPayload);
+          for(const g of games){
+            const entry=liveOddsMap.get(fixtureMatchKey(g.home.name,g.away.name));
+            const liveOdds=oddsFromTheOdds(entry,g.home.name,g.away.name);
+            if(liveOdds)g.odds=mergeOdds(g.odds,liveOdds);
+          }
         }
       }
     }
@@ -571,7 +601,7 @@ async function load(date=S.date){
     const newsPool=games.filter(g=>g.model?.top?.score>=78).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,6);
     await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
     for(const g of games)applyInstinctCalibration(g);
-    S.games=games;S.dataSource=liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
+    S.games=games;S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
 
