@@ -1,0 +1,189 @@
+const API_BASE="https://api.the-odds-api.com/v4";
+const CACHE_SECONDS=120;
+
+const LEAGUE_HINTS={
+  "uefa.nations":{keys:["soccer_uefa_nations_league"],aliases:["uefa nations league","nations league"]},
+  "uefa.champions":{keys:["soccer_uefa_champs_league"],aliases:["uefa champions league","champions league"]},
+  "uefa.europa":{keys:["soccer_uefa_europa_league"],aliases:["uefa europa league","europa league"]},
+  "uefa.europa.conf":{keys:["soccer_uefa_europa_conference_league"],aliases:["uefa europa conference league","conference league"]},
+  "eng.1":{keys:["soccer_epl"],aliases:["english premier league","premier league","epl"]},
+  "esp.1":{keys:["soccer_spain_la_liga"],aliases:["la liga","spain la liga"]},
+  "ger.1":{keys:["soccer_germany_bundesliga"],aliases:["germany bundesliga","bundesliga"]},
+  "ita.1":{keys:["soccer_italy_serie_a"],aliases:["italy serie a","serie a"]},
+  "fra.1":{keys:["soccer_france_ligue_one"],aliases:["france ligue 1","ligue 1"]},
+  "ned.1":{keys:["soccer_netherlands_eredivisie"],aliases:["netherlands eredivisie","eredivisie"]},
+  "por.1":{keys:["soccer_portugal_primeira_liga"],aliases:["portugal primeira liga","primeira liga"]},
+  "usa.1":{keys:["soccer_usa_mls"],aliases:["major league soccer","mls"]},
+  "mex.1":{keys:["soccer_mexico_ligamx"],aliases:["mexico liga mx","liga mx"]},
+  "fifa.world":{keys:["soccer_fifa_world_cup"],aliases:["fifa world cup","world cup"]},
+  "fifa.worldq.uefa":{keys:["soccer_fifa_world_cup_qualifiers_europe"],aliases:["world cup qualifiers europe","world cup qualification uefa","fifa world cup qualifiers"]},
+  "uefa.euro":{keys:["soccer_uefa_european_championship"],aliases:["uefa european championship","european championship","euro"]},
+  "uefa.euroq":{keys:["soccer_uefa_euro_qualification"],aliases:["euro qualification","european championship qualification"]},
+  "arg.1":{keys:["soccer_argentina_primera_division"],aliases:["argentina primera division","argentina primera"]},
+  "uru.1":{keys:["soccer_uruguay_primera_division"],aliases:["uruguay primera division","uruguay primera"]},
+  "col.1":{keys:["soccer_colombia_primera_a"],aliases:["colombia primera a","categoria primera a"]},
+  "par.1":{keys:["soccer_paraguay_primera_division"],aliases:["paraguay primera division","paraguay primera"]}
+};
+
+function norm(v=""){
+  return String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
+}
+function median(nums){
+  const a=nums.filter(Number.isFinite).sort((x,y)=>x-y);
+  if(!a.length)return null;
+  const m=Math.floor(a.length/2);
+  return a.length%2?a[m]:(a[m-1]+a[m])/2;
+}
+function decimalFromAmerican(v){
+  const n=Number(v);
+  if(!Number.isFinite(n)||n===0)return null;
+  return n>0?1+n/100:1+100/Math.abs(n);
+}
+function americanFromDecimal(v){
+  const d=Number(v);
+  if(!Number.isFinite(d)||d<=1)return null;
+  return d>=2?Math.round((d-1)*100):Math.round(-100/(d-1));
+}
+function medianAmerican(values){
+  const dec=values.map(decimalFromAmerican).filter(Boolean);
+  const med=median(dec);
+  return med?americanFromDecimal(med):null;
+}
+function noVig(a){
+  const v=a.map(x=>Number.isFinite(x)&&x>0?x:0),s=v.reduce((x,y)=>x+y,0);
+  return s?v.map(x=>x/s):v.map(()=>null);
+}
+function impliedAmerican(v){
+  const n=Number(v);if(!Number.isFinite(n)||n===0)return null;
+  return n>0?100/(n+100):Math.abs(n)/(Math.abs(n)+100);
+}
+function resolveSport(sports,league){
+  const hint=LEAGUE_HINTS[league];if(!hint)return null;
+  for(const key of hint.keys||[]){const exact=sports.find(s=>s.key===key);if(exact)return exact}
+  const aliases=(hint.aliases||[]).map(norm);
+  const soccer=sports.filter(s=>norm(s.group)==="soccer"&&!s.has_outrights);
+  let best=null,bestScore=0;
+  for(const s of soccer){
+    const hay=norm([s.title,s.description,s.key].filter(Boolean).join(" "));
+    let score=0;
+    for(const alias of aliases){
+      if(hay===alias)score=Math.max(score,100);
+      else if(hay.includes(alias))score=Math.max(score,80+alias.split(" ").length);
+      else{
+        const words=alias.split(" ").filter(w=>w.length>2);
+        const hit=words.filter(w=>hay.includes(w)).length;
+        if(words.length)score=Math.max(score,Math.round(60*hit/words.length));
+      }
+    }
+    if(score>bestScore){best=s;bestScore=score}
+  }
+  return bestScore>=55?best:null;
+}
+async function getJson(url){
+  const r=await fetch(url,{headers:{"accept":"application/json","user-agent":"FootyEdge/1.0"}});
+  const text=await r.text();let data;
+  try{data=JSON.parse(text)}catch{throw new Error("Invalid odds response")}
+  if(!r.ok){
+    const e=new Error(data?.message||data?.error_code||("Odds API "+r.status));
+    e.status=r.status;throw e;
+  }
+  return {data,headers:r.headers};
+}
+function summarizeEvent(event,league){
+  const home=event.home_team,away=event.away_team;
+  const books=event.bookmakers||[];
+  const h=[],d=[],a=[],o25=[],u25=[];
+  const used=new Set();
+  for(const book of books){
+    let contributed=false;
+    for(const market of book.markets||[]){
+      if(market.key==="h2h"){
+        for(const outcome of market.outcomes||[]){
+          const n=norm(outcome.name),price=Number(outcome.price);
+          if(!Number.isFinite(price))continue;
+          if(n===norm(home)){h.push(price);contributed=true}
+          else if(n===norm(away)){a.push(price);contributed=true}
+          else if(n==="draw"){d.push(price);contributed=true}
+        }
+      }else if(market.key==="totals"){
+        for(const outcome of market.outcomes||[]){
+          if(Number(outcome.point)!==2.5)continue;
+          const price=Number(outcome.price);if(!Number.isFinite(price))continue;
+          if(norm(outcome.name)==="over"){o25.push(price);contributed=true}
+          if(norm(outcome.name)==="under"){u25.push(price);contributed=true}
+        }
+      }
+    }
+    if(contributed)used.add(book.title||book.key);
+  }
+  const homeML=medianAmerican(h),drawML=medianAmerican(d),awayML=medianAmerican(a),over25=medianAmerican(o25),under25=medianAmerican(u25);
+  const ml=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
+  const totals=noVig([impliedAmerican(over25),impliedAmerican(under25)]);
+  return {
+    id:event.id,league,sportKey:event.sport_key,sportTitle:event.sport_title,
+    commenceTime:event.commence_time,home,away,
+    provider:"The Odds API · CA market median",
+    bookmakers:[...used],
+    homeML,drawML,awayML,over25,under25,
+    probs:{home:ml[0],draw:ml[1],away:ml[2],over25:totals[0],under25:totals[1]}
+  };
+}
+
+export default async function handler(req,res){
+  try{
+    if(process.env.VERCEL_ENV&&process.env.VERCEL_ENV!=="production"){
+      return res.status(200).json({enabled:false,reason:"production_only",events:[]});
+    }
+    const key=process.env.THEODDSAPI;
+    if(!key)return res.status(200).json({enabled:false,reason:"missing_key",events:[]});
+    if(String(req.query.live||"")!=="1")return res.status(200).json({enabled:false,reason:"live_only",events:[]});
+
+    const date=String(req.query.date||"");
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return res.status(400).json({error:"Invalid date"});
+    const leagues=[...new Set(String(req.query.leagues||"").split(",").map(x=>x.trim()).filter(Boolean))].slice(0,12);
+    if(!leagues.length)return res.status(200).json({enabled:true,events:[],sports:[]});
+
+    const sportsUrl=API_BASE+"/sports/?apiKey="+encodeURIComponent(key);
+    const sportsResult=await getJson(sportsUrl);
+    const sports=Array.isArray(sportsResult.data)?sportsResult.data:[];
+    const resolved=[];
+    for(const league of leagues){
+      const sport=resolveSport(sports,league);
+      if(sport&&!resolved.some(x=>x.sport.key===sport.key))resolved.push({league,sport});
+    }
+
+    const from=new Date(date+"T00:00:00Z");
+    const to=new Date(from.getTime()+36*60*60*1000);
+    const fromIso=from.toISOString(),toIso=to.toISOString();
+    const events=[];
+    let remaining=null,used=null,last=null;
+
+    for(const {league,sport} of resolved){
+      // Events are free, so check the requested date before spending odds credits.
+      const eventsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/events?apiKey="+encodeURIComponent(key)+"&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
+      let eventCheck;
+      try{eventCheck=await getJson(eventsUrl)}catch{continue}
+      if(!Array.isArray(eventCheck.data)||!eventCheck.data.length)continue;
+
+      const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&regions=ca&markets=h2h,totals&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
+      try{
+        const result=await getJson(oddsUrl);
+        remaining=result.headers.get("x-requests-remaining")??remaining;
+        used=result.headers.get("x-requests-used")??used;
+        last=result.headers.get("x-requests-last")??last;
+        for(const event of Array.isArray(result.data)?result.data:[])events.push(summarizeEvent(event,league));
+      }catch(error){
+        // Leave this league on the existing odds fallback rather than failing the whole live board.
+      }
+    }
+
+    res.setHeader("Cache-Control",`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=120`);
+    return res.status(200).json({
+      enabled:true,region:"ca",markets:["h2h","totals"],events,
+      sports:resolved.map(x=>({league:x.league,key:x.sport.key,title:x.sport.title})),
+      quota:{remaining,used,last},fetchedAt:new Date().toISOString()
+    });
+  }catch(error){
+    return res.status(200).json({enabled:true,events:[],error:error instanceof Error?error.message:String(error)});
+  }
+}
