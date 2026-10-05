@@ -296,16 +296,27 @@ function lineupSeverity(item){
 function teamLineupSignal(g,side){
   const team=g[side],items=latestNewsItems(g).filter(x=>teamSideForItem(g,x)===side),opp=side==="home"?"away":"home";
   let attack=0,defense=0,midfield=0,generic=0,absences=0,major=0,continuity=0;
+  const people=new Map();let anon=0;
   for(const item of items){
     const text=String(item?.text||"");
     const negative=/suspend|injur|ruled out|will miss|without|unavailable|doubt|sent off|yellow card|fitness issue|knee|hamstring|muscle|ankle|illness/i.test(text);
     if(item?.type==="confirmed"){continuity+=.2;continue}
     if(!negative){if(/same lineup|same lineups|continuity|expected to|likely to|set to play|projected/i.test(text))continuity+=.12;continue}
-    const sev=lineupSeverity(item);absences+=1;if(sev>=1.2)major+=1;
-    if(/goalkeeper|keeper|centre-back|center-back|defender|full-back|left-back|right-back/i.test(text))defense+=sev;
-    else if(/striker|forward|winger|attacker|playmaker|number 10|number ten/i.test(text))attack+=sev;
-    else if(/midfielder|midfield|pivot/i.test(text))midfield+=sev;
-    else generic+=sev;
+    const names=item?.player?[item.player]:peopleFromNews(g,text),person=normName(names[0]||"");
+    const key=person||("unknown-"+(++anon));
+    const role=/goalkeeper|keeper|centre-back|center-back|defender|full-back|left-back|right-back/i.test(text)?"defense":
+      /striker|forward|winger|attacker|playmaker|number 10|number ten/i.test(text)?"attack":
+      /midfielder|midfield|pivot/i.test(text)?"midfield":"generic";
+    const sev=lineupSeverity(item),prev=people.get(key);
+    if(!prev)people.set(key,{sev,role,major:sev>=1.2});
+    else{
+      prev.sev=Math.max(prev.sev,sev);prev.major=prev.major||sev>=1.2;
+      if(prev.role==="generic"&&role!=="generic")prev.role=role;
+    }
+  }
+  for(const x of people.values()){
+    absences+=1;if(x.major)major+=1;
+    if(x.role==="attack")attack+=x.sev;else if(x.role==="defense")defense+=x.sev;else if(x.role==="midfield")midfield+=x.sev;else generic+=x.sev;
   }
   const marketProb=g.odds?.probs?.[side]??null,base=g.model?.preLineupExpectedGoals||g.model?.expectedGoals||{},own=base[side]||0,other=base[opp]||0,edge=own-other;
   const clearFavorite=(marketProb!=null&&marketProb>=.62)||edge>=.55;
