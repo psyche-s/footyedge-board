@@ -108,12 +108,20 @@ function oddsFromDaily(entry,homeName,awayName){
   const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
   if(out.homeML!=null)out.markets[normName(homeName+" ML")]=out.homeML;
   if(out.awayML!=null)out.markets[normName(awayName+" ML")]=out.awayML;
+  for(const [line,t] of Object.entries(entry.totals||{})){
+    if(t?.over!=null)out.markets[normName("Over "+line+" Goals")]=t.over;
+    if(t?.under!=null)out.markets[normName("Under "+line+" Goals")]=t.under;
+    if(line==="2.5"){
+      out.over25=t?.over??null;out.under25=t?.under??null;
+      out.probs.over25=t?.probs?.over??entry.probs?.over??null;out.probs.under25=t?.probs?.under??entry.probs?.under??null;
+    }
+  }
   const total=entry.total||{},lineFrom=v=>{const m=String(v||"").match(/([0-9]+(?:\.[0-9]+)?)/);return m?m[1]:null};
   const ol=lineFrom(total.overLine),ul=lineFrom(total.underLine);
-  if(ol&&total.overOdds!=null)out.markets[normName("Over "+ol+" Goals")]=total.overOdds;
-  if(ul&&total.underOdds!=null)out.markets[normName("Under "+ul+" Goals")]=total.underOdds;
-  if(ol==="2.5"){out.over25=total.overOdds??null;out.probs.over25=entry.probs?.over??null}
-  if(ul==="2.5"){out.under25=total.underOdds??null;out.probs.under25=entry.probs?.under??null}
+  if(ol&&total.overOdds!=null&&!out.markets[normName("Over "+ol+" Goals")])out.markets[normName("Over "+ol+" Goals")]=total.overOdds;
+  if(ul&&total.underOdds!=null&&!out.markets[normName("Under "+ul+" Goals")])out.markets[normName("Under "+ul+" Goals")]=total.underOdds;
+  if(ol==="2.5"&&out.over25==null){out.over25=total.overOdds??null;out.probs.over25=entry.probs?.over??null}
+  if(ul==="2.5"&&out.under25==null){out.under25=total.underOdds??null;out.probs.under25=entry.probs?.under??null}
   return out
 }
 function buildDailyOddsMap(payload){
@@ -129,6 +137,15 @@ function oddsFromTheOdds(entry,homeName,awayName){
   const out={provider:entry.provider||"The Odds API · CA market median",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:entry.over25??null,under25:entry.under25??null,markets:{},probs:{...(entry.probs||{})}};
   if(out.homeML!=null)out.markets[normName(homeName+" ML")]=out.homeML;
   if(out.awayML!=null)out.markets[normName(awayName+" ML")]=out.awayML;
+  for(const [line,t] of Object.entries(entry.totals||{})){
+    if(t?.over!=null)out.markets[normName("Over "+line+" Goals")]=t.over;
+    if(t?.under!=null)out.markets[normName("Under "+line+" Goals")]=t.under;
+    if(line==="2.5"){
+      out.over25=t?.over??out.over25;out.under25=t?.under??out.under25;
+      if(t?.probs?.over!=null)out.probs.over25=t.probs.over;
+      if(t?.probs?.under!=null)out.probs.under25=t.probs.under;
+    }
+  }
   if(out.over25!=null)out.markets[normName("Over 2.5 Goals")]=out.over25;
   if(out.under25!=null)out.markets[normName("Under 2.5 Goals")]=out.under25;
   return out
