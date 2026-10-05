@@ -356,6 +356,24 @@
   .analysisContent .statCell small{font-size:5.5px!important}
 }
 
+
+/* FootyEdge production polish — model-first, green, image-led */
+.gameLeague{display:inline-flex;align-items:center;gap:7px;min-width:0}
+.gameLeague b{font-weight:800;color:#e9f5ed;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leagueLogoWrap{background:transparent!important;border:0!important;overflow:visible!important}
+.leagueLogoWrap img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 1px 1px rgba(0,0,0,.22))}
+.leagueFallback{background:#123323!important;color:#52e495!important}
+.teamLogo,.bestFlags img,.modalTeam img{object-fit:contain!important;background:transparent!important;padding:2px!important;border-color:#2b4a38!important}
+.pickTitle{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:3px!important;min-width:0!important}
+.pickTitle small.pickCategory{display:block!important;margin:0!important;color:#55e696!important;font-size:8px!important;line-height:1!important;letter-spacing:.12em!important;text-transform:uppercase!important;font-weight:900!important}
+.pickTitle strong{display:block!important;margin:0!important;white-space:normal!important;overflow:visible!important;font-size:15px!important;line-height:1.18!important}
+@media(max-width:500px){
+  .gameLeague{gap:5px}
+  .gameLeague b{font-size:7.7px}
+  .pickTitle small.pickCategory{font-size:5.9px!important;letter-spacing:.1em!important;margin-bottom:1px!important}
+  .pickTitle strong{font-size:10.7px!important;line-height:1.16!important}
+  .teamLogo,.bestFlags img,.modalTeam img{padding:1px!important}
+}
 </style>
 </head>
 <body>
