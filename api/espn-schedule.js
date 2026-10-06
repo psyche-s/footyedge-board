@@ -3,6 +3,7 @@ export default async function handler(req,res){
     const league=String(req.query.league||"");
     const team=String(req.query.team||"");
     const season=String(req.query.season||"");
+    const scope=String(req.query.scope||"competition").toLowerCase();
     if(!league||!team) return res.status(400).json({error:"Missing league or team"});
 
     const qs=season?"?season="+encodeURIComponent(season):"";
@@ -17,10 +18,10 @@ export default async function handler(req,res){
       return {r,text,json,usable:r.ok&&Array.isArray(json?.events)&&json.events.length>0};
     }
 
-    // Competition-specific history first so the model does not mix league,
-    // friendly and cup form unless ESPN has no usable competition history.
-    let result=await pull(leagueUrl);
-    if(!result.usable) result=await pull(allUrl);
+    // scope=all returns the team's cross-competition schedule so callers can
+    // build a true last-10 form sample. Default keeps competition-first behaviour.
+    let result=scope==="all"?await pull(allUrl):await pull(leagueUrl);
+    if(!result.usable&&scope!=="all") result=await pull(allUrl);
 
     res.setHeader("Content-Type","application/json; charset=utf-8");
     res.setHeader("Cache-Control","public, s-maxage=300, stale-while-revalidate=300");
