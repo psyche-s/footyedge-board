@@ -81,3 +81,23 @@ For each fixture:
 - Preferred sportsbook order remains DraftKings, FanDuel, ESPN BET when available; if none has the exact market, a reputable regulated sportsbook line may be used as a fallback.
 - Record the sportsbook/source internally even when the UI does not display branding.
 - If no exact verified line is found after reasonable checks, leave the market unranked rather than publishing it with a dash.
+
+
+## Deterministic research base
+- `scripts/build-research-base.mjs` runs before the morning editorial research.
+- It writes `data/research-base-YYYY-MM-DD.json` from FootyEdge/ESPN schedule history only.
+- This layer is deterministic and audit-friendly: each generated fact includes structured evidence describing the sample, numerator/denominator, streak length, split, or H2H record.
+- The UI loads this file as a preferred statistical support layer. If it is unavailable, the client still computes the same style of trends from live schedule history.
+- External sources never replace or rewrite deterministic evidence; they can only add current context or confirm a market direction.
+
+## Pre-publish validation
+Run `node scripts/validate-daily-board.mjs` before production publication.
+The validator checks:
+- date alignment across research, insights and odds;
+- tracked-fixture matching;
+- duplicate/overlong research facts;
+- source URL validity;
+- odds value validity and source metadata;
+- missing event coverage warnings.
+
+A failed validation means the board is not ready to publish.
