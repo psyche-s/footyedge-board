@@ -155,6 +155,22 @@ function buildTheOddsMap(payload){
   return map
 }
 function fixtureMatchKey(home,away){return normName(home)+"|"+normName(away)}
+function mergeFootballPayloads(a,b){
+  const ar=Array.isArray(a?.response)?a.response:[],br=Array.isArray(b?.response)?b.response:[];
+  const seen=new Set(),response=[];
+  for(const item of [...ar,...br]){
+    const id=String(item?.fixture?.id||"");
+    if(id&&seen.has(id))continue;
+    if(id)seen.add(id);
+    response.push(item);
+  }
+  return{
+    ...(a||b||{}),
+    response,
+    _footyedgeFallback:Boolean(a?._footyedgeFallback&&b?._footyedgeFallback),
+    _footyedgeSource:[a?._footyedgeSource,b?._footyedgeSource].filter(Boolean).join("+")||null
+  }
+}
 function buildFixtureMap(payload){const map=new Map();for(const entry of payload?.response||[]){const home=entry?.teams?.home?.name,away=entry?.teams?.away?.name;if(home&&away)map.set(fixtureMatchKey(home,away),entry)}return map}
 function leagueIconHtml(id,fallback){const src=fallback||LEAGUE_LOGOS[id]||"";return src?'<span class="leagueIcon" aria-hidden="true"><img class="leagueLogoImg" src="'+esc(src)+'" alt="" loading="lazy"></span>':'<span class="leagueFallback" aria-hidden="true">⚽</span>'}
 function decimalOdds(a){if(a==null)return null;const n=Number(String(a).replace("+",""));if(!Number.isFinite(n)||n===0)return null;return n>0?1+n/100:1+100/Math.abs(n)}
@@ -631,13 +647,17 @@ async function load(date=S.date){
   document.getElementById("best").innerHTML='<div class="loading"><div class="spin"></div>Ranking today’s best plays…</div>';
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
-    const [p,fixturesPayload,oddsPayload,performancePayload]=await Promise.all([
+    const utcNext=addDate(S.date,1);
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload]=await Promise.all([
       json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?json("/data/latest-scoreboard.json"):Promise.reject(new Error("Scoreboard unavailable"))),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-fixtures.json").catch(()=>null):null),
+      json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
+      json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json("/data/performance/summary.json?v=1").catch(()=>null)
     ]);
     S.performance=performancePayload;
+    const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     let games=(p.events||[]).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
