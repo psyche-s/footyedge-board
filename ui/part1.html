@@ -1250,7 +1250,7 @@
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script>
 const TZ="America/Toronto";
-const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null,insights:null};
+const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null};
 const leagueNames={
   "eng.1":"Premier League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
   "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
@@ -1371,7 +1371,8 @@ function researchFactsForPick(g,p,limit=3){
     if(ts.has("result")||ts.has("team goals")||ts.has("under")||ts.has("over")||ts.has("btts"))score+=1;
     pool.push({text,score})
   };
-  for(const f of g?.dailyInsight?.facts||[])typeof f==="string"?add(f,[],5):add(f.text,f.tags,5);
+  for(const f of g?.dailyInsight?.facts||[])typeof f==="string"?add(f,[],6):add(f.text,f.tags,6);
+  for(const f of g?.baseResearch?.facts||[])typeof f==="string"?add(f,[],4):add(f.text,f.tags,4);
   for(const f of g?.context?.keyStats||[])add(f,[],3);
   for(const f of g?.model?.trendFacts||[])typeof f==="string"?add(f,[],2):add(f.text,f.tags,2);
   return pool.sort((a,b)=>b.score-a.score).slice(0,limit).map(x=>x.text)
