@@ -1190,6 +1190,14 @@
   .analysisContent .statCell b{font-size:7.5px!important}
   .analysisContent .statCell small{font-size:4.1px!important}
 }
+
+/* Daily research support */
+.researchBox{margin:10px 0 2px;border:1px solid #173624;background:#08180f;border-radius:10px;padding:9px 10px}
+.researchTitle{font-size:7px;letter-spacing:.12em;color:#5ce79a;font-weight:900;margin-bottom:6px}
+.researchFacts{display:grid;gap:5px}
+.researchFact{display:grid;grid-template-columns:5px 1fr;gap:7px;align-items:start;color:#b8c8bf;font-size:9px;line-height:1.35}
+.researchDot{width:4px;height:4px;border-radius:50%;background:#50db8d;margin-top:4px}
+@media(max-width:500px){.researchBox{padding:7px 8px;margin-top:8px}.researchFact{font-size:8px;gap:6px}.researchTitle{font-size:6px}}
 </style>
 </head>
 <body>
@@ -1242,7 +1250,7 @@
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script>
 const TZ="America/Toronto";
-const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null};
+const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null,insights:null};
 const leagueNames={
   "eng.1":"Premier League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
   "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
@@ -1333,9 +1341,44 @@ function ourReason(g,p){
 }
 function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
 function instinctFitReason(g,p){return""}
+function researchTagSet(text,tags=[]){
+  const t=normName(text),out=new Set((tags||[]).map(normName));
+  if(/h2h|head to head|meeting/.test(t))out.add("h2h");
+  if(/winless|unbeaten|won|lost|draw/.test(t))out.add("result");
+  if(/failed to score|without scoring|scoreless|scored/.test(t)){out.add("team goals");out.add("btts")}
+  if(/clean sheet|conceded/.test(t))out.add("defense");
+  if(/under/.test(t))out.add("under");
+  if(/over/.test(t))out.add("over");
+  if(/btts|both teams/.test(t))out.add("btts");
+  return out
+}
+function researchFactsForPick(g,p,limit=3){
+  const pool=[],seen=new Set(),label=normName(p?.label||""),cat=normName(p?.category||"");
+  const add=(text,tags=[],priority=0)=>{
+    text=String(text||"").replace(/\s+/g," ").trim();
+    if(!text||text.length>190||/shots per 90|first goalscorer|anytime goalscorer/i.test(text))return;
+    const k=normName(text);if(!k||seen.has(k))return;seen.add(k);
+    const ts=researchTagSet(text,tags);
+    let score=priority;
+    if(cat.includes("match result")||cat.includes("double chance"))score+=ts.has("result")?4:0;
+    if(cat.includes("team goals"))score+=ts.has("team goals")?4:0;
+    if(cat.includes("btts"))score+=ts.has("btts")?4:0;
+    if(cat.includes("goals")){
+      if(label.includes("under"))score+=ts.has("under")?4:0;
+      if(label.includes("over"))score+=ts.has("over")?4:0;
+    }
+    if(ts.has("h2h"))score+=2;
+    if(ts.has("result")||ts.has("team goals")||ts.has("under")||ts.has("over")||ts.has("btts"))score+=1;
+    pool.push({text,score})
+  };
+  for(const f of g?.dailyInsight?.facts||[])typeof f==="string"?add(f,[],5):add(f.text,f.tags,5);
+  for(const f of g?.context?.keyStats||[])add(f,[],3);
+  for(const f of g?.model?.trendFacts||[])typeof f==="string"?add(f,[],2):add(f.text,f.tags,2);
+  return pool.sort((a,b)=>b.score-a.score).slice(0,limit).map(x=>x.text)
+}
 function cardCommentary(g,p){
-  const base=ourReason(g,p),lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
-  return base+lineup
+  const base=ourReason(g,p),fact=researchFactsForPick(g,p,1)[0]||"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
+  return [base,fact,lineup].filter(Boolean).join(" ")
 }
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
