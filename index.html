@@ -89,7 +89,7 @@ function renderTop5(top){
     return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%":"")+'</div></div>';
   }).join("");
 }
-fetch("/data/performance/summary.json?v=63",{cache:"no-store"}).then(r=>r.json()).then(p=>{
+fetch("/data/performance/summary.json?v=64",{cache:"no-store"}).then(r=>r.json()).then(p=>{
   const m=p.month||{};
   document.getElementById("record").textContent=(m.hits??0)+"–"+(m.misses??0);
   document.getElementById("hitRate").textContent=m.hitRate==null?"No settled picks yet":Math.round(m.hitRate)+"% hit rate";
@@ -99,7 +99,7 @@ fetch("/data/performance/summary.json?v=63",{cache:"no-store"}).then(r=>r.json()
 (async()=>{
   const date=todayToronto();
   try{
-    const r=await fetch("/data/boards/"+date+".json?v=63",{cache:"no-store"});
+    const r=await fetch("/data/boards/"+date+".json?v=64",{cache:"no-store"});
     if(r.ok){const a=await r.json();if(a?.top5?.length){renderTop5(a.top5);return}}
   }catch{}
   const frame=document.getElementById("boardProbe");
