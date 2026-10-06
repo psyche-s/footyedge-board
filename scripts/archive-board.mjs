@@ -32,7 +32,7 @@ async function main(){
   const browser=await chromium.launch({headless:true});
   try{
     const page=await browser.newPage({viewport:{width:1440,height:1200}});
-    await page.goto(SITE+"/?archiveCapture="+Date.now(),{waitUntil:"networkidle",timeout:120000});
+    await page.goto(SITE+"/picks.html?archiveCapture="+Date.now(),{waitUntil:"networkidle",timeout:120000});
     await page.waitForFunction(()=>typeof window.FootyEdgeArchive==="function",{timeout:120000});
     await page.waitForFunction(()=>{
       try{const x=window.FootyEdgeArchive();return x&&x.date&&Array.isArray(x.games)&&x.games.length>0}catch{return false}
