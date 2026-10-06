@@ -32,7 +32,7 @@ async function fetchJson(url){
   return r.json();
 }
 async function productionVersion(){
-  const r=await fetch(SITE+"/",{headers:{"cache-control":"no-cache","user-agent":"FootyEdgeTracker/1.0"}});
+  const r=await fetch(SITE+"/picks.html",{headers:{"cache-control":"no-cache","user-agent":"FootyEdgeTracker/1.0"}});
   const html=await r.text();
   const m=html.match(/\/ui\/part0\.html\?v=(\d+)/);
   return m?Number(m[1]):0;
@@ -148,7 +148,7 @@ async function scrapeTop5(today){
   const browser=await chromium.launch({headless:true});
   try{
     const page=await browser.newPage({viewport:{width:1280,height:900}});
-    await page.goto(SITE,{waitUntil:"domcontentloaded",timeout:90000});
+    await page.goto(SITE+"/picks.html",{waitUntil:"domcontentloaded",timeout:90000});
     await page.waitForFunction(()=>{
       const best=document.querySelectorAll(".bestRow").length;
       const text=document.querySelector("#best")?.textContent||"";
