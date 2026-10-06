@@ -121,10 +121,10 @@ repoJson("data/performance/summary.json").then(p=>{
       const fn=frame.contentWindow?.FootyEdgeArchive;
       if(typeof fn==="function"){
         const data=fn();
-        if(data?.top5){clearInterval(timer);renderTop5(data.top5);return}
+        if(data?.games?.length){clearInterval(timer);renderTop5(data.top5||[]);return}
       }
     }catch{}
-    if(tries>50){clearInterval(timer);renderTop5([])}
+    if(tries>240){clearInterval(timer);renderTop5([])}
   },500);
 })();
 </script>
