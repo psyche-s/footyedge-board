@@ -677,18 +677,21 @@ function renderLeagues(){
 function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
 function perfMark(result){if(result==="hit")return"✓";if(result==="miss")return"✕";if(result==="push")return"—";return"•"}
 function renderPerformance(){
-  const p=S.performance||{},month=p.month||{},week=p.week||{},previous=p.previousTop5||[];
+  const p=S.performance||{},month=p.month||{},week=p.week||{};
+  const current=(p.recentDays||[]).find(x=>x.date===S.date);
+  const previous=(p.previousTop5||[]).length?p.previousTop5:(current?.top5||[]);
+  const showingCurrent=!(p.previousTop5||[]).length&&Boolean(current?.top5?.length);
   document.getElementById("perfMonthLabel").textContent=month.label?String(month.label).toUpperCase()+" HIT RATE":"MONTH HIT RATE";
   document.getElementById("perfHitRate").textContent=pctRate(month.hitRate);
-  document.getElementById("perfRecord").textContent=(month.hits||0)+"-"+(month.misses||0);
+  document.getElementById("perfRecord").textContent=(month.hits||0)+"-"+(month.misses||0)+((month.pending||0)?" · "+month.pending+" pending":"");
   document.getElementById("perfWeekRate").textContent=pctRate(week.hitRate);
-  document.getElementById("perfWeekRecord").textContent=(week.hits||0)+"-"+(week.misses||0);
-  document.getElementById("previousDate").textContent=p.previousDate?niceDate(p.previousDate):"Tracking starts with the next published board";
+  document.getElementById("perfWeekRecord").textContent=(week.hits||0)+"-"+(week.misses||0)+((week.pending||0)?" · "+week.pending+" pending":"");
+  document.getElementById("previousDate").textContent=showingCurrent?"Today’s Top 5 · pending":p.previousDate?niceDate(p.previousDate):"No settled board yet";
   const el=document.getElementById("previousList");
-  if(!previous.length){el.innerHTML='<span class="previousEmpty">No graded picks yet</span>';return}
+  if(!previous.length){el.innerHTML='<span class="previousEmpty">No tracked picks yet</span>';return}
   el.innerHTML=previous.slice(0,5).map((x,i)=>{
     const result=x.result||"pending",score=x.finalScore?(" · "+esc(x.finalScore)):"";
-    return '<div class="previousPick '+esc(result)+'"><span class="resultMark">'+perfMark(result)+'</span><div class="previousPickText"><b>#'+(i+1)+' '+esc(x.selection||"Pick")+'</b><small>'+esc(x.home||"")+(x.away?" vs "+esc(x.away):"")+score+'</small></div></div>'
+    return '<div class="previousPick '+esc(result)+'"><span class="resultMark">'+perfMark(result)+'</span><div class="previousPickText"><b>#'+(x.rank||i+1)+' '+esc(x.selection||"Pick")+'</b><small>'+esc(x.home||"")+(x.away?" vs "+esc(x.away):"")+score+'</small></div></div>'
   }).join("")
 }
 
@@ -719,7 +722,7 @@ async function load(date=S.date){
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      json("/data/performance/summary.json?v=1").catch(()=>null)
+      json("/data/performance/summary.json?v=49").catch(()=>null)
     ]);
     S.performance=performancePayload;
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
