@@ -137,7 +137,9 @@ function marketSignals(facts,g){
   return [...new Set(sig)].slice(0,4)
 }
 async function schedule(league,team,season){
-  const u=`${SITE}/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(team)}&season=${encodeURIComponent(season)}&scope=all`;
+  // Pull ESPN's all-competition team schedule directly so research-base is
+  // independent of the currently deployed FootyEdge API version.
+  const u=`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(team)}/schedule?season=${encodeURIComponent(season)}`;
   return json(u);
 }
 async function buildFixture(g){
