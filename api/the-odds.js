@@ -1,9 +1,10 @@
 const API_BASE="https://api.the-odds-api.com/v4";
 const CACHE_SECONDS=60;
-const BUILD_TAG="v31";
+const BUILD_TAG="v32";
 
 const LEAGUE_HINTS={
   "uefa.nations":{keys:["soccer_uefa_nations_league"],aliases:["uefa nations league","nations league"]},
+  "concacaf.nations.league":{keys:["soccer_concacaf_nations_league"],aliases:["concacaf nations league","concacaf nations"]},
   "uefa.champions":{keys:["soccer_uefa_champs_league"],aliases:["uefa champions league","champions league"]},
   "uefa.europa":{keys:["soccer_uefa_europa_league"],aliases:["uefa europa league","europa league"]},
   "uefa.europa.conf":{keys:["soccer_uefa_europa_conference_league"],aliases:["uefa europa conference league","conference league"]},
