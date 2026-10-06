@@ -352,15 +352,18 @@ function marketCandidate(g,label){
   return g?.model?.candidates?.find(x=>normName(x.label)===normName(label))||null
 }
 function researchAngleCandidates(g){
-  const items=Array.isArray(g?.dailyInsight?.markets)?g.dailyInsight.markets:[];
+  const items=Array.isArray(g?.dailyInsight?.markets)?g.dailyInsight.markets:[],supported=Array.isArray(g?.dailyInsight?.supportedMarkets)?g.dailyInsight.supportedMarkets:[];
+  const baseByLikelihood={probable:77,likely:75,possible:72,outsider:66};
   return items.map(m=>{
     const odds=m.americanOdds??null,priceDecimal=Number(m.decimal),verifiedPrice=Boolean(m.price)&&(Number.isFinite(Number(odds))||Number.isFinite(priceDecimal));
-    const score=Math.max(70,Math.min(84,Number(m.score)||76));
+    const base=baseByLikelihood[normName(m.likelihood||"possible")]??72;
+    const deterministicAgreement=supported.some(x=>sameMarket(x,m.label));
+    const score=Math.min(82,base+(deterministicAgreement?3:0));
     return{
       label:m.label,category:m.category||"Research",score,modelScore:null,baseScore:score,stars:stars(score),
       odds:Number.isFinite(Number(odds))?Number(odds):null,oddsDisplay:m.price||null,priceDecimal:Number.isFinite(priceDecimal)?priceDecimal:null,
       provider:m.source||"Verified public market",bookKey:null,modelProb:null,marketProb:Number.isFinite(priceDecimal)&&priceDecimal>1?1/priceDecimal:null,
-      ev:null,bookExact:false,verifiedPrice,researchOnly:true,reason:m.reason||"",crossSources:1
+      ev:null,bookExact:false,verifiedPrice,researchOnly:true,reason:m.reason||"",crossSources:deterministicAgreement?1:0
     }
   }).filter(x=>x.label&&priceAllowed(x))
 }
@@ -421,7 +424,8 @@ function applyContextCrossCheck(g){
   if(!g?.model?.candidates?.length)return;
   const fw=contextSignals(g),api=apiPredictionSignals(g),daily=Array.isArray(g?.dailyInsight?.supportedMarkets)?g.dailyInsight.supportedMarkets:[];
   for(const c of g.model.candidates){
-    const fwAgree=fw.some(x=>sameMarket(c.label,x)),apiAgree=api.some(x=>sameMarket(c.label,x)),researchAgree=daily.some(x=>sameMarket(c.label,x));
+    const statEligible=(c.baseScore??c.modelScore??0)>=70;
+    const fwAgree=statEligible&&fw.some(x=>sameMarket(c.label,x)),apiAgree=statEligible&&api.some(x=>sameMarket(c.label,x)),researchAgree=statEligible&&daily.some(x=>sameMarket(c.label,x));
     const sources=Math.min(2,Number(fwAgree)+Number(apiAgree)+Number(researchAgree));
     c.contextAgree=fwAgree;c.apiAgree=apiAgree;c.researchAgree=researchAgree;c.crossSources=sources;
   }
