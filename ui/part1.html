@@ -1271,7 +1271,7 @@ body{background:#031008}
 
   <section class="filters" id="filters">
     <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
-    <div class="filterGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill active" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Completed</button><button class="filterPill" data-status="all">All Games</button></div></div>
+    <div class="filterGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Completed</button><button class="filterPill active" data-status="all">All Games</button></div></div>
     <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button></div></div>
   </section>
 
@@ -1288,7 +1288,7 @@ body{background:#031008}
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script>
 const TZ="America/Toronto";
-const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
+const S={date:null,games:[],filter:"all",league:"all",status:"all",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
 const leagueNames={
   "eng.1":"Premier League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
   "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
@@ -1525,7 +1525,7 @@ function applyBoardArchive(games,archive){
   return games
 }
 function defaultStatusForDate(date){
-  const desired=date<etDate()?"completed":"upcoming";
+  const desired="all";
   S.status=desired;
   document.querySelectorAll("[data-status]").forEach(b=>b.classList.toggle("active",b.dataset.status===desired))
 }
