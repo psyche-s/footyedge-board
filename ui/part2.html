@@ -107,7 +107,7 @@ function oddsFromFootball(entry,homeName,awayName){
 function oddsFromDaily(entry,homeName,awayName){
   if(!entry)return null;
   const mlKey=entry.mlBook?.key||null;
-  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},marketBooks:{},probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
+  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},marketBooks:{},spreads:[],probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
   if(out.homeML!=null){const k=normName(homeName+" ML");out.markets[k]=out.homeML;if(mlKey)out.marketBooks[k]=mlKey}
   if(out.awayML!=null){const k=normName(awayName+" ML");out.markets[k]=out.awayML;if(mlKey)out.marketBooks[k]=mlKey}
   for(const [line,t] of Object.entries(entry.totals||{})){
@@ -118,6 +118,16 @@ function oddsFromDaily(entry,homeName,awayName){
       out.over25=t?.over??null;out.under25=t?.under??null;
       out.probs.over25=t?.probs?.over??null;out.probs.under25=t?.probs?.under??null;
     }
+  }
+  for(const s of entry.spreads||[]){
+    const bk=s?.book?.key||mlKey||null,fmt=n=>(Number(n)>0?"+":"")+Number(n);
+    if(Number.isFinite(Number(s.homeLine))&&s.home!=null){
+      const k=normName(homeName+" "+fmt(s.homeLine));out.markets[k]=s.home;if(bk)out.marketBooks[k]=bk
+    }
+    if(Number.isFinite(Number(s.awayLine))&&s.away!=null){
+      const k=normName(awayName+" "+fmt(s.awayLine));out.markets[k]=s.away;if(bk)out.marketBooks[k]=bk
+    }
+    out.spreads.push(s)
   }
   return out
 }
@@ -207,10 +217,9 @@ function localTrendFacts(g,hh,ah){
 function model(g,hh,ah){
   const hAll=stats(hh),aAll=stats(ah);
   const hCompHist=hh.filter(x=>x.league===g.league),aCompHist=ah.filter(x=>x.league===g.league);
-  const hHist=hCompHist.length>=3?hCompHist:hh;
-  const aHist=aCompHist.length>=3?aCompHist:ah;
-  const h=stats(hHist),a=stats(aHist);
-  const hv=stats(hHist.filter(x=>x.venue==="home")),av=stats(aHist.filter(x=>x.venue==="away"));
+  const hComp=stats(hCompHist),aComp=stats(aCompHist);
+  const h=hAll,a=aAll;
+  const hv=stats(hh.filter(x=>x.venue==="home")),av=stats(ah.filter(x=>x.venue==="away"));
   const sample=h.n+a.n;
   const h2=[...hh,...ah].filter((x,i,q)=>(x.opp===g.home.id||x.opp===g.away.id)&&q.findIndex(y=>y.id===x.id)===i).slice(0,5);
   const hc=fn=>rate(h2,fn);
@@ -245,6 +254,26 @@ function model(g,hh,ah){
   add(`${g.home.name} ML`,"Match Result",avg([h.win,a.nonLoss==null?null:1-a.nonLoss]),avg([hv.win,av.nonLoss==null?null:1-av.nonLoss]),homeH2,g.odds.probs.home,g.odds.homeML);
   add(`${g.away.name} ML`,"Match Result",avg([a.win,h.nonLoss==null?null:1-h.nonLoss]),avg([av.win,hv.nonLoss==null?null:1-hv.nonLoss]),awayH2,g.odds.probs.away,g.odds.awayML);
 
+  const coverRate=(hist,line)=>rate(hist,x=>x.gf+Number(line)>x.ga);
+  const fmtLine=n=>(Number(n)>0?"+":"")+Number(n);
+  for(const s of g.odds?.spreads||[]){
+    const hl=Number(s.homeLine),al=Number(s.awayLine);
+    if(Number.isFinite(hl)&&s.home!=null){
+      const e=avg([coverRate(hh,hl),coverRate(ah,al)==null?null:1-coverRate(ah,al)]);
+      const v=avg([coverRate(hh.filter(x=>x.venue==="home"),hl),coverRate(ah.filter(x=>x.venue==="away"),al)==null?null:1-coverRate(ah.filter(x=>x.venue==="away"),al)]);
+      const hr=rate(hh.filter(x=>x.opp===g.away.id),x=>x.gf+hl>x.ga);
+      add(g.home.name+" "+fmtLine(hl),"Handicap",e,v,hr,s.probs?.home??probAmerican(s.home),s.home);
+      const cp=c[c.length-1];if(cp){cp.coverRate=e;cp.handicapLine=hl}
+    }
+    if(Number.isFinite(al)&&s.away!=null){
+      const e=avg([coverRate(ah,al),coverRate(hh,hl)==null?null:1-coverRate(hh,hl)]);
+      const v=avg([coverRate(ah.filter(x=>x.venue==="away"),al),coverRate(hh.filter(x=>x.venue==="home"),hl)==null?null:1-coverRate(hh.filter(x=>x.venue==="home"),hl)]);
+      const hr=rate(ah.filter(x=>x.opp===g.home.id),x=>x.gf+al>x.ga);
+      add(g.away.name+" "+fmtLine(al),"Handicap",e,v,hr,s.probs?.away??probAmerican(s.away),s.away);
+      const cp=c[c.length-1];if(cp){cp.coverRate=e;cp.handicapLine=al}
+    }
+  }
+
   const expHome=hLambda??rawHome,expAway=aLambda??rawAway,expTotal=expHome+expAway;
   for(const x of c){
     const label=normName(x.label);let d=0;
@@ -260,6 +289,14 @@ function model(g,hh,ah){
     if(x.category==="Match Result"&&label.includes(normName(g.away.name)))d+=expAway>=expHome+.25?2:expAway<expHome?-4:0;
     if(x.category==="Double Chance"&&label.includes(normName(g.home.name)))d+=expHome>=expAway-.1?1:-2;
     if(x.category==="Double Chance"&&label.includes(normName(g.away.name)))d+=expAway>=expHome-.1?1:-2;
+    if(hComp.n>=3||aComp.n>=3){
+      if(x.category==="Match Result"||x.category==="Double Chance"||x.category==="Handicap"){
+        if(label.includes(normName(g.home.name))&&hComp.n>=3)d+=hComp.win>=.67?1:hComp.win<=.2?-1:0;
+        if(label.includes(normName(g.away.name))&&aComp.n>=3)d+=aComp.win>=.67?1:aComp.win<=.2?-1:0;
+      }
+      if(x.category==="Goals"&&label.includes("over")&&hComp.n>=3&&aComp.n>=3)d+=avg([hComp.o25,aComp.o25])>=.67?1:0;
+      if(x.category==="Goals"&&label.includes("under")&&hComp.n>=3&&aComp.n>=3)d+=avg([hComp.u35,aComp.u35])>=.67?1:0;
+    }
     x.internalDelta=d;x.modelScore=Math.max(55,Math.min(96,x.score+d));x.score=x.modelScore;x.baseScore=x.modelScore;x.stars=stars(x.score);
   }
   c.sort((x,y)=>y.score-x.score||(y.ev??-99)-(x.ev??-99));
@@ -314,36 +351,59 @@ function apiPredictionSignals(g){
 function marketCandidate(g,label){
   return g?.model?.candidates?.find(x=>normName(x.label)===normName(label))||null
 }
+function researchAngleCandidates(g){
+  const items=Array.isArray(g?.dailyInsight?.markets)?g.dailyInsight.markets:[];
+  return items.map(m=>{
+    const odds=m.americanOdds??null,priceDecimal=Number(m.decimal),verifiedPrice=Boolean(m.price)&&(Number.isFinite(Number(odds))||Number.isFinite(priceDecimal));
+    const score=Math.max(70,Math.min(84,Number(m.score)||76));
+    return{
+      label:m.label,category:m.category||"Research",score,modelScore:null,baseScore:score,stars:stars(score),
+      odds:Number.isFinite(Number(odds))?Number(odds):null,oddsDisplay:m.price||null,priceDecimal:Number.isFinite(priceDecimal)?priceDecimal:null,
+      provider:m.source||"Verified public market",bookKey:null,modelProb:null,marketProb:Number.isFinite(priceDecimal)&&priceDecimal>1?1/priceDecimal:null,
+      ev:null,bookExact:false,verifiedPrice,researchOnly:true,reason:m.reason||"",crossSources:1
+    }
+  }).filter(x=>x.label&&priceAllowed(x))
+}
 function rankingFamily(g,p){
   const label=normName(p?.label||""),cat=p?.category||"";
-  if(cat==="Goals"){
-    if(label.includes("under"))return"goals:under";
-    if(label.includes("over"))return"goals:over";
-  }
-  if(cat==="Match Result"||cat==="Double Chance"){
+  if(cat==="Goals")return"goals:total";
+  if(cat==="Match Result"||cat==="Double Chance"||cat==="Handicap"||cat==="Win to Nil"){
     const side=selectedSide(g,p)||"other";
     return"result:"+side;
   }
+  if(cat==="Half Time")return"halftime:"+(selectedSide(g,p)||label);
   if(cat==="Team Goals")return"team-goals:"+(selectedSide(g,p)||label.replace(/\d.*/,""));
   if(cat==="BTTS")return"btts";
+  if(cat==="Player")return"player:"+label;
   return cat+":"+label
+}
+function diversifyCandidates(g,items){
+  const seen=new Set(),ranked=[];
+  for(const p of items){
+    const family=rankingFamily(g,p);
+    if(seen.has(family))continue;
+    seen.add(family);ranked.push(p)
+  }
+  return ranked
 }
 function orderedQualifiedCandidates(g){
   const sorted=(g?.model?.candidates||[]).filter(x=>x.score>=78&&priceAllowed(x))
     .sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
-  const seen=new Set(),ranked=[];
-  for(const p of sorted){
-    const family=rankingFamily(g,p);
-    if(seen.has(family))continue;
-    seen.add(family);ranked.push(p);
-  }
-  return ranked
+  return diversifyCandidates(g,sorted)
+}
+function orderedDisplayCandidates(g){
+  const core=(g?.model?.candidates||[]).filter(x=>x.score>=70&&priceAllowed(x));
+  const research=researchAngleCandidates(g);
+  const all=[...core,...research].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
+  return diversifyCandidates(g,all)
 }
 function setRankedTop(g){
-  const ranked=orderedQualifiedCandidates(g);
+  const ranked=orderedQualifiedCandidates(g),display=orderedDisplayCandidates(g);
   g.model.rankedCandidates=ranked;
-  g.model.top=ranked.find(x=>x.score>=80)||null;
-  g.model.top3=ranked.slice(0,3);
+  g.model.researchCandidates=researchAngleCandidates(g);
+  g.model.top=ranked.find(x=>!x.researchOnly&&x.score>=80)||null;
+  g.model.top3=display.slice(0,3);
+  g.model.bestAngle=g.model.top3[0]||null
 }
 
 function finalizeCandidateScores(g){
@@ -668,7 +728,7 @@ function renderGames(){
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">No matches fit this filter.</div>';return}
   el.innerHTML=list.map(g=>{
-    const p=g.model?.top,px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]),top3=p?(g.model?.top3||[]):[];
+    const top3=g.model?.top3||[],p=g.model?.top||top3[0]||null,px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(g.leagueName)+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
@@ -782,9 +842,10 @@ async function load(date=S.date){
     }
 
     await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date))}));
-    const crossPool=games.filter(g=>g.model?.top?.score>=76).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,16);
+    const angleScore=g=>g.model?.top3?.[0]?.score||g.model?.candidates?.[0]?.score||0;
+    const crossPool=games.filter(g=>angleScore(g)>=70).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,18);
     await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
-    const newsPool=games.filter(g=>g.model?.top?.score>=78).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,6);
+    const newsPool=games.filter(g=>angleScore(g)>=74).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,10);
     await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
     for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
     S.games=games;S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
@@ -793,14 +854,15 @@ async function load(date=S.date){
 
 function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
-  const top3=g.model?.top?(g.model?.top3||[]):[];
+  const top3=g.model?.top3||[];
+  const focus=g.model?.top||top3[0]||null;
   const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
-  const supportFacts=researchFactsForPick(g,g.model?.top,3);
+  const supportFacts=researchFactsForPick(g,focus,3);
   const researchHtml=supportFacts.length?'<section class="researchBox"><div class="researchTitle">WHY THIS PICK FITS</div><div class="researchFacts">'+supportFacts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div></section>':"";
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
-    const body=items.length?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,g.model?.top,item)?'<div class="newsImpact">'+esc(newsImpact(g,g.model?.top,item))+'</div>':'')+'</div>').join(""):'<div class="teamNewsItem"><div class="newsText mutedNews">No verified absence or lineup change has been reported yet.</div></div>';
+    const body=items.length?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(newsImpact(g,focus,item))+'</div>':'')+'</div>').join(""):'<div class="teamNewsItem"><div class="newsText mutedNews">No verified absence or lineup change has been reported yet.</div></div>';
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
