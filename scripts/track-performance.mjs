@@ -107,6 +107,22 @@ function statsFromFiles(files){
   const settled=hits+misses;
   return{hits,misses,pushes,pending,settled,hitRate:settled?hits/settled*100:null};
 }
+function trackedFamily(p){
+  const cat=String(p?.category||"").toLowerCase(),sel=String(p?.selection||"").toLowerCase();
+  if(cat.includes("match result"))return"match_result";
+  if(cat.includes("double chance"))return"double_chance";
+  if(cat.includes("team goals"))return"team_goals";
+  if(cat.includes("btts"))return"btts";
+  if(cat.includes("goals"))return sel.includes("under")?"goals_under":"goals_over";
+  return cat.replace(/[^a-z0-9]+/g,"_")||"other"
+}
+function familyStats(files){
+  const groups={};
+  for(const p of files.flatMap(x=>x.top5||[])){
+    const k=trackedFamily(p);(groups[k]||(groups[k]=[])).push(p)
+  }
+  return Object.fromEntries(Object.entries(groups).map(([k,picks])=>[k,statsFromFiles([{top5:picks}])]))
+}
 function buildSummary(today){
   const daily=fs.existsSync(PERF_DIR)?fs.readdirSync(PERF_DIR)
     .filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x))
@@ -122,6 +138,7 @@ function buildSummary(today){
     trackingStarted:daily.length?daily[0].date:null,
     month:{key:monthKey,label,...monthStats},
     week:weekStats,
+    byFamily:familyStats(monthFiles),
     previousDate:prior?.date||null,
     previousTop5:prior?.top5||[],
     recentDays
