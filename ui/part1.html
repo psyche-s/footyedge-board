@@ -1402,9 +1402,9 @@ function candidateAmerican(p){
   return p.modelProb!=null?americanFromProb(p.modelProb):null
 }
 function priceAllowed(p){
-  if(!p||p.odds==null)return true;
+  if(!p||p.odds==null)return false;
   const n=Number(String(p.odds).replace("+",""));
-  return !Number.isFinite(n)||n>=-500
+  return Number.isFinite(n)&&n>=-400
 }
 const BOOK_META={
   draftkings:{name:"DraftKings",logo:"https://a.espncdn.com/i/betting/Draftkings_Dark.svg"},
