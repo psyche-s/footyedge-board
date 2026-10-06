@@ -713,7 +713,7 @@ function playerMarketType(p){
   return null
 }
 function playerCandidates(g,type){
-  const all=[...(g.model?.top3||[]),...(g.model?.researchCandidates||[]),...(g.model?.candidates||[])],seen=new Set();
+  const research=g.model?.researchCandidates?.length?g.model.researchCandidates:researchAngleCandidates(g),all=[...(g.model?.top3||[]),...research,...(g.model?.candidates||[])],seen=new Set();
   return all.filter(p=>playerMarketType(p)===type).filter(p=>{
     const key=normName((p?.label||"")+"|"+(p?.provider||"")+"|"+String(p?.odds??p?.oddsDisplay??""));
     if(!key||seen.has(key))return false;seen.add(key);return true
@@ -765,7 +765,7 @@ function renderBest(){
 }
 function renderGames(){
   let list=S.games.filter(filterOK);
-  list=[...list].sort(S.sort==="confidence"?(a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0):(a,b)=>new Date(a.date)-new Date(b.date));
+  list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.score||0)-(viewPick(a)?.score||0):(a,b)=>new Date(a.date)-new Date(b.date));
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">No matches fit this filter.</div>';return}
