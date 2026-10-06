@@ -705,7 +705,30 @@ function teamNewsSummary(g,p){
 
 function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`}
 function statusOK(g){return S.status==="all"||(S.status==="upcoming"&&!g.done&&!g.live)||(S.status==="live"&&g.live)||(S.status==="completed"&&g.done)}
-function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="qualified")return !!p;if(S.filter==="core")return p?.score>=88;if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
+function playerMarketType(p){
+  if(p?.category!=="Player")return null;
+  const label=normName(p.label||"");
+  if(/anytime goalscorer|anytime scorer|to score anytime|atgs/.test(label))return"atgs";
+  if(/score or assist|to score or assist|goal or assist/.test(label))return"soa";
+  return null
+}
+function playerCandidates(g,type){
+  const all=[...(g.model?.top3||[]),...(g.model?.researchCandidates||[]),...(g.model?.candidates||[])],seen=new Set();
+  return all.filter(p=>playerMarketType(p)===type).filter(p=>{
+    const key=normName((p?.label||"")+"|"+(p?.provider||"")+"|"+String(p?.odds??p?.oddsDisplay??""));
+    if(!key||seen.has(key))return false;seen.add(key);return true
+  }).sort((a,b)=>(b.score||0)-(a.score||0)||(b.crossSources||0)-(a.crossSources||0))
+}
+function viewCandidates(g){
+  if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
+  return g.model?.top3||[]
+}
+function viewPick(g){
+  if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
+  const top3=g.model?.top3||[];
+  return g.model?.top||top3[0]||null
+}
+function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="qualified")return !!p;if(S.filter==="core")return p?.score>=88;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
   if(S.date<etDate()&&S.archive?.top5?.length){
@@ -747,7 +770,7 @@ function renderGames(){
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">No matches fit this filter.</div>';return}
   el.innerHTML=list.map(g=>{
-    const top3=g.model?.top3||[],p=g.model?.top||top3[0]||null,px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
+    const top3=viewCandidates(g),p=viewPick(g),px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(g.leagueName)+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
@@ -773,7 +796,7 @@ function renderGames(){
   }).join("")
 }
 function renderLeagues(){
-  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","concacaf.nations.league","uefa.champions","eng.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
+  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
   row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":leagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
@@ -894,8 +917,8 @@ async function load(date=S.date){
 
 function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
-  const top3=g.model?.top3||[];
-  const focus=g.model?.top||top3[0]||null;
+  const top3=viewCandidates(g);
+  const focus=viewPick(g);
   const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
   const supportFacts=researchFactsForPick(g,focus,3);
   const researchHtml=supportFacts.length?'<section class="researchBox"><div class="researchTitle">WHY THIS PICK FITS</div><div class="researchFacts">'+supportFacts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div></section>':"";
