@@ -1,6 +1,10 @@
 name: Archive FootyEdge Published Board
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/archive-board.yml"
   schedule:
     # 07:20 Toronto, both DST and standard-time UTC offsets.
     - cron: "20 11 * * *"
@@ -38,7 +42,7 @@ jobs:
       - name: Capture immutable published board
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          FORCE_ARCHIVE: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          FORCE_ARCHIVE: ${{ github.event_name == 'schedule' && '0' || '1' }}
         run: node scripts/archive-board.mjs
       - name: Commit board archive
         run: |
