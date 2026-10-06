@@ -71,3 +71,13 @@ For each fixture:
 - A supported market should be listed only when the underlying FootyEdge stats and at least one current external preview point the same way.
 - Conflicting external opinions are recorded as context but must not be converted into a confidence boost.
 - Historical daily files are immutable after publication except for factual corrections.
+
+
+## Published-price gate
+- A pick is not eligible for Top Picks unless FootyEdge has a verified actual sportsbook price for that exact market.
+- Never use model-fair, inferred, synthetic, or derived prices to satisfy this requirement.
+- Prices worse than -400 are excluded from Top Picks. -400 itself is allowed.
+- Morning price discovery should try connected odds APIs first, then exact sportsbook market feeds, then reputable public web sources.
+- Preferred sportsbook order remains DraftKings, FanDuel, ESPN BET when available; if none has the exact market, a reputable regulated sportsbook line may be used as a fallback.
+- Record the sportsbook/source internally even when the UI does not display branding.
+- If no exact verified line is found after reasonable checks, leave the market unranked rather than publishing it with a dash.
