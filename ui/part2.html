@@ -808,8 +808,22 @@ function renderMeta(){
   document.getElementById("stamp").textContent="";
   document.getElementById("source").textContent="";
 }
+function renderLanding(){
+  const p=S.performance||{},month=p.month||{},week=p.week||{};
+  const rate=typeof month.hitRate==="number"&&Number.isFinite(month.hitRate)?Math.round(month.hitRate):null;
+  const hit=document.getElementById("landingHitRate"),record=document.getElementById("landingRecord"),weekEl=document.getElementById("landingWeekRate"),ring=document.getElementById("landingHitRing");
+  if(hit)hit.textContent=rate==null?"—":rate+"%";
+  if(record)record.textContent=(month.hits||0)+"–"+(month.misses||0);
+  if(weekEl)weekEl.textContent=typeof week.hitRate==="number"&&Number.isFinite(week.hitRate)?Math.round(week.hitRate)+"%":"—";
+  if(ring)ring.style.setProperty("--hit-angle",((rate||0)*3.6)+"deg");
+  const el=document.getElementById("landingTopPicks");if(!el)return;
+  const picks=topPicks();
+  if(!picks.length){el.innerHTML='<div class="landingEmpty">No pick has cleared today’s strict Top Pick rules yet.</div>';return}
+  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top,px=priceInfo(p),od=px?.odds&&px.odds!=="—"?" · "+px.odds:"";return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(g.home.name)+' vs '+esc(g.away.name)+'</div><div class="landingPickLabel">'+esc(p?.label||"Pick")+esc(od)+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>CONF</small></div></div>'}).join("")
+}
+
 function render(){
-  renderMeta();renderPerformance();renderLeagues();renderBest();renderGames();
+  renderMeta();renderPerformance();renderLeagues();renderBest();renderGames();renderLanding();
   if(S.openGameId&&document.getElementById("drawer").classList.contains("on")){
     const open=S.games.find(x=>x.id===String(S.openGameId));
     if(open)renderModal(open)
@@ -905,6 +919,13 @@ function openGame(id){
   }
 }
 
+const goTodayAndScroll=id=>{
+  const target=()=>document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});
+  if(S.date!==etDate())load(etDate()).then(()=>setTimeout(target,80));else target()
+};
+document.getElementById("landingTodayLink").onclick=e=>{e.preventDefault();goTodayAndScroll("topAnchor")};
+document.getElementById("landingHeroPicks").onclick=e=>{e.preventDefault();goTodayAndScroll("topAnchor")};
+document.getElementById("landingSeeAll").onclick=e=>{e.preventDefault();goTodayAndScroll("matchesAnchor")};
 document.getElementById("prev").onclick=()=>load(addDate(S.date,-1));document.getElementById("next").onclick=()=>load(addDate(S.date,1));document.getElementById("todayShortcut").onclick=()=>load(etDate());document.getElementById("settingsBtn").onclick=()=>document.getElementById("filters").scrollIntoView({behavior:"smooth",block:"start"});document.getElementById("searchBtn").onclick=()=>{const b=document.getElementById("searchBar");b.classList.toggle("on");if(b.classList.contains("on"))document.getElementById("searchInput").focus()};document.getElementById("searchInput").oninput=e=>{S.search=e.target.value;renderGames()};document.getElementById("sortBtn").onclick=()=>{S.sort=S.sort==="time"?"confidence":"time";document.getElementById("sortBtn").textContent=S.sort==="confidence"?"★ Confidence":"☷ Sort";renderGames()};document.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-status]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.status=b.dataset.status;renderBest();renderGames()});document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.filter=b.dataset.filter;renderGames()});document.getElementById("close").onclick=()=>{S.openGameId=null;document.getElementById("drawer").classList.remove("on")};document.getElementById("drawer").onclick=e=>{if(e.target.id==="drawer"){S.openGameId=null;e.currentTarget.classList.remove("on")}};window.openGame=openGame;S.date=etDate();load();
 </script>
 </body>
