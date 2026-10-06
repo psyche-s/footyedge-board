@@ -1470,7 +1470,7 @@ function marketOdds(o){
   return{provider:o?.provider?.displayName||o?.provider?.name||null,homeML,drawML,awayML,over25:ol==="2.5"?overOdd:null,under25:ul==="2.5"?underOdd:null,markets,probs:{home:m[0]||null,draw:m[1]||null,away:m[2]||null,over25:ol==="2.5"?(tot[0]||null):null,under25:ul==="2.5"?(tot[1]||null):null}};
 }
 function history(payload,teamId,before){
-  const out=[];for(const e of payload?.events||[]){if(!e?.date||new Date(e.date)>=new Date(before))continue;const cs=e?.competitions?.[0]?.competitors||[],me=cs.find(c=>String(c?.id??c?.team?.id)===String(teamId)),op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));if(!me||!op)continue;const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;out.push({id:String(e.id),date:e.date,venue:me.homeAway==="away"?"away":"home",gf,ga,result:gf>ga?"W":gf<ga?"L":"D",opp:String(op?.id??op?.team?.id??"")})}
+  const out=[];for(const e of payload?.events||[]){if(!e?.date||new Date(e.date)>=new Date(before))continue;const cs=e?.competitions?.[0]?.competitors||[],me=cs.find(c=>String(c?.id??c?.team?.id)===String(teamId)),op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));if(!me||!op)continue;const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;out.push({id:String(e.id),date:e.date,venue:me.homeAway==="away"?"away":"home",gf,ga,result:gf>ga?"W":gf<ga?"L":"D",opp:String(op?.id??op?.team?.id??""),league:leagueOf(e)})}
   const seen=new Set;return out.sort((a,b)=>new Date(b.date)-new Date(a.date)).filter(x=>!seen.has(x.id)&&seen.add(x.id)).slice(0,10);
 }
 function stats(g){return{n:g.length,form:g.slice(0,5).map(x=>x.result).join(" ")||"—",gf:avg(g.map(x=>x.gf))||0,ga:avg(g.map(x=>x.ga))||0,o15:rate(g,x=>x.gf+x.ga>=2),o25:rate(g,x=>x.gf+x.ga>=3),u25:rate(g,x=>x.gf+x.ga<=2),u35:rate(g,x=>x.gf+x.ga<=3),u45:rate(g,x=>x.gf+x.ga<=4),btts:rate(g,x=>x.gf>0&&x.ga>0),scored:rate(g,x=>x.gf>0),conceded:rate(g,x=>x.ga>0),win:rate(g,x=>x.result==="W"),nonLoss:rate(g,x=>x.result!=="L"),nonWin:rate(g,x=>x.result!=="W")}}
@@ -1480,7 +1480,7 @@ async function schedule(league,id,year){
   const mem=S.cache.get(key);if(mem&&now-mem.t<SCHEDULE_TTL)return mem.v;
   let stored=null;try{stored=JSON.parse(localStorage.getItem(key)||"null")}catch{}
   if(stored&&now-stored.t<SCHEDULE_TTL){S.cache.set(key,stored);return stored.v}
-  try{const v=await json(`/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(id)}&season=${year}`);const rec={t:now,v};S.cache.set(key,rec);try{localStorage.setItem(key,JSON.stringify(rec))}catch{}return v}catch(e){if(stored?.v)return stored.v;throw e}
+  try{const v=await json(`/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(id)}&season=${year}&scope=all`);const rec={t:now,v};S.cache.set(key,rec);try{localStorage.setItem(key,JSON.stringify(rec))}catch{}return v}catch(e){if(stored?.v)return stored.v;throw e}
 }
 let refreshTimer=null;
 function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const now=Date.now(),live=S.games.some(g=>g.live),near=S.games.some(g=>!g.done&&!g.live&&new Date(g.date).getTime()-now<=3*60*60*1000&&new Date(g.date).getTime()>=now-5*60*1000);const ms=live?60000:near?120000:300000;refreshTimer=setTimeout(()=>load(S.d
