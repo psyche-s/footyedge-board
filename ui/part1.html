@@ -1198,24 +1198,74 @@
 .researchFact{display:grid;grid-template-columns:5px 1fr;gap:7px;align-items:start;color:#b8c8bf;font-size:9px;line-height:1.35}
 .researchDot{width:4px;height:4px;border-radius:50%;background:#50db8d;margin-top:4px}
 @media(max-width:500px){.researchBox{padding:7px 8px;margin-top:8px}.researchFact{font-size:8px;gap:6px}.researchTitle{font-size:6px}}
+
+/* FootyEdge landing */
+html{scroll-behavior:smooth}
+body{background:#031008}
+.wrap{max-width:1180px!important;padding-top:0!important}
+.heroHeader{display:none!important}
+.landingShell{position:relative;margin:0 -16px 18px;overflow:hidden;border-bottom:1px solid #173524;background:#031008}
+.landingNav{position:absolute;z-index:6;top:0;left:0;right:0;min-height:62px;padding:calc(10px + env(safe-area-inset-top)) 22px 10px;display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(180deg,rgba(2,10,6,.90),rgba(2,10,6,.46),transparent)}
+.landingBrand{display:flex;align-items:center;gap:9px;text-decoration:none;color:#fff;flex:0 0 auto}
+.landingMark{width:31px;height:31px;border:1px solid rgba(82,228,148,.46);border-radius:9px;display:grid;place-items:center;color:#50e391;font-weight:950;font-size:17px;background:rgba(5,25,15,.76)}
+.landingBrand b{font-size:18px;letter-spacing:-.7px}.landingBrand b span{color:#48e18d}
+.landingLinks{display:flex;align-items:center;gap:27px}.landingLinks a{color:#b7c7be;text-decoration:none;font-size:12px;font-weight:800;transition:.15s ease;padding:8px 0;border-bottom:1px solid transparent}.landingLinks a:hover,.landingLinks a.active{color:#fff;border-bottom-color:#46df8b}
+.landingHero{min-height:410px;padding:110px 48px 46px;display:flex;align-items:center;background-image:linear-gradient(90deg,rgba(2,9,5,.97) 0%,rgba(2,10,6,.88) 28%,rgba(2,10,6,.58) 49%,rgba(2,10,6,.22) 70%,rgba(2,10,6,.65) 100%),linear-gradient(180deg,rgba(3,12,7,.10),rgba(3,12,7,.18) 58%,#031008 100%),var(--landing-hero-image);background-size:cover;background-repeat:no-repeat;background-position:center 48%}
+.landingHeroCopy{position:relative;z-index:3;width:min(610px,58%)}.landingEyebrow{color:#51e495;font:900 10px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;text-transform:uppercase}
+.landingLogo{font-size:64px;font-weight:950;letter-spacing:-3.5px;line-height:.93;margin-top:10px;text-shadow:0 8px 30px rgba(0,0,0,.46)}.landingLogo span{color:#45e18a}
+.landingTagline{font-size:21px;font-weight:780;letter-spacing:-.5px;color:#e9f2ed;margin-top:14px}.landingLead{max-width:570px;color:#9caf9f;font-size:12px;line-height:1.65;margin:13px 0 0}
+.landingCtas{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}.landingPrimary,.landingSecondary{min-height:42px;border-radius:11px;padding:0 17px;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:11px;font-weight:900}
+.landingPrimary{background:#42df89;color:#021108;border:1px solid #5aeda0;box-shadow:0 0 24px rgba(66,223,137,.13)}.landingSecondary{background:rgba(5,20,12,.74);color:#e7f1eb;border:1px solid #26513a}.landingPrimary:hover{background:#56e897}.landingSecondary:hover{border-color:#3c8159}
+.landingOverview{position:relative;z-index:5;margin:-34px 28px 24px;display:grid;grid-template-columns:1.2fr .72fr 1.08fr;gap:11px}
+.landingCard{min-width:0;border:1px solid #1b422c;border-radius:15px;background:rgba(5,20,12,.96);box-shadow:0 18px 46px rgba(0,0,0,.22);padding:16px}
+.landingCardHead{display:flex;align-items:center;gap:8px;margin-bottom:11px}.landingCardIcon{color:#4be193;font-size:16px}.landingCard h3{font-size:15px;letter-spacing:-.2px;margin:0;color:#f2f7f4}
+.landingAbout p{margin:0 0 8px;color:#a8b9af;font-size:10.5px;line-height:1.54}.landingAbout p:last-of-type{margin-bottom:0}.landingDisclaimer{color:#e4eee8!important;font-weight:800}
+.supportWrap{margin-top:13px;padding-top:12px;border-top:1px solid #173322}.supportLabel{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:#71867a;font-weight:900;margin-bottom:7px}.supportWrap a{display:inline-block;line-height:0;max-width:100%}.supportWrap img{height:38px;max-width:100%;width:auto;border-radius:8px}
+.hitCard{display:flex;flex-direction:column;justify-content:space-between;text-align:center}.hitRing{margin:5px auto 7px;width:118px;height:118px;border-radius:50%;background:conic-gradient(#44e08a var(--hit-angle,0deg),#183326 0);display:grid;place-items:center;padding:7px}.hitRingInner{width:100%;height:100%;border-radius:50%;background:#07160d;display:grid;place-items:center}.hitRing strong{font-size:29px;line-height:1;font-weight:950}.hitRing small{display:block;color:#6f8678;font-size:7px;letter-spacing:.11em;margin-top:4px}.landingRecord{color:#55e799;font-size:14px;font-weight:900;margin-top:3px}.landingWeek{margin-top:11px;border-top:1px solid #14301f;padding-top:9px;color:#7e9287;font-size:8.5px}.landingWeek b{color:#d9e6de}
+.landingTopList{display:grid;gap:6px}.landingPick{min-height:34px;border:1px solid #153522;border-radius:9px;background:#07170e;display:grid;grid-template-columns:23px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px}.landingPickRank{width:22px;height:22px;border-radius:7px;background:#143a29;color:#59e59c;display:grid;place-items:center;font-size:8px;font-weight:900}.landingPickCore{min-width:0}.landingPickFixture{font-size:9px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.landingPickLabel{font-size:8px;color:#83a08f;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.landingPickScore{text-align:right}.landingPickScore b{font-size:10px;color:#dfeae3}.landingPickScore small{display:block;font-size:6px;color:#657b70;margin-top:1px}
+.landingEmpty{border:1px dashed #193927;border-radius:10px;padding:18px 8px;color:#71877a;text-align:center;font-size:9px}.landingSeeAll{margin-top:10px;min-height:38px;border-radius:10px;background:#43df89;color:#021208;text-decoration:none;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:950}
+@media(max-width:820px){.landingHero{min-height:370px;padding:103px 28px 43px;background-position:center 45%}.landingHeroCopy{width:min(610px,70%)}.landingLogo{font-size:54px}.landingTagline{font-size:18px}.landingOverview{margin:-30px 16px 20px;grid-template-columns:1fr 1fr}.landingTopCard{grid-column:1/-1}}
+@media(max-width:560px){.wrap{padding-left:12px!important;padding-right:12px!important}.landingShell{margin-left:-12px;margin-right:-12px;margin-bottom:12px}.landingNav{min-height:54px;padding:calc(8px + env(safe-area-inset-top)) 13px 8px}.landingBrand .landingMark{width:27px;height:27px;font-size:14px}.landingBrand b{font-size:15px}.landingLinks{gap:13px}.landingLinks a{font-size:9px;padding:7px 0}.landingHero{min-height:330px;padding:88px 18px 46px;background-position:58% center}.landingHeroCopy{width:78%}.landingEyebrow{font-size:7.5px}.landingLogo{font-size:43px;letter-spacing:-2.5px}.landingTagline{font-size:14px;margin-top:10px}.landingLead{font-size:9px;line-height:1.55;margin-top:9px}.landingCtas{margin-top:15px;gap:7px}.landingPrimary,.landingSecondary{min-height:36px;padding:0 12px;font-size:9px;border-radius:9px}.landingOverview{margin:-27px 10px 16px;grid-template-columns:1fr;gap:8px}.landingCard{padding:12px;border-radius:12px}.landingCardHead{margin-bottom:8px}.landingCard h3{font-size:13px}.landingAbout p{font-size:9px;line-height:1.5;margin-bottom:6px}.supportWrap img{height:34px}.hitCard{text-align:left}.hitCardBody{display:flex;align-items:center;gap:12px}.hitRing{width:88px;height:88px;margin:2px 0 0}.hitRing strong{font-size:22px}.landingRecord{text-align:left}.landingWeek{text-align:left;margin-top:7px}.landingPick{min-height:31px}.landingPickFixture{font-size:8.5px}.landingPickLabel{font-size:7.5px}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="heroHeader">
-    <div class="heroBrand">
-      <div class="heroTitle">Footy<span>Edge</span></div>
-      <div class="heroSub">Soccer Intelligence</div>
+  <section class="landingShell" id="home">
+    <nav class="landingNav" aria-label="Main navigation">
+      <a class="landingBrand" href="#home"><span class="landingMark">⚽</span><b>Footy<span>Edge</span></b></a>
+      <div class="landingLinks"><a class="active" href="#home">Home</a><a href="#topAnchor" id="landingTodayLink">Today’s Picks</a><a href="#about">About</a></div>
+    </nav>
+    <div class="landingHero">
+      <div class="landingHeroCopy">
+        <div class="landingEyebrow">Soccer intelligence · Free to use</div>
+        <div class="landingLogo">Footy<span>Edge</span></div>
+        <div class="landingTagline">Sharper soccer research. Smarter picks.</div>
+        <p class="landingLead">Stats, trends, form and model-based analysis — brought together in one clean place so you can research today’s matches and make your own picks.</p>
+        <div class="landingCtas"><a class="landingPrimary" href="#topAnchor" id="landingHeroPicks">View Today’s Picks →</a><a class="landingSecondary" href="https://www.buymeacoffee.com/sPsyche" target="_blank" rel="noopener">Support FootyEdge ☕</a></div>
+      </div>
     </div>
-    <div class="heroActions">
-      <button class="heroIcon" id="searchBtn" aria-label="Search">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
-      </button>
-      <button class="heroIcon" id="settingsBtn" aria-label="Filters">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/><circle cx="12" cy="12" r="4"/></svg>
-      </button>
+    <div class="landingOverview">
+      <article class="landingCard landingAbout" id="about">
+        <div class="landingCardHead"><span class="landingCardIcon">●</span><h3>About FootyEdge</h3></div>
+        <p>FootyEdge is completely free to use. ⚽📊 I built it to make soccer research easier by combining stats, trends, form and model-based analysis into one place so you can make your own picks.</p>
+        <p>If you’ve enjoyed using FootyEdge, found the analysis useful, or it’s helped you with your picks, you’re welcome to buy me a coffee as a way of supporting the project. ☕❤️</p>
+        <p>Supporting is completely optional — nothing on FootyEdge is behind a paywall and you never have to donate to use the site. Your support simply helps me continue improving the model, adding features and keeping the site running.</p>
+        <p class="landingDisclaimer">No picks are guaranteed. Gamble responsibly.</p>
+        <div class="supportWrap"><div class="supportLabel">Support the project</div><a href="https://www.buymeacoffee.com/sPsyche" target="_blank" rel="noopener"><img src="https://img.buymeacoffee.com/button-api/?text=Support%20FootyEdge&emoji=%E2%98%95&slug=sPsyche&button_colour=5F7FFF&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00" alt="Support FootyEdge on Buy Me a Coffee"></a></div>
+      </article>
+      <article class="landingCard hitCard">
+        <div class="landingCardHead"><span class="landingCardIcon">◎</span><h3>Current Hit Rate</h3></div>
+        <div class="hitCardBody"><div class="hitRing" id="landingHitRing"><div class="hitRingInner"><div><strong id="landingHitRate">—</strong><small>HIT RATE</small></div></div></div><div><div class="landingRecord" id="landingRecord">0–0</div><div class="landingWeek">Last 7 days · <b id="landingWeekRate">—</b></div></div></div>
+      </article>
+      <article class="landingCard landingTopCard">
+        <div class="landingCardHead"><span class="landingCardIcon">★</span><h3>Today’s Top 5 Picks</h3></div>
+        <div class="landingTopList" id="landingTopPicks"><div class="landingEmpty">Loading today’s best plays…</div></div>
+        <a class="landingSeeAll" href="#matchesAnchor" id="landingSeeAll">See all games & analysis for today →</a>
+      </article>
     </div>
-  </header>
+  </section>
+  <button id="searchBtn" hidden aria-hidden="true"></button><button id="settingsBtn" hidden aria-hidden="true"></button>
+
 
   <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="todayBtn" id="todayShortcut">Today</button><button class="navBtn" id="next">›</button></section>
   <div class="searchBar" id="searchBar"><input id="searchInput" type="search" placeholder="Search team or competition…"></div>
