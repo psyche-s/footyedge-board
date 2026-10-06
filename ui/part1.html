@@ -1441,10 +1441,11 @@ function restoreArchivedPick(p){
   return{...p,archived:true,bookExact:p.odds!=null||Boolean(p.verifiedPrice)}
 }
 function boardArchivePayload(){
-  const top=topPicks();
+  const top=S.games.filter(g=>g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top))
+    .sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5);
   return{
     schema:1,date:S.date,frozenAt:new Date().toISOString(),immutable:true,source:"FootyEdge rendered published board",
-    top5:top.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(g.archiveTopPick||g.model?.top,g)})),
+    top5:top.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(g.model?.top,g)})),
     games:S.games.map(g=>({
       id:g.id,home:g.home.name,away:g.away.name,
       top:clonePickForArchive(g.model?.top,g),
