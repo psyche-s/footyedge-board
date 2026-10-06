@@ -107,13 +107,14 @@ function oddsFromFootball(entry,homeName,awayName){
 function oddsFromDaily(entry,homeName,awayName){
   if(!entry)return null;
   const mlKey=entry.mlBook?.key||null;
-  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},marketBooks:{},spreads:[],probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
+  const out={provider:entry.provider||"Daily odds snapshot",homeML:entry.homeML??null,drawML:entry.drawML??null,awayML:entry.awayML??null,over25:null,under25:null,markets:{},marketBooks:{},totalProbs:{},spreads:[],probs:{home:entry.probs?.home??null,draw:entry.probs?.draw??null,away:entry.probs?.away??null,over25:null,under25:null}};
   if(out.homeML!=null){const k=normName(homeName+" ML");out.markets[k]=out.homeML;if(mlKey)out.marketBooks[k]=mlKey}
   if(out.awayML!=null){const k=normName(awayName+" ML");out.markets[k]=out.awayML;if(mlKey)out.marketBooks[k]=mlKey}
   for(const [line,t] of Object.entries(entry.totals||{})){
     const bk=t?.book?.key||null;
     if(t?.over!=null){const k=normName("Over "+line+" Goals");out.markets[k]=t.over;if(bk)out.marketBooks[k]=bk}
     if(t?.under!=null){const k=normName("Under "+line+" Goals");out.markets[k]=t.under;if(bk)out.marketBooks[k]=bk}
+    out.totalProbs[line]={over:t?.probs?.over??null,under:t?.probs?.under??null};
     if(line==="2.5"){
       out.over25=t?.over??null;out.under25=t?.under??null;
       out.probs.over25=t?.probs?.over??null;out.probs.under25=t?.probs?.under??null;
@@ -242,6 +243,28 @@ function model(g,hh,ah){
   add("Under 2.5 Goals","Goals",avg([h.u25,a.u25]),avg([hv.u25,av.u25]),hc(x=>x.gf+x.ga<=2),g.odds.probs.under25,g.odds.under25);
   add("Under 3.5 Goals","Goals",avg([h.u35,a.u35]),avg([hv.u35,av.u35]),hc(x=>x.gf+x.ga<=3),shape.under35??null);
   add("Under 4.5 Goals","Goals",avg([h.u45,a.u45]),avg([hv.u45,av.u45]),hc(x=>x.gf+x.ga<=4),shape.under45??null);
+
+  // Evaluate the exact bookmaker total line too (5.5, 4.5, etc.) instead of only preset totals.
+  const totalRate=(hist,line,side)=>rate(hist,x=>side==="over"?(x.gf+x.ga)>line:(x.gf+x.ga)<line);
+  const existingTotalLabels=new Set(c.map(x=>normName(x.label)));
+  for(const [lineKey,pair] of Object.entries(g.odds?.totalProbs||{})){
+    const line=Number(lineKey);if(!Number.isFinite(line))continue;
+    for(const side of ["over","under"]){
+      const label=(side==="over"?"Over ":"Under ")+lineKey+" Goals",nk=normName(label);
+      if(existingTotalLabels.has(nk))continue;
+      const e=avg([totalRate(hh,line,side),totalRate(ah,line,side)]);
+      const v=avg([totalRate(hh.filter(x=>x.venue==="home"),line,side),totalRate(ah.filter(x=>x.venue==="away"),line,side)]);
+      const hr=hc(x=>side==="over"?(x.gf+x.ga)>line:(x.gf+x.ga)<line);
+      const odd=g.odds?.markets?.[nk]??null;
+      add(label,"Goals",e,v,hr,pair?.[side]??null,odd);
+      const cp=c[c.length-1];
+      if(cp&&normName(cp.label)===nk){
+        cp.homeTrend=totalRate(hh,line,side);cp.awayTrend=totalRate(ah,line,side);cp.marketLine=line;cp.marketSide=side
+      }
+      existingTotalLabels.add(nk)
+    }
+  }
+
   add(`${g.home.name} 1+ Goal`,"Team Goals",avg([h.scored,a.conceded]),avg([hv.scored,av.conceded]),null,homeGoalMarket);
   add(`${g.away.name} 1+ Goal`,"Team Goals",avg([a.scored,h.conceded]),avg([av.scored,hv.conceded]),null,awayGoalMarket);
   add("BTTS — Yes","BTTS",avg([h.btts,a.btts]),avg([hv.btts,av.btts]),hc(x=>x.gf>0&&x.ga>0),bttsMarket);
@@ -728,7 +751,7 @@ function viewPick(g){
   const top3=g.model?.top3||[];
   return g.model?.top||top3[0]||null
 }
-function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="qualified")return !!p;if(S.filter==="core")return p?.score>=88;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
+function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
   if(S.date<etDate()&&S.archive?.top5?.length){

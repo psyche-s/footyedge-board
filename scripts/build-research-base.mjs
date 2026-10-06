@@ -8,7 +8,7 @@ const UID_LEAGUE={
   "2021":"eng.1","760":"esp.1","730":"ita.1","740":"ger.1","773":"fra.1"
 };
 const TRACKED=new Set([
-  "uefa.nations","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
+  "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
   "eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
   "uefa.euro","uefa.euroq","fifa.world","fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf"
 ]);

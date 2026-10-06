@@ -1272,7 +1272,7 @@ body{background:#031008}
   <section class="filters" id="filters">
     <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
     <div class="filterGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Completed</button><button class="filterPill active" data-status="all">All Games</button></div></div>
-    <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button><button class="filterPill" data-filter="atgs">ATGS</button><button class="filterPill" data-filter="soa" title="Score or Assist" aria-label="Score or Assist">SOA</button></div></div>
+    <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button><button class="filterPill" data-filter="atgs">ATGS</button><button class="filterPill" data-filter="soa" title="Score or Assist" aria-label="Score or Assist">SOA</button></div></div>
   </section>
 
   <section class="modelNote"><span class="infoIcon">i</span><p>FootyEdge ranks each match using current-season form, home/away splits, H2H when available, scoring/conceding trends, live market pricing, EV and sample-size controls. The highest-confidence market becomes the match pick; no manual pick override is applied. <strong>Bet responsibly.</strong></p></section>
@@ -1358,6 +1358,13 @@ function ourReason(g,p){
   }
   if(label.includes("over 2.5")){
     return `The scoring trend points toward three or more goals. ${g.home.name} went over 2.5 in ${statPct(h.o25)} of the sample and ${g.away.name} in ${statPct(a.o25)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+  }
+  if(p.category==="Goals"){
+    const m=label.match(/(over|under)\s*([0-9]+(?:\.[0-9]+)?)/);
+    if(m){
+      const side=m[1],line=m[2],hr=typeof p.homeTrend==="number"?statPct(p.homeTrend):"—",ar=typeof p.awayTrend==="number"?statPct(p.awayTrend):"—";
+      return `This uses the actual posted ${line}-goal line rather than forcing a standard total. ${side==="under"?"Staying below":"Clearing"} that line occurred in ${hr} of ${g.home.name}'s recent sample and ${ar} of ${g.away.name}'s. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    }
   }
   if(p.category==="BTTS"){
     const yes=label.includes("yes");
@@ -1611,21 +1618,37 @@ function leagueOf(e){
   if(x)return x; const m=String(e?.uid||"").match(/~l:(\d+)/); return m?uidLeague[m[1]]||null:null;
 }
 function marketOdds(o){
-  const ml=o?.moneyline||{},t=o?.total||{},markets={};
-  const homeML=ml?.home?.close?.odds??ml?.home?.current?.odds??ml?.home?.open?.odds??null;
-  const drawML=ml?.draw?.close?.odds??ml?.draw?.current?.odds??ml?.draw?.open?.odds??o?.drawOdds?.moneyLine??null;
-  const awayML=ml?.away?.close?.odds??ml?.away?.current?.odds??ml?.away?.open?.odds??null;
-  const hp=probAmerican(homeML),dp=probAmerican(drawML),ap=probAmerican(awayML),m=noVig([hp,dp,ap]);
+  const clean=v=>{if(v==null)return null;const n=Number(String(v).replace("+",""));return Number.isFinite(n)&&n!==0?n:null};
+  const ml=o?.moneyline||{},t=o?.total||{},ps=o?.pointSpread||{},markets={},marketBooks={},totalProbs={},spreads=[];
+  const provider=o?.provider?.displayName||o?.provider?.name||null,bookKey=inferBookKey(provider);
+  const homeML=clean(ml?.home?.close?.odds??ml?.home?.current?.odds??ml?.home?.open?.odds);
+  const drawML=clean(ml?.draw?.close?.odds??ml?.draw?.current?.odds??ml?.draw?.open?.odds??o?.drawOdds?.moneyLine);
+  const awayML=clean(ml?.away?.close?.odds??ml?.away?.current?.odds??ml?.away?.open?.odds);
+  const hp=probAmerican(homeML),dp=probAmerican(drawML),ap=probAmerican(awayML);
+  const completeML=[hp,dp,ap].every(x=>x!=null),m=completeML?noVig([hp,dp,ap]):[null,null,null];
   const overLine=t?.over?.close?.line??t?.over?.current?.line??t?.over?.open?.line??null;
   const underLine=t?.under?.close?.line??t?.under?.current?.line??t?.under?.open?.line??null;
-  const overOdd=t?.over?.close?.odds??t?.over?.current?.odds??t?.over?.open?.odds??null;
-  const underOdd=t?.under?.close?.odds??t?.under?.current?.odds??t?.under?.open?.odds??null;
+  const overOdd=clean(t?.over?.close?.odds??t?.over?.current?.odds??t?.over?.open?.odds);
+  const underOdd=clean(t?.under?.close?.odds??t?.under?.current?.odds??t?.under?.open?.odds);
   const lineNum=v=>{const x=String(v||"").match(/([0-9]+(?:\.[0-9]+)?)/);return x?x[1]:null};
   const ol=lineNum(overLine),ul=lineNum(underLine);
-  if(ol&&overOdd!=null)markets[normName("Over "+ol+" Goals")]=overOdd;
-  if(ul&&underOdd!=null)markets[normName("Under "+ul+" Goals")]=underOdd;
-  const op=probAmerican(overOdd),up=probAmerican(underOdd),tot=noVig([op,up]);
-  return{provider:o?.provider?.displayName||o?.provider?.name||null,homeML,drawML,awayML,over25:ol==="2.5"?overOdd:null,under25:ul==="2.5"?underOdd:null,markets,probs:{home:m[0]||null,draw:m[1]||null,away:m[2]||null,over25:ol==="2.5"?(tot[0]||null):null,under25:ul==="2.5"?(tot[1]||null):null}};
+  if(ol&&overOdd!=null){const k=normName("Over "+ol+" Goals");markets[k]=overOdd;if(bookKey)marketBooks[k]=bookKey}
+  if(ul&&underOdd!=null){const k=normName("Under "+ul+" Goals");markets[k]=underOdd;if(bookKey)marketBooks[k]=bookKey}
+  if(ol&&ul&&ol===ul){
+    const pair=noVig([probAmerican(overOdd),probAmerican(underOdd)]);
+    totalProbs[ol]={over:pair[0]||null,under:pair[1]||null}
+  }
+  const parseLine=v=>{const n=Number(String(v??"").replace("+",""));return Number.isFinite(n)?n:null};
+  const homeLine=parseLine(ps?.home?.close?.line??ps?.home?.current?.line??ps?.home?.open?.line);
+  const awayLine=parseLine(ps?.away?.close?.line??ps?.away?.current?.line??ps?.away?.open?.line);
+  const homeSpread=clean(ps?.home?.close?.odds??ps?.home?.current?.odds??ps?.home?.open?.odds);
+  const awaySpread=clean(ps?.away?.close?.odds??ps?.away?.current?.odds??ps?.away?.open?.odds);
+  if(homeLine!=null&&awayLine!=null&&(homeSpread!=null||awaySpread!=null)){
+    const pair=noVig([probAmerican(homeSpread),probAmerican(awaySpread)]);
+    spreads.push({homeLine,home:homeSpread,awayLine,away:awaySpread,book:bookKey?{key:bookKey,name:provider}:null,probs:{home:pair[0]||null,away:pair[1]||null}})
+  }
+  const p25=totalProbs["2.5"]||{};
+  return{provider,homeML,drawML,awayML,over25:ol==="2.5"?overOdd:null,under25:ul==="2.5"?underOdd:null,markets,marketBooks,totalProbs,spreads,probs:{home:m[0]||null,draw:m[1]||null,away:m[2]||null,over25:p25.over??null,under25:p25.under??null}};
 }
 function history(payload,teamId,before){
   const out=[];for(const e of payload?.events||[]){if(!e?.date||new Date(e.date)>=new Date(before))continue;const cs=e?.competitions?.[0]?.competitors||[],me=cs.find(c=>String(c?.id??c?.team?.id)===String(teamId)),op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));if(!me||!op)continue;const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;out.push({id:String(e.id),date:e.date,venue:me.homeAway==="away"?"away":"home",gf,ga,result:gf>ga?"W":gf<ga?"L":"D",opp:String(op?.id??op?.team?.id??""),league:leagueOf(e)})}
