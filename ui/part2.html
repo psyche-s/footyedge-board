@@ -381,7 +381,8 @@ function researchAngleCandidates(g){
     const odds=m.americanOdds??null,priceDecimal=Number(m.decimal),verifiedPrice=Boolean(m.price)&&(Number.isFinite(Number(odds))||Number.isFinite(priceDecimal));
     const base=baseByLikelihood[normName(m.likelihood||"possible")]??72;
     const deterministicAgreement=supported.some(x=>sameMarket(x,m.label));
-    const score=Math.min(82,base+(deterministicAgreement?3:0));
+    const statedConfidence=Number(m.confidence);
+    const score=Math.min(82,Number.isFinite(statedConfidence)?statedConfidence:base+(deterministicAgreement?3:0));
     return{
       label:m.label,category:m.category||"Research",score,modelScore:null,baseScore:score,stars:stars(score),
       odds:Number.isFinite(Number(odds))?Number(odds):null,oddsDisplay:m.price||null,priceDecimal:Number.isFinite(priceDecimal)?priceDecimal:null,
@@ -753,15 +754,15 @@ function playerCandidates(g,type){
   }).sort((a,b)=>(b.score||0)-(a.score||0)||(b.crossSources||0)-(a.crossSources||0))
 }
 function viewCandidates(g){
-  if(S.filter==="atgs"||S.filter==="multigoal"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
+  if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   return g.model?.top3||[]
 }
 function viewPick(g){
-  if(S.filter==="atgs"||S.filter==="multigoal"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
+  if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
   const top3=g.model?.top3||[];
   return g.model?.top||top3[0]||null
 }
-function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="multigoal"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
+function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
   if(S.date<etDate()&&S.archive?.top5?.length){
