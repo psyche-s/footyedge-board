@@ -722,7 +722,7 @@ async function load(date=S.date){
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      json("/data/performance/summary.json?v=49").catch(()=>null)
+      json("/data/performance/summary.json?v=50").catch(()=>null)
     ]);
     S.performance=performancePayload;
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
@@ -738,7 +738,7 @@ async function load(date=S.date){
 
     let liveOddsPayload=null,dailyOddsPayload=null;
     if(S.date===etDate()&&games.length){
-      dailyOddsPayload=await json('/data/daily-odds-'+S.date+'.json?v=1').catch(()=>null);
+      dailyOddsPayload=await json('/data/daily-odds-'+S.date+'.json?v=50').catch(()=>null);
       if(dailyOddsPayload?.events?.length){
         const dailyMap=buildDailyOddsMap(dailyOddsPayload);
         for(const g of games){
