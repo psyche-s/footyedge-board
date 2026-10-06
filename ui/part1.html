@@ -1250,7 +1250,7 @@
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script>
 const TZ="America/Toronto";
-const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null};
+const S={date:null,games:[],filter:"all",league:"all",status:"upcoming",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
 const leagueNames={
   "eng.1":"Premier League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
   "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
@@ -1359,6 +1359,7 @@ function researchTagSet(text,tags=[]){
 }
 function researchFactsForPick(g,p,limit=3){
   if(!p)return[];
+  if(Array.isArray(p.archivedSupportFacts))return p.archivedSupportFacts.slice(0,limit);
   const pool=[],seen=new Set(),label=normName(p?.label||""),cat=normName(p?.category||"");
   const side=typeof selectedSide==="function"?selectedSide(g,p):null;
   const sideName=side==="home"?g.home.name:side==="away"?g.away.name:"";
@@ -1414,6 +1415,7 @@ function researchFactsForPick(g,p,limit=3){
   return pool.sort((a,b)=>b.score-a.score).slice(0,limit).map(x=>x.text)
 }
 function cardCommentary(g,p){
+  if(p?.archivedCommentary)return p.archivedCommentary;
   const fact=researchFactsForPick(g,p,1)[0]||"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
   if(p?.researchOnly){
     const parts=[p.reason||"Verified current-market angle.",fact,lineup].filter(Boolean);
@@ -1425,6 +1427,70 @@ function cardCommentary(g,p){
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
 function applyUserPick(g){return g}
+function clonePickForArchive(p,g){
+  if(!p)return null;
+  return{
+    label:p.label,category:p.category,score:p.score,stars:p.stars,odds:p.odds??null,oddsDisplay:p.oddsDisplay??null,
+    provider:p.provider??null,bookKey:p.bookKey??null,modelProb:p.modelProb??null,marketProb:p.marketProb??null,ev:p.ev??null,
+    verifiedPrice:Boolean(p.verifiedPrice),priceDecimal:p.priceDecimal??null,researchOnly:Boolean(p.researchOnly),reason:p.reason||"",
+    archivedCommentary:cardCommentary(g,p),archivedSupportFacts:researchFactsForPick(g,p,3)
+  }
+}
+function restoreArchivedPick(p){
+  if(!p)return null;
+  return{...p,archived:true,bookExact:p.odds!=null||Boolean(p.verifiedPrice)}
+}
+function boardArchivePayload(){
+  const top=topPicks();
+  return{
+    schema:1,date:S.date,frozenAt:new Date().toISOString(),immutable:true,source:"FootyEdge rendered published board",
+    top5:top.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(g.archiveTopPick||g.model?.top,g)})),
+    games:S.games.map(g=>({
+      id:g.id,home:g.home.name,away:g.away.name,
+      top:clonePickForArchive(g.model?.top,g),
+      top3:(g.model?.top3||[]).map(p=>clonePickForArchive(p,g)),
+      model:{
+        home:g.model?.home||null,away:g.model?.away||null,displayHome:g.model?.displayHome||null,displayAway:g.model?.displayAway||null,
+        expectedGoals:g.model?.expectedGoals||null,sample:g.model?.sample||null
+      }
+    }))
+  }
+}
+window.FootyEdgeArchive=boardArchivePayload;
+function applyBoardArchive(games,archive){
+  if(!archive||archive.date!==S.date)return games;
+  const byId=new Map((archive.games||[]).map(x=>[String(x.id),x]));
+  const byFixture=new Map((archive.games||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
+  for(const g of games){
+    const a=byId.get(String(g.id))||byFixture.get(fixtureMatchKey(g.home.name,g.away.name));
+    if(a&&g.model){
+      if(a.model){
+        if(a.model.home)g.model.home=a.model.home;
+        if(a.model.away)g.model.away=a.model.away;
+        if(a.model.displayHome)g.model.displayHome=a.model.displayHome;
+        if(a.model.displayAway)g.model.displayAway=a.model.displayAway;
+        if(a.model.expectedGoals)g.model.expectedGoals=a.model.expectedGoals;
+        if(a.model.sample)g.model.sample=a.model.sample;
+      }
+      g.model.top=restoreArchivedPick(a.top);
+      g.model.top3=(a.top3||[]).map(restoreArchivedPick).filter(Boolean);
+      g.model.rankedCandidates=g.model.top3.slice();
+    }
+  }
+  const gameById=new Map(games.map(g=>[String(g.id),g]));
+  const gameByFixture=new Map(games.map(g=>[fixtureMatchKey(g.home.name,g.away.name),g]));
+  for(const x of archive.top5||[]){
+    const g=gameById.get(String(x.gameId))||gameByFixture.get(fixtureMatchKey(x.home,x.away));
+    if(g)g.archiveTopPick=restoreArchivedPick(x.pick);
+  }
+  return games
+}
+function defaultStatusForDate(date){
+  const desired=date<etDate()?"completed":"upcoming";
+  S.status=desired;
+  document.querySelectorAll("[data-status]").forEach(b=>b.classList.toggle("active",b.dataset.status===desired))
+}
+
 function etDate(d=new Date()){const p=new Intl.DateTimeFormat("en-CA",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(d),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return `${o.year}-${o.month}-${o.day}`}
 function addDate(s,n){const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
 function dateKey(s){return s.replaceAll("-","")}
