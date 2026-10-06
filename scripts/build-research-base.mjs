@@ -137,7 +137,7 @@ function marketSignals(facts,g){
   return [...new Set(sig)].slice(0,4)
 }
 async function schedule(league,team,season){
-  const u=`${SITE}/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(team)}&season=${encodeURIComponent(season)}`;
+  const u=`${SITE}/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(team)}&season=${encodeURIComponent(season)}&scope=all`;
   return json(u);
 }
 async function buildFixture(g){
