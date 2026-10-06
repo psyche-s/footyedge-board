@@ -7,6 +7,28 @@ const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const words=s=>String(s||"").trim().split(/\s+/).filter(Boolean).length;
 const errors=[],warnings=[];
 const fail=m=>errors.push(m),warn=m=>warnings.push(m);
+function marketSupportFromFacts(market,facts,fixture){
+  const m=norm(market),tags=new Set();
+  for(const f of facts||[])for(const t of (typeof f==="string"?[]:(f.tags||[])))tags.add(norm(t));
+  if(m.includes("under"))return tags.has("under");
+  if(m.includes("over"))return tags.has("over");
+  if(m.includes("btts"))return tags.has("btts");
+  if(m.includes("draw")||m.includes("ml")){
+    const team=m.includes(norm(fixture.home))?norm(fixture.home):m.includes(norm(fixture.away))?norm(fixture.away):"";
+    if(!team)return tags.has("result");
+    return (facts||[]).some(f=>{
+      const text=norm(typeof f==="string"?f:f?.text);
+      const ftags=(typeof f==="string"?[]:(f.tags||[])).map(norm);
+      return text.includes(team)&&ftags.includes("result");
+    });
+  }
+  if(m.includes("goal")){
+    const team=m.includes(norm(fixture.home))?norm(fixture.home):m.includes(norm(fixture.away))?norm(fixture.away):"";
+    return tags.has("team goals")||Boolean(team&&(facts||[]).some(f=>norm(typeof f==="string"?f:f?.text).includes(team)));
+  }
+  return false
+}
+
 async function exists(f){try{await fs.access(f);return true}catch{return false}}
 
 async function main(){
@@ -39,11 +61,23 @@ async function main(){
       if(words(text)>30)fail("Fact too long (>30 words): "+item.home+" vs "+item.away+" :: "+text);
       const nk=norm(text);if(seen.has(nk))fail("Duplicate fact: "+text);seen.add(nk);
     }
-    for(const s of item.sources||[]){
+    const sources=item.sources||[];
+    for(const s of sources){
       if(!/^https:\/\//i.test(String(s.url||"")))fail("Invalid source URL for "+item.home+" vs "+item.away);
       const host=(()=>{try{return new URL(s.url).hostname}catch{return""}})();
       if(/footballwhispers\.com$/i.test(host)||/sportskeeda\.com$/i.test(host)){}
       else warn("Non-primary research source used: "+host+" for "+item.home+" vs "+item.away);
+      if(s.checkedAt){
+        const age=Math.abs(Date.now()-new Date(s.checkedAt).getTime());
+        if(!Number.isFinite(age)||age>48*3600000)warn("Research source check is older than 48h: "+item.home+" vs "+item.away+" :: "+host);
+      }
+    }
+    const baseFixture=fixtures.get(k);
+    if((item.supportedMarkets||[]).length&&!sources.length)fail("Supported market has no external source: "+item.home+" vs "+item.away);
+    for(const market of item.supportedMarkets||[]){
+      if(!marketSupportFromFacts(market,baseFixture?.facts||[],{home:item.home,away:item.away})){
+        fail("Supported market lacks matching deterministic evidence: "+item.home+" vs "+item.away+" :: "+market);
+      }
     }
   }
 
