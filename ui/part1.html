@@ -1153,6 +1153,43 @@
     margin-top:8px!important;
   }
 }
+
+/* v47 final compact analysis + true circular flags */
+.modalTeams{gap:34px!important;align-items:flex-start!important}
+.modalTeam{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;min-width:92px!important}
+.modalTeam img.countryFlag{
+  width:72px!important;height:72px!important;min-width:72px!important;max-width:72px!important;
+  aspect-ratio:1/1!important;border-radius:50%!important;object-fit:cover!important;object-position:center!important;
+  padding:0!important;transform:none!important;clip-path:none!important;overflow:hidden!important;background:#fff!important
+}
+.modalTeam b{margin-top:7px!important;line-height:1.1!important}
+.modalLeague{margin:13px 0 12px!important}
+.top3Pick{min-height:46px!important;padding:6px 8px!important;gap:7px!important}
+.top3Right{gap:3px!important}
+.top3Odds{margin-top:2px!important}
+.top3Odds small{display:none!important}
+.analysisContent .statStrip{
+  display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:6px!important;overflow:visible!important;align-items:stretch!important
+}
+.analysisContent .statCell{
+  width:auto!important;min-width:0!important;height:36px!important;min-height:36px!important;
+  padding:2px 3px!important;border-radius:7px!important;gap:3px!important
+}
+.analysisContent .statCell b{font-size:9px!important;line-height:1!important}
+.analysisContent .statCell small{font-size:5px!important;line-height:1!important;margin:0!important}
+@media(max-width:500px){
+  .modalTeams{gap:20px!important}
+  .modalTeam{min-width:72px!important}
+  .modalTeam img.countryFlag{width:58px!important;height:58px!important;min-width:58px!important;max-width:58px!important}
+  .modalTeam b{margin-top:5px!important;font-size:9px!important}
+  .modalLeague{margin:10px 0 9px!important}
+  .top3Pick{min-height:40px!important;padding:5px 6px!important}
+  .analysisContent .statStrip{gap:4px!important}
+  .analysisContent .statCell{height:31px!important;min-height:31px!important;padding:1px 2px!important;border-radius:6px!important;gap:2px!important}
+  .analysisContent .statCell b{font-size:7.5px!important}
+  .analysisContent .statCell small{font-size:4.1px!important}
+}
 </style>
 </head>
 <body>
