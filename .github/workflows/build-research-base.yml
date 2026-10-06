@@ -1,0 +1,45 @@
+name: Build FootyEdge Research Base
+
+on:
+  schedule:
+    # Dual UTC schedules for Toronto DST/standard time. Script only runs at local hour 06.
+    - cron: "15 10 * * *"
+    - cron: "15 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-research-base
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build deterministic stats research
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_RESEARCH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+        run: node scripts/build-research-base.mjs
+      - name: Commit research base
+        shell: bash
+        run: |
+          if git diff --quiet -- data/research-base-*.json; then
+            echo "No research-base changes."
+            exit 0
+          fi
+          git config user.name "FootyEdge Research Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/research-base-*.json
+          git commit -m "chore(research): build deterministic daily stats base [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
