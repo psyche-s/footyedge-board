@@ -1337,6 +1337,11 @@ function ourReason(g,p){
     const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
     return `${team} is the side we trust more here. They have won ${statPct(s.win)} of the sample, while the opponent has failed to win ${statPct(opp.nonWin)}. ${team} is averaging ${s.gf.toFixed(2)} goals scored and ${s.ga.toFixed(2)} allowed per match.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
   }
+  if(p.category==="Handicap"){
+    const side=typeof selectedSide==="function"?selectedSide(g,p):null,team=side==="home"?g.home.name:g.away.name;
+    const cover=typeof p.coverRate==="number"?statPct(p.coverRate):"—";
+    return `${team} is the stronger handicap side in this matchup. The recent-score sample covered this line in ${cover} of comparable results.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+  }
   return `${sample}${proj?" The adjusted projection is "+proj+".":""} This is the market that lines up best with the recent trend and matchup data.`
 }
 function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
@@ -1353,22 +1358,53 @@ function researchTagSet(text,tags=[]){
   return out
 }
 function researchFactsForPick(g,p,limit=3){
+  if(!p)return[];
   const pool=[],seen=new Set(),label=normName(p?.label||""),cat=normName(p?.category||"");
+  const side=typeof selectedSide==="function"?selectedSide(g,p):null;
+  const sideName=side==="home"?g.home.name:side==="away"?g.away.name:"";
+  const oppositeName=side==="home"?g.away.name:side==="away"?g.home.name:"";
+  const relevant=(text,ts)=>{
+    const n=normName(text);
+    if(cat==="goals"){
+      if(label.includes("under"))return ts.has("under")&&!ts.has("over");
+      if(label.includes("over"))return ts.has("over")&&!ts.has("under");
+      return ts.has("under")||ts.has("over");
+    }
+    if(cat==="btts"){
+      if(!ts.has("btts"))return false;
+      if(label.includes("yes"))return !/failed to score|clean sheet|goalless|btts no|both teams.*not score/i.test(text);
+      if(label.includes("no"))return /failed to score|clean sheet|goalless|btts no|only one|no goal/i.test(text);
+      return true;
+    }
+    if(cat==="team goals"){
+      if(!(ts.has("team goals")||ts.has("defense")||ts.has("h2h")))return false;
+      if(sideName&&n.includes(normName(sideName))&&/failed to score|goalless|without scoring/.test(n))return false;
+      return true;
+    }
+    if(cat==="match result"||cat==="double chance"||cat==="handicap"||cat==="win to nil"||cat==="half time"){
+      if(!(ts.has("result")||ts.has("h2h")||ts.has("form")||ts.has("defense")))return false;
+      if(oppositeName&&n.includes(normName(oppositeName))&&/won|unbeaten|winning run|straight wins/.test(n)&&!n.includes(normName(sideName)))return false;
+      return true;
+    }
+    if(cat==="player")return false;
+    return true
+  };
   const add=(text,tags=[],priority=0)=>{
     text=String(text||"").replace(/\s+/g," ").trim();
-    if(!text||text.length>190||/shots per 90|first goalscorer|anytime goalscorer/i.test(text))return;
-    const k=normName(text);if(!k||seen.has(k))return;seen.add(k);
+    if(!text||text.length>190||/shots per 90|first goalscorer/i.test(text))return;
+    const k=normName(text);if(!k||seen.has(k))return;
     const ts=researchTagSet(text,tags);
+    if(!relevant(text,ts))return;
+    seen.add(k);
     let score=priority;
-    if(cat.includes("match result")||cat.includes("double chance"))score+=ts.has("result")?4:0;
+    if(cat.includes("match result")||cat.includes("double chance")||cat.includes("handicap"))score+=ts.has("result")?4:0;
     if(cat.includes("team goals"))score+=ts.has("team goals")?4:0;
     if(cat.includes("btts"))score+=ts.has("btts")?4:0;
     if(cat.includes("goals")){
-      if(label.includes("under"))score+=ts.has("under")?4:0;
-      if(label.includes("over"))score+=ts.has("over")?4:0;
+      if(label.includes("under"))score+=ts.has("under")?5:0;
+      if(label.includes("over"))score+=ts.has("over")?5:0;
     }
     if(ts.has("h2h"))score+=2;
-    if(ts.has("result")||ts.has("team goals")||ts.has("under")||ts.has("over")||ts.has("btts"))score+=1;
     pool.push({text,score})
   };
   for(const f of g?.dailyInsight?.facts||[])typeof f==="string"?add(f,[],6):add(f.text,f.tags,6);
@@ -1378,7 +1414,12 @@ function researchFactsForPick(g,p,limit=3){
   return pool.sort((a,b)=>b.score-a.score).slice(0,limit).map(x=>x.text)
 }
 function cardCommentary(g,p){
-  const base=ourReason(g,p),fact=researchFactsForPick(g,p,1)[0]||"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
+  const fact=researchFactsForPick(g,p,1)[0]||"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
+  if(p?.researchOnly){
+    const parts=[p.reason||"Verified current-market angle.",fact,lineup].filter(Boolean);
+    return [...new Set(parts)].join(" ")
+  }
+  const base=ourReason(g,p);
   return [base,fact,lineup].filter(Boolean).join(" ")
 }
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
@@ -1403,9 +1444,13 @@ function candidateAmerican(p){
   return p.modelProb!=null?americanFromProb(p.modelProb):null
 }
 function priceAllowed(p){
-  if(!p||p.odds==null)return false;
-  const n=Number(String(p.odds).replace("+",""));
-  return Number.isFinite(n)&&n>=-400
+  if(!p)return false;
+  if(p.odds!=null){
+    const n=Number(String(p.odds).replace("+",""));
+    if(Number.isFinite(n))return n>=-400
+  }
+  if(p.verifiedPrice&&Number.isFinite(Number(p.priceDecimal)))return Number(p.priceDecimal)>=1.25;
+  return false
 }
 const BOOK_META={
   draftkings:{name:"DraftKings",logo:"https://a.espncdn.com/i/betting/Draftkings_Dark.svg"},
@@ -1430,13 +1475,21 @@ function oddsWithLogo(px){
 function priceInfo(p){
   if(!p)return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
   const bookKey=p.bookKey||inferBookKey(p.provider);
-  if(p.odds!=null&&bookKey)return{
+  if(p.odds!=null&&(bookKey||p.verifiedPrice))return{
     oddsLabel:"",
     odds:oddsText(p.odds),
     evLabel:"EV",
     ev:evText(p.ev),
     cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg",
     bookKey
+  };
+  if(p.verifiedPrice&&p.oddsDisplay)return{
+    oddsLabel:"",
+    odds:String(p.oddsDisplay),
+    evLabel:"EV",
+    ev:"—",
+    cls:"fair",
+    bookKey:null
   };
   return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
 }
