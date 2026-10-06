@@ -420,7 +420,10 @@ function orderedQualifiedCandidates(g){
 function orderedDisplayCandidates(g){
   const core=(g?.model?.candidates||[]).filter(x=>x.score>=70&&priceAllowed(x));
   const research=researchAngleCandidates(g);
-  const all=[...core,...research].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
+  // If no verified price exists, still surface a strong stats-only lean on the match card.
+  // These are display-only and can never enter the global Top Picks.
+  const leans=(g?.model?.candidates||[]).filter(x=>x.score>=82&&!priceAllowed(x)).map(x=>({...x,displayOnly:true}));
+  const all=[...core,...research,...leans].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
   return diversifyCandidates(g,all)
 }
 function setRankedTop(g){
@@ -800,7 +803,7 @@ function renderGames(){
       '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(g.home.name)+'</div><div class="form">'+formHTML(dh?.form)+'</div></div></div>'+
       '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(g.away.name)+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
     if(p){
-      html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.category)+'</small><strong>'+esc(p.label)+'</strong></div>'+
+      html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(p.label)+'</strong></div>'+
       '<div class="pickMetrics"><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>CONF</small></div></div></div>';
@@ -942,7 +945,7 @@ function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
   const top3=viewCandidates(g);
   const focus=viewPick(g);
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
   const supportFacts=researchFactsForPick(g,focus,3);
   const researchHtml=supportFacts.length?'<section class="researchBox"><div class="researchTitle">WHY THIS PICK FITS</div><div class="researchFacts">'+supportFacts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div></section>':"";
   const allNews=latestNewsItems(g);
