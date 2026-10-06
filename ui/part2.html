@@ -800,6 +800,10 @@ function renderPerformance(){
   }).join("")
 }
 
+async function repoData(path){
+  const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
+  try{return await json(raw)}catch{return await json("/"+path+"?v="+Date.now())}
+}
 function renderMeta(){
   const today=etDate();
   document.getElementById("dayTitle").textContent=S.date===today?"Today":new Date(S.date+"T12:00:00Z").toLocaleDateString("en-US",{weekday:"long",timeZone:"UTC"});
@@ -842,10 +846,10 @@ async function load(date=S.date){
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      json("/data/performance/summary.json?v=53").catch(()=>null),
-      json('/data/daily-insights-'+S.date+'.json?v=1').catch(()=>null),
-      json('/data/research-base-'+S.date+'.json?v=1').catch(()=>null),
-      json('/data/boards/'+S.date+'.json?v=1').catch(()=>null)
+      repoData("data/performance/summary.json").catch(()=>null),
+      repoData('data/daily-insights-'+S.date+'.json').catch(()=>null),
+      repoData('data/research-base-'+S.date+'.json').catch(()=>null),
+      repoData('data/boards/'+S.date+'.json').catch(()=>null)
     ]);
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;S.archive=archivePayload;
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
@@ -863,7 +867,7 @@ async function load(date=S.date){
 
     let liveOddsPayload=null,dailyOddsPayload=null;
     if(games.length){
-      dailyOddsPayload=await json('/data/daily-odds-'+S.date+'.json?v=60').catch(()=>null);
+      dailyOddsPayload=await repoData('data/daily-odds-'+S.date+'.json').catch(()=>null);
       if(dailyOddsPayload?.events?.length){
         const dailyMap=buildDailyOddsMap(dailyOddsPayload);
         for(const g of games){
