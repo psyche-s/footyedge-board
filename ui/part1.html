@@ -1272,7 +1272,7 @@ body{background:#031008}
   <section class="filters" id="filters">
     <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
     <div class="filterGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Completed</button><button class="filterPill active" data-status="all">All Games</button></div></div>
-    <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button></div></div>
+    <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="qualified">Qualified</button><button class="filterPill" data-filter="core">Core A</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="result">ML / Double Chance</button><button class="filterPill" data-filter="atgs">ATGS</button><button class="filterPill" data-filter="soa">Score / Assist</button></div></div>
   </section>
 
   <section class="modelNote"><span class="infoIcon">i</span><p>FootyEdge ranks each match using current-season form, home/away splits, H2H when available, scoring/conceding trends, live market pricing, EV and sample-size controls. The highest-confidence market becomes the match pick; no manual pick override is applied. <strong>Bet responsibly.</strong></p></section>
@@ -1295,7 +1295,7 @@ const leagueNames={
   "uefa.champions":"UEFA Champions League","uefa.europa":"UEFA Europa League","uefa.europa.conf":"UEFA Conference League",
   "uefa.nations":"UEFA Nations League","uefa.euro":"UEFA Euro","uefa.euroq":"Euro Qualifying",
   "fifa.world":"FIFA World Cup","fifa.worldq.uefa":"World Cup Qualifying","fifa.worldq.conmebol":"World Cup Qualifying","fifa.worldq.concacaf":"World Cup Qualifying",
-  "fifa.friendly":"International Friendly","concacaf.nations.league":"CONCACAF Nations League","conmebol.copa_america":"Copa América"
+  "fifa.friendly":"International Friendlies","concacaf.nations.league":"CONCACAF Nations League","conmebol.copa_america":"Copa América"
 };
 function displayLeagueName(id,raw){
   const key=String(id||"").trim(),source=String(raw||"").trim();
@@ -1313,7 +1313,7 @@ function displayLeagueName(id,raw){
   }).join(" ");
 }
 const uidLeague={2395:"uefa.nations",3922:"fifa.friendly",19267:"concacaf.nations.league"};
-const MAJOR_LEAGUES=new Set(Object.keys(leagueNames).filter(x=>x!=="fifa.friendly"));
+const MAJOR_LEAGUES=new Set(Object.keys(leagueNames));
 function isMajorLeague(id){return !!id&&MAJOR_LEAGUES.has(id)};
 const MATCH_CONTEXT={"2026-10-05":{
 "cyprus|latvia":"This matchup continues to profile as a low-event game. Cyprus are unbeaten across the last four meetings, all four recent H2Hs have stayed under 2.5, and Latvia have managed only one goal through their opening three Nations League matches. That keeps the safer under markets near the top.",
