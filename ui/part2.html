@@ -439,7 +439,13 @@ function finalizeCandidateScores(g){
   if(!g?.model?.candidates?.length)return;
   for(const c of g.model.candidates){
     const base=c.modelScore??c.baseScore??c.score,external=(c.crossSources||0)*2,lineup=c.lineupDelta||0,userFit=c.userFitDelta||0,tracked=c.trackedDelta||0;
-    c.score=Math.max(55,Math.min(96,Math.round(base+external+lineup+userFit+tracked)));c.stars=stars(c.score);
+    c.score=Math.max(55,Math.min(96,Math.round(base+external+lineup+userFit+tracked)));
+    // Safety layer: very large handicap lines are highly opponent-strength sensitive.
+    // Without an independent confirming source, never promote them as an 80+ core play.
+    if(c.category==="Handicap"&&Math.abs(Number(c.handicapLine))>=3.5&&(c.crossSources||0)===0){
+      c.score=Math.min(c.score,79);c.safetyCap="large-handicap"
+    }
+    c.stars=stars(c.score);
     c.displayOdds=candidateAmerican(c);
     c.priceEligible=priceAllowed(c);
   }
