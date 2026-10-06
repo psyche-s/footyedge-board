@@ -289,16 +289,30 @@ function apiPredictionSignals(g){
 function marketCandidate(g,label){
   return g?.model?.candidates?.find(x=>normName(x.label)===normName(label))||null
 }
-function orderedQualifiedCandidates(g){
-  const all=(g?.model?.candidates||[]).filter(x=>x.score>=78&&priceAllowed(x));
-  const expected=g?.model?.expectedGoals?.total;
-  const u25=marketCandidate(g,"Under 2.5 Goals"),u35=marketCandidate(g,"Under 3.5 Goals");
-  const underProfile=Number.isFinite(expected)&&expected<=2.8&&u25?.score>=78&&u35?.score>=78&&priceAllowed(u25)&&priceAllowed(u35);
-  if(underProfile){
-    const rest=all.filter(x=>x!==u25&&x!==u35).sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
-    return [u25,u35,...rest]
+function rankingFamily(g,p){
+  const label=normName(p?.label||""),cat=p?.category||"";
+  if(cat==="Goals"){
+    if(label.includes("under"))return"goals:under";
+    if(label.includes("over"))return"goals:over";
   }
-  return [...all].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99))
+  if(cat==="Match Result"||cat==="Double Chance"){
+    const side=selectedSide(g,p)||"other";
+    return"result:"+side;
+  }
+  if(cat==="Team Goals")return"team-goals:"+(selectedSide(g,p)||label.replace(/\d.*/,""));
+  if(cat==="BTTS")return"btts";
+  return cat+":"+label
+}
+function orderedQualifiedCandidates(g){
+  const sorted=(g?.model?.candidates||[]).filter(x=>x.score>=78&&priceAllowed(x))
+    .sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99));
+  const seen=new Set(),ranked=[];
+  for(const p of sorted){
+    const family=rankingFamily(g,p);
+    if(seen.has(family))continue;
+    seen.add(family);ranked.push(p);
+  }
+  return ranked
 }
 function setRankedTop(g){
   const ranked=orderedQualifiedCandidates(g);
@@ -310,8 +324,8 @@ function setRankedTop(g){
 function finalizeCandidateScores(g){
   if(!g?.model?.candidates?.length)return;
   for(const c of g.model.candidates){
-    const base=c.modelScore??c.baseScore??c.score,external=(c.crossSources||0)*2,lineup=c.lineupDelta||0,userFit=c.userFitDelta||0;
-    c.score=Math.max(55,Math.min(96,Math.round(base+external+lineup+userFit)));c.stars=stars(c.score);
+    const base=c.modelScore??c.baseScore??c.score,external=(c.crossSources||0)*2,lineup=c.lineupDelta||0,userFit=c.userFitDelta||0,tracked=c.trackedDelta||0;
+    c.score=Math.max(55,Math.min(96,Math.round(base+external+lineup+userFit+tracked)));c.stars=stars(c.score);
     c.displayOdds=candidateAmerican(c);
     c.priceEligible=priceAllowed(c);
   }
@@ -360,10 +374,29 @@ function lineupNewsItems(g){
   for(const lineup of a.lineups||[])if(lineup.startXI.length>=8){out.push({team:lineup.team,type:"confirmed",source:"api",text:lineup.team+" confirmed XI"+(lineup.formation?" ("+lineup.formation+")":"")+": "+lineup.startXI.join(", ")})}
   return out
 }
+function meaningfulNewsItem(g,item){
+  if(!item?.text)return false;
+  if(item.type==="confirmed"||item.source==="api")return true;
+  const raw=String(item.text||"");
+  if(/no new injury concerns|no injury concerns|fully fit|clean bill of health/i.test(raw))return true;
+  if(item.type==="projected")return /expected|set to|likely|projected|same lineup|unchanged|partnered/i.test(raw);
+  if(item.type==="availability")return /suspend|banned|ruled out|will miss|without|unavailable|injur|fitness|doubt|hamstring|knee|ankle|muscle|illness/i.test(raw);
+  return false
+}
+function newsSemanticKey(g,item){
+  const team=normName(item?.team||teamSideForItem(g,item)||"unknown"),raw=String(item?.text||"");
+  if(/no new injury concerns|no injury concerns|fully fit|clean bill of health/i.test(raw))return team+":clear";
+  const people=peopleFromNews(g,raw).map(normName).sort().join("|");
+  if(people)return team+":"+String(item?.type||"news")+":"+people;
+  return team+":"+String(item?.type||"news")+":"+normName(raw).slice(0,65)
+}
 function latestNewsItems(g){
   const c=g?.context,verified=lineupNewsItems(g),preview=Array.isArray(c?.teamNews)?c.teamNews.filter(x=>x?.text).map(x=>({...x,source:"preview"})):[],fallback=c?.squadNews?[{team:null,type:"availability",source:"preview",text:c.squadNews}]:[],seen=new Set();
-  const rank=x=>x.source==="api"&&x.type==="availability"?5:x.type==="confirmed"?4:x.type==="availability"?3:x.type==="projected"?2:1;
-  return [...verified,...preview,...fallback].filter(item=>{const k=normName(item?.text||"");if(!k||seen.has(k))return false;seen.add(k);return true}).sort((a,b)=>rank(b)-rank(a)).slice(0,10)
+  const rank=x=>x.source==="api"&&x.type==="availability"?6:x.type==="confirmed"?5:/no new injury concerns|no injury concerns/i.test(String(x.text||""))?4:x.type==="availability"?3:x.type==="projected"?2:1;
+  return [...verified,...preview,...fallback].filter(item=>{
+    if(!meaningfulNewsItem(g,item))return false;
+    const k=newsSemanticKey(g,item);if(!k||seen.has(k))return false;seen.add(k);return true
+  }).sort((a,b)=>rank(b)-rank(a)).slice(0,8)
 }
 function selectedSide(g,p){
   const label=normName(p?.label||""),h=normName(g.home.name),a=normName(g.away.name);
@@ -398,6 +431,30 @@ function applyInstinctCalibration(g){
     }
     // Keep this as calibration, not a second model.
     p.userFitDelta=Math.max(-2,Math.min(2,d));p.userFitReason=reason;
+  }
+  finalizeCandidateScores(g)
+}
+
+function trackedPerformanceFamily(p){
+  const label=normName(p?.label||"");
+  if(p?.category==="Goals")return label.includes("under")?"goals_under":"goals_over";
+  if(p?.category==="Match Result")return"match_result";
+  if(p?.category==="Double Chance")return"double_chance";
+  if(p?.category==="Team Goals")return"team_goals";
+  if(p?.category==="BTTS")return"btts";
+  return normName(p?.category||"other").replace(/\s+/g,"_")
+}
+function applyTrackedPerformanceCalibration(g){
+  if(!g?.model?.candidates?.length)return;
+  const by=S.performance?.byFamily||{};
+  for(const p of g.model.candidates){
+    const rec=by[trackedPerformanceFamily(p)],n=Number(rec?.settled||0),rate=Number(rec?.hitRate);
+    let d=0;
+    if(n>=5&&Number.isFinite(rate)){
+      if(rate>=72)d=Math.min(1.25,(rate-68)/12);
+      else if(rate<48)d=-Math.min(1.25,(50-rate)/12);
+    }
+    p.trackedDelta=Math.max(-1.25,Math.min(1.25,d));
   }
   finalizeCandidateScores(g)
 }
@@ -500,43 +557,48 @@ function lineupCommentary(g,p){
 }
 
 function peopleFromNews(g,text){
-  const blocked=[normName(g.home.name),normName(g.away.name),"team news","squad news","nations league","world cup"];
+  const blocked=[normName(g.home.name),normName(g.away.name),"team news","squad news","nations league","world cup","monday","tuesday","wednesday","thursday","friday","saturday","sunday","however","nothing","as for"];
   const m=String(text||"").match(/\b[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+){1,2}\b/g)||[];
-  return [...new Set(m)].filter(x=>!blocked.some(b=>normName(x)===b)).slice(0,4)
+  return [...new Set(m)].filter(x=>!blocked.some(b=>normName(x)===b||normName(x).startsWith(b+" "))).slice(0,4)
 }
 function displayNewsText(g,item){
   if(!item)return"";
+  const raw=String(item.text||""),teamName=item.team||((teamSideForItem(g,item)==="home"?g.home:g.away)?.name)||"The team";
   if(item.type==="confirmed")return String(item.text||"");
+  if(/no new injury concerns|no injury concerns|fully fit|clean bill of health/i.test(raw))return teamName+" have no new injury concerns reported ahead of kickoff.";
   if(item.source==="api"){
-    const player=item.player||String(item.text||"").split(" — ")[0],reason=item.reason||String(item.text||"").split(" — ").slice(1).join(" — ");
-    return player+(reason?" is listed with "+reason.toLowerCase()+".":" is listed as unavailable.")
+    const player=item.player||raw.split(" — ")[0],reason=item.reason||raw.split(" — ").slice(1).join(" — ");
+    return reason?player+" is listed as unavailable due to "+reason.toLowerCase()+".":player+" is listed as unavailable."
   }
-  const raw=String(item.text||""),team=item.team?item.team+" — ":"",names=peopleFromNews(g,raw);
-  if(/suspend|sent off|yellow card/i.test(raw))return team+(names.length?names.join(", ")+" "+(names.length>1?"are":"is")+" unavailable because of suspension/disciplinary status.":"a suspension or disciplinary absence is flagged before kickoff.");
-  if(/injur|fitness|knee|hamstring|muscle|ankle|illness|ruled out|will miss|without|unavailable|doubt/i.test(raw))return team+(names.length?names.join(", ")+" "+(names.length>1?"are":"is")+" carrying an injury or availability concern.":"the latest preview flags an injury or availability concern.");
-  if(/same lineup|same lineups|continuity/i.test(raw))return team+"the projected XI is expected to remain largely unchanged.";
-  if(/set to play|expected to|likely to|partnered by|projected/i.test(raw))return team+(names.length?names.join(", ")+" "+(names.length>1?"are":"is")+" expected to feature in the projected XI.":"the projected XI points to selection continuity.");
-  return team+"the latest pre-match reporting includes a squad-selection update."
+  const names=peopleFromNews(g,raw),subject=names.length?names.join(", "):teamName;
+  if(/suspend|sent off|banned|yellow card/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" suspended and will miss the match.":teamName+" have a suspension to account for before kickoff.";
+  if(/ruled out|will miss|without|unavailable/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" expected to miss the match.":teamName+" are expected to be without at least one player.";
+  if(/doubt|fitness|late test/i.test(raw))return names.length?subject+" "+(names.length>1?"remain":"remains")+" a fitness doubt and will be assessed before kickoff.":teamName+" have a late fitness concern to monitor.";
+  if(/injur|knee|hamstring|muscle|ankle|illness/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" dealing with an injury concern ahead of kickoff.":teamName+" have an injury concern ahead of kickoff.";
+  if(/same lineup|same lineups|continuity|unchanged/i.test(raw))return teamName+" are expected to keep a largely unchanged starting XI.";
+  if(/set to play|expected to|likely to|partnered by|projected/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" expected to start.":teamName+" are expected to field a familiar starting XI.";
+  return teamName+" have a pre-match squad update, but no major confirmed change is clear yet."
 }
 function newsImpact(g,p,item){
   const text=String(item?.text||"");if(!text)return"";
+  if(/no new injury concerns|no injury concerns|fully fit|clean bill of health/i.test(text))return"Impact: no lineup downgrade is needed at this stage.";
   const side=teamSideForItem(g,item),signal=side?teamLineupSignal(g,side):null,opp=side==="home"?"away":"home";
-  const negative=/suspend|injur|ruled out|will miss|without|unavailable|doubt|sent off|yellow card|fitness issue|knee issue|hamstring|muscle|ankle|illness/i.test(text);
-  const attacker=/attack|forward|striker|winger|playmaker/i.test(text),defender=/defen|centre-back|center-back|full-back|goalkeeper|keeper/i.test(text),projected=/set to play|expected to|likely to|same lineup|same lineups|partnered by|projected/i.test(text);
-  if(item?.type==="confirmed")return"Impact: confirmed starters reduce uncertainty; the model still weighs the team’s underlying strength, opponent and market position.";
+  const negative=/suspend|banned|injur|ruled out|will miss|without|unavailable|doubt|sent off|fitness|knee|hamstring|muscle|ankle|illness/i.test(text);
+  const attacker=/attack|forward|striker|winger|playmaker/i.test(text),defender=/defen|centre-back|center-back|full-back|goalkeeper|keeper/i.test(text),projected=/set to play|expected to|likely to|same lineup|same lineups|partnered by|projected|unchanged/i.test(text);
+  if(item?.type==="confirmed")return"Impact: the confirmed XI reduces uncertainty and is reflected in the final projection.";
   if(negative&&signal){
     const adjusted=g?.model?.expectedGoals,edge=adjusted&&side?adjusted[side]-adjusted[opp]:signal.edge;
     if(signal.clearFavorite&&edge>=.4&&signal.absences<3){
-      if(attacker)return"Impact: the attacking ceiling is trimmed, but the team still projects as a clear favorite; the win angle is downgraded slightly rather than discarded.";
-      if(defender)return"Impact: defensive risk rises modestly, but the team still holds a clear post-lineup edge; result confidence is trimmed rather than flipped.";
-      return"Impact: a modest lineup downgrade is applied, but the team remains a clear favorite after strength, projected score and market context are considered.";
+      if(attacker)return"Impact: attacking depth takes a small hit, but the overall matchup still favors this side.";
+      if(defender)return"Impact: defensive risk rises slightly, but the overall matchup edge remains intact.";
+      return"Impact: this trims confidence slightly without changing the broader matchup view.";
     }
-    if(signal.absences>=3||signal.major)return"Impact: this is a meaningful availability downgrade and the projected score/result confidence are reduced accordingly.";
+    if(signal.absences>=3||signal.major)return"Impact: this is a meaningful availability downgrade, so the projected score and result confidence are reduced.";
   }
-  if(negative&&attacker)return"Impact: reduced attacking depth lowers that side’s scoring ceiling and weakens aggressive scoring or win angles.";
-  if(negative&&defender)return"Impact: a defensive absence raises scoring volatility and slightly weakens clean-sheet or under angles.";
-  if(negative)return"Impact: the availability change adds lineup risk and is reflected as a bounded confidence adjustment.";
-  if(projected)return"Impact: projected XI continuity supports keeping the recent-form weighting broadly unchanged.";
+  if(negative&&attacker)return"Impact: the absence lowers the attacking ceiling and makes aggressive scoring angles less appealing.";
+  if(negative&&defender)return"Impact: the absence increases defensive volatility and weakens clean-sheet or low-total angles slightly.";
+  if(negative)return"Impact: squad depth is reduced, so the projection receives a modest downgrade.";
+  if(projected)return"Impact: expected lineup continuity supports keeping the current projection broadly unchanged.";
   return""
 }
 function itemBelongsToTeam(g,item,team){
@@ -688,7 +750,7 @@ async function load(date=S.date){
     await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
     const newsPool=games.filter(g=>g.model?.top?.score>=78).sort((a,b)=>(b.model?.top?.score||0)-(a.model?.top?.score||0)).slice(0,6);
     await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
-    for(const g of games)applyInstinctCalibration(g);
+    for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
     S.games=games;S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
@@ -699,7 +761,7 @@ function renderModal(g){
   const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
-    const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,3);
+    const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
     const body=items.length?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,g.model?.top,item)?'<div class="newsImpact">'+esc(newsImpact(g,g.model?.top,item))+'</div>':'')+'</div>').join(""):'<div class="teamNewsItem"><div class="newsText mutedNews">No verified absence or lineup change has been reported yet.</div></div>';
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
