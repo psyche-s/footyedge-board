@@ -179,6 +179,31 @@ function evText(v){return v==null||!Number.isFinite(v)?"—":`${v>=0?"+":""}${(v
 function formHTML(v){const a=String(v||"").trim().split(/\s+/).filter(x=>/^[WDL]$/.test(x)).slice(0,5);return a.length?a.map(x=>`<span class="formChip ${x}">${x}</span>`).join(""):"—"}
 function blendedProb(e,m,v,h){if(e==null)return null;let x=e,w=.6;if(v!=null){x+=v*.22;w+=.22}if(h!=null){x+=h*.1;w+=.1}if(m!=null){x+=m*(1-w);w=1}else x/=w;return Math.max(.03,Math.min(.97,x))}
 function conf(e,m,s,v,h){const x=blendedProb(e,m,v,h);if(x==null)return 0;let z=52+(x-.5)*74+Math.min(1,s/14)*5;if(m!=null)z+=(1-Math.min(1,Math.abs(e-m))-.5)*6;return Math.max(55,Math.min(s<6?87:s<10?91:96,Math.round(z)))}
+function leadingRun(items,fn){let n=0;for(const x of items){if(!fn(x))break;n++}return n}
+function localTrendFacts(g,hh,ah){
+  const facts=[],push=(text,tags)=>facts.push({text,tags});
+  const teamFacts=(name,h)=>{
+    if(!h.length)return;
+    const n=Math.min(10,h.length),sample=h.slice(0,n),winless=leadingRun(sample,x=>x.result!=="W"),unbeaten=leadingRun(sample,x=>x.result!=="L"),scoreless=leadingRun(sample,x=>x.gf===0);
+    const failed=sample.filter(x=>x.gf===0).length,under25=sample.filter(x=>x.gf+x.ga<=2).length,under35=sample.filter(x=>x.gf+x.ga<=3).length;
+    if(winless>=4)push(name+" are winless in their last "+winless+".",["result","form"]);
+    else if(unbeaten>=4)push(name+" are unbeaten in their last "+unbeaten+".",["result","form"]);
+    if(scoreless>=3)push(name+" have failed to score in "+scoreless+" straight matches.",["team goals","btts","under"]);
+    else if(n>=5&&failed>=Math.ceil(n*.5))push(name+" failed to score in "+failed+" of their last "+n+".",["team goals","btts","under"]);
+    if(n>=5&&under25>=Math.ceil(n*.7))push(under25+" of "+name+"'s last "+n+" finished under 2.5 goals.",["under"]);
+    else if(n>=5&&under35>=Math.ceil(n*.8))push(under35+" of "+name+"'s last "+n+" finished under 3.5 goals.",["under"]);
+  };
+  teamFacts(g.home.name,hh);teamFacts(g.away.name,ah);
+  const h2=hh.filter(x=>String(x.opp)===String(g.away.id)).slice(0,5);
+  if(h2.length>=2){
+    const n=h2.length,hw=h2.filter(x=>x.result==="W").length,aw=h2.filter(x=>x.result==="L").length,dr=n-hw-aw,u25=h2.filter(x=>x.gf+x.ga<=2).length,btts=h2.filter(x=>x.gf>0&&x.ga>0).length;
+    push("Last "+n+" H2Hs: "+g.home.name+" "+hw+" wins, "+g.away.name+" "+aw+" wins, "+dr+" draws.",["h2h","result"]);
+    if(u25>=Math.ceil(n*.6))push(u25+" of the last "+n+" H2Hs finished under 2.5 goals.",["h2h","under"]);
+    if(btts>=Math.ceil(n*.7))push("Both teams scored in "+btts+" of the last "+n+" H2Hs.",["h2h","btts"]);
+  }
+  return facts.slice(0,8)
+}
+
 function model(g,hh,ah){
   const hAll=stats(hh),aAll=stats(ah);
   const hCompHist=hh.filter(x=>x.league===g.league),aCompHist=ah.filter(x=>x.league===g.league);
@@ -238,7 +263,7 @@ function model(g,hh,ah){
     x.internalDelta=d;x.modelScore=Math.max(55,Math.min(96,x.score+d));x.score=x.modelScore;x.baseScore=x.modelScore;x.stars=stars(x.score);
   }
   c.sort((x,y)=>y.score-x.score||(y.ev??-99)-(x.ev??-99));
-  const m={top:null,top3:[],rankedCandidates:[],candidates:c,home:h,away:a,displayHome:hAll,displayAway:aAll,expectedGoals:{home:expHome,away:expAway,total:expTotal},sample:{home:h.n,away:a.n,h2:h2.length}};
+  const m={top:null,top3:[],rankedCandidates:[],candidates:c,home:h,away:a,displayHome:hAll,displayAway:aAll,expectedGoals:{home:expHome,away:expAway,total:expTotal},sample:{home:h.n,away:a.n,h2:h2.length},trendFacts:localTrendFacts(g,hh,ah)};
   const gg={...g,model:m};setRankedTop(gg);
   return m
 }
@@ -334,10 +359,11 @@ function finalizeCandidateScores(g){
 }
 function applyContextCrossCheck(g){
   if(!g?.model?.candidates?.length)return;
-  const fw=contextSignals(g),api=apiPredictionSignals(g);
+  const fw=contextSignals(g),api=apiPredictionSignals(g),daily=Array.isArray(g?.dailyInsight?.supportedMarkets)?g.dailyInsight.supportedMarkets:[];
   for(const c of g.model.candidates){
-    const fwAgree=fw.some(x=>sameMarket(c.label,x)),apiAgree=api.some(x=>sameMarket(c.label,x)),sources=Number(fwAgree)+Number(apiAgree);
-    c.contextAgree=fwAgree;c.apiAgree=apiAgree;c.crossSources=sources;
+    const fwAgree=fw.some(x=>sameMarket(c.label,x)),apiAgree=api.some(x=>sameMarket(c.label,x)),researchAgree=daily.some(x=>sameMarket(c.label,x));
+    const sources=Math.min(2,Number(fwAgree)+Number(apiAgree)+Number(researchAgree));
+    c.contextAgree=fwAgree;c.apiAgree=apiAgree;c.researchAgree=researchAgree;c.crossSources=sources;
   }
   finalizeCandidateScores(g);
 }
@@ -716,24 +742,26 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload]=await Promise.all([
       json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?json("/data/latest-scoreboard.json"):Promise.reject(new Error("Scoreboard unavailable"))),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-fixtures.json").catch(()=>null):null),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      json("/data/performance/summary.json?v=53").catch(()=>null)
+      json("/data/performance/summary.json?v=53").catch(()=>null),
+      json('/data/daily-insights-'+S.date+'.json?v=1').catch(()=>null)
     ]);
-    S.performance=performancePayload;
+    S.performance=performancePayload;S.insights=insightsPayload;
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
+    const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
     let games=(p.events||[]).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
       const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
       const base=marketOdds(c.odds?.[0]||{}),extra=oddsFromFootball(oddsEntries.get(apiFixtureId)||oddsEntries.get(String(e.id)),homeName,awayName);
       const apiPrimary=Boolean(apiFixture)&&!fixturesPayload?._footyedgeFallback,apiStatus=apiFixture?.fixture?.status||{},apiShort=String(apiStatus.short||"");
       const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
-      return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false}
+      return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null}
     }).filter(g=>isMajorLeague(g.league));
 
     let liveOddsPayload=null,dailyOddsPayload=null;
@@ -765,6 +793,8 @@ function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
   const top3=g.model?.top?(g.model?.top3||[]):[];
   const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div><p class="candidateCommentary">${esc(cardCommentary(g,x))}</p></section>`}).join(""):'<div class="pass">PASS — no market cleared the model threshold.</div>';
+  const supportFacts=researchFactsForPick(g,g.model?.top,3);
+  const researchHtml=supportFacts.length?'<section class="researchBox"><div class="researchTitle">WHY THIS PICK FITS</div><div class="researchFacts">'+supportFacts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div></section>':"";
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
@@ -772,7 +802,7 @@ function renderModal(g){
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}${researchHtml}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf||0).toFixed(2)} / ${(g.model?.home?.ga||0).toFixed(2)}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf||0).toFixed(2)} / ${(g.model?.away?.ga||0).toFixed(2)}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
