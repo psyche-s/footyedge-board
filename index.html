@@ -3,32 +3,119 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta name="theme-color" content="#031008">
-<title>FootyEdge</title>
+<title>FootyEdge — Soccer Research & Picks</title>
 <style>
-html,body{margin:0;min-height:100%;background:#031008;color:#fff;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-#boot{min-height:100vh;display:grid;place-items:center;color:#94a99c;font-size:13px}
-.spinner{width:26px;height:26px;border:3px solid #173624;border-top-color:#43df88;border-radius:50%;animation:s .8s linear infinite;margin:0 auto 10px}
-@keyframes s{to{transform:rotate(360deg)}}
+:root{--bg:#031008;--panel:rgba(6,24,14,.88);--panel2:#07160d;--line:#1c442d;--text:#f4f8f5;--muted:#93a89c;--green:#47e590;--green2:#27c874}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% 0,rgba(56,223,132,.08),transparent 32rem),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:inherit;text-decoration:none}.shell{min-height:100vh}
+.nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:24px;max-width:1180px;margin:auto;padding:0 22px;border-bottom:1px solid rgba(65,126,88,.18)}
+.logo{font-weight:950;font-size:23px;letter-spacing:-1px}.logo span{color:var(--green)}
+.links{display:flex;align-items:center;gap:26px}.links a{font-size:13px;font-weight:750;color:#9eb0a6}.links a.active,.links a:hover{color:#fff}.links a.active:after{content:"";display:block;height:2px;background:var(--green);margin-top:7px;border-radius:2px}
+.hero{max-width:1180px;margin:0 auto;padding:28px 22px 24px}
+.heroVisual{position:relative;min-height:365px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#07150d center/cover no-repeat;display:flex;align-items:flex-end;box-shadow:0 28px 70px rgba(0,0,0,.28)}
+.heroVisual:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,9,5,.08) 5%,rgba(2,10,6,.15) 36%,rgba(2,10,6,.88) 100%),linear-gradient(90deg,rgba(2,10,6,.55),transparent 38%,transparent 62%,rgba(2,10,6,.42))}
+.heroCopy{position:relative;z-index:1;padding:34px;max-width:720px}.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:900}.heroCopy h1{font-size:58px;line-height:.95;letter-spacing:-3px;margin:8px 0 10px}.heroCopy h1 span{color:var(--green)}.tag{font-size:18px;color:#dce7e0;font-weight:700;margin:0}
+.grid{display:grid;grid-template-columns:1.1fr .75fr 1.15fr;gap:14px;margin-top:14px}.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(8,27,16,.94),rgba(5,20,12,.94));border-radius:18px;padding:20px;min-width:0}.card h2{font-size:18px;margin:0 0 11px}.card h2 span{color:var(--green)}.about p{margin:0;color:#b6c6bd;font-size:13px;line-height:1.62}.about .micro{margin-top:12px;color:#7f9588;font-size:11px}
+.rate{display:grid;place-items:center;text-align:center}.rateLabel{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8da194;font-weight:850}.rateStrong{font-size:50px;font-weight:950;letter-spacing:-2px;margin:8px 0 0}.ratePct{font-size:17px;color:var(--green);font-weight:900}.rateMeta{font-size:11px;color:#809589;margin-top:8px}
+.support{margin-top:16px}.support img{max-width:100%;height:auto;display:block}
+.topCard{padding:0;overflow:hidden}.topHead{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid #12301f}.topHead h2{margin:0}.topHead small{color:#71887b;font-size:10px}.topList{display:grid;padding:9px 12px}.pick{display:grid;grid-template-columns:27px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 6px;border-bottom:1px solid #10291b}.pick:last-child{border-bottom:0}.rank{width:26px;height:26px;border-radius:8px;background:#123522;color:var(--green);display:grid;place-items:center;font-size:10px;font-weight:900}.fixture{font-size:12px;font-weight:800}.selection{font-size:10px;color:#88a095;margin-top:3px}.confidence{font-size:11px;color:#d9e7de;font-weight:850}.cta{display:flex;justify-content:center;align-items:center;gap:9px;margin:5px 12px 13px;padding:13px 16px;border-radius:12px;background:linear-gradient(135deg,#4be995,#27cc76);color:#031008;font-weight:900;font-size:13px}.loading{padding:24px;text-align:center;color:#73897c;font-size:11px}
+.footer{max-width:1180px;margin:0 auto;padding:0 22px 28px;color:#5f7769;font-size:10px;text-align:center}
+#boardProbe{display:none}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.topCard{grid-column:1/-1}}
+@media(max-width:640px){.nav{height:58px;padding:0 14px}.logo{font-size:19px}.links{gap:14px}.links a{font-size:10px}.hero{padding:16px 12px 18px}.heroVisual{min-height:250px;border-radius:17px;background-position:center}.heroCopy{padding:22px}.heroCopy h1{font-size:39px;letter-spacing:-2px}.tag{font-size:13px}.grid{grid-template-columns:1fr;gap:10px;margin-top:10px}.topCard{grid-column:auto}.card{border-radius:14px;padding:16px}.topCard{padding:0}.rateStrong{font-size:43px}.footer{padding:0 14px 22px}}
 </style>
 </head>
 <body>
-<div id="boot"><div><div class="spinner"></div>Loading FootyEdge…</div></div>
+<div class="shell">
+  <nav class="nav">
+    <a class="logo" href="/">Footy<span>Edge</span></a>
+    <div class="links">
+      <a class="active" href="/">Home</a>
+      <a href="/picks.html">Today’s Picks</a>
+      <a href="/about.html">About</a>
+    </div>
+  </nav>
+
+  <main class="hero">
+    <section class="heroVisual" id="heroVisual">
+      <div class="heroCopy">
+        <div class="eyebrow">Soccer intelligence</div>
+        <h1>Footy<span>Edge</span></h1>
+        <p class="tag">Sharper soccer research. Smarter picks.</p>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card about">
+        <h2><span>About</span> FootyEdge</h2>
+        <p>FootyEdge is completely free to use. It brings stats, trends, form, H2H, market pricing and model-based analysis into one clean place so you can research matches and make your own picks.</p>
+        <p class="micro">Nothing is behind a paywall. No picks are guaranteed. Gamble responsibly.</p>
+        <div class="support">
+          <a href="https://www.buymeacoffee.com/sPsyche" target="_blank" rel="noopener"><img src="https://img.buymeacoffee.com/button-api/?text=Support%20FootyEdge&emoji=%E2%98%95&slug=sPsyche&button_colour=5F7FFF&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00" alt="Support FootyEdge"></a>
+        </div>
+      </article>
+
+      <article class="card rate">
+        <div class="rateLabel">Current hit rate</div>
+        <div class="rateStrong" id="record">—</div>
+        <div class="ratePct" id="hitRate">Loading…</div>
+        <div class="rateMeta" id="rateMeta">Official tracked Top 5</div>
+      </article>
+
+      <article class="card topCard">
+        <div class="topHead"><h2>Today’s Top 5 Picks</h2><small>Live snapshot</small></div>
+        <div class="topList" id="topList"><div class="loading">Loading today’s published picks…</div></div>
+        <a class="cta" href="/picks.html">See all games &amp; analysis for today <span>→</span></a>
+      </article>
+    </section>
+  </main>
+  <footer class="footer">FootyEdge · Free soccer research &amp; model analysis · Gamble responsibly</footer>
+</div>
+<iframe id="boardProbe" src="/picks.html?landing=1" title="FootyEdge live board"></iframe>
+<script src="/assets/hero-0.js"></script><script src="/assets/hero-1.js"></script><script src="/assets/hero-2.js"></script><script src="/assets/hero-3.js"></script><script src="/assets/hero-4.js"></script><script src="/assets/hero-5.js"></script>
 <script>
-const PARTS=["/ui/part0.html?v=62","/ui/part1.html?v=62","/ui/part2.html?v=62"];
-Promise.all(PARTS.map(url=>fetch(url,{cache:"no-store"}).then(r=>{
-  if(!r.ok) throw new Error("UI bundle "+r.status);
-  return r.text();
-}))).then(parts=>{
-  const html=parts.join("");
-  document.open();
-  document.write(html);
-  document.close();
-}).catch(err=>{
-  console.error(err);
-  document.getElementById("boot").innerHTML='<div style="padding:28px;text-align:center"><b style="color:#fff">Unable to load FootyEdge.</b><br><span style="color:#7f9388">Please refresh the page.</span></div>';
-});
+if(window.__FOOTYEDGE_HERO)document.getElementById("heroVisual").style.backgroundImage="url(data:image/webp;base64,"+window.__FOOTYEDGE_HERO+")";
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+const todayToronto=()=>{const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+"-"+o.month+"-"+o.day};
+function renderTop5(top){
+  const el=document.getElementById("topList");
+  if(!top?.length){el.innerHTML='<div class="loading">No Top 5 has been published yet.</div>';return}
+  el.innerHTML=top.slice(0,5).map((x,i)=>{
+    const p=x.pick||x;
+    const fixture=(x.home||"")+(x.away?" vs "+x.away:"");
+    const selection=p.label||x.selection||"Pick";
+    const conf=p.score??x.confidence;
+    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%":"")+'</div></div>';
+  }).join("");
+}
+fetch("/data/performance/summary.json?v=63",{cache:"no-store"}).then(r=>r.json()).then(p=>{
+  const m=p.month||{};
+  document.getElementById("record").textContent=(m.hits??0)+"–"+(m.misses??0);
+  document.getElementById("hitRate").textContent=m.hitRate==null?"No settled picks yet":Math.round(m.hitRate)+"% hit rate";
+  document.getElementById("rateMeta").textContent=(m.settled??0)+" official picks tracked this month";
+}).catch(()=>{document.getElementById("hitRate").textContent="Tracking unavailable"});
+
+(async()=>{
+  const date=todayToronto();
+  try{
+    const r=await fetch("/data/boards/"+date+".json?v=63",{cache:"no-store"});
+    if(r.ok){const a=await r.json();if(a?.top5?.length){renderTop5(a.top5);return}}
+  }catch{}
+  const frame=document.getElementById("boardProbe");
+  let tries=0;
+  const timer=setInterval(()=>{
+    tries++;
+    try{
+      const fn=frame.contentWindow?.FootyEdgeArchive;
+      if(typeof fn==="function"){
+        const data=fn();
+        if(data?.top5){clearInterval(timer);renderTop5(data.top5);return}
+      }
+    }catch{}
+    if(tries>50){clearInterval(timer);renderTop5([])}
+  },500);
+})();
 </script>
 </body>
 </html>
