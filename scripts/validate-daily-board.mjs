@@ -12,7 +12,10 @@ function marketSupportFromFacts(market,facts,fixture){
   for(const f of facts||[])for(const t of (typeof f==="string"?[]:(f.tags||[])))tags.add(norm(t));
   if(m.includes("under"))return tags.has("under");
   if(m.includes("over"))return tags.has("over");
-  if(m.includes("btts"))return tags.has("btts");
+  if(m.includes("btts")){
+    if(m.includes("no"))return tags.has("btts")||tags.has("defense")||tags.has("team goals")||tags.has("under");
+    return tags.has("btts");
+  }
   if(m.includes("draw")||m.includes("ml")){
     const team=m.includes(norm(fixture.home))?norm(fixture.home):m.includes(norm(fixture.away))?norm(fixture.away):"";
     if(!team)return tags.has("result");
@@ -43,7 +46,7 @@ async function main(){
   if(insights.date!==date)fail("Daily insights date mismatch");
   if(odds.date!==date)fail("Daily odds date mismatch");
 
-  const fixtures=new Map((base.fixtures||[]).map(x=>[norm(x.home)+"|"+norm(x.away),x]));
+  const fixtures=new Map((base.fixtures||[]).map(x=>[norm(x.home?.name||x.home)+"|"+norm(x.away?.name||x.away),x]));
   if(!fixtures.size)fail("Research base has no fixtures");
 
   const insightKeys=new Set();
@@ -78,6 +81,12 @@ async function main(){
       if(!marketSupportFromFacts(market,baseFixture?.facts||[],{home:item.home,away:item.away})){
         fail("Supported market lacks matching deterministic evidence: "+item.home+" vs "+item.away+" :: "+market);
       }
+    }
+    for(const market of item.markets||[]){
+      const d=Number(market?.decimal);
+      if(!market?.label||!market?.price||!Number.isFinite(d)||d<=1)fail("Research market lacks verified native price metadata: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
+      if(d<1.25)fail("Research market is worse than the -400 floor: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
+      if(!market?.source||!market?.reason)fail("Research market lacks source/reason: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
     }
   }
 
