@@ -379,8 +379,11 @@ function meaningfulNewsItem(g,item){
   if(item.type==="confirmed"||item.source==="api")return true;
   const raw=String(item.text||"");
   if(/no new injury concerns|no injury concerns|fully fit|clean bill of health/i.test(raw))return true;
-  if(item.type==="projected")return /expected|set to|likely|projected|same lineup|unchanged|partnered/i.test(raw);
-  if(item.type==="availability")return /suspend|banned|ruled out|will miss|without|unavailable|injur|fitness|doubt|hamstring|knee|ankle|muscle|illness/i.test(raw);
+  if(item.type==="projected"){
+    if(item.team&&!normName(raw).includes(normName(item.team)))return false;
+    return /expected|set to|likely|projected|same lineup|unchanged|partnered/i.test(raw)
+  }
+  if(item.type==="availability")return /suspend|banned|ruled out|will miss|unavailable|injur|fitness|doubt|hamstring|knee|ankle|muscle|illness/i.test(raw);
   return false
 }
 function newsSemanticKey(g,item){
@@ -392,7 +395,7 @@ function newsSemanticKey(g,item){
 }
 function latestNewsItems(g){
   const c=g?.context,verified=lineupNewsItems(g),preview=Array.isArray(c?.teamNews)?c.teamNews.filter(x=>x?.text).map(x=>({...x,source:"preview"})):[],fallback=c?.squadNews?[{team:null,type:"availability",source:"preview",text:c.squadNews}]:[],seen=new Set();
-  const rank=x=>x.source==="api"&&x.type==="availability"?6:x.type==="confirmed"?5:/no new injury concerns|no injury concerns/i.test(String(x.text||""))?4:x.type==="availability"?3:x.type==="projected"?2:1;
+  const rank=x=>x.source==="api"&&x.type==="availability"?6:x.type==="confirmed"?5:x.type==="availability"?4:/no new injury concerns|no injury concerns/i.test(String(x.text||""))?3:x.type==="projected"?2:1;
   return [...verified,...preview,...fallback].filter(item=>{
     if(!meaningfulNewsItem(g,item))return false;
     const k=newsSemanticKey(g,item);if(!k||seen.has(k))return false;seen.add(k);return true
@@ -572,7 +575,7 @@ function displayNewsText(g,item){
   }
   const names=peopleFromNews(g,raw),subject=names.length?names.join(", "):teamName;
   if(/suspend|sent off|banned|yellow card/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" suspended and will miss the match.":teamName+" have a suspension to account for before kickoff.";
-  if(/ruled out|will miss|without|unavailable/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" expected to miss the match.":teamName+" are expected to be without at least one player.";
+  if(/ruled out|will miss|unavailable/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" expected to miss the match.":teamName+" are expected to have at least one player unavailable.";
   if(/doubt|fitness|late test/i.test(raw))return names.length?subject+" "+(names.length>1?"remain":"remains")+" a fitness doubt and will be assessed before kickoff.":teamName+" have a late fitness concern to monitor.";
   if(/injur|knee|hamstring|muscle|ankle|illness/i.test(raw))return names.length?subject+" "+(names.length>1?"are":"is")+" dealing with an injury concern ahead of kickoff.":teamName+" have an injury concern ahead of kickoff.";
   if(/same lineup|same lineups|continuity|unchanged/i.test(raw))return teamName+" are expected to keep a largely unchanged starting XI.";
@@ -583,7 +586,7 @@ function newsImpact(g,p,item){
   const text=String(item?.text||"");if(!text)return"";
   if(/no new injury concerns|no injury concerns|fully fit|clean bill of health/i.test(text))return"Impact: no lineup downgrade is needed at this stage.";
   const side=teamSideForItem(g,item),signal=side?teamLineupSignal(g,side):null,opp=side==="home"?"away":"home";
-  const negative=/suspend|banned|injur|ruled out|will miss|without|unavailable|doubt|sent off|fitness|knee|hamstring|muscle|ankle|illness/i.test(text);
+  const negative=/suspend|banned|injur|ruled out|will miss|unavailable|doubt|sent off|fitness|knee|hamstring|muscle|ankle|illness/i.test(text);
   const attacker=/attack|forward|striker|winger|playmaker/i.test(text),defender=/defen|centre-back|center-back|full-back|goalkeeper|keeper/i.test(text),projected=/set to play|expected to|likely to|same lineup|same lineups|partnered by|projected|unchanged/i.test(text);
   if(item?.type==="confirmed")return"Impact: the confirmed XI reduces uncertainty and is reflected in the final projection.";
   if(negative&&signal){
