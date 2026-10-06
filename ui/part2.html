@@ -686,7 +686,7 @@ function renderPerformance(){
   document.getElementById("perfRecord").textContent=(month.hits||0)+"-"+(month.misses||0)+((month.pending||0)?" · "+month.pending+" pending":"");
   document.getElementById("perfWeekRate").textContent=pctRate(week.hitRate);
   document.getElementById("perfWeekRecord").textContent=(week.hits||0)+"-"+(week.misses||0)+((week.pending||0)?" · "+week.pending+" pending":"");
-  document.getElementById("previousDate").textContent=showingCurrent?"Today’s Top 5 · pending":p.previousDate?(niceDate(p.previousDate)+(p.previousBoardCount?" · "+p.previousBoardCount+" boards":"")+(p.previousRecord?" · "+p.previousRecord.hits+"-"+p.previousRecord.misses:"")):"No settled board yet";
+  document.getElementById("previousDate").textContent=showingCurrent?"Today’s Top 5 · pending":p.previousDate?(niceDate(p.previousDate)+(p.previousBoardCount?" · "+p.previousBoardCount+" "+(p.previousBoardCount===1?"board":"boards"):"")+(p.previousRecord?" · "+p.previousRecord.hits+"-"+p.previousRecord.misses:"")):"No settled board yet";
   const el=document.getElementById("previousList");
   if(!previous.length){el.innerHTML='<span class="previousEmpty">No tracked picks yet</span>';return}
   el.innerHTML=previous.slice(0,10).map((x,i)=>{
@@ -722,7 +722,7 @@ async function load(date=S.date){
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      json("/data/performance/summary.json?v=52").catch(()=>null)
+      json("/data/performance/summary.json?v=53").catch(()=>null)
     ]);
     S.performance=performancePayload;
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
