@@ -94,7 +94,7 @@ async function main(){
   for(const e of odds.events||[]){
     const k=norm(e.home)+"|"+norm(e.away);oddsKeys.add(k);
     const source=String(e.provider||e.mlBook?.name||"");
-    const prices=[e.homeML,e.drawML,e.awayML,...Object.values(e.totals||{}).flatMap(t=>[t?.over,t?.under])].filter(v=>v!=null);
+    const prices=[e.homeML,e.drawML,e.awayML,...Object.values(e.totals||{}).flatMap(t=>[t?.over,t?.under]),...(e.spreads||[]).flatMap(s=>[s?.home,s?.away])].filter(v=>v!=null);
     for(const p of prices){
       const n=Number(String(p).replace("+",""));if(!Number.isFinite(n))fail("Invalid odds value for "+e.home+" vs "+e.away+": "+p);
     }
