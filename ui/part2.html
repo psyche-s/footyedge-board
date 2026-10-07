@@ -877,7 +877,7 @@ async function load(date=S.date){
           const posted=oddsFromDaily(entry,g.home.name,g.away.name);
           if(posted)g.odds=posted;
         }
-      }else if(S.date===etDate()){
+      }else if(CAPTURE_MODE!=="draft"&&S.date===etDate()){
         for(const g of games)g.odds={provider:null,homeML:null,drawML:null,awayML:null,over25:null,under25:null,markets:{},marketBooks:{},probs:{home:null,draw:null,away:null,over25:null,under25:null}};
       }
     }
