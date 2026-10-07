@@ -179,7 +179,8 @@ test("Home and About support buttons use native matching CTA typography and heig
   assert.match(aboutPage,/ABOUT FOOTYEDGE/);
 });
 test("mobile Home hero favors full-banner visibility",()=>{
-  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroVisual\{[\s\S]*?background-size:contain[\s\S]*?background-repeat:no-repeat/);
+  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroArt\{width:100%;aspect-ratio:8\/1/);
+  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroArt img\{[\s\S]*?object-fit:contain/);
 });
 
 test("Support CTA keeps the original Buy Me a Coffee cup mark",()=>{
