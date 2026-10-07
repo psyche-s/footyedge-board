@@ -84,3 +84,12 @@ test("official board locks from preview at 06:00 Toronto",()=>{
   assert.match(freezer,/payload\.immutable=true/);
   assert.match(publisher,/Past 06:00 Toronto lock; refusing mutable refresh/)
 });
+
+test("league filters use recognizable Wikimedia marks for MLS, Bundesliga and Ligue 1",()=>{
+  assert.match(p2,/"usa\.1":"https:\/\/commons\.wikimedia\.org\/wiki\/Special:Redirect\/file\/Major_League_Soccer_logo\.svg"/);
+  assert.match(p2,/"ger\.1":"https:\/\/upload\.wikimedia\.org\/wikinews\/en\/1\/15\/Bundesliga_logo\.svg"/);
+  assert.match(p2,/"fra\.1":"https:\/\/commons\.wikimedia\.org\/wiki\/Special:Redirect\/file\/Logo_Ligue_1_McDonald%27s_2024\.svg"/)
+});
+test("current international slate has direct flag mappings",()=>{
+  for(const name of ["bolivia","el salvador","haiti","india","indonesia","jamaica","jordan","malaysia","new zealand","panama","philippines","russia","saudi arabia"])assert.ok(p2.includes('"'+name+'":'))
+});

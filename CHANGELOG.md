@@ -341,3 +341,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Deterministic research was moved to the Toronto 05:00 hour so the final morning re-run happens before the 06:00 lock. Rolling preview capture is scheduled around 05:35 with 06:05 + fallback lock checks.
 - UI impact: no redesign. Picks pages simply load the rolling preview when no locked board exists and prefer the official board once locked.
 - Deployment result: pending Git/Vercel and preview-workflow verification.
+
+
+## 2026-10-07 — v74 league artwork / international flag coverage
+**Status:** 🟡 Code ready / production deployment pending
+
+- Replaced the generic/ESPN league-filter artwork for MLS, Bundesliga and Ligue 1 with recognizable Wikimedia-hosted marks matching the owner-provided visual references. Existing Premier League, LaLiga and Serie A mappings remain unchanged.
+- Extended the national-team flag map for the currently researched international slate (including Bolivia, El Salvador, Haiti, India, Indonesia, Jamaica, Jordan, Malaysia, New Zealand, Panama, Philippines, Russia and Saudi Arabia) plus common adjacent international teams.
+- Country images retain the existing circular treatment; club crests remain natural-shape contain images. No card/layout/theme redesign.
+- Added regression coverage for the three requested league marks and current-slate country flags.
+- Tracking/model impact: none. Published historical boards remain unchanged.
+- Deployment result: pending.
