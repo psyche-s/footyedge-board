@@ -414,3 +414,13 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Removed Team News from collapsed match cards; Team News remains only in the expanded matchup drawer using the existing two-team card layout.
 - Hardened odds rendering so any verified exact price is displayed in American format derived from the stored exact decimal price, preventing fractional notation from leaking into the visible UI.
 - No pick, confidence, EV, market probability, reasoning, form, tracking record, or card layout changed.
+
+
+## 2026-10-07 — v80 live odds refresh + expanded-only Team News compatibility
+**Status:** 🟢 Data ready on main · works through live GitHub-backed board loader
+
+- Refreshed October 7 exact current prices from PokerStars Sports: Jordan or Draw **1.08** (display **-1250 American**) and Over 1.5 Goals **1.17** (display **-588 American**).
+- Updated implied Market % and EV from those exact current prices while keeping the locked selections/ranks/confidences unchanged.
+- Jordan 1+ Goal remains N/A because the exact team-total price still is not verified.
+- Added a temporary archive-data compatibility sentinel so the currently deployed legacy renderer suppresses Team News on collapsed match cards while preserving both Jordan and Armenia team-news cards inside expanded analysis.
+- Permanent expanded-only Team News code is already on main; once Vercel's free deployment quota clears, the compatibility sentinel can be removed.
