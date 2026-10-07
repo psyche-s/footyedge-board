@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-10-07T06:26:00Z",
+  "checkedAt": "2026-10-07T06:34:01.241Z",
   "timeZone": "America/Toronto",
-  "horizonDays": 4,
+  "horizonDays": 5,
   "days": [
     {
       "date": "2026-10-07",
@@ -83,20 +83,27 @@
       "scheduledGames": 27,
       "researchFixtures": 27,
       "published": false,
-      "status": "research-prepared-needs-history-refresh",
+      "status": "partial-exact-odds-ready-awaiting-research-news",
       "pending": [
-        "Refresh incomplete last-10 samples with prior-season all-competition history",
-        "Current editorial/team-news checks",
-        "Verified exact native sportsbook prices",
-        "Immutable first publication"
+        "Refresh incomplete all-competition last-10 samples where needed",
+        "Current editorial/team-news checks for every tracked fixture",
+        "Validate exact-price coverage against tracked fixtures",
+        "Validate and freeze qualifying first publication"
       ],
-      "researchFile": "data/research-base-2026-10-11.json"
+      "researchFile": "data/research-base-2026-10-11.json",
+      "liveSnapshot": {
+        "scoreboard": 273,
+        "fixtures": 273,
+        "odds": 102
+      },
+      "exactNativeOdds": 25
     }
   ],
   "notes": [
-    "Dated schedule/fixtures/market snapshots are saved for today + next 3 dates.",
-    "Future exact-odds lookup is enabled for the same 4-day horizon; future boards may publish early once ALL gates pass.",
+    "Dated schedule/fixtures/market snapshots are saved for today + next 4 dates.",
+    "Future exact-odds lookup is enabled for the same 5-day horizon; future boards may publish early once ALL gates pass.",
     "Oct 9 currently has 7 exact native-American priced fixtures and Oct 10 has 48. Picks remain unpublished where research/team-news validation is incomplete.",
-    "A future board freezes immediately when first published; no later automatic pick rewrites are allowed."
+    "A future board freezes immediately when first published; no later automatic pick rewrites are allowed.",
+    "Oct 11 currently has 25 exact native-American priced events after Toronto-date filtering. Picks remain unpublished until research/team-news validation is complete."
   ]
 }
