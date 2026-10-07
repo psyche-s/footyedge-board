@@ -238,3 +238,21 @@ test("locked board competition metadata remains authoritative after live fixture
   assert.match(p1,/if\(a\.league!=null\)g\.league=a\.league/);
   assert.match(p2,/modalTitle"\)\.textContent=teamDisplayName\(g,g\.home\)\+" vs "\+teamDisplayName\(g,g\.away\)/);
 });
+
+test("public schedule and research apply the configured tagged-event scope",()=>{
+  const availability=fs.readFileSync("assets/board-availability.js","utf8");
+  const research=fs.readFileSync("scripts/build-research-base.mjs","utf8");
+  assert.match(availability,/function excludedTaggedEvent/);
+  assert.match(availability,/!excludedTaggedEvent\(e\)/);
+  assert.match(research,/FootyEdgeAvailability\.excludedTaggedEvent/);
+  assert.match(p2,/filter\(e=>!FootyEdgeAvailability\.excludedTaggedEvent\?\.\(e\)\)\.map/);
+});
+
+test("October 7 corrected official board is locked and cleared",()=>{
+  const board=JSON.parse(fs.readFileSync("data/boards/2026-10-07.json","utf8"));
+  assert.equal(board.immutable,true);
+  assert.equal(board.state,"locked");
+  assert.equal(board.coverage,"full-board");
+  assert.deepEqual(board.top5,[]);
+  assert.deepEqual(board.games,[]);
+});
