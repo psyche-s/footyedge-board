@@ -469,3 +469,11 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Removed inherited form margin/min-height inside those tiles so W/D/L chips align consistently with the numeric GF/GA row.
 - Mobile uses the same alignment with proportional 58px flag/VS height and more compact metric tiles.
 - No picks, odds, write-ups, Team News content, model logic, tracking or historical data changed.
+
+
+## 2026-10-07 — v85 equal expanded metric tiles
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Made the four expanded-analysis metric boxes exactly equal in width and height as a uniform 2×2 grid.
+- Desktop/tablet tiles are fixed to the same 42px row height; mobile tiles use the same 36px row height.
+- No content, data, picks, odds, model logic, Team News, or other layout elements changed.

@@ -155,3 +155,9 @@ test("expanded modal centers VS between flags and normalizes four metric tiles",
   assert.match(p1,/\.metric \.form\{[\s\S]*?margin:0!important[\s\S]*?min-height:0!important/);
   assert.match(p1,/\.metric\{[\s\S]*?height:42px!important[\s\S]*?justify-content:center!important/);
 });
+
+test("expanded four metric boxes are identical size",()=>{
+  assert.match(p1,/v85 equal-size expanded metric tiles only/);
+  assert.match(p1,/grid-template-rows:repeat\(2,42px\)!important/);
+  assert.match(p1,/\.metric\{[\s\S]*?max-height:42px!important/);
+});

@@ -1453,6 +1453,36 @@ body{background:#031008}
   }
 }
 
+
+
+/* v85 equal-size expanded metric tiles only */
+.metrics{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  grid-template-rows:repeat(2,42px)!important;
+  grid-auto-rows:42px!important;
+  gap:7px!important;
+  align-items:stretch!important;
+}
+.metric{
+  width:100%!important;
+  height:42px!important;
+  min-height:42px!important;
+  max-height:42px!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:500px){
+  .metrics{
+    grid-template-rows:repeat(2,36px)!important;
+    grid-auto-rows:36px!important;
+  }
+  .metric{
+    height:36px!important;
+    min-height:36px!important;
+    max-height:36px!important;
+  }
+}
+
 </style>
 </head>
 <body>
