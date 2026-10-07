@@ -256,3 +256,12 @@ test("October 7 corrected official board is locked and cleared",()=>{
   assert.deepEqual(board.top5,[]);
   assert.deepEqual(board.games,[]);
 });
+
+test("empty locked boards resolve and show the next eligible game date",()=>{
+  const availability=fs.readFileSync("assets/board-availability.js","utf8");
+  assert.match(availability,/async function loadNext\(date,readJson\)/);
+  assert.match(availability,/nextGameDate:day/);
+  assert.match(availability,/No games today\./);
+  assert.match(p2,/FootyEdgeAvailability\.loadNext\(date,json\)/);
+  assert.match(p1,/board-availability\.js\?v=68/);
+});
