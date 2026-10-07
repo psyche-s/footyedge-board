@@ -181,3 +181,8 @@ test("Home and About support buttons use native matching CTA typography and heig
 test("mobile Home hero favors full-banner visibility",()=>{
   assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroVisual\{[\s\S]*?background-size:contain[\s\S]*?background-repeat:no-repeat/);
 });
+
+test("Support CTA keeps the original Buy Me a Coffee cup mark",()=>{
+  assert.match(home,/bmc-new-btn-logo\.svg/);
+  assert.match(aboutPage,/bmc-new-btn-logo\.svg/);
+});

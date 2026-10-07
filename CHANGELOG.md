@@ -503,3 +503,10 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Home About heading is now **ABOUT FOOTYEDGE**; the About page eyebrow uses the same wording in caps.
 - On mobile, the Home hero now prioritizes showing the complete banner artwork with contain-style sizing instead of aggressive cover cropping.
 - No board data, model logic, picks, odds, tracking or content logic changed.
+
+
+## 2026-10-07 — v89 restore original support cup mark
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Kept the new native FootyEdge support-button typography/height/radius, but restored the original Buy Me a Coffee yellow cup mark on Home and About.
+- No other layout, content, board or model changes.
