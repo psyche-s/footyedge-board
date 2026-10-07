@@ -890,7 +890,7 @@ async function load(date=S.date){
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
     const researchBaseMap=new Map((researchBasePayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home?.name||x.home,x.away?.name||x.away),x]));
-    let games=(p?.events||[]).map(e=>{
+    let games=(p?.events||[]).filter(e=>!FootyEdgeAvailability.excludedTaggedEvent?.(e)).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
       const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
       const base=marketOdds(c.odds?.[0]||{}),extra=oddsFromFootball(oddsEntries.get(apiFixtureId)||oddsEntries.get(String(e.id)),homeName,awayName);
