@@ -1798,6 +1798,10 @@ function applyBoardArchive(games,archive){
     const g=live||{id:String(a.id||fixtureMatchKey(a.home,a.away)),apiFixtureId:String(a.id||""),date:a.date||S.date+"T16:00:00Z",year:a.year||Number(S.date.slice(0,4)),
       league:a.league||null,leagueName:a.leagueName||"",leagueLogo:a.leagueLogo||null,
       home:a.teams?.home||{name:a.home},away:a.teams?.away||{name:a.away},live:false,done:false,detail:"",availabilityLoaded:false};
+    if(a.league!=null)g.league=a.league;
+    if(a.leagueName)g.leagueName=a.leagueName;
+    if(a.leagueLogo!=null)g.leagueLogo=a.leagueLogo;
+    if(a.gender!=null)g.gender=a.gender;
     const saved=a.model||{};
     g.model={...saved,top:restoreArchivedPick(a.top),top3:(a.top3||[]).map(restoreArchivedPick).filter(Boolean),
       ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(saved[k]||a.top3||[]).map(restoreArchivedPick).filter(Boolean)]))};
