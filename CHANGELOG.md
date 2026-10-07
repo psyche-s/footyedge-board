@@ -303,3 +303,10 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Hourly live snapshots now push dated scoreboard/fixtures/odds data for today + next 3 dates; `latest-*` continues to represent today only.
 - Future data/research does NOT publish future picks. Picks still require all verification gates and become immutable only on first publication.
 - No historical pick, confidence, odds, explanation or tracking record was modified.
+
+## 2026-10-07 — v70 deployed / verified
+**Status:** 🟢 Deployed and integrity-verified
+
+- Commit `bfe9107e9caff6007f851db691b48ffebb48899e` deployed to Vercel production and reached READY on the production aliases.
+- Published board integrity completed successfully; October 5–6 immutable board history remains unchanged.
+- Mobile date controls, transparent league fallback, restored league mappings, and the today + next-3-days live-data/research horizon are now on main.
