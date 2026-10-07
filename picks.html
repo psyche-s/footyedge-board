@@ -21,7 +21,7 @@ html,body{margin:0;min-height:100%;background:#031008;color:#fff;font-family:sys
 <script defer src="/_vercel/insights/script.js"></script>
 <script src="/assets/logos/registry.js?v=2"></script>
 <script>
-const PARTS=["/ui/part0.html?v=93","/ui/part1.html?v=93","/ui/part2.html?v=93"];
+const PARTS=["/ui/part0.html?v=94","/ui/part1.html?v=94","/ui/part2.html?v=94"];
 Promise.all(PARTS.map(url=>fetch(url,{cache:"no-store"}).then(r=>{
   if(!r.ok) throw new Error("UI bundle "+r.status);
   return r.text();
