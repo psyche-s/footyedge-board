@@ -621,3 +621,13 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - The look-ahead excludes tagged women’s/female fixtures and searches up to 21 days ahead.
 - Bumped the board-availability helper to v68 and Today’s Picks UI bundle to v98.
 - No locked picks, odds, tracking, historical audit entries or prior board backups were rewritten.
+
+
+## 2026-10-07 — v99 Premier League / MLS logo containment
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Reduced only the rendered Premier League and MLS competition marks inside the existing league-logo footprint so their full artwork remains visible instead of touching/cropping against the icon boundary.
+- Kept the existing 24×24 competition container, filter spacing, header height and card layout unchanged.
+- Bumped Today’s Picks UI bundle to v99.
+- October 7 remains the corrected immutable locked board with women’s soccer removed from the public scope.
+- No picks, odds, model logic, tracking or historical board data changed.
