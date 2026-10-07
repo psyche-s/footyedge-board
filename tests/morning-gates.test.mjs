@@ -148,3 +148,10 @@ test("Top 3 pick labels stay single-line while cards and stat boxes stay compact
   assert.match(p1,/\.top3Pick\{[\s\S]*?min-height:0!important/);
   assert.match(p1,/\.analysisContent \.statCell\{[\s\S]*?height:30px!important/);
 });
+
+test("expanded modal centers VS between flags and normalizes four metric tiles",()=>{
+  assert.match(p1,/v84 expanded modal alignment cleanup only/);
+  assert.match(p1,/\.modalTeams>\.vs\{[\s\S]*?height:72px!important[\s\S]*?align-items:center!important[\s\S]*?justify-content:center!important/);
+  assert.match(p1,/\.metric \.form\{[\s\S]*?margin:0!important[\s\S]*?min-height:0!important/);
+  assert.match(p1,/\.metric\{[\s\S]*?height:42px!important[\s\S]*?justify-content:center!important/);
+});

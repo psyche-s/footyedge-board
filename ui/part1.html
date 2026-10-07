@@ -1354,6 +1354,105 @@ body{background:#031008}
   }
 }
 
+
+
+/* v84 expanded modal alignment cleanup only */
+.modalTeams{
+  display:grid!important;
+  grid-template-columns:minmax(92px,1fr) 34px minmax(92px,1fr)!important;
+  column-gap:18px!important;
+  align-items:start!important;
+  justify-items:center!important;
+}
+.modalTeam{
+  width:100%!important;
+  min-width:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+}
+.modalTeams>.vs{
+  width:34px!important;
+  height:72px!important;
+  min-height:72px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  align-self:start!important;
+  margin:0!important;
+  padding:0!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.metrics{
+  gap:7px!important;
+  align-items:stretch!important;
+}
+.metric{
+  min-width:0!important;
+  height:42px!important;
+  min-height:42px!important;
+  padding:5px 7px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  text-align:center!important;
+}
+.metric small{
+  display:block!important;
+  margin:0!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.metric b{
+  display:block!important;
+  margin:0!important;
+  line-height:1!important;
+  text-align:center!important;
+}
+.metric .form{
+  margin:0!important;
+  min-height:0!important;
+  height:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+}
+@media(max-width:500px){
+  .modalTeams{
+    grid-template-columns:minmax(72px,1fr) 28px minmax(72px,1fr)!important;
+    column-gap:10px!important;
+  }
+  .modalTeams>.vs{
+    width:28px!important;
+    height:58px!important;
+    min-height:58px!important;
+    font-size:7px!important;
+  }
+  .metric{
+    height:36px!important;
+    min-height:36px!important;
+    padding:4px 5px!important;
+    gap:4px!important;
+  }
+  .metric small{
+    margin:0!important;
+    font-size:5.7px!important;
+  }
+  .metric b{
+    font-size:9.5px!important;
+  }
+  .metric .form{
+    margin:0!important;
+    min-height:0!important;
+    gap:3px!important;
+  }
+}
+
 </style>
 </head>
 <body>

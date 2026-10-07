@@ -458,3 +458,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Trimmed the five lower stat boxes vertically while keeping the value and label centered with even spacing.
 - Mobile receives the same proportional tightening without changing card structure, colors, typography hierarchy or data.
 - No model, pick, odds, confidence, write-up, tracking or historical data changed.
+
+
+## 2026-10-07 — v84 expanded modal metric / VS alignment
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Owner-requested alignment-only cleanup in expanded analysis; no redesign.
+- Centered the VS marker vertically between the two flag circles by giving the middle column the same visual height as the flags.
+- Tightened the four form/GF-GA tiles and centered each label/value pair as one unit.
+- Removed inherited form margin/min-height inside those tiles so W/D/L chips align consistently with the numeric GF/GA row.
+- Mobile uses the same alignment with proportional 58px flag/VS height and more compact metric tiles.
+- No picks, odds, write-ups, Team News content, model logic, tracking or historical data changed.
