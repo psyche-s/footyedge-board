@@ -715,11 +715,12 @@
 
 /* v38 performance tracking */
 .performanceBar{display:grid;grid-template-columns:220px minmax(0,1fr);gap:10px;margin:2px 0 12px;padding:10px;border:1px solid #183524;border-radius:14px;background:linear-gradient(180deg,#07170e,#06120a)}
-.performanceMain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
-.perfMonth,.perfWeek{min-width:0;padding:9px 10px;border:1px solid #183524;border-radius:10px;background:#08170e}
-.perfMonth small,.perfWeek small{display:block;color:#71867a;font-size:6.5px;font-weight:850;letter-spacing:.11em}
-.perfMonth strong,.perfWeek strong{display:inline-block;margin-top:3px;color:#52e593;font-size:21px;line-height:1;font-weight:950}
-.perfMonth span,.perfWeek span{display:inline-block;margin-left:7px;color:#91a69a;font-size:9px;font-weight:800}
+.performanceMain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;text-align:center;border:1px solid #183524;border-radius:10px;overflow:hidden}
+.perfYear{border-left:1px solid #183524!important}.perfCount{font-size:7px;color:#91a69a;margin-top:5px;line-height:1.4}
+.perfMonth,.perfYear{min-width:0;padding:9px 7px;border:0;border-radius:0;background:#08170e}
+.perfMonth small,.perfYear small{display:block;color:#71867a;font-size:6.5px;font-weight:850;letter-spacing:.11em}
+.perfMonth strong,.perfYear strong{display:inline-block;margin-top:3px;color:#f4f8f5;font-size:21px;line-height:1;font-weight:950}
+.perfMonth span,.perfYear span{display:block;margin:5px 0 0;color:#52e593;font-size:9px;font-weight:800}
 .previousPicks{min-width:0;display:flex;flex-direction:column;justify-content:center}
 .previousHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 2px 6px}
 .previousHead span{font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#dbe8e0}
@@ -739,10 +740,10 @@
 @media(max-width:700px){
 .performanceBar{grid-template-columns:1fr;gap:8px;padding:8px;border-radius:11px;margin-bottom:9px}
 .performanceMain{grid-template-columns:1fr 1fr}
-.perfMonth,.perfWeek{padding:7px 8px;border-radius:8px}
-.perfMonth strong,.perfWeek strong{font-size:17px}
-.perfMonth small,.perfWeek small{font-size:5.7px}
-.perfMonth span,.perfWeek span{font-size:7.5px;margin-left:5px}
+.perfMonth,.perfYear{padding:7px 8px;border-radius:8px}
+.perfMonth strong,.perfYear strong{font-size:17px}
+.perfMonth small,.perfYear small{font-size:5.7px}
+.perfMonth span,.perfYear span{font-size:7.5px;margin-left:5px}
 .previousHead{margin-bottom:5px}
 .previousHead span{font-size:7.5px}
 .previousHead small{font-size:6px}
@@ -1260,8 +1261,8 @@ body{background:#031008}
 
   <section class="performanceBar" id="performanceBar">
     <div class="performanceMain">
-      <div class="perfMonth"><small id="perfMonthLabel">MONTH HIT RATE</small><strong id="perfHitRate">—</strong><span id="perfRecord">0-0</span></div>
-      <div class="perfWeek"><small>LAST 7 DAYS</small><strong id="perfWeekRate">—</strong><span id="perfWeekRecord">0-0</span></div>
+      <div class="perfMonth"><small id="perfMonthLabel">Oct Tracking</small><strong id="perfRecord">—</strong><span id="perfHitRate">— Hit Rate</span><div class="perfCount" id="perfMonthCount">Official picks tracked this month</div></div>
+      <div class="perfYear"><small id="perfYearLabel">2026 Tracking</small><strong id="perfYearRecord">—</strong><span id="perfYearRate">— Hit Rate</span><div class="perfCount" id="perfYearCount">Official picks tracked YTD</div></div>
     </div>
     <div class="previousPicks">
       <div class="previousHead"><span>Previous Picks</span><small id="previousDate">Tracking starts with the next published board</small></div>
@@ -1460,6 +1461,7 @@ function researchFactsForPick(g,p,limit=3){
   return pool.sort((a,b)=>b.score-a.score).slice(0,limit).map(x=>x.text)
 }
 function cardCommentary(g,p){
+  if(p?.archived)return p.archivedCommentary||"Original published explanation was not saved.";
   if(p?.archivedCommentary)return p.archivedCommentary;
   const fact=researchFactsForPick(g,p,1)[0]||"",lineup=typeof lineupCommentary==="function"?lineupCommentary(g,p):"";
   if(p?.researchOnly){
@@ -1472,64 +1474,63 @@ function cardCommentary(g,p){
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
 function applyUserPick(g){return g}
+// Published selections are authoritative on the publication day and every later day.
+const ARCHIVE_CAPTURE=new URLSearchParams(window.location.search).has("archiveCapture");
 function clonePickForArchive(p,g){
   if(!p)return null;
-  return{
-    label:p.label,category:p.category,score:p.score,stars:p.stars,odds:p.odds??null,oddsDisplay:p.oddsDisplay??null,
-    provider:p.provider??null,bookKey:p.bookKey??null,modelProb:p.modelProb??null,marketProb:p.marketProb??null,ev:p.ev??null,
-    verifiedPrice:Boolean(p.verifiedPrice),priceDecimal:p.priceDecimal??null,researchOnly:Boolean(p.researchOnly),reason:p.reason||"",
-    archivedCommentary:cardCommentary(g,p),archivedSupportFacts:researchFactsForPick(g,p,3)
-  }
+  return {...JSON.parse(JSON.stringify(p)),archivedCommentary:cardCommentary(g,p),archivedSupportFacts:researchFactsForPick(g,p,3)}
 }
 function restoreArchivedPick(p){
   if(!p)return null;
-  return{...p,archived:true,bookExact:p.odds!=null||Boolean(p.verifiedPrice)}
+  return {...p,archived:true,bookExact:p.bookExact??(p.odds!=null||Boolean(p.verifiedPrice))}
 }
 function boardArchivePayload(){
-  const top=S.games.filter(g=>g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top))
+  if(S.archive?.date===S.date)return JSON.parse(JSON.stringify(S.archive));
+  // Public pages never expose a recalculated board before its durable publication.
+  if(!ARCHIVE_CAPTURE||!S.boardReady)return null;
+  const eligible=games=>games.filter(g=>g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top))
     .sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5);
+  const refs=games=>games.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(g.model.top,g)}));
   return{
-    schema:1,date:S.date,frozenAt:new Date().toISOString(),immutable:true,source:"FootyEdge rendered published board",
-    top5:top.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(g.model?.top,g)})),
+    schema:2,date:S.date,frozenAt:new Date().toISOString(),immutable:true,coverage:"full-board",source:"FootyEdge first published complete board",
+    top5:refs(eligible(S.games)),
+    leagueTop5:Object.fromEntries([...new Set(S.games.map(g=>g.league))].map(l=>[l,refs(eligible(S.games.filter(g=>g.league===l)))])),
     games:S.games.map(g=>({
-      id:g.id,home:g.home.name,away:g.away.name,
-      top:clonePickForArchive(g.model?.top,g),
-      top3:(g.model?.top3||[]).map(p=>clonePickForArchive(p,g)),
-      model:{
-        home:g.model?.home||null,away:g.model?.away||null,displayHome:g.model?.displayHome||null,displayAway:g.model?.displayAway||null,
-        expectedGoals:g.model?.expectedGoals||null,sample:g.model?.sample||null
-      }
+      id:g.id,home:g.home.name,away:g.away.name,date:g.date,year:g.year,league:g.league,leagueName:g.leagueName,leagueLogo:g.leagueLogo,
+      teams:{home:g.home,away:g.away},
+      top:clonePickForArchive(g.model?.top,g),top3:(g.model?.top3||[]).map(p=>clonePickForArchive(p,g)),
+      model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:clonePickForArchive(g.model.top,g),
+        ...Object.fromEntries(["top3","candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).map(p=>clonePickForArchive(p,g))]))}:null
     }))
   }
 }
 window.FootyEdgeArchive=boardArchivePayload;
 function applyBoardArchive(games,archive){
   if(!archive||archive.date!==S.date)return games;
-  const byId=new Map((archive.games||[]).map(x=>[String(x.id),x]));
-  const byFixture=new Map((archive.games||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
+  const byId=new Map(games.map(g=>[String(g.id),g]));
+  const byFixture=new Map(games.map(g=>[fixtureMatchKey(g.home.name,g.away.name),g]));
+  const archived=(archive.games||[]).map(a=>{
+    const live=byId.get(String(a.id))||byFixture.get(fixtureMatchKey(a.home,a.away));
+    const g=live||{id:String(a.id||fixtureMatchKey(a.home,a.away)),apiFixtureId:String(a.id||""),date:a.date||S.date+"T16:00:00Z",year:a.year||Number(S.date.slice(0,4)),
+      league:a.league||null,leagueName:a.leagueName||"",leagueLogo:a.leagueLogo||null,
+      home:a.teams?.home||{name:a.home},away:a.teams?.away||{name:a.away},live:false,done:false,detail:"",availabilityLoaded:false};
+    const saved=a.model||{};
+    g.model={...saved,top:restoreArchivedPick(a.top),top3:(a.top3||[]).map(restoreArchivedPick).filter(Boolean),
+      ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(saved[k]||a.top3||[]).map(restoreArchivedPick).filter(Boolean)]))};
+    g.published=true;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
+    return g;
+  });
+  // Legacy partial archives must not fill gaps with today's model or add fresh props.
   for(const g of games){
-    const a=byId.get(String(g.id))||byFixture.get(fixtureMatchKey(g.home.name,g.away.name));
-    if(a&&g.model){
-      if(a.model){
-        if(a.model.home)g.model.home=a.model.home;
-        if(a.model.away)g.model.away=a.model.away;
-        if(a.model.displayHome)g.model.displayHome=a.model.displayHome;
-        if(a.model.displayAway)g.model.displayAway=a.model.displayAway;
-        if(a.model.expectedGoals)g.model.expectedGoals=a.model.expectedGoals;
-        if(a.model.sample)g.model.sample=a.model.sample;
-      }
-      g.model.top=restoreArchivedPick(a.top);
-      g.model.top3=(a.top3||[]).map(restoreArchivedPick).filter(Boolean);
-      g.model.rankedCandidates=g.model.top3.slice();
-    }
+    if(archived.some(a=>a.id===g.id))continue;
+    g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};g.published=true;g.archiveUnavailable=true;
+    archived.push(g);
   }
-  const gameById=new Map(games.map(g=>[String(g.id),g]));
-  const gameByFixture=new Map(games.map(g=>[fixtureMatchKey(g.home.name,g.away.name),g]));
   for(const x of archive.top5||[]){
-    const g=gameById.get(String(x.gameId))||gameByFixture.get(fixtureMatchKey(x.home,x.away));
+    const g=archived.find(g=>String(g.id)===String(x.gameId)||fixtureMatchKey(g.home.name,g.away.name)===fixtureMatchKey(x.home,x.away));
     if(g)g.archiveTopPick=restoreArchivedPick(x.pick);
   }
-  return games
+  return archived
 }
 function defaultStatusForDate(date){
   const desired="all";

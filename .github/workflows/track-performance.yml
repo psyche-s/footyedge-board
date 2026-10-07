@@ -29,15 +29,9 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Install browser runtime
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-
       - name: Archive and grade Top 5
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          MIN_UI_VERSION: "38"
           FORCE_TRACK: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: node scripts/track-performance.mjs
 

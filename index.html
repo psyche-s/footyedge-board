@@ -18,7 +18,7 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
 .heroCopy{position:relative;z-index:1;padding:34px;max-width:720px}.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:900}.heroCopy h1{font-size:58px;line-height:.95;letter-spacing:-3px;margin:8px 0 10px}.heroCopy h1 span{color:var(--green)}.tag{font-size:18px;color:#dce7e0;font-weight:700;margin:0}
 .grid{display:grid;grid-template-columns:1.1fr .75fr 1.15fr;gap:14px;margin-top:14px}.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(8,27,16,.94),rgba(5,20,12,.94));border-radius:18px;padding:20px;min-width:0}.card h2{font-size:18px;margin:0 0 11px}.card h2 span{color:var(--green)}.about p{margin:0;color:#b6c6bd;font-size:13px;line-height:1.62}.about .micro{margin-top:12px;color:#7f9588;font-size:11px}
 .rate{display:grid;place-items:center;text-align:center}.rateLabel{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8da194;font-weight:850}.rateStrong{font-size:50px;font-weight:950;letter-spacing:-2px;margin:8px 0 0}.ratePct{font-size:17px;color:var(--green);font-weight:900}.rateMeta{font-size:11px;color:#809589;margin-top:8px}
-.support{margin-top:16px}.support img{max-width:100%;height:auto;display:block}
+.rateColumns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;align-items:center}.ratePeriod{min-width:0;padding:0 8px}.ratePeriod+.ratePeriod{border-left:1px solid #1c442d}.rateColumns .rateStrong{font-size:clamp(26px,3vw,40px);letter-spacing:-1px}.rateColumns .ratePct{font-size:clamp(11px,1.4vw,15px)}.rateColumns .rateMeta{font-size:9px;line-height:1.5}.support{margin-top:16px}.support img{max-width:100%;height:auto;display:block}
 .topCard{padding:0;overflow:hidden}.topHead{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid #12301f}.topHead h2{margin:0}.topHead small{color:#71887b;font-size:10px}.topList{display:grid;padding:9px 12px}.pick{display:grid;grid-template-columns:27px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 6px;border-bottom:1px solid #10291b}.pick:last-child{border-bottom:0}.rank{width:26px;height:26px;border-radius:8px;background:#123522;color:var(--green);display:grid;place-items:center;font-size:10px;font-weight:900}.fixture{font-size:12px;font-weight:800}.selection{font-size:10px;color:#88a095;margin-top:3px}.confidence{font-size:11px;color:#d9e7de;font-weight:850}.cta{display:flex;justify-content:center;align-items:center;gap:9px;margin:5px 12px 13px;padding:13px 16px;border-radius:12px;background:linear-gradient(135deg,#4be995,#27cc76);color:#031008;font-weight:900;font-size:13px}.loading{padding:24px;text-align:center;color:#73897c;font-size:11px}
 .footer{max-width:1180px;margin:0 auto;padding:0 22px 28px;color:#5f7769;font-size:10px;text-align:center}
 #boardProbe{position:absolute!important;left:-10000px!important;top:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;border:0!important}
@@ -57,10 +57,14 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
       </article>
 
       <article class="card rate">
-        <div class="rateLabel">Current hit rate</div>
-        <div class="rateStrong" id="record">—</div>
-        <div class="ratePct" id="hitRate">Loading…</div>
-        <div class="rateMeta" id="rateMeta">Official tracked Top 5</div>
+        <div class="rateColumns">
+          <div class="ratePeriod"><div class="rateLabel" id="monthTrackingLabel">Oct Tracking</div>
+            <div class="rateStrong" id="record">—</div><div class="ratePct" id="hitRate">Loading…</div>
+            <div class="rateMeta" id="rateMeta">Official picks tracked this month</div></div>
+          <div class="ratePeriod"><div class="rateLabel" id="yearTrackingLabel">2026 Tracking</div>
+            <div class="rateStrong" id="yearRecord">—</div><div class="ratePct" id="yearHitRate">Loading…</div>
+            <div class="rateMeta" id="yearRateMeta">Official picks tracked YTD</div></div>
+        </div>
       </article>
 
       <article class="card topCard">
@@ -72,7 +76,7 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
   </main>
   <footer class="footer">FootyEdge · Free soccer research &amp; model analysis · Gamble responsibly</footer>
 </div>
-<iframe id="boardProbe" src="/picks.html?landing=1" title="FootyEdge live board"></iframe>
+
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
@@ -105,11 +109,17 @@ function renderTop5(top){
   }).join("");
 }
 repoJson("data/performance/summary.json").then(p=>{
-  const m=p.month||{};
+  const m=p.month||{},y=p.year||{};
+  const shortMonth=m.key?new Date(m.key+"-01T12:00:00Z").toLocaleDateString("en-US",{month:"short",timeZone:"UTC"}):"Month";
+  document.getElementById("monthTrackingLabel").textContent=shortMonth+" Tracking";
+  document.getElementById("yearTrackingLabel").textContent=(y.key||todayToronto().slice(0,4))+" Tracking";
+  document.getElementById("yearRecord").textContent=y.hitRate==null?"—":(y.hits??0)+"–"+(y.misses??0);
+  document.getElementById("yearHitRate").textContent=y.hitRate==null?"No settled picks yet":Math.round(y.hitRate)+"% Hit Rate";
+  document.getElementById("yearRateMeta").textContent=(y.settled??0)+" official picks tracked YTD";
   document.getElementById("record").textContent=(m.hits??0)+"–"+(m.misses??0);
-  document.getElementById("hitRate").textContent=m.hitRate==null?"No settled picks yet":Math.round(m.hitRate)+"% hit rate";
+  document.getElementById("hitRate").textContent=m.hitRate==null?"No settled picks yet":Math.round(m.hitRate)+"% Hit Rate";
   document.getElementById("rateMeta").textContent=(m.settled??0)+" official picks tracked this month";
-}).catch(()=>{document.getElementById("hitRate").textContent="Tracking unavailable"});
+}).catch(()=>{document.getElementById("hitRate").textContent="Tracking unavailable";document.getElementById("yearHitRate").textContent="Tracking unavailable"});
 
 (async()=>{
   const date=todayToronto();
@@ -117,19 +127,7 @@ repoJson("data/performance/summary.json").then(p=>{
     const a=await repoJson("data/boards/"+date+".json");
     if(a?.top5?.length){renderTop5(a.top5);return}
   }catch{}
-  const frame=document.getElementById("boardProbe");
-  let tries=0;
-  const timer=setInterval(()=>{
-    tries++;
-    try{
-      const fn=frame.contentWindow?.FootyEdgeArchive;
-      if(typeof fn==="function"){
-        const data=fn();
-        if(data?.games?.length){clearInterval(timer);renderTop5(data.top5||[]);return}
-      }
-    }catch{}
-    if(tries>240){clearInterval(timer);renderTop5([])}
-  },500);
+  renderTop5([]);
 })();
 </script>
 </body>

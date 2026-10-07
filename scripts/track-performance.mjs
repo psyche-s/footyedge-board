@@ -1,12 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { chromium } from "playwright";
+
 
 const ROOT=process.cwd();
 const SITE=(process.env.FOOTYEDGE_URL||"https://footyedge-board.vercel.app").replace(/\/$/,"");
 const PERF_DIR=path.join(ROOT,"data","performance");
-const MIN_UI_VERSION=Number(process.env.MIN_UI_VERSION||38);
 const FORCE=process.env.FORCE_TRACK==="1";
 
 function torontoParts(d=new Date()){
@@ -30,12 +29,6 @@ async function fetchJson(url){
   const r=await fetch(url,{headers:{accept:"application/json","user-agent":"FootyEdgeTracker/1.0"}});
   if(!r.ok)throw new Error("HTTP "+r.status+" for "+url);
   return r.json();
-}
-async function productionVersion(){
-  const r=await fetch(SITE+"/picks.html",{headers:{"cache-control":"no-cache","user-agent":"FootyEdgeTracker/1.0"}});
-  const html=await r.text();
-  const m=html.match(/\/ui\/part0\.html\?v=(\d+)/);
-  return m?Number(m[1]):0;
 }
 function eventInfo(e){
   const c=e?.competitions?.[0]||{},cs=c?.competitors||[];
@@ -78,6 +71,15 @@ function settlePick(p,event){
     const team=dc[1].trim();
     if(norm(team)===norm(event.home))return hit(hs>=as);
     if(norm(team)===norm(event.away))return hit(as>=hs);
+  }
+  const handicap=selection.match(/^(.*?)\s+([+-]\d+(?:\.\d+)?)$/);
+  if(handicap){
+    const team=handicap[1].trim(),line=Number(handicap[2]);
+    const diff=norm(team)===norm(event.home)?hs-as:norm(team)===norm(event.away)?as-hs:null;
+    if(diff!=null&&Math.abs(line*2-Math.round(line*2))<1e-9){
+      if(diff+line===0)return{result:"push",finalScore};
+      return hit(diff+line>0);
+    }
   }
   return{result:"pending",finalScore};
 }
@@ -127,7 +129,8 @@ function buildSummary(today){
   const daily=fs.existsSync(PERF_DIR)?fs.readdirSync(PERF_DIR)
     .filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x))
     .map(name=>readJson(path.join(PERF_DIR,name))).sort((a,b)=>a.date.localeCompare(b.date)):[];
-  const monthKey=today.slice(0,7),monthFiles=daily.filter(x=>x.date.startsWith(monthKey));
+  const yearKey=today.slice(0,4),yearFiles=daily.filter(x=>x.date.startsWith(yearKey)&&x.date<=today);
+  const monthKey=today.slice(0,7),monthFiles=daily.filter(x=>x.date.startsWith(monthKey)&&x.date<=today);
   const weekStart=addDays(today,-6),weekFiles=daily.filter(x=>x.date>=weekStart&&x.date<=today);
   const prior=[...daily].filter(x=>x.date<today&&Array.isArray(x.top5)&&x.top5.length).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
   const monthStats=statsFromFiles(monthFiles),weekStats=statsFromFiles(weekFiles);
@@ -137,6 +140,7 @@ function buildSummary(today){
     generatedAt:new Date().toISOString(),
     trackingStarted:daily.length?daily[0].date:null,
     month:{key:monthKey,label,...monthStats},
+    year:{key:yearKey,label:yearKey,...statsFromFiles(yearFiles)},
     week:weekStats,
     byFamily:familyStats(monthFiles),
     previousDate:prior?.date||null,
@@ -144,34 +148,14 @@ function buildSummary(today){
     recentDays
   };
 }
-async function scrapeTop5(today){
-  const browser=await chromium.launch({headless:true});
-  try{
-    const page=await browser.newPage({viewport:{width:1280,height:900}});
-    await page.goto(SITE+"/picks.html",{waitUntil:"domcontentloaded",timeout:90000});
-    await page.waitForFunction(()=>{
-      const best=document.querySelectorAll(".bestRow").length;
-      const text=document.querySelector("#best")?.textContent||"";
-      return best>0||/No pick has cleared/i.test(text);
-    },{timeout:90000});
-    const picks=await page.$$eval(".bestRow",rows=>rows.slice(0,5).map((row,i)=>{
-      const fixture=(row.querySelector(".bestFixture")?.textContent||"").trim();
-      const parts=fixture.split(/\s+vs\s+/i);
-      const oddsBox=row.querySelector(".oddsMetric");
-      return{
-        rank:i+1,gameId:row.getAttribute("data-game-id")||null,
-        home:(parts[0]||"").trim(),away:(parts[1]||"").trim(),
-        fixture,league:(row.querySelector(".bestLeague")?.textContent||"").trim(),
-        category:(row.querySelector(".bestCategory")?.textContent||"").trim(),
-        selection:(row.querySelector(".bestSelection")?.textContent||"").trim(),
-        confidence:Number((row.querySelector(".bestConfidence b")?.textContent||"").replace(/[^0-9.]/g,""))||null,
-        odds:(oddsBox?.querySelector("b")?.textContent||"").trim()||null,
-        book:oddsBox?.querySelector("img.bookLogo")?.getAttribute("alt")||null,
-        result:"pending",finalScore:null
-      };
-    }));
-    return picks;
-  }finally{await browser.close()}
+function publishedTop5(today){
+  const file=path.join(ROOT,"data","boards",today+".json");
+  if(!fs.existsSync(file))return null;
+  const board=readJson(file);
+  if(board.date!==today||board.immutable!==true)throw new Error("Tracker requires immutable published board");
+  return (board.top5||[]).map(x=>({rank:x.rank,gameId:x.gameId,home:x.home,away:x.away,
+    fixture:x.home+" vs "+x.away,category:x.pick.category,selection:x.pick.label,confidence:x.pick.score,
+    odds:x.pick.odds??x.pick.oddsDisplay??null,book:x.pick.provider??null,result:"pending",finalScore:null}));
 }
 
 async function main(){
@@ -179,22 +163,22 @@ async function main(){
   if(!FORCE&&nowParts.hour!=="07"){
     console.log("Skip: Toronto local hour is",nowParts.hour,"not 07");return;
   }
-  const version=await productionVersion();
-  if(version<MIN_UI_VERSION){
-    console.log("Skip: production UI v"+version+" is below required v"+MIN_UI_VERSION);return;
-  }
+
   fs.mkdirSync(PERF_DIR,{recursive:true});
 
   const dailyFiles=fs.readdirSync(PERF_DIR).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x)).map(x=>path.join(PERF_DIR,x));
   for(const file of dailyFiles)await settleDailyFile(file);
 
-  const todayFile=path.join(PERF_DIR,today+".json");
-  if(!fs.existsSync(todayFile)){
-    const top5=await scrapeTop5(today);
-    writeJson(todayFile,{date:today,publishedAt:new Date().toISOString(),source:"FootyEdge published Top 5",frozen:true,top5});
-    console.log("Archived",top5.length,"Top Picks for",today);
-  }else{
-    console.log("Today's Top 5 already archived; leaving frozen snapshot unchanged.");
+  const boardsDir=path.join(ROOT,"data","boards");
+  for(const name of fs.readdirSync(boardsDir).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x))){
+    const date=name.slice(0,10);if(date>today)continue;
+    const dailyFile=path.join(PERF_DIR,name);
+    if(fs.existsSync(dailyFile))continue;
+    const top5=publishedTop5(date);
+    const board=readJson(path.join(boardsDir,name));
+    writeJson(dailyFile,{date,publishedAt:board.publishedAt||null,recordedAt:new Date().toISOString(),source:"Immutable FootyEdge published board",frozen:true,top5});
+    console.log("Recorded",top5.length,"original published picks for",date);
+    await settleDailyFile(dailyFile);
   }
 
   writeJson(path.join(PERF_DIR,"summary.json"),buildSummary(today));

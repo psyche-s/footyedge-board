@@ -70,7 +70,7 @@ For each fixture:
 - The total external cross-check contribution remains capped at the existing two-source weight.
 - A supported market should be listed only when the underlying FootyEdge stats and at least one current external preview point the same way.
 - Conflicting external opinions are recorded as context but must not be converted into a confidence boost.
-- Historical daily files are immutable after publication except for factual corrections.
+- Historical daily files are immutable after publication. Factual corrections require Shaif's explicit instruction and a preserved before/after audit.
 
 
 ## Published-price gate
@@ -101,3 +101,6 @@ The validator checks:
 - missing event coverage warnings.
 
 A failed validation means the board is not ready to publish.
+
+## Published selections
+All picks are locked at first publication, including every game and player prop, not just Top 5. Follow `AGENTS.md`. Publish a complete durable snapshot before displaying picks; scores and settlements update separately. Missing original history is unavailable, never regenerated.

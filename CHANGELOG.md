@@ -205,3 +205,17 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - League-filter icons should use the correct competition logo instead of generic soccer-ball placeholders where assets are available; specifically fix Serie A, Bundesliga and Ligue 1 and extend the same treatment to other supported filters.
 - League logos inside match-card/header rows must stay within the existing header height. Serie A's tall logo currently bleeds outside the header and must be constrained/centered without increasing header height.
 - These are targeted visual consistency fixes only. No redesign, card/layout/theme/spacing changes are authorized beyond the already planned game-search control and these logo fixes.
+
+## 2026-10-07 — v65 published-pick protection and tracking
+**Status:** 🟡 Code ready / deployment pending
+
+- Owner rule: every published pick is immutable unless Shaif explicitly requests the specific correction. Covers all game picks, Top 3, player props, alternatives, global/league rankings, published confidence/prices/EV and pre-match explanations.
+- Same-day and historical pages now render saved boards before any model computation. Filters use saved alternatives. Unpublished dates wait for a durable complete board instead of exposing live recalculations. Scores/status and separate settlements still update.
+- Publication captures reviewed checkout code and dated inputs, validates completeness and exclusively creates the board file. Repeated captures cannot overwrite an existing record. Tracker reads original archive selections rather than scraping current DOM rankings.
+- Added AGENTS.md, integrity validation, CI checks and preserved correction backups/audit. Integrity validation rejects changed published boards, odds/research, correction history and altered tracking selections.
+- October 6 restored to the owner's screenshot: Switzerland U3.5, Kazakhstan U2.5, Albania U4.5, Scotland U2.5, Estonia +0.5; original ranks, odds, confidence and displayed EV retained. Overwritten five-game archive preserved in data/board-revisions/2026-10-06.
+- Recovery limit: no complete first-published October 6 board was saved. Unverified original selections, additional Top-3 slots and explanations remain unavailable; they were not replaced with fresh model outputs. This is a partial historical restoration, not a recovered full board.
+- Original October 6 Top 5 graded 3-2 from completed scoreboard results; combined official tracked record is 7-3 (70%) across October 5–6. Prior October 5 record remains unchanged.
+- Owner-requested tracking panel implemented on Home and Picks: month tracking on left, 2026/YTD on right, center divider, `Hit Rate` capitalization. YTD counts only saved official picks for the current calendar year. No example 24-11/35-pick totals were invented.
+- Model/data impact: future research and model changes affect future boards; no model scoring formula redesigned here. UI impact limited to the explicitly requested tracking panel and accurate unavailable-history states.
+- Validation: nine regression checks plus daily-board validation, published-history integrity and JavaScript syntax checks. Browser QA could not run because the environment lacks a browser executable; production source/deployment verification remains required.

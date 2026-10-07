@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/archive-board.yml"
+      - "data/daily-odds-*.json"
+      - "data/daily-insights-*.json"
   schedule:
     # 07:20 Toronto, both DST and standard-time UTC offsets.
     - cron: "20 11 * * *"
@@ -55,4 +57,5 @@ jobs:
           git add data/boards
           git commit -m "chore(board): freeze published FootyEdge board [skip ci]"
           git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main

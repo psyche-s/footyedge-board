@@ -1,0 +1,12 @@
+# FootyEdge project rules
+
+## Published picks: owner rule, 2026-10-07
+Once any pick is published it cannot be altered unless Shaif explicitly asks for that specific change. This applies to every game's picks, Top 3, player props, alternatives and global/league Top 5, including order, market/line, confidence, published odds/EV and pre-match explanation/evidence.
+
+- First publication freezes the complete board in `data/boards/YYYY-MM-DD.json` BEFORE public pages display picks. 07:00 Toronto is the target publication time, never permission to rewrite an earlier publication.
+- Current and historical pages, Home, filters, expanded analysis and tracking must use that snapshot. Refreshes, news, lineup changes, model changes and deploys must not regenerate selections for published dates.
+- Automatic updates may change scores/status/settlements and append later observations separately. Learning applies to future boards only.
+- Missing historical selections/explanations must remain explicitly unavailable. Never backfill them with a current model and call them original.
+- Explicit owner corrections preserve the previous board in `data/board-revisions/` and append an audit entry with the exact instruction, before/after SHA256 and backup path. They must never erase prior records or silently improve the performance record.
+- Before commit/deploy run `node scripts/validate-published-boards.mjs --base <main SHA before your changes>` and meaningful regression tests. Do not change a published board, historical odds or research to satisfy newer model validation.
+- No UI redesign is authorized by model/data/publishing tasks. The owner explicitly requested the existing tracking panel display `Oct Tracking | 2026 Tracking`, a center divider and `Hit Rate` capitalization; use actual official monthly/YTD results only.
