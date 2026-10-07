@@ -1514,6 +1514,24 @@ body{background:#031008}
   overflow:hidden!important;
 }
 
+
+
+/* v96 live scores / live-state indicator */
+.liveState{display:inline-flex;align-items:center;gap:5px;color:#54e593;font-weight:900;white-space:nowrap}
+.liveDot{width:7px;height:7px;border-radius:50%;background:#47e590;box-shadow:0 0 0 3px rgba(71,229,144,.10);display:inline-block;flex:0 0 7px}
+.liveText{color:#54e593!important;font-weight:900!important}
+.teamCompact{grid-template-columns:48px minmax(0,1fr) auto!important}
+.matchScore{min-width:18px;text-align:right;color:#f4f8f5;font-size:18px;font-weight:950;line-height:1}
+.bestFixture .inlineScore{color:#f4f8f5;font-size:1em;font-weight:950}
+.bestFixture .scoreDash{color:#789083;margin:0 2px}
+.bestLeague .liveState{font-size:inherit}
+.modalLeague .liveState{font-size:inherit}
+@media(max-width:500px){
+  .teamCompact{grid-template-columns:31px minmax(0,1fr) auto!important}
+  .matchScore{font-size:15px;min-width:14px}
+  .liveDot{width:6px;height:6px;flex-basis:6px}
+}
+
 </style>
 </head>
 <body>
@@ -1957,19 +1975,3 @@ async function schedule(league,id,year){
 }
 let refreshTimer=null;
 function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const now=Date.now(),live=S.games.some(g=>g.live),near=S.games.some(g=>!g.done&&!g.live&&new Date(g.date).getTime()-now<=3*60*60*1000&&new Date(g.date).getTime()>=now-5*60*1000);const ms=live?60000:near?120000:300000;refreshTimer=setTimeout(()=>load(S.d
-
-/* v96 live scores / live-state indicator */
-.liveState{display:inline-flex;align-items:center;gap:5px;color:#54e593;font-weight:900;white-space:nowrap}
-.liveDot{width:7px;height:7px;border-radius:50%;background:#47e590;box-shadow:0 0 0 3px rgba(71,229,144,.10);display:inline-block;flex:0 0 7px}
-.liveText{color:#54e593!important;font-weight:900!important}
-.teamCompact{grid-template-columns:48px minmax(0,1fr) auto!important}
-.matchScore{min-width:18px;text-align:right;color:#f4f8f5;font-size:18px;font-weight:950;line-height:1}
-.bestFixture .inlineScore{color:#f4f8f5;font-size:1em;font-weight:950}
-.bestFixture .scoreDash{color:#789083;margin:0 2px}
-.bestLeague .liveState{font-size:inherit}
-.modalLeague .liveState{font-size:inherit}
-@media(max-width:500px){
-  .teamCompact{grid-template-columns:31px minmax(0,1fr) auto!important}
-  .matchScore{font-size:15px;min-width:14px}
-  .liveDot{width:6px;height:6px;flex-basis:6px}
-}
