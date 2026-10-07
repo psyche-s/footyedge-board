@@ -51,3 +51,10 @@ test('Tracker exports every current-month day instead of only seven recent days'
   const summary=vm.runInContext('buildSummary("2026-10-20")',c);
   assert.equal(summary.monthDays.length,20);assert.equal(summary.monthDays.at(-1).date,'2026-10-01');
 });
+
+test('Picks header matches the single-row site navigation',()=>{
+  const html=fs.readFileSync('ui/part1.html','utf8');
+  assert.match(html,/<a class="siteLogo" href="\/">Footy<span>Edge<\/span><\/a>/);
+  assert.match(html,/<div class="siteLinks">/);
+  assert.doesNotMatch(html,/<header class="boardHeader"/);
+});

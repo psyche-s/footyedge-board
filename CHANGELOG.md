@@ -251,3 +251,10 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - History covers the full current Toronto calendar month, rather than only the seven-day recentDays window. Month rollover hides prior-month rows and starts the new monthly record; full stored history and YTD remain intact. Home labels also handle stale summary data at a calendar rollover.
 - Tracker summary now exports full monthDays. Saved selections, confidence, odds, grade/history data and correction audits are unchanged. No scoring/model changes.
 - Validation: 21 tests pass, covering monthly ordering, month/midnight rollover, complete month history, score-only rendering, navigation placement and published-pick integrity. Integrity verified against f6aa23d. Production UI verification pending.
+
+## 2026-10-07 — v68 matching header and early morning run
+**Status:** 🟡 Code ready / deployment pending
+
+- Owner's second header screenshot is the reference: Today’s Picks now has the same single-row FootyEdge-left / navigation-right header as Home, Hit Rate and About, with the active-link underline. Removed the extra branding/tagline row. No game-card or model changes.
+- Owner requested the October 7 morning automation run immediately and skip its normal 7 AM occurrence. Recurring schedule moved to DTSTART October 8 at 7 AM America/Toronto, retaining daily runs. Early run submission follows this header deployment so it uses current main.
+- Hit Rate deployment dpl_A4PPBGUeiMjG5QzK6AfUjXN7Hrqh reached READY on production from fc25c0a. Full live-page verification follows the matching header deployment. Published history remains preserved.
