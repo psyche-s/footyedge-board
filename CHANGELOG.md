@@ -610,3 +610,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Cleared the October 7 research fixture list and updated board readiness to 0 scheduled/research fixtures for the public scope.
 - Bumped the Picks bundle to v96 and the board-availability helper cache to v67.
 - No prior audit entries or backup files were rewritten.
+
+
+## 2026-10-07 — v98 empty-day next-game state
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Kept the corrected October 7 official board locked at 0 games after the owner removed women’s soccer from the public scope.
+- Fixed the empty locked-board path so Today’s Picks and Today’s Games no longer remain stuck on “Checking the game schedule…”.
+- Empty current-day boards now render “No games today.” and look ahead for the next confirmed eligible fixture date using the same public competition scope.
+- The look-ahead excludes tagged women’s/female fixtures and searches up to 21 days ahead.
+- Bumped the board-availability helper to v68 and Today’s Picks UI bundle to v98.
+- No locked picks, odds, tracking, historical audit entries or prior board backups were rewritten.
