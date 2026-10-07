@@ -558,3 +558,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Added final logo containment rules so every competition mark stays inside the existing 24×24 footprint with `object-fit: contain`, centered alignment and hidden overflow.
 - Added small per-mark scale normalization for tall/narrow Serie A, Bundesliga and Champions League marks so they read consistently without changing filter/header dimensions.
 - No picks, model logic, odds, tracking or historical board data changed.
+
+
+## 2026-10-07 — v94 Ligue 1 white-logo completion
+**Status:** 🟢 Code pushed to main · deployment verification pending
+
+- Completed the previously planned Ligue 1 white-logo treatment for the dark FootyEdge UI.
+- The existing local Ligue 1 competition asset is now rendered white inside the same contained logo footprint; dimensions, spacing, filter layout and header height are unchanged.
+- Bumped the Picks UI bundle version to v94 so clients reload the corrected treatment.
+- No picks, odds, model logic, tracking or historical board data changed.
