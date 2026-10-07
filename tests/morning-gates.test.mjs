@@ -47,16 +47,16 @@ test("league fallback is a transparent SVG, never the emoji football",()=>{
   assert.match(p2,/viewBox="0 0 24 24"/);
   assert.doesNotMatch(p2,/<span class="leagueFallback" aria-hidden="true">⚽<\/span>/)
 });
-test("morning data horizon covers today plus next three days",()=>{
+test("morning data horizon covers today plus next four days",()=>{
   const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
   const snapshots=fs.readFileSync(".github/workflows/refresh-snapshots.yml","utf8");
-  assert.match(research,/for OFFSET in 0 1 2 3/);
-  assert.match(snapshots,/for OFFSET in 0 1 2 3/)
+  assert.match(research,/for OFFSET in 0 1 2 3 4/);
+  assert.match(snapshots,/for OFFSET in 0 1 2 3 4/)
 });
 
-test("exact sportsbook endpoint permits today plus next three dates",()=>{
+test("exact sportsbook endpoint permits today plus next four dates",()=>{
   const oddsApi=fs.readFileSync("api/the-odds.js","utf8");
   assert.doesNotMatch(oddsApi,/live_date_only/);
-  assert.match(oddsApi,/outside_4_day_horizon/);
+  assert.match(oddsApi,/outside_5_day_horizon/);
   assert.match(oddsApi,/"fifa\.friendly"/)
 });
