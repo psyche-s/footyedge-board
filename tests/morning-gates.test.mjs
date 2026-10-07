@@ -53,3 +53,10 @@ test("morning data horizon covers today plus next three days",()=>{
   assert.match(research,/for OFFSET in 0 1 2 3/);
   assert.match(snapshots,/for OFFSET in 0 1 2 3/)
 });
+
+test("exact sportsbook endpoint permits today plus next three dates",()=>{
+  const oddsApi=fs.readFileSync("api/the-odds.js","utf8");
+  assert.doesNotMatch(oddsApi,/live_date_only/);
+  assert.match(oddsApi,/outside_4_day_horizon/);
+  assert.match(oddsApi,/"fifa\.friendly"/)
+});

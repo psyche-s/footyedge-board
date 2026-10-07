@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-07T05:44:00Z",
+  "checkedAt": "2026-10-07T06:20:00Z",
   "timeZone": "America/Toronto",
   "horizonDays": 4,
   "days": [
@@ -14,7 +14,12 @@
         "Verified exact native sportsbook prices",
         "Publication-grade team-news/expected-XI review"
       ],
-      "researchFile": "data/research-base-2026-10-07.json"
+      "researchFile": "data/research-base-2026-10-07.json",
+      "liveSnapshot": {
+        "scoreboard": 64,
+        "fixtures": 64,
+        "odds": 13
+      }
     },
     {
       "date": "2026-10-08",
@@ -27,21 +32,31 @@
         "Verified exact native sportsbook prices",
         "Immutable first publication"
       ],
-      "researchFile": "data/research-base-2026-10-08.json"
+      "researchFile": "data/research-base-2026-10-08.json",
+      "liveSnapshot": {
+        "scoreboard": 101,
+        "fixtures": 101,
+        "odds": 11
+      }
     },
     {
       "date": "2026-10-09",
       "scheduledGames": 17,
       "researchFixtures": 17,
       "published": false,
-      "status": "research-prepared-needs-history-refresh",
+      "status": "market-data-present-picks-awaiting-research-news-validation",
       "pending": [
         "Refresh incomplete last-10 samples with prior-season all-competition history",
         "Current editorial/team-news checks",
-        "Verified exact native sportsbook prices",
-        "Immutable first publication"
+        "Run exact native-American future odds publication gate",
+        "Validate and freeze first published board"
       ],
-      "researchFile": "data/research-base-2026-10-09.json"
+      "researchFile": "data/research-base-2026-10-09.json",
+      "liveSnapshot": {
+        "scoreboard": 119,
+        "fixtures": 119,
+        "odds": 55
+      }
     },
     {
       "date": "2026-10-10",
@@ -55,7 +70,12 @@
         "Verified exact native sportsbook prices",
         "Immutable first publication"
       ],
-      "researchFile": "data/research-base-2026-10-10.json"
+      "researchFile": "data/research-base-2026-10-10.json",
+      "liveSnapshot": {
+        "scoreboard": 347,
+        "fixtures": 347,
+        "odds": 181
+      }
     },
     {
       "date": "2026-10-11",
@@ -73,8 +93,8 @@
     }
   ],
   "notes": [
-    "No future selection is published until all research/news/price gates pass.",
-    "The research builder now backfills the prior season to obtain deterministic all-competition last-10 samples where available.",
-    "October 7 has a confirmed Jordan–Armenia women’s friendly, but no verified exact native sportsbook price was found during the owner-triggered early run."
+    "Today + next 3 dated scoreboard/fixtures/odds snapshots are pushed to GitHub; latest-* aliases remain today only.",
+    "Future boards may publish before game day once complete research, current team-news, exact native sportsbook prices and validation pass. First publication freezes them immediately.",
+    "October 9 already has DraftKings market data in the live feeds, but its publication-grade daily insights/team-news review and refreshed complete histories are not yet saved, so no picks are frozen yet."
   ]
 }

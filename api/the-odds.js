@@ -4,6 +4,7 @@ const BUILD_TAG="v32";
 
 const LEAGUE_HINTS={
   "uefa.nations":{keys:["soccer_uefa_nations_league"],aliases:["uefa nations league","nations league"]},
+  "fifa.friendly":{keys:["soccer_international_friendlies","soccer_fifa_friendlies"],aliases:["international friendlies","international friendly","fifa friendlies","friendly games"]},
   "concacaf.nations.league":{keys:["soccer_concacaf_nations_league"],aliases:["concacaf nations league","concacaf nations"]},
   "uefa.champions":{keys:["soccer_uefa_champs_league"],aliases:["uefa champions league","champions league"]},
   "uefa.europa":{keys:["soccer_uefa_europa_league"],aliases:["uefa europa league","europa league"]},
@@ -161,7 +162,8 @@ export default async function handler(req,res){
 
     const date=String(req.query.date||"");
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return res.status(400).json({error:"Invalid date"});
-    if(date!==torontoDate())return res.status(200).json({enabled:false,reason:"live_date_only",events:[]});
+    const today=torontoDate(),horizon=new Date(today+"T12:00:00Z");horizon.setUTCDate(horizon.getUTCDate()+3);const maxDate=horizon.toISOString().slice(0,10);
+    if(date<today||date>maxDate)return res.status(200).json({enabled:false,reason:"outside_4_day_horizon",today,maxDate,events:[]});
     const leagues=[...new Set(String(req.query.leagues||"").split(",").map(x=>x.trim()).filter(Boolean))].slice(0,12);
     if(!leagues.length)return res.status(200).json({enabled:true,events:[],sports:[]});
 

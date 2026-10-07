@@ -310,3 +310,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Commit `bfe9107e9caff6007f851db691b48ffebb48899e` deployed to Vercel production and reached READY on the production aliases.
 - Published board integrity completed successfully; October 5–6 immutable board history remains unchanged.
 - Mobile date controls, transparent league fallback, restored league mappings, and the today + next-3-days live-data/research horizon are now on main.
+
+## 2026-10-07 — v71 future-board publication horizon
+**Status:** 🟡 Code/data update in progress
+
+- Corrected the future-date odds gate: exact native sportsbook lookup now permits the Toronto current date plus the next 3 dates instead of returning `live_date_only`.
+- Added International Friendlies resolution hints for the exact-odds provider.
+- Clarified the owner rule: future boards SHOULD publish early when their complete research, current team-news, qualifying exact-price and validation gates already pass. They do not have to wait until game day.
+- Future published boards become immutable immediately at first publication, exactly like same-day boards.
+- October 9 currently has scheduled fixtures and DraftKings market data, but no saved publication-grade daily insights/team-news review and no frozen board yet; this is why the UI correctly shows "Picks have not been published yet."

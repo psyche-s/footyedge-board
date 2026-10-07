@@ -29,3 +29,8 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - Deterministic research bases are also rebuilt for today + next 3 days. Future research/data may refresh freely until publication.
 - Future PICKS are different from future DATA: never publish/freeze future picks merely because schedule, research, fixtures or odds snapshots exist. A date's selections publish only after its full verification gates pass, then become immutable.
 - Mobile date navigation must keep Previous / date / Today / Search / Next on one horizontal row. League-filter logos must use a transparent icon footprint; unknown competitions use the transparent SVG football fallback, never a boxed emoji.
+
+## Future-board publication clarification, 2026-10-07
+- The owner wants usable picks visible for today plus the next 3 Toronto dates whenever those future dates already satisfy the same publication gates. Do NOT wait until the calendar reaches that date merely because it is in the future.
+- Future boards may therefore publish early after complete research, current team-news review, qualifying exact native sportsbook prices and validation. The instant a future board is first exposed publicly, its full picks/odds/confidence/explanations freeze under the same immutable rule.
+- If a future date has fixtures and prices but its research/news review is incomplete, show "Picks have not been published yet" for that date; do not synthesize or downgrade the gates.
