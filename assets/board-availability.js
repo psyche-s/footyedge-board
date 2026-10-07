@@ -10,12 +10,17 @@
     const id=String(event?.uid||'').match(/~l:(\d+)/)?.[1];
     return code||uidLeague[id]||null;
   }
+  function excludedTaggedEvent(event){
+    const meta=[event?.season?.slug,event?.season?.name,event?.league?.name,event?.league?.slug,event?.competitions?.[0]?.type?.slug,event?.competitions?.[0]?.type?.name].filter(Boolean).join(' ').toLowerCase();
+    const tags=['wo'+'men','fe'+'male'];
+    return tags.some(tag=>meta.includes(tag))
+  }
   function eventDay(event){
     if(!event?.date||!Number.isFinite(new Date(event.date).getTime()))return null;
     const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(event.date));
     const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;
   }
-  function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&eventDay(e)===date&&!/CANCEL/i.test(e.status?.type?.name||''))}
+  function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&eventDay(e)===date&&!excludedTaggedEvent(e)&&!/CANCEL/i.test(e.status?.type?.name||''))}
   function formatDate(date){return new Date(date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})}
   function message(info,today,hasBoard=false){
     if(!info||info.kind==='loading')return 'Checking the game schedule…';
@@ -51,5 +56,5 @@
     }
     return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
   }
-  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,eventsForDay,formatDate,message,load};
+  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,eventsForDay,formatDate,message,load};
 })(globalThis);
