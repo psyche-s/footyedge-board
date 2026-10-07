@@ -90,3 +90,9 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - Preserve the approved national-team/country display treatment: national sides continue to show circular flags unless the owner explicitly changes that rule.
 - External/API team logos are fallback-only when a matching local cached club logo is unavailable.
 - Keep football-logos.cc attribution/source metadata in the repo as requested by the upstream site.
+
+
+## Public competition scope — owner instruction 2026-10-07
+- The public competition scope is enforced by `FootyEdgeAvailability.excludedTaggedEvent` and must be applied consistently to schedule availability, deterministic research, preview capture, official boards and performance tracking.
+- Raw upstream snapshots may retain out-of-scope source rows for audit/debugging, but those rows must not flow into reader-facing boards or tracked pick records.
+- October 7 was explicitly corrected and re-locked after applying this scope rule; preserve the prior board only through the append-only board-revisions audit backup.
