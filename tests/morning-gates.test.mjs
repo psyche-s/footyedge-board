@@ -7,6 +7,7 @@ const p2=fs.readFileSync("ui/part2.html","utf8");
 const builder=fs.readFileSync("scripts/build-research-base.mjs","utf8");
 const validator=fs.readFileSync("scripts/validate-daily-board.mjs","utf8");
 const home=fs.readFileSync("index.html","utf8");
+const aboutPage=fs.readFileSync("about.html","utf8");
 
 test("compact search is visible and accessible",()=>{
   assert.match(p1,/id="searchBtn" aria-label="Search games"/);
@@ -168,4 +169,15 @@ test("Home Top 5 applies womens W suffix at display layer",()=>{
   assert.match(home,/function homeTeamName/);
   assert.match(home,/function homeSelectionLabel/);
   assert.match(home,/renderTop5\(board\.top5,"",board\)/);
+});
+
+test("Home and About support buttons use native matching CTA typography and height",()=>{
+  assert.match(home,/class="supportCta"/);
+  assert.match(home,/\.supportCta\{[\s\S]*?min-height:46px[\s\S]*?font-family:inherit/);
+  assert.match(home,/\.cta\{[\s\S]*?min-height:46px[\s\S]*?font-family:inherit/);
+  assert.match(aboutPage,/class="supportCta"/);
+  assert.match(aboutPage,/ABOUT FOOTYEDGE/);
+});
+test("mobile Home hero favors full-banner visibility",()=>{
+  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroVisual\{[\s\S]*?background-size:contain[\s\S]*?background-repeat:no-repeat/);
 });

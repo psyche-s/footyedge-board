@@ -493,3 +493,13 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Removed #1/#2/#3/#4/#5 prefixes from the saved Top 5 result rows; the table now shows only the actual pick text.
 - Centered the result glyph inside the circular hit/miss marker, including the miss X.
 - No tracking records, scores, hit/miss outcomes, dates, or other Hit Rate page layout changed.
+
+
+## 2026-10-07 — v88 support CTA / About title / mobile hero fit
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Kept Support FootyEdge blue so support remains visually distinct from the green primary action, but replaced the externally rendered image button with a native FootyEdge CTA using the site font, weight, radius and 46px height.
+- Applied the same support CTA treatment on Home and About.
+- Home About heading is now **ABOUT FOOTYEDGE**; the About page eyebrow uses the same wording in caps.
+- On mobile, the Home hero now prioritizes showing the complete banner artwork with contain-style sizing instead of aggressive cover cropping.
+- No board data, model logic, picks, odds, tracking or content logic changed.
