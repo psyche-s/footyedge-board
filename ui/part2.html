@@ -824,7 +824,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload]=await Promise.all([
       json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-fixtures.json").catch(()=>null):null),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -833,10 +833,11 @@ async function load(date=S.date){
       repoData("data/performance/summary.json").catch(()=>null),
       repoData('data/daily-insights-'+S.date+'.json').catch(()=>null),
       repoData('data/research-base-'+S.date+'.json').catch(()=>null),
-      repoData('data/boards/'+S.date+'.json').catch(()=>null)
+      repoData('data/boards/'+S.date+'.json').catch(()=>null),
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/board-drafts/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
-    S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;S.archive=archivePayload;
+    S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;S.archive=archivePayload;S.draft=draftPayload;
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
@@ -851,7 +852,10 @@ async function load(date=S.date){
     }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
 
     if(archivePayload?.date===S.date){
-      S.games=applyBoardArchive(games,archivePayload);S.boardReady=true;S.dataSource="Frozen published board";render();planRefresh();return;
+      S.games=applyBoardArchive(games,archivePayload);S.boardReady=true;S.dataSource="Locked at 6:00 AM ET";render();planRefresh();return;
+    }
+    if(!ARCHIVE_CAPTURE&&draftPayload?.date===S.date){
+      S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Morning preview · updates until 6:00 AM ET";render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE){
       for(const g of games)g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
@@ -865,7 +869,7 @@ async function load(date=S.date){
     }
     let liveOddsPayload=null,dailyOddsPayload=null;
     if(games.length){
-      dailyOddsPayload=await repoData('data/daily-odds-'+S.date+'.json').catch(()=>null);
+      dailyOddsPayload=CAPTURE_MODE==="draft"?null:await repoData('data/daily-odds-'+S.date+'.json').catch(()=>null);
       if(dailyOddsPayload?.events?.length){
         const dailyMap=buildDailyOddsMap(dailyOddsPayload);
         for(const g of games){

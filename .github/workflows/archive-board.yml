@@ -1,40 +1,38 @@
-name: Archive FootyEdge Published Board
+name: Publish and Lock FootyEdge Boards
 
 on:
   push:
     branches: [main]
     paths:
       - ".github/workflows/archive-board.yml"
-      - "data/daily-odds-*.json"
-      - "data/daily-insights-*.json"
+      - "scripts/publish-board-previews.mjs"
+      - "scripts/archive-board.mjs"
+      - "ui/part1.html"
+      - "ui/part2.html"
+      - "picks.html"
   schedule:
-    # 07:20 Toronto, both DST and standard-time UTC offsets.
+    # Rolling preview refresh: one of these is 05:35 Toronto depending on DST.
+    - cron: "35 9 * * *"
+    - cron: "35 10 * * *"
+    # Official 06:05 Toronto lock: one of these is correct depending on DST.
+    - cron: "5 10 * * *"
+    - cron: "5 11 * * *"
+    # Lock fallback if GitHub's first scheduled run was delayed.
+    - cron: "20 10 * * *"
     - cron: "20 11 * * *"
-    - cron: "20 12 * * *"
-    # 08:55 fallback if the morning capture was delayed/missed.
-    - cron: "55 12 * * *"
-    - cron: "55 13 * * *"
-    # 23:50 final fallback for the current day.
-    - cron: "50 3 * * *"
-    - cron: "50 4 * * *"
   workflow_dispatch:
-    inputs:
-      board_date:
-        description: 'Optional Toronto board date (today or future; validated inputs required)'
-        required: false
-        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: footyedge-board-archive
+  group: footyedge-board-publish
   cancel-in-progress: false
 
 jobs:
-  archive:
+  publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
@@ -46,22 +44,26 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Capture immutable published board
+      - name: Refresh rolling preview boards
+        if: github.event_name != 'schedule' || github.event.schedule == '35 9 * * *' || github.event.schedule == '35 10 * * *'
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          ARCHIVE_DATE: ${{ inputs.board_date }}
-          FORCE_ARCHIVE: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          PREVIEW_DAYS: "4"
+        run: node scripts/publish-board-previews.mjs
+      - name: Lock today's official board when Toronto has reached 06:00
         run: node scripts/archive-board.mjs
-      - name: Commit board archive
+      - name: Commit preview / lock changes
+        shell: bash
         run: |
-          if git diff --quiet -- data/boards; then
-            echo "No new board archive."
+          mkdir -p data/board-drafts data/boards
+          git config user.name "FootyEdge Board Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A -- data/board-drafts data/boards
+          if git diff --cached --quiet; then
+            echo "No board changes."
             exit 0
           fi
-          git config user.name "FootyEdge Archive Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/boards
-          git commit -m "chore(board): freeze published FootyEdge board [skip ci]"
+          git commit -m "chore(board): refresh rolling previews / 6am lock [skip ci]"
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main

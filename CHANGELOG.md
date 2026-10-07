@@ -328,3 +328,16 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Added a hard Toronto-date filter to the exact-odds endpoint so adjacent UTC-date events cannot leak into a requested board.
 - October 11 picks remain unpublished because current publication-grade research/team-news validation is not yet complete; no gate was weakened.
 - No previously published selection, price, confidence, explanation or tracking record changed.
+
+
+## 2026-10-07 — v73 rolling previews / 06:00 official lock
+**Status:** 🟡 Code ready · immediate preview publication triggered by main push
+
+- Owner rule changed: FootyEdge now publishes rolling model boards for today plus the next four Toronto dates without waiting for sportsbook pricing.
+- Future/current pre-lock boards live separately in `data/board-drafts/` and may change on each morning refresh as research, team news, confidence, pricing and adjacent-line choices update.
+- Missing odds no longer block a preview pick. If an exact price is already posted, it must still satisfy the existing -400 floor; an unavailable price displays as pending/blank rather than being invented.
+- The fixture-date board hard-locks at 06:00 America/Toronto. The latest preview is promoted to the immutable official `data/boards/` record and no automatic selection, rank, confidence, price or explanation can change afterward.
+- Post-lock changes remain owner-only and continue to require the existing backup/audit process. Tracking continues to use official locked boards only; preview boards never enter the hit-rate denominator.
+- Deterministic research was moved to the Toronto 05:00 hour so the final morning re-run happens before the 06:00 lock. Rolling preview capture is scheduled around 05:35 with 06:05 + fallback lock checks.
+- UI impact: no redesign. Picks pages simply load the rolling preview when no locked board exists and prefer the official board once locked.
+- Deployment result: pending Git/Vercel and preview-workflow verification.

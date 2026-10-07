@@ -1483,8 +1483,10 @@ function cardCommentary(g,p){
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
 function applyUserPick(g){return g}
-// Published selections are authoritative on the publication day and every later day.
-const ARCHIVE_CAPTURE=new URLSearchParams(window.location.search).has("archiveCapture");
+// Rolling previews may update until the fixture date reaches 06:00 America/Toronto.
+const CAPTURE_PARAMS=new URLSearchParams(window.location.search);
+const CAPTURE_MODE=CAPTURE_PARAMS.has("draftCapture")?"draft":CAPTURE_PARAMS.has("archiveCapture")?"archive":null;
+const ARCHIVE_CAPTURE=Boolean(CAPTURE_MODE);
 function clonePickForArchive(p,g){
   if(!p)return null;
   return {...JSON.parse(JSON.stringify(p)),archivedCommentary:cardCommentary(g,p),archivedSupportFacts:researchFactsForPick(g,p,3)}
@@ -1493,28 +1495,46 @@ function restoreArchivedPick(p){
   if(!p)return null;
   return {...p,archived:true,bookExact:p.bookExact??(p.odds!=null||Boolean(p.verifiedPrice))}
 }
-function boardArchivePayload(){
-  if(S.archive?.date===S.date)return JSON.parse(JSON.stringify(S.archive));
-  // Public pages never expose a recalculated board before its durable publication.
-  if(!ARCHIVE_CAPTURE||!S.boardReady)return null;
-  const eligible=games=>games.filter(g=>g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top))
-    .sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5);
-  const refs=games=>games.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(g.model.top,g)}));
+function hasPostedPrice(p){return Boolean(p&&(p.odds!=null||p.verifiedPrice))}
+function previewPriceAllowed(p){return Boolean(p&&(!hasPostedPrice(p)||priceAllowed(p)))}
+function previewCandidates(g){
+  const core=(g?.model?.candidates||[]).filter(x=>x.score>=78&&previewPriceAllowed(x))
+    .map(x=>hasPostedPrice(x)?x:{...x,displayOnly:true});
+  const research=(g?.model?.researchCandidates||[]).filter(x=>x.score>=78&&previewPriceAllowed(x));
+  return diversifyCandidates(g,[...core,...research].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99))).slice(0,3)
+}
+function boardArchivePayload(mode=CAPTURE_MODE||"archive"){
+  if(mode==="archive"&&S.archive?.date===S.date)return JSON.parse(JSON.stringify(S.archive));
+  if(!CAPTURE_MODE||!S.boardReady)return null;
+  const preview=mode==="draft";
+  const picksFor=g=>preview?previewCandidates(g):(g.model?.top3||[]).filter(priceAllowed).slice(0,3);
+  const topFor=g=>preview?(picksFor(g)[0]||null):(priceAllowed(g.model?.top)?g.model.top:null);
+  const eligible=games=>games.filter(g=>{const p=topFor(g);return p&&p.score>=80})
+    .sort((a,b)=>{const ap=topFor(a),bp=topFor(b);return bp.score-ap.score||(bp.ev??-99)-(ap.ev??-99)}).slice(0,5);
+  const refs=games=>games.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(topFor(g),g)}));
+  const generatedAt=new Date().toISOString();
   return{
-    schema:2,date:S.date,frozenAt:new Date().toISOString(),immutable:true,coverage:"full-board",source:"FootyEdge first published complete board",
+    schema:3,date:S.date,generatedAt,frozenAt:preview?null:generatedAt,immutable:!preview,state:preview?"preview":"locked",
+    mutableUntil:preview?S.date+" 06:00 America/Toronto":null,coverage:"full-board",
+    source:preview?"FootyEdge rolling preview board":"FootyEdge locked published board",
     top5:refs(eligible(S.games)),
     leagueTop5:Object.fromEntries([...new Set(S.games.map(g=>g.league))].map(l=>[l,refs(eligible(S.games.filter(g=>g.league===l)))])),
-    games:S.games.map(g=>({
-      id:g.id,home:g.home.name,away:g.away.name,date:g.date,year:g.year,league:g.league,leagueName:g.leagueName,leagueLogo:g.leagueLogo,
-      teams:{home:g.home,away:g.away},
-      teamNews:typeof latestNewsItems==="function"?latestNewsItems(g):[],
-      top:priceAllowed(g.model?.top)?clonePickForArchive(g.model?.top,g):null,top3:(g.model?.top3||[]).filter(priceAllowed).map(p=>clonePickForArchive(p,g)),
-      model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:priceAllowed(g.model.top)?clonePickForArchive(g.model.top,g):null,
-        ...Object.fromEntries(["top3","candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).filter(priceAllowed).map(p=>clonePickForArchive(p,g))]))}:null
-    }))
+    games:S.games.map(g=>{
+      const top3=picksFor(g),top=topFor(g);
+      const keep=preview?previewPriceAllowed:priceAllowed;
+      return{
+        id:g.id,home:g.home.name,away:g.away.name,date:g.date,year:g.year,league:g.league,leagueName:g.leagueName,leagueLogo:g.leagueLogo,
+        teams:{home:g.home,away:g.away},
+        teamNews:typeof latestNewsItems==="function"?latestNewsItems(g):[],
+        top:top?clonePickForArchive(top,g):null,top3:top3.map(p=>clonePickForArchive(p,g)),
+        model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:top?clonePickForArchive(top,g):null,top3:top3.map(p=>clonePickForArchive(p,g)),
+          ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).filter(keep).map(p=>clonePickForArchive(p,g))]))}:null
+      }
+    })
   }
 }
-window.FootyEdgeArchive=boardArchivePayload;
+window.FootyEdgeArchive=()=>boardArchivePayload("archive");
+window.FootyEdgeDraft=()=>boardArchivePayload("draft");
 function applyBoardArchive(games,archive){
   if(!archive||archive.date!==S.date)return games;
   const byId=new Map(games.map(g=>[String(g.id),g]));
@@ -1527,7 +1547,7 @@ function applyBoardArchive(games,archive){
     const saved=a.model||{};
     g.model={...saved,top:restoreArchivedPick(a.top),top3:(a.top3||[]).map(restoreArchivedPick).filter(Boolean),
       ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(saved[k]||a.top3||[]).map(restoreArchivedPick).filter(Boolean)]))};
-    g.published=true;g.frozenTeamNews=a.teamNews||[];g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
+    g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
     return g;
   });
   // Legacy partial archives must not fill gaps with today's model or add fresh props.

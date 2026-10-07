@@ -1,11 +1,12 @@
 # FootyEdge project rules
 
-## Published picks: owner rule, 2026-10-07
-Once any pick is published it cannot be altered unless Shaif explicitly asks for that specific change. This applies to every game's picks, Top 3, player props, alternatives and global/league Top 5, including order, market/line, confidence, published odds/EV and pre-match explanation/evidence.
+## Rolling previews and official lock: owner rule, 2026-10-07
+The owner's latest instruction supersedes the earlier first-publication freeze. FootyEdge publishes rolling preview boards for today plus the next four Toronto calendar dates. Preview picks may change during morning refreshes. The official board becomes immutable at **06:00 America/Toronto on the fixture date** and cannot change afterward unless Shaif explicitly overrides that date.
 
-- First publication freezes the complete board in `data/boards/YYYY-MM-DD.json` BEFORE public pages display picks. 07:00 Toronto is the target publication time, never permission to rewrite an earlier publication.
-- Current and historical pages, Home, filters, expanded analysis and tracking must use that snapshot. Refreshes, news, lineup changes, model changes and deploys must not regenerate selections for published dates.
-- Automatic updates may change scores/status/settlements and append later observations separately. Learning applies to future boards only.
+- Mutable public previews live in `data/board-drafts/YYYY-MM-DD.json`. They may be regenerated from current research, team news, model evidence and pricing until the 06:00 lock boundary.
+- At/after 06:00 Toronto, the latest preview is promoted once into `data/boards/YYYY-MM-DD.json` as the official locked record. Public pages prefer the official board whenever it exists.
+- Automatic refreshes must never change the current date's draft or official board after 06:00. Scores/status/settlements and later postmatch observations remain separate from the locked pre-match board.
+- Explicit owner corrections after lock preserve the previous board in `data/board-revisions/` and append the existing audit trail before any change.
 - Missing historical selections/explanations must remain explicitly unavailable. Never backfill them with a current model and call them original.
 - Explicit owner corrections preserve the previous board in `data/board-revisions/` and append an audit entry with the exact instruction, before/after SHA256 and backup path. They must never erase prior records or silently improve the performance record.
 - Before commit/deploy run `node scripts/validate-published-boards.mjs --base <main SHA before your changes>` and meaningful regression tests. Do not change a published board, historical odds or research to satisfy newer model validation.
@@ -21,16 +22,16 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - “Why this pick” belongs directly under Pick #1 and uses 1–3 strongest deterministic/model facts. Never rewrite archived explanations or evidence.
 - Team-news model adjustments require current sourced status plus explicit role, importance, replacement quality and causal evidence. Uncertain news stays uncertain.
 - ATGS, Score-or-Assist, assist and multi-goal player selections require credible expected-start and minutes evidence; material rotation/injury risk excludes the prop.
-- Exact native sportsbook prices are mandatory for every published selection/alternative; no synthetic or display-only pick may be frozen.
+- Pricing is **not** a publication gate for rolling previews. A strong model selection may publish with odds pending. When an exact price exists, it must be verified/native, the normal -400 floor still applies, and safer adjacent-line optimization remains active. At 06:00 the board locks with the latest available verified price; missing prices remain blank rather than blocking the lock or being backfilled later.
 - Postmatch learning grades saved Top-3 candidates at 85%+ separately from process quality. Never infer a red-card, injury, VAR or luck explanation from the score alone; verify it before learning from it.
 
 ## Live data horizon, 2026-10-07
 - Every morning/data refresh must push dated schedule/fixture/odds snapshots for the Toronto current date plus the next 4 calendar dates. `latest-*` remains an alias for the current Toronto date only.
 - Deterministic research bases are also rebuilt for today + next 4 days. Future research/data may refresh freely until publication.
-- Future PICKS are different from future DATA: never publish/freeze future picks merely because schedule, research, fixtures or odds snapshots exist. A date's selections publish only after its full verification gates pass, then become immutable.
+- Future picks are published as rolling previews whenever tracked fixtures/model research are available; missing prices do not block preview publication. Future previews remain mutable until their own fixture date reaches 06:00 Toronto.
 - Mobile date navigation must keep Previous / date / Today / Search / Next on one horizontal row. League-filter logos must use a transparent icon footprint; unknown competitions use the transparent SVG football fallback, never a boxed emoji.
 
-## Future-board publication clarification, 2026-10-07
-- The owner wants usable picks visible for today plus the next 4 Toronto dates whenever those future dates already satisfy the same publication gates. Do NOT wait until the calendar reaches that date merely because it is in the future.
-- Future boards may therefore publish early after complete research, current team-news review, qualifying exact native sportsbook prices and validation. The instant a future board is first exposed publicly, its full picks/odds/confidence/explanations freeze under the same immutable rule.
-- If a future date has fixtures and prices but its research/news review is incomplete, show "Picks have not been published yet" for that date; do not synthesize or downgrade the gates.
+## Future-board rolling-preview clarification, 2026-10-07
+- Show usable model boards for today plus the next 4 Toronto dates as soon as the slate/model can be built; do not wait for sportsbook pricing.
+- Re-run the rolling previews every morning after research/data refresh. Pricing, team news, confidence and pick ordering may change on those preview dates.
+- At 06:00 Toronto on the fixture date, promote the latest preview to the immutable official board. No automatic pick/price/confidence/explanation changes are allowed after that boundary. Shaif may explicitly override a locked date through the audited correction process.

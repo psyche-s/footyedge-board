@@ -2,9 +2,9 @@ name: Build FootyEdge Research Base
 
 on:
   schedule:
-    # Dual UTC schedules for Toronto DST/standard time. Script only runs at local hour 06.
-    - cron: "15 10 * * *"
-    - cron: "15 11 * * *"
+    # Dual UTC schedules for Toronto DST/standard time. Only the run landing in local hour 05 proceeds.
+    - cron: "5 9 * * *"
+    - cron: "5 10 * * *"
   workflow_dispatch:
 
 permissions:
@@ -31,6 +31,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "05" ]]; then
+            echo "Skipping duplicate UTC schedule outside Toronto 05:00 hour."
+            exit 0
+          fi
           TODAY="$(TZ=America/Toronto date +%F)"
           for OFFSET in 0 1 2 3 4; do
             DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"

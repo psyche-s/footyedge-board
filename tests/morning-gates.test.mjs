@@ -65,3 +65,22 @@ test("future exact odds are filtered to the requested Toronto calendar date",()=
   const oddsApi=fs.readFileSync("api/the-odds.js","utf8");
   assert.match(oddsApi,/torontoDateOf\(event\.commence_time\)===date/)
 });
+
+test("rolling previews ignore missing price but respect posted-price floor",()=>{
+  assert.match(p1,/function previewPriceAllowed\(p\)/);
+  assert.match(p1,/!hasPostedPrice\(p\)\|\|priceAllowed\(p\)/);
+  assert.match(p1,/window\.FootyEdgeDraft/)
+});
+test("public board prefers official lock then rolling preview",()=>{
+  assert.match(p2,/data\/board-drafts/);
+  assert.match(p2,/Morning preview · updates until 6:00 AM ET/);
+  assert.match(p2,/Locked at 6:00 AM ET/)
+});
+test("official board locks from preview at 06:00 Toronto",()=>{
+  const freezer=fs.readFileSync("scripts/archive-board.mjs","utf8");
+  const publisher=fs.readFileSync("scripts/publish-board-previews.mjs","utf8");
+  assert.match(freezer,/LOCK_HOUR=6/);
+  assert.match(freezer,/board-drafts/);
+  assert.match(freezer,/payload\.immutable=true/);
+  assert.match(publisher,/Past 06:00 Toronto lock; refusing mutable refresh/)
+});
