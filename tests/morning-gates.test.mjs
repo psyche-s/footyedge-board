@@ -60,3 +60,8 @@ test("exact sportsbook endpoint permits today plus next four dates",()=>{
   assert.match(oddsApi,/outside_5_day_horizon/);
   assert.match(oddsApi,/"fifa\.friendly"/)
 });
+
+test("future exact odds are filtered to the requested Toronto calendar date",()=>{
+  const oddsApi=fs.readFileSync("api/the-odds.js","utf8");
+  assert.match(oddsApi,/torontoDateOf\(event\.commence_time\)===date/)
+});
