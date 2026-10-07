@@ -319,3 +319,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Clarified the owner rule: future boards SHOULD publish early when their complete research, current team-news, qualifying exact-price and validation gates already pass. They do not have to wait until game day.
 - Future published boards become immutable immediately at first publication, exactly like same-day boards.
 - October 9 currently has scheduled fixtures and DraftKings market data, but no saved publication-grade daily insights/team-news review and no frozen board yet; this is why the UI correctly shows "Picks have not been published yet."
+
+## 2026-10-07 — v72 five-date horizon / October 11 readiness
+**Status:** 🟡 Data verified · latest production verification pending
+
+- Corrected the morning/data horizon to today plus the next four Toronto calendar dates (five dates total).
+- Saved October 11 scoreboard/fixtures/market snapshots and verified 25 exact native-American sportsbook events after filtering strictly to the October 11 Toronto calendar date.
+- Added a hard Toronto-date filter to the exact-odds endpoint so adjacent UTC-date events cannot leak into a requested board.
+- October 11 picks remain unpublished because current publication-grade research/team-news validation is not yet complete; no gate was weakened.
+- No previously published selection, price, confidence, explanation or tracking record changed.
