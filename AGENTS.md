@@ -25,12 +25,12 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - Postmatch learning grades saved Top-3 candidates at 85%+ separately from process quality. Never infer a red-card, injury, VAR or luck explanation from the score alone; verify it before learning from it.
 
 ## Live data horizon, 2026-10-07
-- Every morning/data refresh must push dated schedule/fixture/odds snapshots for the Toronto current date plus the next 3 calendar dates. `latest-*` remains an alias for the current Toronto date only.
-- Deterministic research bases are also rebuilt for today + next 3 days. Future research/data may refresh freely until publication.
+- Every morning/data refresh must push dated schedule/fixture/odds snapshots for the Toronto current date plus the next 4 calendar dates. `latest-*` remains an alias for the current Toronto date only.
+- Deterministic research bases are also rebuilt for today + next 4 days. Future research/data may refresh freely until publication.
 - Future PICKS are different from future DATA: never publish/freeze future picks merely because schedule, research, fixtures or odds snapshots exist. A date's selections publish only after its full verification gates pass, then become immutable.
 - Mobile date navigation must keep Previous / date / Today / Search / Next on one horizontal row. League-filter logos must use a transparent icon footprint; unknown competitions use the transparent SVG football fallback, never a boxed emoji.
 
 ## Future-board publication clarification, 2026-10-07
-- The owner wants usable picks visible for today plus the next 3 Toronto dates whenever those future dates already satisfy the same publication gates. Do NOT wait until the calendar reaches that date merely because it is in the future.
+- The owner wants usable picks visible for today plus the next 4 Toronto dates whenever those future dates already satisfy the same publication gates. Do NOT wait until the calendar reaches that date merely because it is in the future.
 - Future boards may therefore publish early after complete research, current team-news review, qualifying exact native sportsbook prices and validation. The instant a future board is first exposed publicly, its full picks/odds/confidence/explanations freeze under the same immutable rule.
 - If a future date has fixtures and prices but its research/news review is incomplete, show "Picks have not been published yet" for that date; do not synthesize or downgrade the gates.
