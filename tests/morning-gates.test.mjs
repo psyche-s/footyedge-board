@@ -204,3 +204,19 @@ test("mobile hero extends image through tagline with a readability fade",()=>{
   assert.match(home,/\.heroStage>img\{object-fit:cover/);
   assert.match(home,/\.heroStage:after\{background:linear-gradient/);
 });
+
+test("logo cache is loaded before Today’s Picks UI and local assets are preferred",()=>{
+  assert.match(fs.readFileSync("picks.html","utf8"),/assets\/logos\/registry\.js/);
+  assert.match(p2,/const REMOTE_LEAGUE_LOGOS=/);
+  assert.match(p2,/eng\.1":"\/assets\/logos\/competitions\/eng\.1\.png/);
+  assert.match(p2,/window\.FOOTYEDGE_LOGOS\?\.teams/);
+});
+test("football-logos.cc is canonical upstream for cached logos",()=>{
+  const cfg=JSON.parse(fs.readFileSync("data/logo-sources.json","utf8"));
+  assert.equal(cfg.source,"https://football-logos.cc");
+  assert.ok(cfg.competitions.length>=10);
+  const sync=fs.readFileSync("scripts/sync-football-logos.mjs","utf8");
+  assert.match(sync,/assets\.football-logos\.cc/);
+  assert.match(sync,/manifest\.json/);
+  assert.match(sync,/registry\.js/);
+});

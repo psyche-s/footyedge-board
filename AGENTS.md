@@ -82,3 +82,11 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - Pick #2/#3 notes should be shorter than Pick #1 and should not repeat the full argument.
 - Any reader-facing women's team name must include `(W)` after the team name. Keep raw provider/team IDs unchanged internally.
 - This is a writing/data-label change only. Do not redesign the UI to implement it.
+
+## Logo source-of-truth rule — owner instruction 2026-10-07
+- Use `football-logos.cc` as the upstream source for reusable competition and club/team logos.
+- Store cached copies in this repository under `assets/logos/`; production should prefer the repo-local asset instead of external hotlinks.
+- `data/logo-sources.json` is the canonical upstream source list. `scripts/sync-football-logos.mjs` refreshes the cache and records source URLs in the generated manifest/registry.
+- Preserve the approved national-team/country display treatment: national sides continue to show circular flags unless the owner explicitly changes that rule.
+- External/API team logos are fallback-only when a matching local cached club logo is unavailable.
+- Keep football-logos.cc attribution/source metadata in the repo as requested by the upstream site.

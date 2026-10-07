@@ -532,3 +532,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - After the tagline, the image fades fully into the existing dark hero body containing the free-to-use copy and Support button.
 - Mobile uses a 285px image stage with the same fade treatment.
 - No board, picks, odds, tracking or model data changed.
+
+
+## 2026-10-07 — v92 repository logo cache / football-logos.cc source
+**Status:** 🟡 Code ready · logo-sync workflow pending
+
+- Made `football-logos.cc` the canonical upstream source for FootyEdge competition and club/team logos.
+- Added a repo-local logo cache under `assets/logos/` with generated manifest/registry source metadata and attribution.
+- Added a GitHub Actions sync workflow that refreshes configured competition marks and crawls their listed teams, storing 256×256 transparent PNG copies in the FootyEdge repository.
+- Seeded supported sources for Premier League, La Liga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, MLS, UEFA Champions League, UEFA Europa League, UEFA Nations League, CONCACAF Nations League and FIFA World Cup 2026.
+- Today’s Picks now prefers repo-local competition/team assets. Existing remote/API logos remain fallback-only so the UI does not break before or between cache refreshes.
+- Country/national-team display remains the existing circular flag treatment.
+- Added upstream credit/source documentation as requested by football-logos.cc.
