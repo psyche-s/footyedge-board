@@ -25,9 +25,9 @@ test('History scores contain only the numeric score, with clear hit/miss marks',
   const html=h.historyHtml([{date:'2026-10-06',top5:[pick(1),pick(2,'miss')]}]);
   assert.equal(h.scoreOnly('Switzerland 3-0 North Macedonia'),'3–0');
   assert.equal(h.scoreOnly('2-1'),'2–1');assert.equal(h.scoreOnly(null),'—');
-  assert.match(html,/aria-label="Hit">✓/);assert.match(html,/aria-label="Miss">✕/);
+  assert.match(html,/aria-label="Hit"><span class="markGlyph">✓<\/span>/);assert.match(html,/aria-label="Miss"><span class="markGlyph">✕<\/span>/);
   assert.match(html,/<td class="score">3–0<\/td>/);assert.doesNotMatch(html,/Switzerland 3-0 North Macedonia/);
-  assert.match(html,/class="date">OCT 6, 2026/);assert.match(html,/<table class="results"/);
+  assert.match(html,/class="date">OCT 6, 2026/);assert.match(html,/<table class="results"/);assert.doesNotMatch(html,/<span class="selection">#\d/);
 });
 test('Month and YTD cards use real records and roll over independently',()=>{
   const c=context(),nodes=new Map();c.document={getElementById(id){if(!nodes.has(id))nodes.set(id,{});return nodes.get(id)}};
