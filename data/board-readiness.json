@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-07T06:20:00Z",
+  "checkedAt": "2026-10-07T06:26:00Z",
   "timeZone": "America/Toronto",
   "horizonDays": 4,
   "days": [
@@ -26,56 +26,57 @@
       "scheduledGames": 1,
       "researchFixtures": 1,
       "published": false,
-      "status": "research-prepared",
+      "status": "research-data-ready-no-exact-future-odds",
       "pending": [
         "Current editorial/team-news checks",
-        "Verified exact native sportsbook prices",
-        "Immutable first publication"
+        "No exact native-American future prices verified yet",
+        "Validate and freeze first published board"
       ],
       "researchFile": "data/research-base-2026-10-08.json",
       "liveSnapshot": {
         "scoreboard": 101,
         "fixtures": 101,
         "odds": 11
-      }
+      },
+      "exactNativeOdds": 0
     },
     {
       "date": "2026-10-09",
       "scheduledGames": 17,
       "researchFixtures": 17,
       "published": false,
-      "status": "market-data-present-picks-awaiting-research-news-validation",
+      "status": "partial-exact-odds-ready-awaiting-research-news",
       "pending": [
         "Refresh incomplete last-10 samples with prior-season all-competition history",
-        "Current editorial/team-news checks",
-        "Run exact native-American future odds publication gate",
-        "Validate and freeze first published board"
+        "Current editorial/team-news checks for every tracked fixture",
+        "Validate price coverage and freeze qualifying first publication"
       ],
       "researchFile": "data/research-base-2026-10-09.json",
       "liveSnapshot": {
         "scoreboard": 119,
         "fixtures": 119,
         "odds": 55
-      }
+      },
+      "exactNativeOdds": 7
     },
     {
       "date": "2026-10-10",
       "scheduledGames": 52,
       "researchFixtures": 52,
       "published": false,
-      "status": "research-prepared-needs-history-refresh",
+      "status": "exact-odds-present-awaiting-research-news",
       "pending": [
-        "Refresh incomplete last-10 samples with prior-season all-competition history",
+        "Refresh complete all-competition history where needed",
         "Current editorial/team-news checks",
-        "Verified exact native sportsbook prices",
-        "Immutable first publication"
+        "Validate and freeze qualifying first publication"
       ],
       "researchFile": "data/research-base-2026-10-10.json",
       "liveSnapshot": {
         "scoreboard": 347,
         "fixtures": 347,
         "odds": 181
-      }
+      },
+      "exactNativeOdds": 48
     },
     {
       "date": "2026-10-11",
@@ -93,8 +94,9 @@
     }
   ],
   "notes": [
-    "Today + next 3 dated scoreboard/fixtures/odds snapshots are pushed to GitHub; latest-* aliases remain today only.",
-    "Future boards may publish before game day once complete research, current team-news, exact native sportsbook prices and validation pass. First publication freezes them immediately.",
-    "October 9 already has DraftKings market data in the live feeds, but its publication-grade daily insights/team-news review and refreshed complete histories are not yet saved, so no picks are frozen yet."
+    "Dated schedule/fixtures/market snapshots are saved for today + next 3 dates.",
+    "Future exact-odds lookup is enabled for the same 4-day horizon; future boards may publish early once ALL gates pass.",
+    "Oct 9 currently has 7 exact native-American priced fixtures and Oct 10 has 48. Picks remain unpublished where research/team-news validation is incomplete.",
+    "A future board freezes immediately when first published; no later automatic pick rewrites are allowed."
   ]
 }
