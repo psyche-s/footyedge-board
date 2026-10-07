@@ -131,3 +131,13 @@ test("verified prices render in American format from exact decimal price",()=>{
   assert.match(p1,/function displayAmericanOdds/);
   assert.match(p1,/odds:displayAmericanOdds\(p\)/);
 });
+
+test("reader-facing commentary avoids model-report jargon",()=>{
+  assert.doesNotMatch(p1,/venue-rate blend|Poisson translation|risk-adjusted fit|positive availability\/continuity signal/i);
+});
+test("women fixtures add W suffix only at display layer",()=>{
+  assert.match(p2,/function isWomenFixture/);
+  assert.match(p2,/function teamDisplayName/);
+  assert.match(p2,/function displayPickLabel/);
+  assert.match(p2,/name\+" \(W\)"/);
+});

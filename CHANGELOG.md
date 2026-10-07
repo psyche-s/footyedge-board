@@ -435,3 +435,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Pick #2 and Pick #3 were left unchanged because the owner asked specifically about Jordan ML.
 - Team News remains data-populated for both teams but is intended to display only inside expanded analysis. No collapsed-card Team News UI is authorized.
 - Board correction backup and audit preserved before the override.
+
+
+## 2026-10-07 — v82 editorial rewrite standard + women’s-team labels
+**Status:** 🟡 Code/rules ready for next morning board
+
+- Added `EDITORIAL_STYLE.md` as the canonical reader-facing writing guide.
+- Future WHY THIS PICK, match summaries, Team News, supporting picks and player-prop notes now follow a plain-English football-preview style inspired by current Football Whispers structure without copying its prose.
+- Removed model-report wording from the deterministic commentary generator. Reader-facing copy should no longer use phrases such as venue-rate blend, Poisson translation, risk-adjusted fit, positive availability/continuity signal, or FootyEdge/model self-reference.
+- Team News impact text no longer adds a mechanical `Impact:` prefix; the sentence should read naturally.
+- Women’s fixtures now display `(W)` after team names at the presentation layer, including fixture names, team headers and visible pick labels, without changing provider IDs or odds-matching keys.
+- No card layout, theme, spacing or component redesign is part of this change.
+- Historical locked explanations remain unchanged unless the owner explicitly asks to rewrite a specific historical board.

@@ -70,3 +70,15 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 ## Team News visibility rule — owner instruction 2026-10-07
 - Team News appears **only inside expanded/full match analysis**. Do not render Team News on collapsed match cards, Top Picks rows, Home summaries, or other compact views unless the owner explicitly asks for it.
 - Preserve the existing two-team expanded Team News card layout.
+
+
+## Editorial writing standard — owner instruction 2026-10-07
+- Read and follow `EDITORIAL_STYLE.md` before generating any reader-facing summary, Team News, WHY THIS PICK, Pick #2/#3 commentary or player-prop explanation.
+- Current Football Whispers previews are an editorial reference for clarity and structure only: short key stats, simple form language, concise team news and an easy-to-follow reason for the pick. Never copy source prose.
+- Reader-facing copy must sound like a football preview written for a person, not a model report.
+- Do not mention FootyEdge, the model, Poisson calculations, internal scoring, venue-rate blends, risk-adjusted fit, probability-edge jargon or internal process language in normal write-ups. Keep those calculations internal or in dedicated numeric UI fields.
+- WHY THIS PICK should normally be 2-4 short sentences or up to three compact evidence bullets. Lead with the football reason, then the strongest supporting stat(s), then a plain conclusion.
+- Team News should name the important player/status first, then explain the likely football effect in ordinary language. If no material news is verified, say so simply.
+- Pick #2/#3 notes should be shorter than Pick #1 and should not repeat the full argument.
+- Any reader-facing women's team name must include `(W)` after the team name. Keep raw provider/team IDs unchanged internally.
+- This is a writing/data-label change only. Do not redesign the UI to implement it.

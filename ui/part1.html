@@ -1351,53 +1351,52 @@ function projectionText(g){
 function ourReason(g,p){
   if(!p||!g.model)return"No qualifying market yet.";
   const h=g.model.home,a=g.model.away;
-  const label=String(p.label||"").toLowerCase(),proj=projectionText(g),price=p.odds!=null?oddsText(p.odds):null;
-  const sample=`${g.home.name} last ${h.n}: ${h.gf.toFixed(2)} scored / ${h.ga.toFixed(2)} allowed; ${g.away.name} last ${a.n}: ${a.gf.toFixed(2)} / ${a.ga.toFixed(2)}.`;
-
+  const label=String(p.label||"").toLowerCase(),price=p.odds!=null?oddsText(p.odds):null;
+  const pct=v=>typeof v==="number"?Math.round(v*100)+"%":null;
+  const num=v=>Number.isFinite(Number(v))?Number(v):null;
+  const homeName=g.home.name,awayName=g.away.name;
   if(label.includes("under 2.5")){
-    return `This sets up as a low-total game. ${g.home.name} stayed under 2.5 in ${statPct(h.u25)} of the sample and ${g.away.name} in ${statPct(a.u25)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    const b=[]; if(h.u25!=null)b.push(homeName+" have stayed under 2.5 goals in "+pct(h.u25)+" of their recent matches"); if(a.u25!=null)b.push(awayName+" have done the same in "+pct(a.u25));
+    return (b.length?b.join(", while ")+". ":"")+"This looks more likely to be a tight game than an open one, which makes Under 2.5 the sensible angle."+(price?" The price is "+price+".":"");
   }
   if(label.includes("under 3.5")){
-    return `The under has some room here. ${g.home.name} finished under 3.5 in ${statPct(h.u35)} of the sample and ${g.away.name} in ${statPct(a.u35)}. ${sample}${proj?" The adjusted projection is "+proj+", which still lands below four goals.":""}${price?" Posted price: "+price+".":""}`
+    const b=[]; if(h.u35!=null)b.push(homeName+" have finished under 3.5 in "+pct(h.u35)+" of the sample"); if(a.u35!=null)b.push(awayName+" have done so in "+pct(a.u35));
+    return (b.length?b.join(", and ")+". ":"")+"The extra goal of protection makes Under 3.5 the safer total here."+(price?" The price is "+price+".":"");
   }
-  if(label.includes("under 4.5")){
-    return `This is the safer under angle. ${g.home.name} stayed under 4.5 in ${statPct(h.u45)} of the sample and ${g.away.name} in ${statPct(a.u45)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}`
-  }
+  if(label.includes("under 4.5")) return "Neither side needs a shootout for this bet to land. Under 4.5 gives plenty of room for a normal game without asking the match to stay especially low-scoring."+(price?" The price is "+price+".":"");
   if(label.includes("over 1.5")){
-    return `Two goals is the target here. Over 1.5 landed in ${statPct(h.o15)} of ${g.home.name}'s sample and ${statPct(a.o15)} of ${g.away.name}'s. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    const b=[]; if(h.o15!=null)b.push(homeName+" have seen at least two goals in "+pct(h.o15)+" of their recent matches"); if(a.o15!=null)b.push(awayName+" have done the same in "+pct(a.o15));
+    return (b.length?b.join(", while ")+". ":"")+"Two goals is a modest target for this matchup, so Over 1.5 is the safer way to back the scoring trend."+(price?" The price is "+price+".":"");
   }
   if(label.includes("over 2.5")){
-    return `The scoring trend points toward three or more goals. ${g.home.name} went over 2.5 in ${statPct(h.o25)} of the sample and ${g.away.name} in ${statPct(a.o25)}. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    const b=[]; if(h.o25!=null)b.push(homeName+" have gone over 2.5 in "+pct(h.o25)+" of the sample"); if(a.o25!=null)b.push(awayName+" have done so in "+pct(a.o25));
+    return (b.length?b.join(", while ")+". ":"")+"There is enough attacking evidence on both sides to make three or more goals a live outcome."+(price?" The price is "+price+".":"");
   }
   if(p.category==="Goals"){
     const m=label.match(/(over|under)\s*([0-9]+(?:\.[0-9]+)?)/);
-    if(m){
-      const side=m[1],line=m[2],hr=typeof p.homeTrend==="number"?statPct(p.homeTrend):"—",ar=typeof p.awayTrend==="number"?statPct(p.awayTrend):"—";
-      return `This uses the actual posted ${line}-goal line rather than forcing a standard total. ${side==="under"?"Staying below":"Clearing"} that line occurred in ${hr} of ${g.home.name}'s recent sample and ${ar} of ${g.away.name}'s. ${sample}${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
-    }
+    if(m){const side=m[1],line=m[2],hr=typeof p.homeTrend==="number"?pct(p.homeTrend):null,ar=typeof p.awayTrend==="number"?pct(p.awayTrend):null,b=[];if(hr)b.push(homeName+" "+hr);if(ar)b.push(awayName+" "+ar);return (b.length?"Recent results support the line: "+b.join(", ")+". ":"")+"The "+side+" "+line+" line fits the way these two sides have been playing."+(price?" The price is "+price+".":"");}
   }
   if(p.category==="BTTS"){
-    const yes=label.includes("yes");
-    return `${yes?"Both teams have enough scoring evidence for BTTS":"The weaker scoring side is the main reason to fade BTTS"}. ${g.home.name} scored in ${statPct(h.scored)} of the sample and conceded in ${statPct(h.conceded)}; ${g.away.name} scored in ${statPct(a.scored)} and conceded in ${statPct(a.conceded)}. Their BTTS rates are ${statPct(h.btts)} and ${statPct(a.btts)}.${proj?" The adjusted projection is "+proj+".":""}`
+    const yes=label.includes("yes"),b=[]; if(h.scored!=null)b.push(homeName+" have scored in "+pct(h.scored)+" of the sample"); if(a.scored!=null)b.push(awayName+" have scored in "+pct(a.scored));
+    return (b.length?b.join(", while ")+". ":"")+(yes?"Both teams have shown enough going forward to make BTTS Yes appealing.":"One side looks much less reliable in front of goal, so BTTS No is the better fit.");
   }
   if(p.category==="Team Goals"){
-    const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
-    return `${team} has scored in ${statPct(s.scored)} of the sample, while the opponent has conceded in ${statPct(opp.conceded)}. ${team} is averaging ${s.gf.toFixed(2)} goals per match in this sample.${proj?" The adjusted projection is "+proj+".":""}`
+    const hs=label.includes(normName(homeName)),s=hs?h:a,opp=hs?a:h,team=hs?homeName:awayName,oppName=hs?awayName:homeName,b=[]; if(s.scored!=null)b.push(team+" have scored in "+pct(s.scored)+" of their recent matches"); if(opp.conceded!=null)b.push(oppName+" have conceded in "+pct(opp.conceded)); if(num(s.gf)!=null)b.push(team+" are averaging "+Number(s.gf).toFixed(1)+" goals");
+    return (b.length?b.join(", ")+". ":"")+"That makes "+p.label+" a straightforward way to play the matchup.";
   }
   if(p.category==="Double Chance"){
-    const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
-    return `The protection makes sense here. ${team} avoided defeat in ${statPct(s.nonLoss)} of the sample, while the opponent failed to win in ${statPct(opp.nonWin)}.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    const hs=label.includes(normName(homeName)),s=hs?h:a,opp=hs?a:h,team=hs?homeName:awayName,oppName=hs?awayName:homeName,b=[]; if(s.nonLoss!=null)b.push(team+" have avoided defeat in "+pct(s.nonLoss)+" of the sample"); if(opp.nonWin!=null)b.push(oppName+" have failed to win in "+pct(opp.nonWin));
+    return (b.length?b.join(", while ")+". ":"")+"The draw protection makes sense without asking "+team+" to do too much."+(price?" The price is "+price+".":"");
   }
   if(p.category==="Match Result"){
-    const homeSide=label.includes(normName(g.home.name)),s=homeSide?h:a,opp=homeSide?a:h,team=homeSide?g.home.name:g.away.name;
-    return `${team} is the side we trust more here. They have won ${statPct(s.win)} of the sample, while the opponent has failed to win ${statPct(opp.nonWin)}. ${team} is averaging ${s.gf.toFixed(2)} goals scored and ${s.ga.toFixed(2)} allowed per match.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    const hs=label.includes(normName(homeName)),s=hs?h:a,opp=hs?a:h,team=hs?homeName:awayName,oppName=hs?awayName:homeName,b=[]; if(s.win!=null)b.push(team+" have won "+pct(s.win)+" of their recent matches"); if(opp.nonWin!=null)b.push(oppName+" have failed to win in "+pct(opp.nonWin)); if(num(s.gf)!=null&&num(s.ga)!=null)b.push(team+" are averaging "+Number(s.gf).toFixed(1)+" goals scored and "+Number(s.ga).toFixed(1)+" conceded");
+    return (b.length?b.join(", while ")+". ":"")+team+" are the stronger side on the recent evidence, so the moneyline is the preferred play."+(price?" The price is "+price+".":"");
   }
   if(p.category==="Handicap"){
-    const side=typeof selectedSide==="function"?selectedSide(g,p):null,team=side==="home"?g.home.name:g.away.name;
-    const cover=typeof p.coverRate==="number"?statPct(p.coverRate):"—";
-    return `${team} is the stronger handicap side in this matchup. The recent-score sample covered this line in ${cover} of comparable results.${proj?" The adjusted projection is "+proj+".":""}${price?" Posted price: "+price+".":""}`
+    const side=typeof selectedSide==="function"?selectedSide(g,p):null,team=side==="home"?homeName:awayName,cover=typeof p.coverRate==="number"?pct(p.coverRate):null;
+    return (cover?team+" have covered this sort of line in "+cover+" of the recent sample. ":"")+p.label+" gives a little more protection while still backing the stronger side."+(price?" The price is "+price+".":"");
   }
-  return `${sample}${proj?" The adjusted projection is "+proj+".":""} This is the market that lines up best with the recent trend and matchup data.`
+  return "The recent form and matchup point in the same direction, making "+p.label+" the clearest angle from this game.";
 }
 function commentary(g,p){const base=ourReason(g,p),extra=contextFor(g);return extra?`${base} ${extra}`:base}
 function instinctFitReason(g,p){return""}
