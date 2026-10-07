@@ -265,3 +265,9 @@ test("empty locked boards resolve and show the next eligible game date",()=>{
   assert.match(p2,/FootyEdgeAvailability\.loadNext\(date,json\)/);
   assert.match(p1,/board-availability\.js\?v=68/);
 });
+
+test("Premier League and MLS logos fit fully inside the existing competition icon box",()=>{
+  assert.match(p1,/\.league-eng-1 \.leagueLogoImg\{transform:scale\(\.78\)!important\}/);
+  assert.match(p1,/\.league-usa-1 \.leagueLogoImg\{transform:scale\(\.78\)!important\}/);
+  assert.match(p1,/\.leagueIcon\{[\s\S]*?width:24px!important[\s\S]*?height:24px!important/);
+});
