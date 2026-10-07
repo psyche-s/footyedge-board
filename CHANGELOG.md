@@ -258,3 +258,11 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Owner's second header screenshot is the reference: Today’s Picks now has the same single-row FootyEdge-left / navigation-right header as Home, Hit Rate and About, with the active-link underline. Removed the extra branding/tagline row. No game-card or model changes.
 - Owner requested the October 7 morning automation run immediately and skip its normal 7 AM occurrence. Recurring schedule moved to DTSTART October 8 at 7 AM America/Toronto, retaining daily runs. Early run submission follows this header deployment so it uses current main.
 - Hit Rate deployment dpl_A4PPBGUeiMjG5QzK6AfUjXN7Hrqh reached READY on production from fc25c0a. Full live-page verification follows the matching header deployment. Published history remains preserved.
+
+## 2026-10-07 — v67/v68 production verification and early-run request
+**Status:** 🟢 UI deployed / verified; morning run requested asynchronously
+
+- Production dpl_9xEjEpU4UuG6FzXtz3wgL7ED3JTk reached READY from d5c4a26 and was assigned footyedge-board.vercel.app. Live browser verification confirmed the single-row Picks header, navigation with Hit Rate before About and removal of the old tracking strip from Picks.
+- Live Hit Rate page verified: real October/YTD 7-3 and 70% from 10 official picks; October 6 then October 5, five vertical rows each, correct hit/miss marks and numeric-only scores. Month rollover and full-month history checks pass. Preview captured from production.
+- All 22 regression tests and published-history integrity passed; GitHub Published board integrity CI succeeded. Existing published boards, selections, prices and historical grade files remain unchanged by these UI changes.
+- Immediate morning automation run was requested successfully at the owner's instruction. Execution/delivery are asynchronous; this log does not claim the board run has completed. The recurring Codex task now starts October 8 at 07:00 America/Toronto and therefore skips October 7's 07:00 occurrence. Its prompt includes the current header, Hit Rate layout, immutability and four-day readiness rules plus force flags for the authorized early run.
