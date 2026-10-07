@@ -141,3 +141,10 @@ test("women fixtures add W suffix only at display layer",()=>{
   assert.match(p2,/function displayPickLabel/);
   assert.match(p2,/name\+" \(W\)"/);
 });
+
+test("Top 3 pick labels stay single-line while cards and stat boxes stay compact",()=>{
+  assert.match(p1,/v83 owner-requested compact Top 3/);
+  assert.match(p1,/\.top3PickMain b\{[\s\S]*?white-space:nowrap!important/);
+  assert.match(p1,/\.top3Pick\{[\s\S]*?min-height:0!important/);
+  assert.match(p1,/\.analysisContent \.statCell\{[\s\S]*?height:30px!important/);
+});

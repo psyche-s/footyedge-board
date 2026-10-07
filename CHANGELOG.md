@@ -447,3 +447,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Women’s fixtures now display `(W)` after team names at the presentation layer, including fixture names, team headers and visible pick labels, without changing provider IDs or odds-matching keys.
 - No card layout, theme, spacing or component redesign is part of this change.
 - Historical locked explanations remain unchanged unless the owner explicitly asks to rewrite a specific historical board.
+
+
+## 2026-10-07 — v83 compact Top 3 / stat-box spacing
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Owner-requested spacing-only cleanup to the existing game card; no redesign.
+- Top 3 selection labels now stay on one line whenever the available card width allows it. The odds/confidence column keeps a fixed compact footprint so text cannot overlap it; genuinely overlong labels truncate rather than creating unnecessary multi-line height.
+- Removed unnecessary minimum height / bottom whitespace from the three Top 3 pick boxes and reduced their vertical padding.
+- Trimmed the five lower stat boxes vertically while keeping the value and label centered with even spacing.
+- Mobile receives the same proportional tightening without changing card structure, colors, typography hierarchy or data.
+- No model, pick, odds, confidence, write-up, tracking or historical data changed.

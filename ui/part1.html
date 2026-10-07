@@ -1265,6 +1265,95 @@ body{background:#031008}
   }
   .leagueFallback{width:17px!important;height:17px!important;flex-basis:17px!important}
 }
+
+
+/* v83 owner-requested compact Top 3 + stat spacing only */
+.top3Strip{
+  align-items:stretch!important;
+  padding-bottom:7px!important;
+}
+.top3Pick{
+  grid-template-columns:minmax(0,1fr) 44px!important;
+  min-height:0!important;
+  height:auto!important;
+  padding:5px 8px!important;
+  gap:7px!important;
+  align-items:center!important;
+}
+.top3PickMain{
+  min-width:0!important;
+  align-self:center!important;
+}
+.top3PickMain span{
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.top3PickMain b{
+  width:100%!important;
+  max-width:100%!important;
+  margin-top:3px!important;
+  line-height:1.08!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+.top3Right{
+  min-width:44px!important;
+  width:44px!important;
+  gap:3px!important;
+  align-self:center!important;
+}
+.top3Pick .top3Odds{
+  margin:0!important;
+  line-height:1!important;
+}
+.analysisContent .statStrip{
+  gap:6px!important;
+  padding-bottom:0!important;
+}
+.analysisContent .statCell{
+  min-height:30px!important;
+  height:30px!important;
+  padding:2px 3px!important;
+  gap:2px!important;
+  border-radius:7px!important;
+}
+.analysisContent .statCell b{
+  margin:0!important;
+  line-height:1!important;
+}
+.analysisContent .statCell small{
+  margin:1px 0 0!important;
+  line-height:1!important;
+}
+@media(max-width:500px){
+  .top3Strip{padding-bottom:5px!important}
+  .top3Pick{
+    grid-template-columns:minmax(0,1fr) 34px!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:4px 6px!important;
+    gap:4px!important;
+  }
+  .top3PickMain b{
+    margin-top:2px!important;
+    white-space:nowrap!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+  .top3Right{
+    min-width:34px!important;
+    width:34px!important;
+    gap:2px!important;
+  }
+  .analysisContent .statCell{
+    min-height:26px!important;
+    height:26px!important;
+    padding:1px 2px!important;
+    gap:1px!important;
+  }
+}
+
 </style>
 </head>
 <body>
