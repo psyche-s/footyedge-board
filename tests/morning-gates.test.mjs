@@ -188,8 +188,9 @@ test("Support CTA keeps the original Buy Me a Coffee cup mark",()=>{
   assert.match(aboutPage,/bmc-new-btn-logo\.svg/);
 });
 
-test("Home merges intro into hero and shows full banner image without separate About card",()=>{
-  assert.match(home,/class="heroArt"/);
+test("Home merges intro into hero with image stage and no separate About card",()=>{
+  assert.match(home,/class="heroStage"/);
+  assert.match(home,/class="heroBrand"/);
   assert.match(home,/id="heroImage"/);
   assert.match(home,/class="heroIntro"/);
   assert.doesNotMatch(home,/class="card about"/);
