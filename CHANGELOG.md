@@ -598,3 +598,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Restored Today’s Picks UI files and regression coverage to commit `9d22c7a`, the last known-good state before live-score work began.
 - Preserved the women’s competition metadata fix, `(W)` display behavior, logo-source changes, locked picks, odds, confidence, tracking and historical board data.
 - Live scores are not currently enabled in production.
+
+
+## 2026-10-07 — v97 public competition-scope correction / cleared Oct 7 board
+**Status:** 🟡 Code/data pushed · deployment verification pending
+
+- Applied the owner-selected public competition scope consistently across schedule availability, live game rendering and deterministic research generation.
+- Raw upstream snapshots remain untouched for audit/debugging, but out-of-scope tagged fixtures no longer flow into public boards, research candidates or future tracking.
+- Backed up the prior October 7 locked board before correction and appended an audit entry with before/after SHA256 values.
+- Cleared and re-locked the official October 7 board. The corrected board is immutable with 0 games and 0 Top 5 picks because no eligible tracked fixtures remain in scope today.
+- Cleared the October 7 research fixture list and updated board readiness to 0 scheduled/research fixtures for the public scope.
+- Bumped the Picks bundle to v96 and the board-availability helper cache to v67.
+- No prior audit entries or backup files were rewritten.
