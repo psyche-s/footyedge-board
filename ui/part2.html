@@ -951,7 +951,7 @@ async function load(date=S.date){
 }
 
 function renderModal(g){
-  document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
+  document.getElementById("modalTitle").textContent=teamDisplayName(g,g.home)+" vs "+teamDisplayName(g,g.away);
   const top3=viewCandidates(g);
   const focus=viewPick(g);
   const whyHtml=p=>{const facts=researchFactsForPick(g,p,3);return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div>'+(facts.length?'<div class="researchFacts">'+facts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div>':'<p class="candidateCommentary">'+esc(cardCommentary(g,p))+'</p>')+'</section>'};
