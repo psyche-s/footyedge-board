@@ -282,3 +282,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - October 8–11 research inventory remains prepared; no future board is published until current team-news, price and validation gates pass.
 - Tracking/history impact: October 5–6 immutable selections and results are unchanged. No October 7 tracking denominator is created because no board was published.
 - Deployment result: pending this commit’s Vercel production verification.
+
+## 2026-10-07 — v69 deployed and verified
+**Status:** 🟢 Deployed / verified
+
+- Commit `dc47dbf93b1fc773d1ff14ab69b06b4108618d03` deployed to Vercel production as `dpl_G2N3dSgfcgRpcg74kAmrqLRnKDrN` and reached READY.
+- Production alias `footyedge-board.vercel.app` is assigned to the deployment.
+- GitHub Published board integrity passed, including immutable-history enforcement and the complete regression test suite.
+- The archive workflow completed without creating an October 7 board. This is intentional: the publication gates remain blocked by incomplete verified last-10 inputs and the absence of a verified exact native sportsbook price for the tracked fixture.
+- October 5–6 published selections remain byte-preserved by the integrity guard. No October 7 tracking denominator was added.
