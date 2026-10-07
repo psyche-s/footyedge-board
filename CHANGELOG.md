@@ -373,3 +373,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - October 7 deterministic evidence was refreshed from current Jordan/Armenia women's last-10 and venue aggregate records; player props remain excluded because expected-start/minutes evidence was not publication-grade.
 - Postmatch/model-evolution workflow fixed so both performance tracking and postmatch learning actually run and persist. Saved Top-3 candidates at 85%+ are graded, market-family diagnostics are regenerated, and those diagnostics are ingested before later research. Numerical model changes remain small/versioned and require repeated verified evidence.
 - No October 5–6 historical pick, odds, confidence, explanation or result was modified.
+
+
+## 2026-10-07 — v76 odds / EV / market + Team News correction
+**Status:** 🟡 Data published on main · UI deployment subject to Vercel quota
+
+- Explicit owner correction to the locked October 7 board: keep the selections/ranks/confidences unchanged, but publish current exact sportsbook pricing, implied market probability and EV where the exact market can be verified.
+- Paddy Power current market page verified Jordan or Draw at **1/10** and Over 1.5 Goals at **1/7**. FootyEdge stores the sportsbook’s native fractional prices without converting them. Market probability and EV are derived from those exact prices and the already-saved model probability.
+- No exact native price for the exact **Jordan 1+ Goal** team-total selection was verified in the current review, so its price/market/EV remain explicitly unavailable rather than inferred.
+- Added explicit Team News review content to the October 7 archive. No role-specific confirmed absence/return with replacement evidence met the threshold for a confidence adjustment; player props remain excluded without expected-start/minutes evidence.
+- UI code changes “Why this pick” to **WHY THIS PICK**, keeps TEAM NEWS visible even when the verified review is a no-adjustment result, and displays EV for exact native display prices.
+- Historical correction backup and SHA256 audit were appended; October 7 selection/rank/confidence/explanation were not changed.

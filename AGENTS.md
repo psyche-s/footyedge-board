@@ -44,3 +44,11 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - Show usable model boards for today plus the next 4 Toronto dates as soon as the slate/model can be built; do not wait for sportsbook pricing.
 - Re-run the rolling previews every morning after research/data refresh. Pricing, team news, confidence and pick ordering may change on those preview dates.
 - At 06:00 Toronto on the fixture date, promote the latest preview to the immutable official board. No automatic pick/price/confidence/explanation changes are allowed after that boundary. Shaif may explicitly override a locked date through the audited correction process.
+
+
+## Odds / EV / Market display rule — owner instruction 2026-10-07
+- For every published Top 3 selection, actively search for the exact selected market at a current reputable sportsbook before lock. When verified, publish the exact native price, its implied market probability, and EV computed from the saved FootyEdge model probability and that exact price.
+- Never infer, synthesize or convert an unavailable official price merely to fill the UI. When the exact selected market cannot be verified, show it explicitly as N/A/unavailable rather than pretending a price exists.
+- Preserve the established -400 qualifying floor for normal selection optimization. If the owner has already locked/overridden a selection before a later price is added, do not silently replace the pick; record the price-floor conflict and preserve the audit.
+- “WHY THIS PICK” is always uppercase in expanded analysis.
+- “TEAM NEWS” must always be visible in expanded analysis. If there is material verified news, show the concise football/market impact. If no material item meets the verification threshold, explicitly say so and state that no model adjustment was made.

@@ -682,8 +682,10 @@ function itemBelongsToTeam(g,item,team){
   return t?(t.includes(name)||name.includes(t)):raw.includes(name)
 }
 function teamNewsSummary(g,p){
-  const item=latestNewsItems(g)[0];if(!item)return null;
-  return{text:displayNewsText(g,item),impact:newsImpact(g,p,item)}
+  const item=latestNewsItems(g)[0];
+  if(item)return{text:displayNewsText(g,item),impact:newsImpact(g,p,item)};
+  if(g?.teamNewsReview)return{text:"No material verified team-news item changed the model.",impact:g.teamNewsReview.modelImpact||""};
+  return null
 }
 
 function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`}
@@ -909,8 +911,8 @@ function renderModal(g){
   document.getElementById("modalTitle").textContent=`${g.home.name} vs ${g.away.name}`;
   const top3=viewCandidates(g);
   const focus=viewPick(g);
-  const whyHtml=p=>{const facts=researchFactsForPick(g,p,3);return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">Why this pick</div>'+(facts.length?'<div class="researchFacts">'+facts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div>':'<p class="candidateCommentary">'+esc(cardCommentary(g,p))+'</p>')+'</section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${pctInt(x.marketProb)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(cardCommentary(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const whyHtml=p=>{const facts=researchFactsForPick(g,p,3);return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div>'+(facts.length?'<div class="researchFacts">'+facts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div>':'<p class="candidateCommentary">'+esc(cardCommentary(g,p))+'</p>')+'</section>'};
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(x.label)}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span><span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span><span class="priceTag">Model <b>${pctInt(x.modelProb)}</b></span><span class="priceTag">Market <b>${x.marketProb==null?(x.priceStatus?"N/A":"—"):pctInt(x.marketProb)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(cardCommentary(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
@@ -918,7 +920,8 @@ function renderModal(g){
     const body=items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(newsImpact(g,focus,item))+'</div>':'')+'</div>').join("");
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
-  const newsHtml=teamCard(g.home)+teamCard(g.away);
+  const cards=teamCard(g.home)+teamCard(g.away);
+  const newsHtml=cards||('<section class="researchBox"><div class="researchTitle">TEAM NEWS</div><p class="candidateCommentary">'+esc(g?.teamNewsReview?.modelImpact||"No material verified team-news item changed the model.")+'</p></section>');
   document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(g.home.name)}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(g.away.name)}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf!=null?g.model.home.gf.toFixed(2):"—")} / ${(g.model?.home?.ga!=null?g.model.home.ga.toFixed(2):"—")}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf!=null?g.model.away.gf.toFixed(2):"—")} / ${(g.model?.away?.ga!=null?g.model.away.ga.toFixed(2):"—")}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){

@@ -100,3 +100,13 @@ test("rolling previews never freeze converted or otherwise unverified prices",()
   assert.match(p1,/x\.odds=null/);
   assert.match(p2,/daily-odds-/)
 });
+
+test("expanded analysis uses uppercase WHY THIS PICK and always supports TEAM NEWS status",()=>{
+  assert.match(p2,/WHY THIS PICK/);
+  assert.match(p2,/No material verified team-news item changed the model/);
+});
+test("verified native display prices can show EV while unavailable exact markets are explicit",()=>{
+  assert.match(p1,/p\.ev==null\?"—":evText\(p\.ev\)/);
+  assert.match(p1,/p\.priceStatus/);
+  assert.match(p1,/odds:"N\/A"/);
+});
