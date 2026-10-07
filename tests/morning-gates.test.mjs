@@ -232,3 +232,9 @@ test("competition marks use dark-UI variants and remain contained",()=>{
   assert.match(p1,/\.leagueIcon\{[\s\S]*?overflow:hidden!important/);
   assert.match(p2,/leagueLogoSerieA/);
 });
+
+test("locked board competition metadata remains authoritative after live fixture merge",()=>{
+  assert.match(p1,/if\(a\.leagueName\)g\.leagueName=a\.leagueName/);
+  assert.match(p1,/if\(a\.league!=null\)g\.league=a\.league/);
+  assert.match(p2,/modalTitle"\)\.textContent=teamDisplayName\(g,g\.home\)\+" vs "\+teamDisplayName\(g,g\.away\)/);
+});
