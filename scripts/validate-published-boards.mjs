@@ -6,7 +6,8 @@ import {pathToFileURL} from 'node:url';
 export const sha256=text=>crypto.createHash('sha256').update(text).digest('hex');
 export function validateBoard(board,{requireFull=false}={}){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(board?.date||'')||board.immutable!==true)throw new Error('Published board requires date and immutable:true');
-  if(!Array.isArray(board.games)||!board.games.length||!Array.isArray(board.top5)||board.top5.length>5)throw new Error('Invalid board games/Top 5');
+  const explicitlyCleared=board.state==='locked'&&board.coverage==='full-board'&&board.scope==='owner-selected-competitions'&&Array.isArray(board.games)&&board.games.length===0&&Array.isArray(board.top5)&&board.top5.length===0&&Object.values(board.leagueTop5||{}).every(x=>Array.isArray(x)&&x.length===0);
+  if(!Array.isArray(board.games)||(!board.games.length&&!explicitlyCleared)||!Array.isArray(board.top5)||board.top5.length>5)throw new Error('Invalid board games/Top 5');
   if(requireFull&&(board.schema<2||board.coverage!=='full-board'))throw new Error('First publication must capture the complete board');
   const ids=new Set();
   for(const g of board.games){
