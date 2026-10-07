@@ -352,3 +352,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Added regression coverage for the three requested league marks and current-slate country flags.
 - Tracking/model impact: none. Published historical boards remain unchanged.
 - Deployment result: pending.
+
+
+## 2026-10-07 — v73 preview pricing safety follow-up
+**Status:** 🟡 Code ready / preview refresh queued
+
+- Mutable previews now prefer saved exact native-American daily sportsbook snapshots when available, while still publishing picks when no exact price exists.
+- Converted/generic feed prices may inform model context but are scrubbed from the saved preview and can never become the official recorded price at the 06:00 lock.
+- The exact 06:00 Toronto lock schedule replaces the earlier 06:05 wording. A fallback lock check remains.
+- Board-publish concurrency now queues rather than cancels an in-progress pre-lock refresh, so the 06:00 lock cannot interrupt the final morning preview build.

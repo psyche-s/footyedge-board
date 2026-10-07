@@ -93,3 +93,10 @@ test("league filters use recognizable Wikimedia marks for MLS, Bundesliga and Li
 test("current international slate has direct flag mappings",()=>{
   for(const name of ["bolivia","el salvador","haiti","india","indonesia","jamaica","jordan","malaysia","new zealand","panama","philippines","russia","saudi arabia"])assert.ok(p2.includes('"'+name+'":'))
 });
+
+test("rolling previews never freeze converted or otherwise unverified prices",()=>{
+  assert.match(p1,/p\.odds!=null&&p\.bookKey/);
+  assert.match(p1,/function clonePreviewPickForArchive/);
+  assert.match(p1,/x\.odds=null/);
+  assert.match(p2,/daily-odds-/)
+});

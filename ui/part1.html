@@ -1495,8 +1495,13 @@ function restoreArchivedPick(p){
   if(!p)return null;
   return {...p,archived:true,bookExact:p.bookExact??(p.odds!=null||Boolean(p.verifiedPrice))}
 }
-function hasPostedPrice(p){return Boolean(p&&(p.odds!=null||p.verifiedPrice))}
+function hasPostedPrice(p){return Boolean(p&&(p.verifiedPrice||(p.odds!=null&&p.bookKey)))}
 function previewPriceAllowed(p){return Boolean(p&&(!hasPostedPrice(p)||priceAllowed(p)))}
+function clonePreviewPickForArchive(p,g){
+  const x=clonePickForArchive(p,g);if(!x)return null;
+  if(!hasPostedPrice(p)){x.odds=null;x.provider=null;x.bookKey=null;x.bookExact=false;x.ev=null;x.displayOdds=null;x.priceEligible=false}
+  return x
+}
 function previewCandidates(g){
   const core=(g?.model?.candidates||[]).filter(x=>x.score>=78&&previewPriceAllowed(x))
     .map(x=>hasPostedPrice(x)?x:{...x,displayOnly:true});
@@ -1511,7 +1516,8 @@ function boardArchivePayload(mode=CAPTURE_MODE||"archive"){
   const topFor=g=>preview?(picksFor(g)[0]||null):(priceAllowed(g.model?.top)?g.model.top:null);
   const eligible=games=>games.filter(g=>{const p=topFor(g);return p&&p.score>=80})
     .sort((a,b)=>{const ap=topFor(a),bp=topFor(b);return bp.score-ap.score||(bp.ev??-99)-(ap.ev??-99)}).slice(0,5);
-  const refs=games=>games.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:clonePickForArchive(topFor(g),g)}));
+  const cloneFor=(p,g)=>preview?clonePreviewPickForArchive(p,g):clonePickForArchive(p,g);
+  const refs=games=>games.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:cloneFor(topFor(g),g)}));
   const generatedAt=new Date().toISOString();
   return{
     schema:3,date:S.date,generatedAt,frozenAt:preview?null:generatedAt,immutable:!preview,state:preview?"preview":"locked",
@@ -1526,9 +1532,9 @@ function boardArchivePayload(mode=CAPTURE_MODE||"archive"){
         id:g.id,home:g.home.name,away:g.away.name,date:g.date,year:g.year,league:g.league,leagueName:g.leagueName,leagueLogo:g.leagueLogo,
         teams:{home:g.home,away:g.away},
         teamNews:typeof latestNewsItems==="function"?latestNewsItems(g):[],
-        top:top?clonePickForArchive(top,g):null,top3:top3.map(p=>clonePickForArchive(p,g)),
-        model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:top?clonePickForArchive(top,g):null,top3:top3.map(p=>clonePickForArchive(p,g)),
-          ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).filter(keep).map(p=>clonePickForArchive(p,g))]))}:null
+        top:top?cloneFor(top,g):null,top3:top3.map(p=>cloneFor(p,g)),
+        model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:top?cloneFor(top,g):null,top3:top3.map(p=>cloneFor(p,g)),
+          ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).filter(keep).map(p=>cloneFor(p,g))]))}:null
       }
     })
   }

@@ -872,7 +872,7 @@ async function load(date=S.date){
     }
     let liveOddsPayload=null,dailyOddsPayload=null;
     if(games.length){
-      dailyOddsPayload=CAPTURE_MODE==="draft"?null:await repoData('data/daily-odds-'+S.date+'.json').catch(()=>null);
+      dailyOddsPayload=await repoData('data/daily-odds-'+S.date+'.json').catch(()=>null);
       if(dailyOddsPayload?.events?.length){
         const dailyMap=buildDailyOddsMap(dailyOddsPayload);
         for(const g of games){
