@@ -521,3 +521,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Replaced the banner background treatment with the exact embedded panoramic image as a real image element, preserving its full natural width/height instead of cropping it.
 - On mobile the banner area uses the source image’s approximately 8:1 panoramic ratio so the full artwork is visible and the hero card sizes naturally around it.
 - Tracking and Today’s Top 5 remain as the next two cards; no board/model/pick/tracking data changed.
+
+
+## 2026-10-07 — v91 tall hero image with text fade
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Clarified the Home banner treatment after checking the source asset: the banner itself is 1672×210 (about 8:1), so there is no hidden vertical artwork to reveal.
+- Changed the upper hero into a taller image stage that extends through “SOCCER INTELLIGENCE”, the FootyEdge wordmark and “Sharper soccer research. Smarter picks.”
+- The same source image is proportionally zoomed to fill that taller area without vertical stretching; the lower part receives a progressive dark overlay so the branding/tagline remains readable.
+- After the tagline, the image fades fully into the existing dark hero body containing the free-to-use copy and Support button.
+- Mobile uses a 285px image stage with the same fade treatment.
+- No board, picks, odds, tracking or model data changed.

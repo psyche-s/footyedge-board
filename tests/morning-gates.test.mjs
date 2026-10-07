@@ -178,9 +178,9 @@ test("Home and About support buttons use native matching CTA typography and heig
   assert.match(aboutPage,/class="supportCta"/);
   assert.match(aboutPage,/ABOUT FOOTYEDGE/);
 });
-test("mobile Home hero favors full-banner visibility",()=>{
-  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroArt\{width:100%;aspect-ratio:8\/1/);
-  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroArt img\{[\s\S]*?object-fit:contain/);
+test("mobile Home hero uses a tall image stage through the tagline",()=>{
+  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroStage\{height:285px/);
+  assert.match(home,/@media\(max-width:640px\)[\s\S]*?\.heroStage>img\{object-fit:cover/);
 });
 
 test("Support CTA keeps the original Buy Me a Coffee cup mark",()=>{
@@ -196,7 +196,10 @@ test("Home merges intro into hero and shows full banner image without separate A
   assert.doesNotMatch(home,/>ABOUT<\/span> FOOTYEDGE/);
   assert.match(home,/heroImage"\)\.src="data:image\/webp;base64/);
 });
-test("mobile hero image keeps natural panoramic ratio instead of cropping",()=>{
-  assert.match(home,/\.heroArt\{width:100%;aspect-ratio:8\/1/);
-  assert.match(home,/\.heroArt img\{width:100%;height:100%;object-fit:contain/);
+test("mobile hero extends image through tagline with a readability fade",()=>{
+  assert.match(home,/class="heroStage"/);
+  assert.match(home,/class="heroBrand"/);
+  assert.match(home,/\.heroStage\{height:285px/);
+  assert.match(home,/\.heroStage>img\{object-fit:cover/);
+  assert.match(home,/\.heroStage:after\{background:linear-gradient/);
 });
