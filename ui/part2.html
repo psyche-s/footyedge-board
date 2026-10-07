@@ -900,7 +900,12 @@ async function load(date=S.date){
     }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
 
     if(archivePayload?.date===S.date){
-      S.games=applyBoardArchive(games,archivePayload);S.boardReady=true;S.dataSource="Locked at 6:00 AM ET";render();planRefresh();return;
+      S.games=applyBoardArchive(games,archivePayload);S.boardReady=true;S.dataSource="Locked at 6:00 AM ET";
+      if(!S.games.length){
+        S.availability=await FootyEdgeAvailability.loadNext(date,json).catch(()=>({kind:"empty",date,count:0,nextGameDate:null,searchComplete:false}));
+        if(S.date!==date)return;
+      }
+      render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE&&draftPayload?.date===S.date){
       S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Morning preview · updates until 6:00 AM ET";render();planRefresh();return;
