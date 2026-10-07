@@ -23,3 +23,9 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - ATGS, Score-or-Assist, assist and multi-goal player selections require credible expected-start and minutes evidence; material rotation/injury risk excludes the prop.
 - Exact native sportsbook prices are mandatory for every published selection/alternative; no synthetic or display-only pick may be frozen.
 - Postmatch learning grades saved Top-3 candidates at 85%+ separately from process quality. Never infer a red-card, injury, VAR or luck explanation from the score alone; verify it before learning from it.
+
+## Live data horizon, 2026-10-07
+- Every morning/data refresh must push dated schedule/fixture/odds snapshots for the Toronto current date plus the next 3 calendar dates. `latest-*` remains an alias for the current Toronto date only.
+- Deterministic research bases are also rebuilt for today + next 3 days. Future research/data may refresh freely until publication.
+- Future PICKS are different from future DATA: never publish/freeze future picks merely because schedule, research, fixtures or odds snapshots exist. A date's selections publish only after its full verification gates pass, then become immutable.
+- Mobile date navigation must keep Previous / date / Today / Search / Next on one horizontal row. League-filter logos must use a transparent icon footprint; unknown competitions use the transparent SVG football fallback, never a boxed emoji.

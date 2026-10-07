@@ -14,62 +14,62 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Capture compact live board data
+      - name: Capture compact live board data — today + next 3 days
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          KEY="${TODAY//-/}"
-          mkdir -p "data/$TODAY"
 
-          curl --fail --retry 3 --silent --show-error \
-            "https://footyedge-board.vercel.app/api/espn-scoreboard?dates=$KEY&limit=1000" \
-            -o /tmp/scoreboard-raw.json
+          for OFFSET in 0 1 2 3; do
+            SNAP_DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
+            KEY="${SNAP_DATE//-/}"
+            mkdir -p "data/$SNAP_DATE"
 
-          jq '{
-            events: [
-              .events[] | {
-                id,
-                uid,
-                date,
-                name,
-                shortName,
-                season,
-                status: {
-                  displayClock: .status.displayClock,
-                  type: .status.type
-                },
-                competitions: [
-                  .competitions[0] | {
-                    id,
-                    competitors: [
-                      .competitors[] | {
-                        id,
-                        homeAway,
-                        winner,
-                        score,
-                        team: {
-                          id: .team.id,
-                          displayName: .team.displayName,
-                          abbreviation: .team.abbreviation,
-                          logo: .team.logo
+            echo "Refreshing snapshot for $SNAP_DATE"
+
+            curl --fail --retry 3 --silent --show-error               "https://footyedge-board.vercel.app/api/espn-scoreboard?dates=$KEY&limit=1000"               -o "/tmp/scoreboard-$KEY.json"
+
+            jq '{
+              events: [
+                .events[] | {
+                  id,
+                  uid,
+                  date,
+                  name,
+                  shortName,
+                  season,
+                  status: {
+                    displayClock: .status.displayClock,
+                    type: .status.type
+                  },
+                  competitions: [
+                    .competitions[0] | {
+                      id,
+                      competitors: [
+                        .competitors[] | {
+                          id,
+                          homeAway,
+                          winner,
+                          score,
+                          team: {
+                            id: .team.id,
+                            displayName: .team.displayName,
+                            abbreviation: .team.abbreviation,
+                            logo: .team.logo
+                          }
                         }
-                      }
-                    ],
-                    odds: (.odds // [])
-                  }
-                ]
-              }
-            ]
-          }' /tmp/scoreboard-raw.json > "data/$TODAY/scoreboard.json"
+                      ],
+                      odds: (.odds // [])
+                    }
+                  ]
+                }
+              ]
+            }' "/tmp/scoreboard-$KEY.json" > "data/$SNAP_DATE/scoreboard.json"
 
-          curl --fail --retry 3 --silent --show-error \
-            "https://footyedge-board.vercel.app/api/football?endpoint=fixtures&date=$TODAY" \
-            -o "data/$TODAY/fixtures.json"
+            curl --fail --retry 3 --silent --show-error               "https://footyedge-board.vercel.app/api/football?endpoint=fixtures&date=$SNAP_DATE"               -o "data/$SNAP_DATE/fixtures.json"
 
-          curl --fail --retry 3 --silent --show-error \
-            "https://footyedge-board.vercel.app/api/football?endpoint=odds&date=$TODAY" \
-            -o "data/$TODAY/odds.json"
+            curl --fail --retry 3 --silent --show-error               "https://footyedge-board.vercel.app/api/football?endpoint=odds&date=$SNAP_DATE"               -o "data/$SNAP_DATE/odds.json"
+          done
 
           cp "data/$TODAY/scoreboard.json" data/latest-scoreboard.json
           cp "data/$TODAY/fixtures.json" data/latest-fixtures.json

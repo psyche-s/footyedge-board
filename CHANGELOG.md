@@ -291,3 +291,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - GitHub Published board integrity passed, including immutable-history enforcement and the complete regression test suite.
 - The archive workflow completed without creating an October 7 board. This is intentional: the publication gates remain blocked by incomplete verified last-10 inputs and the absence of a verified exact native sportsbook price for the tracked fixture.
 - October 5–6 published selections remain byte-preserved by the integrity guard. No October 7 tracking denominator was added.
+
+## 2026-10-07 — v70 mobile navigation, league filters, 4-day live-data horizon
+**Status:** 🟡 Code ready / deployment pending
+
+- Fixed the Picks date bar regression introduced by adding Today + Search: all five controls now occupy one row on mobile instead of wrapping the Next arrow below Previous.
+- Restored/expanded competition-logo mappings in league filters, including FIFA friendlies and Europa League coverage, while retaining the existing major-league marks.
+- Replaced the emoji football fallback with a fully transparent inline SVG football so unknown competitions never render an opaque/boxed emoji background.
+- League logos remain contain-sized and transparent; failed/unknown competition artwork falls back cleanly.
+- Morning deterministic research now rebuilds and pushes the Toronto current date plus the next 3 calendar dates.
+- Hourly live snapshots now push dated scoreboard/fixtures/odds data for today + next 3 dates; `latest-*` continues to represent today only.
+- Future data/research does NOT publish future picks. Picks still require all verification gates and become immutable only on first publication.
+- No historical pick, confidence, odds, explanation or tracking record was modified.

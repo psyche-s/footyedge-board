@@ -38,3 +38,18 @@ test("publication validator enforces history price and player-news gates",()=>{
   assert.match(validator,/No verified native sportsbook odds available/);
   assert.match(validator,/Player prop lacks credible expected-start\/minutes evidence/)
 });
+
+test("mobile date bar keeps all five controls on one row",()=>{
+  assert.match(p1,/grid-template-columns:36px minmax\(0,1fr\) auto 36px 36px!important/)
+});
+test("league fallback is a transparent SVG, never the emoji football",()=>{
+  assert.match(p2,/function leagueFallbackHtml\(\)/);
+  assert.match(p2,/viewBox="0 0 24 24"/);
+  assert.doesNotMatch(p2,/<span class="leagueFallback" aria-hidden="true">⚽<\/span>/)
+});
+test("morning data horizon covers today plus next three days",()=>{
+  const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
+  const snapshots=fs.readFileSync(".github/workflows/refresh-snapshots.yml","utf8");
+  assert.match(research,/for OFFSET in 0 1 2 3/);
+  assert.match(snapshots,/for OFFSET in 0 1 2 3/)
+});
