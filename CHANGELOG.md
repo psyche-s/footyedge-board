@@ -485,3 +485,11 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Fixed the Home “Today’s Top 5 Picks” renderer so women’s fixtures use the same `(W)` display convention as Today’s Picks.
 - Example: `Jordan (W) vs Armenia (W)` and `Jordan (W) ML`.
 - This is display-layer only; raw team names, provider IDs, odds matching, locked picks and historical data remain unchanged.
+
+
+## 2026-10-07 — v87 Hit Rate row cleanup
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Removed #1/#2/#3/#4/#5 prefixes from the saved Top 5 result rows; the table now shows only the actual pick text.
+- Centered the result glyph inside the circular hit/miss marker, including the miss X.
+- No tracking records, scores, hit/miss outcomes, dates, or other Hit Rate page layout changed.

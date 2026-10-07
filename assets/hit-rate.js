@@ -17,7 +17,7 @@
     const labels={hit:'Hit',miss:'Miss',push:'Push',pending:'Pending'},marks={hit:'✓',miss:'✕',push:'—',pending:'•'};
     return days.map(day=>'<section class="day"><h2 class="date">'+esc(dayLabel(day.date))+'</h2><div class="card"><table class="results" aria-label="Top 5 results for '+esc(dayLabel(day.date))+'"><thead><tr><th scope="col">Result</th><th scope="col">Pick / Match</th><th scope="col">Score</th></tr></thead><tbody>'+day.top5.map((pick,i)=>{
       const result=Object.hasOwn(labels,pick.result)?pick.result:'pending';
-      return '<tr><td><span class="mark '+result+'" role="img" aria-label="'+labels[result]+'">'+marks[result]+'</span></td><td><span class="selection">#'+(pick.rank||i+1)+' '+esc(pick.selection||'Pick')+'</span><span class="fixture">'+esc(pick.home||'')+' vs '+esc(pick.away||'')+'</span></td><td class="score">'+esc(scoreOnly(pick.finalScore))+'</td></tr>';
+      return '<tr><td><span class="mark '+result+'" role="img" aria-label="'+labels[result]+'"><span class="markGlyph">'+marks[result]+'</span></span></td><td><span class="selection">'+esc(pick.selection||'Pick')+'</span><span class="fixture">'+esc(pick.home||'')+' vs '+esc(pick.away||'')+'</span></td><td class="score">'+esc(scoreOnly(pick.finalScore))+'</td></tr>';
     }).join('')+'</tbody></table></div></section>').join('');
   }
   function render(summary,today=todayToronto()){
