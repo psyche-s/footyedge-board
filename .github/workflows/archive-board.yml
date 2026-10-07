@@ -14,9 +14,9 @@ on:
     # Rolling preview refresh: one of these is 05:35 Toronto depending on DST.
     - cron: "35 9 * * *"
     - cron: "35 10 * * *"
-    # Official 06:05 Toronto lock: one of these is correct depending on DST.
-    - cron: "5 10 * * *"
-    - cron: "5 11 * * *"
+    # Official 06:00 Toronto lock: one of these is correct depending on DST.
+    - cron: "0 10 * * *"
+    - cron: "0 11 * * *"
     # Lock fallback if GitHub's first scheduled run was delayed.
     - cron: "20 10 * * *"
     - cron: "20 11 * * *"
