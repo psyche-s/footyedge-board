@@ -578,3 +578,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Updated the expanded fixture title to use the same women-aware display names.
 - Bumped the Today’s Picks UI bundle to v95.
 - No locked pick, odds, confidence, model output, tracking or historical board data changed.
+
+
+## 2026-10-07 — v96 live scores / green live indicator
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Added a small green live dot and live status/minute wherever a match is actively in progress.
+- Today’s game cards now show the current score beside each team while live and retain the final score after FT.
+- Today’s Top Picks now swaps the scheduled kickoff line for live/FT status and includes the live/final score in the fixture line.
+- Expanded analysis uses the same live-state indicator.
+- Live score/status data remains a separate dynamic layer; frozen picks, odds, confidence, reasoning and tracking remain unchanged.
+- Bumped the Today’s Picks UI bundle to v96.
