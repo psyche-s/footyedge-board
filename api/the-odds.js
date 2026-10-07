@@ -31,11 +31,12 @@ const LEAGUE_HINTS={
 function norm(v=""){
   return String(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 }
-function torontoDate(){
-  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+function torontoDateOf(value=new Date()){
+  const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date(value));
   const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));
   return p.year+"-"+p.month+"-"+p.day;
 }
+function torontoDate(){return torontoDateOf(new Date())}
 function median(nums){
   const a=nums.filter(Number.isFinite).sort((x,y)=>x-y);
   if(!a.length)return null;
@@ -205,7 +206,7 @@ export default async function handler(req,res){
         used=result.headers.get("x-requests-used")??used;
         last=result.headers.get("x-requests-last")??last;
         attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:data.length,requestsLast:result.headers.get("x-requests-last")||null});
-        for(const event of data)events.push(summarizeEvent(event,league));
+        for(const event of data)if(torontoDateOf(event.commence_time)===date)events.push(summarizeEvent(event,league));
       }catch(error){
         attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:0,error:error instanceof Error?error.message:String(error)});
       }
