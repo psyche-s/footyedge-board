@@ -228,10 +228,12 @@ function leagueIconHtml(id,fallback){
   const src=LEAGUE_LOGOS[id]||window.FOOTYEDGE_LOGOS?.competitions?.[id]||fallback||REMOTE_LEAGUE_LOGOS[id]||"";
   const remote=REMOTE_LEAGUE_LOGOS[id]||fallback||"";
   if(!src)return leagueFallbackHtml();
+  const safeId=String(id||"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+  const extra=id==="uefa.champions"?" leagueLogoUcl":id==="ita.1"?" leagueLogoSerieA":id==="ger.1"?" leagueLogoBundesliga":"";
   const err=remote&&remote!==src
     ?' onerror="this.onerror=null;this.src=\''+esc(remote)+'\';"'
     :' onerror="this.parentElement.outerHTML=leagueFallbackHtml()"';
-  return '<span class="leagueIcon" aria-hidden="true"><img class="leagueLogoImg" src="'+esc(src)+'" alt="" loading="lazy"'+err+'></span>'
+  return '<span class="leagueIcon league-'+safeId+'" aria-hidden="true"><img class="leagueLogoImg'+extra+'" src="'+esc(src)+'" alt="" loading="lazy"'+err+'></span>'
 }
 function decimalOdds(a){if(a==null)return null;const n=Number(String(a).replace("+",""));if(!Number.isFinite(n)||n===0)return null;return n>0?1+n/100:1+100/Math.abs(n)}
 function oddsText(a){if(a==null)return "—";const n=Number(String(a).replace("+",""));return Number.isFinite(n)?(n>0?`+${n}`:`${n}`):String(a)}

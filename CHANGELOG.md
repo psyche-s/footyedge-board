@@ -544,3 +544,17 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Today’s Picks now prefers repo-local competition/team assets. Existing remote/API logos remain fallback-only so the UI does not break before or between cache refreshes.
 - Country/national-team display remains the existing circular flag treatment.
 - Added upstream credit/source documentation as requested by football-logos.cc.
+
+
+## 2026-10-07 — v93 competition-logo visual variants / containment
+**Status:** 🟡 Code ready · logo resync/deploy verification pending
+
+- Kept football-logos.cc as the upstream logo source, with the FootyEdge repository cache remaining the production source of truth.
+- Selected display variants for the dark UI instead of blindly using each competition's default mark:
+  - UEFA Champions League: compact **no-text** starball, rendered white on the FootyEdge dark background.
+  - UEFA Europa League: compact **no-text** mark.
+  - Ligue 1: **white** variant for dark-background legibility.
+  - Eredivisie: **no-text white** variant.
+- Added final logo containment rules so every competition mark stays inside the existing 24×24 footprint with `object-fit: contain`, centered alignment and hidden overflow.
+- Added small per-mark scale normalization for tall/narrow Serie A, Bundesliga and Champions League marks so they read consistently without changing filter/header dimensions.
+- No picks, model logic, odds, tracking or historical board data changed.

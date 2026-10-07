@@ -220,3 +220,15 @@ test("football-logos.cc is canonical upstream for cached logos",()=>{
   assert.match(sync,/manifest\.json/);
   assert.match(sync,/registry\.js/);
 });
+
+test("competition marks use dark-UI variants and remain contained",()=>{
+  const cfg=JSON.parse(fs.readFileSync("data/logo-sources.json","utf8"));
+  const byId=Object.fromEntries(cfg.competitions.map(x=>[x.id,x]));
+  assert.match(byId["uefa.champions"].page,/uefa-champions-league\/no-text\/$/);
+  assert.equal(byId["uefa.champions"].displayVariant,"no-text-white");
+  assert.match(byId["fra.1"].page,/ligue-1\/white\/$/);
+  assert.match(byId["ned.1"].page,/eredivisie\/no-text-white\/$/);
+  assert.match(p1,/\.leagueLogoUcl\{[\s\S]*?brightness\(0\) invert\(1\)/);
+  assert.match(p1,/\.leagueIcon\{[\s\S]*?overflow:hidden!important/);
+  assert.match(p2,/leagueLogoSerieA/);
+});
