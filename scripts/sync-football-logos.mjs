@@ -25,7 +25,7 @@ async function fetchBytes(url){
 }
 function assetUrls(html){
   const h=cleanHtml(html);
-  const rx=/https:\/\/assets\.football-logos\.cc\/logos\/[^"'<>\s]+?\/256x256\/[^"'<>\s]+?\.png/g;
+  const rx=/https:\/\/assets\.football-logos\.cc\/logos\/[^"'<>\s]+?\/[0-9]+x[0-9]+\/[^"'<>\s]+?\.png/g;
   return uniq(h.match(rx)||[]);
 }
 function pageSlug(url){
@@ -33,7 +33,8 @@ function pageSlug(url){
 }
 function chooseAsset(html,pageUrl){
   const urls=assetUrls(html),ps=pageSlug(pageUrl);
-  return urls.find(u=>decodeURIComponent(u).split("/").at(-1)?.startsWith(ps+"."))||urls[0]||null;
+  const matching=urls.filter(u=>decodeURIComponent(u).split("/").at(-1)?.startsWith(ps+"."));
+  return matching.find(u=>u.includes("/256x256/"))||matching.find(u=>u.includes("/512x512/"))||matching[0]||urls.find(u=>u.includes("/256x256/"))||urls[0]||null;
 }
 function titleFromPage(html){
   const h=cleanHtml(html);
