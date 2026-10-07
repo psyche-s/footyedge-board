@@ -510,3 +510,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 
 - Kept the new native FootyEdge support-button typography/height/radius, but restored the original Buy Me a Coffee yellow cup mark on Home and About.
 - No other layout, content, board or model changes.
+
+
+## 2026-10-07 — v90 unified Home hero / full banner
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Combined the Home hero and separate About FootyEdge card into one continuous hero card.
+- Removed the redundant ABOUT FOOTYEDGE heading and eliminated the visual break between “Sharper soccer research. Smarter picks.” and the introductory/free-to-use copy.
+- Support FootyEdge now lives inside the same hero card below the intro copy.
+- Replaced the banner background treatment with the exact embedded panoramic image as a real image element, preserving its full natural width/height instead of cropping it.
+- On mobile the banner area uses the source image’s approximately 8:1 panoramic ratio so the full artwork is visible and the hero card sizes naturally around it.
+- Tracking and Today’s Top 5 remain as the next two cards; no board/model/pick/tracking data changed.
