@@ -589,3 +589,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Expanded analysis uses the same live-state indicator.
 - Live score/status data remains a separate dynamic layer; frozen picks, odds, confidence, reasoning and tracking remain unchanged.
 - Bumped the Today’s Picks UI bundle to v96.
+
+
+## 2026-10-07 — v96 live-score experiment reverted
+**Status:** 🟢 Reverted to last known-good UI baseline
+
+- Reverted the live-score/green-dot UI experiment after the assembled UI bundle failed the full published-board regression parser.
+- Restored Today’s Picks UI files and regression coverage to commit `9d22c7a`, the last known-good state before live-score work began.
+- Preserved the women’s competition metadata fix, `(W)` display behavior, logo-source changes, locked picks, odds, confidence, tracking and historical board data.
+- Live scores are not currently enabled in production.
