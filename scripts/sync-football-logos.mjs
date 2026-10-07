@@ -62,10 +62,10 @@ async function saveAsset(assetUrl,dest){
   await fs.mkdir(path.dirname(dest),{recursive:true});
   await fs.writeFile(dest,await fetchBytes(assetUrl));
 }
-async function cachePage(pageUrl,dest,kind,key){
+async function cachePage(pageUrl,dest,kind,key,assetOverride=null){
   const html=sourcePages[pageUrl]??await fetchText(pageUrl);
   sourcePages[pageUrl]=html;
-  const asset=chooseAsset(html,pageUrl);
+  const asset=assetOverride||chooseAsset(html,pageUrl);
   if(!asset)throw new Error("No 256x256 football-logos.cc asset found for "+pageUrl);
   await saveAsset(asset,dest);
   const publicPath="/"+dest.replaceAll("\\","/");
@@ -79,7 +79,7 @@ await fs.mkdir(TEAM_DIR,{recursive:true});
 for(const comp of cfg.competitions){
   try{
     const dest=path.join(COMP_DIR,comp.id+".png");
-    const html=await cachePage(comp.page,dest,"competitions",comp.id);
+    const html=await cachePage(comp.page,dest,"competitions",comp.id,comp.asset||null);
     console.log("competition",comp.id,"->",dest);
     if(!comp.crawlTeams)continue;
     const links=teamLinks(html,comp.page);
