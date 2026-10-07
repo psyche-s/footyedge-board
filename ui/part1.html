@@ -1546,7 +1546,7 @@ body{background:#031008}
 </div>
 <div class="drawer" id="drawer"><div class="modal"><div class="modalHead"><b id="modalTitle">Match Breakdown</b><button class="close" id="close" aria-label="Close">×</button></div><div class="modalBody" id="modalBody"></div></div></div>
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
-<script src="/assets/board-availability.js?v=68"></script>
+<script src="/assets/board-availability.js?v=69"></script>
 <script>
 const TZ="America/Toronto";
 const S={date:null,games:[],filter:"all",league:"all",status:"all",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
@@ -1795,7 +1795,7 @@ function applyBoardArchive(games,archive){
   if(!archive||archive.date!==S.date)return games;
   const byId=new Map(games.map(g=>[String(g.id),g]));
   const byFixture=new Map(games.map(g=>[fixtureMatchKey(g.home.name,g.away.name),g]));
-  const archived=(archive.games||[]).map(a=>{
+  const archived=(archive.games||[]).filter(a=>!FootyEdgeAvailability.excludedArchivedGame?.(a)).map(a=>{
     const live=byId.get(String(a.id))||byFixture.get(fixtureMatchKey(a.home,a.away));
     const g=live||{id:String(a.id||fixtureMatchKey(a.home,a.away)),apiFixtureId:String(a.id||""),date:a.date||S.date+"T16:00:00Z",year:a.year||Number(S.date.slice(0,4)),
       league:a.league||null,leagueName:a.leagueName||"",leagueLogo:a.leagueLogo||null,

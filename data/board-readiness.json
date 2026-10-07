@@ -1,40 +1,40 @@
 {
-  "checkedAt": "2026-10-07T07:13:19Z",
+  "checkedAt": "2026-10-07T18:11:55.440Z",
   "timeZone": "America/Toronto",
   "horizonDays": 5,
   "days": [
     {
       "date": "2026-10-07",
-      "scheduledGames": 1,
-      "researchFixtures": 1,
+      "scheduledGames": 0,
+      "researchFixtures": 0,
       "published": true,
-      "status": "owner-locked-now",
+      "status": "locked-empty-mens-only",
       "pending": [],
-      "researchFile": "data/research-base-2026-10-07.json",
+      "researchFile": null,
       "officialBoard": "data/boards/2026-10-07.json",
       "liveSnapshot": {
         "scoreboard": 64,
         "fixtures": 64,
         "odds": 13
-      }
+      },
+      "nextGameDate": "2026-10-09",
+      "excludedRawFixtures": 1
     },
     {
       "date": "2026-10-08",
-      "scheduledGames": 1,
-      "researchFixtures": 1,
+      "scheduledGames": 0,
+      "researchFixtures": 0,
       "published": false,
-      "status": "prepared-for-06am-day-of-lock",
-      "pending": [
-        "Re-run current research/team news at morning cycle",
-        "Publish and lock current-day board at 06:00 America/Toronto"
-      ],
-      "researchFile": "data/research-base-2026-10-08.json",
+      "status": "verified-empty-mens-only",
+      "pending": [],
+      "researchFile": null,
       "liveSnapshot": {
         "scoreboard": 101,
         "fixtures": 101,
         "odds": 11
       },
-      "exactNativeOdds": 0
+      "nextGameDate": "2026-10-09",
+      "excludedRawFixtures": 1
     },
     {
       "date": "2026-10-09",
@@ -89,8 +89,10 @@
     }
   ],
   "notes": [
-    "October 7 was explicitly owner-overridden and locked immediately before 06:00 Toronto.",
-    "Starting October 8, picks are not published early for future dates. Only the current Toronto date is published and locked during the 06:00 morning run.",
+    "Women's soccer is excluded from the FootyEdge tracked slate and publication pipeline.",
+    "October 7 is a verified empty men's slate; the next eligible tracked games are on October 9, 2026.",
+    "October 8's only raw tracked fixture is a women's international friendly and is excluded.",
+    "Starting October 8, picks are not published early for future dates. Only the current Toronto date is published and locked during the morning run.",
     "Future schedule/research/odds snapshots may still be prepared in advance, but they are data only and do not create public picks.",
     "Postmatch diagnostics remain part of the next morning research/model context; automatic coefficient changes require repeated verified evidence."
   ]

@@ -15,6 +15,10 @@
     const tags=['wo'+'men','fe'+'male'];
     return tags.some(tag=>meta.includes(tag))
   }
+  function excludedArchivedGame(game){
+    const meta=[game?.leagueName,game?.competition,game?.gender,game?.seasonSlug,game?.source].filter(Boolean).join(' ').toLowerCase();
+    return ['women','female'].some(tag=>meta.includes(tag));
+  }
   function eventDay(event){
     if(!event?.date||!Number.isFinite(new Date(event.date).getTime()))return null;
     const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(event.date));
@@ -71,5 +75,5 @@
     }
     return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
   }
-  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,eventsForDay,formatDate,message,load,loadNext};
+  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,excludedArchivedGame,eventsForDay,formatDate,message,load,loadNext};
 })(globalThis);

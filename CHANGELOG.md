@@ -8,6 +8,16 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-07 — Men's-only scope + verified empty-slate fix
+**Status:** ✅ Live
+
+- Women's soccer removed from the FootyEdge tracked/public slate going forward.
+- October 7 corrected back to a locked, verified empty men's board; the previously restored Jordan–Armenia women's pick was removed.
+- October 8's India–Russia women's friendly is excluded, making October 9, 2026 the next eligible tracked slate.
+- Empty current-day boards now render immediately as “No games today. Next game on Oct 9, 2026.” instead of remaining on “Checking the game schedule…”.
+- Archived board rows are also filtered for women's/female competition metadata so excluded fixtures cannot reappear from a saved board.
+- Home and Today’s Picks now share the same verified empty-slate behavior.
+
 ## 2026-10-03 — Project foundation
 **Status:** ✅ Complete
 
