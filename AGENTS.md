@@ -59,3 +59,9 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - Each team card should show the highest-value verified news/availability note and its model/market impact. If no material item is verified, keep that team's card and explicitly say no material verified update/no model adjustment.
 - Published/archive payloads must populate the recent-form string expected by the UI (for example: W D L W W) whenever verified results are available.
 - GF/GA display fields are per-match averages, not raw goal totals. Preserve raw totals separately if needed for evidence/audit.
+
+
+## Display-format preservation rule — owner instruction 2026-10-07
+- FootyEdge displays sportsbook odds in **American format**. If a source publishes fractional/decimal odds, preserve that native source quote separately for audit, but convert only the display notation to its exact American equivalent.
+- Do not redesign or reformat the UI when the owner asks for data, odds, form, Team News, model, research or publishing corrections. Preserve the existing visual components and layout unless the owner explicitly requests a UI change.
+- For archived/current boards, verified form must populate the exact model fields consumed by the existing UI; do not replace verified form with dashes when the result sequence is available.

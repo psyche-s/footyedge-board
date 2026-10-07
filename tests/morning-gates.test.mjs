@@ -101,9 +101,9 @@ test("rolling previews never freeze converted or otherwise unverified prices",()
   assert.match(p2,/daily-odds-/)
 });
 
-test("expanded analysis uses uppercase WHY THIS PICK and always supports TEAM NEWS status",()=>{
+test("expanded analysis uses uppercase WHY THIS PICK and preserves existing Team News rendering",()=>{
   assert.match(p2,/WHY THIS PICK/);
-  assert.match(p2,/No material verified team-news item changed the model/);
+  assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
 test("verified native display prices can show EV while unavailable exact markets are explicit",()=>{
   assert.match(p1,/p\.ev==null\?"—":evText\(p\.ev\)/);
@@ -111,9 +111,10 @@ test("verified native display prices can show EV while unavailable exact markets
   assert.match(p1,/odds:"N\/A"/);
 });
 
-test("expanded Team News always renders one team card per side",()=>{
+test("expanded Team News keeps the original team-card layout",()=>{
+  assert.match(p2,/if\(!items\.length\)return ""/);
+  assert.match(p2,/teamNewsCard/);
   assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
-  assert.match(p2,/No material verified team-news update for/);
 });
 test("form chips support archived verified W D L strings",()=>{
   assert.match(p2,/function formHTML/);

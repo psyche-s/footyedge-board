@@ -682,10 +682,8 @@ function itemBelongsToTeam(g,item,team){
   return t?(t.includes(name)||name.includes(t)):raw.includes(name)
 }
 function teamNewsSummary(g,p){
-  const item=latestNewsItems(g)[0];
-  if(item)return{text:displayNewsText(g,item),impact:newsImpact(g,p,item)};
-  if(g?.teamNewsReview)return{text:"No material verified team-news item changed the model.",impact:g.teamNewsReview.modelImpact||""};
-  return null
+  const item=latestNewsItems(g)[0];if(!item)return null;
+  return{text:displayNewsText(g,item),impact:newsImpact(g,p,item)}
 }
 
 function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`}
@@ -916,7 +914,8 @@ function renderModal(g){
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
-    const body=items.length?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(newsImpact(g,focus,item))+'</div>':'')+'</div>').join(""):'<div class="teamNewsItem"><div class="newsLabel">TEAM NEWS</div><div class="newsText">No material verified team-news update for '+esc(team.name)+'.</div><div class="newsImpact">No model adjustment.</div></div>';
+    if(!items.length)return "";
+    const body=items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(newsImpact(g,focus,item))+'</div>':'')+'</div>').join("");
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(team.name)+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);

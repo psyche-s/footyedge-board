@@ -395,3 +395,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Fixed the October 7 archive's missing form display. Jordan recent form is saved as W-W-L-W-W and Armenia as L-D-L-L-D from current women's-team results sources.
 - Corrected display GF/GA fields from raw totals (22/16 and 14/24) to per-match averages (2.20/1.60 and 1.40/2.40), while preserving totals separately.
 - No locked pick, rank, confidence, price, EV, market percentage or explanation changed. A second correction backup and SHA256 audit were appended.
+
+
+## 2026-10-07 — v78 American odds + no-UI-change correction
+**Status:** 🟡 Data/code on main · production UI unchanged until normal deploy availability
+
+- Owner clarified that FootyEdge must display odds in American format and that data corrections must not alter the existing UI.
+- October 7 exact source prices are now displayed as **-1000** for Jordan or Draw (native source quote 1/10) and **-700** for Over 1.5 Goals (native source quote 1/7). Native fractional quotes remain stored separately for audit/source fidelity.
+- Jordan 1+ Goal remains N/A because an exact sportsbook price for that exact market was not verified.
+- Reaffirmed the verified archived form fields used by the existing modal: Jordan W-W-L-W-W; Armenia L-D-L-L-D. Per-match GF/GA remains 2.20/1.60 and 1.40/2.40.
+- Restored Team News rendering code on main to the pre-change team-card structure; no new layout/fallback presentation is introduced.
+- No pick, rank, confidence, Market %, EV, explanation or tracking record changed. Correction backup/audit appended.
