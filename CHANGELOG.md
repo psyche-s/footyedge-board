@@ -477,3 +477,11 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Made the four expanded-analysis metric boxes exactly equal in width and height as a uniform 2×2 grid.
 - Desktop/tablet tiles are fixed to the same 42px row height; mobile tiles use the same 36px row height.
 - No content, data, picks, odds, model logic, Team News, or other layout elements changed.
+
+
+## 2026-10-07 — v86 Home women’s-team labels
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Fixed the Home “Today’s Top 5 Picks” renderer so women’s fixtures use the same `(W)` display convention as Today’s Picks.
+- Example: `Jordan (W) vs Armenia (W)` and `Jordan (W) ML`.
+- This is display-layer only; raw team names, provider IDs, odds matching, locked picks and historical data remain unchanged.

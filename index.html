@@ -98,13 +98,31 @@ async function repoJson(path){
 }
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
 const todayToronto=()=>{const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+"-"+o.month+"-"+o.day};
-function renderTop5(top,emptyMessage="Checking the game schedule…"){
+function homeWomenFixture(board,x){
+  const game=(board?.games||[]).find(g=>String(g.id)===String(x?.gameId)||(g.home===x?.home&&g.away===x?.away));
+  return /women|female/i.test(String(game?.leagueName||game?.competition||game?.gender||""))
+}
+function homeTeamName(name,women){
+  const s=String(name||"");
+  return women&&s&&!/\(W\)$/i.test(s)?s+" (W)":s
+}
+function homeSelectionLabel(label,x,women){
+  let s=String(label||"Pick");
+  if(!women)return s;
+  for(const raw of [x?.home,x?.away]){
+    const n=String(raw||"");
+    if(n&&!/\(W\)$/i.test(n))s=s.split(n).join(n+" (W)")
+  }
+  return s
+}
+function renderTop5(top,emptyMessage="Checking the game schedule…",board=null){
   const el=document.getElementById("topList");
   if(!top?.length){el.innerHTML='<div class="loading">'+esc(emptyMessage)+'</div>';return}
   el.innerHTML=top.slice(0,5).map((x,i)=>{
-    const p=x.pick||x;
-    const fixture=(x.home||"")+(x.away?" vs "+x.away:"");
-    const selection=p.label||x.selection||"Pick";
+    const p=x.pick||x,women=homeWomenFixture(board,x);
+    const home=homeTeamName(x.home,women),away=homeTeamName(x.away,women);
+    const fixture=home+(away?" vs "+away:"");
+    const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
     const conf=p.score??x.confidence;
     return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%":"")+'</div></div>';
   }).join("");
@@ -127,7 +145,7 @@ repoJson("data/performance/summary.json").then(p=>{
   let board=null;
   try{
     board=await repoJson("data/boards/"+date+".json");
-    if(board?.top5?.length){renderTop5(board.top5);return}
+    if(board?.top5?.length){renderTop5(board.top5,"",board);return}
   }catch{}
   const info=board?.games?.length?{kind:"games",date,count:board.games.length}:await FootyEdgeAvailability.load(date,async path=>{
     const r=await fetch(path,{cache:"no-store"});if(!r.ok)throw new Error("Schedule unavailable");return r.json();

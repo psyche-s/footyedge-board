@@ -6,6 +6,7 @@ const p1=fs.readFileSync("ui/part1.html","utf8");
 const p2=fs.readFileSync("ui/part2.html","utf8");
 const builder=fs.readFileSync("scripts/build-research-base.mjs","utf8");
 const validator=fs.readFileSync("scripts/validate-daily-board.mjs","utf8");
+const home=fs.readFileSync("index.html","utf8");
 
 test("compact search is visible and accessible",()=>{
   assert.match(p1,/id="searchBtn" aria-label="Search games"/);
@@ -160,4 +161,11 @@ test("expanded four metric boxes are identical size",()=>{
   assert.match(p1,/v85 equal-size expanded metric tiles only/);
   assert.match(p1,/grid-template-rows:repeat\(2,42px\)!important/);
   assert.match(p1,/\.metric\{[\s\S]*?max-height:42px!important/);
+});
+
+test("Home Top 5 applies womens W suffix at display layer",()=>{
+  assert.match(home,/function homeWomenFixture/);
+  assert.match(home,/function homeTeamName/);
+  assert.match(home,/function homeSelectionLabel/);
+  assert.match(home,/renderTop5\(board\.top5,"",board\)/);
 });
