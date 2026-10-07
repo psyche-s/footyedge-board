@@ -29,6 +29,21 @@
     const first=today?'No games today.':'No games on '+formatDate(info.date)+'.';
     return first+' '+(info.nextGameDate?'Next game on '+formatDate(info.nextGameDate)+'.':info.searchComplete?'Next game date is not available yet.':'Next game date could not be confirmed.');
   }
+  async function loadNext(date,readJson){
+    const read=async day=>{
+      const saved=cache.get(day);if(saved&&Date.now()-saved.at<15*60*1000)return saved.payload;
+      const payload=await readJson('/api/espn-scoreboard?dates='+day.replaceAll('-','')+'&limit=1000');
+      if(!Array.isArray(payload?.events))throw new Error('Schedule response unavailable');
+      cache.set(day,{at:Date.now(),payload});return payload;
+    };
+    for(let offset=1;offset<=21;offset++){
+      const day=addDate(date,offset);
+      let payload=null;
+      try{payload=await read(day)}catch{return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:false}}
+      if(eventsForDay(payload,day).length)return {kind:'empty',date,count:0,nextGameDate:day,searchComplete:true};
+    }
+    return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
+  }
   async function load(date,readJson,seed){
     const read=async day=>{
       if(day===date&&Array.isArray(seed?.events))return seed;
@@ -56,5 +71,5 @@
     }
     return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
   }
-  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,eventsForDay,formatDate,message,load};
+  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,eventsForDay,formatDate,message,load,loadNext};
 })(globalThis);
