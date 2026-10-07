@@ -1,6 +1,6 @@
 {
   "date": "2026-10-07",
-  "generatedAt": "2026-10-07T07:13:19Z",
+  "generatedAt": "2026-10-07T08:02:00Z",
   "modelVersion": "v69-gates",
   "status": "published-owner-override",
   "policy": "Deterministic FootyEdge evidence leads. For October 7 only, the owner explicitly waived sportsbook pricing as a publication gate; missing prices remain null.",
@@ -16,17 +16,22 @@
         "Across the last 10 overall, Jordan are 5-2-3 (22-16) and Armenia are 2-2-6 (14-24)."
       ],
       "supportedMarkets": [
-        "Jordan or Draw",
+        "Jordan ML",
         "Jordan 1+ Goal",
         "Over 1.5 Goals"
       ],
       "markets": [
         {
-          "label": "Jordan or Draw",
-          "category": "Double Chance",
-          "confidence": 94,
-          "price": null,
-          "reason": "Protected Jordan result line best matches the verified home/away split."
+          "label": "Jordan ML",
+          "category": "Match Result",
+          "confidence": 93,
+          "modelProbability": 0.7854608067571349,
+          "marketProbability": 0.6666666666666666,
+          "price": "-200",
+          "nativePrice": "1.50",
+          "sportsbook": "PokerStars Sports",
+          "ev": 0.17819121013570238,
+          "reason": "Jordan are 4-2-0 at home, Armenia are 0-1-4 away, and the venue-rate model prices Jordan around 78.5% to win versus 66.7% implied at -200."
         },
         {
           "label": "Jordan 1+ Goal",
@@ -63,6 +68,11 @@
           "name": "FBref — Armenia Women all competitions",
           "url": "https://fbref.com/en/squads/f13b4a62/2026/matchlogs/all_comps/schedule/Armenia-Women-Scores-and-Fixtures-All-Competitions",
           "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "PokerStars Sports — Jordan Women v Armenia Women",
+          "url": "https://www.pokerstars.es/en/sports/soccer/1/friendlies-womens-international/12200369/jordan-w-v-armenia-w/36159679/",
+          "checkedAt": "2026-10-07T08:02:00Z"
         }
       ],
       "teamNews": [],
@@ -74,7 +84,7 @@
       },
       "playerProps": "Excluded: no credible expected-start/minutes evidence. No ATGS/SOA/assist/2+ prop was forced.",
       "publicationBlockers": [],
-      "ownerOverride": "Pricing gate waived for October 7 only; board locked immediately."
+      "ownerOverride": "October 7 Pick #1 changed by explicit owner override from Jordan or Draw to Jordan ML after exact-price/value review."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "date": "2026-10-07",
   "modelVersion": "v69-gates",
-  "generatedAt": "2026-10-07T07:13:19Z",
+  "generatedAt": "2026-10-07T08:02:00Z",
   "source": "Owner-override deterministic research refresh using current public last-10/venue aggregates",
   "learningIngested": {
     "generatedAt": "2026-10-07T07:13:19Z",
@@ -97,7 +97,7 @@
         }
       ],
       "marketSignals": [
-        "Jordan or Draw",
+        "Jordan ML",
         "Jordan 1+ Goal",
         "Over 1.5 Goals"
       ],
@@ -121,10 +121,26 @@
           "name": "FBref — Armenia Women all competitions",
           "url": "https://fbref.com/en/squads/f13b4a62/2026/matchlogs/all_comps/schedule/Armenia-Women-Scores-and-Fixtures-All-Competitions",
           "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "PokerStars Sports — Jordan Women v Armenia Women",
+          "url": "https://www.pokerstars.es/en/sports/soccer/1/friendlies-womens-international/12200369/jordan-w-v-armenia-w/36159679/",
+          "checkedAt": "2026-10-07T08:02:00Z"
         }
       ],
       "note": "The current provider did not expose the individual all-competition match rows cleanly in the app pipeline, so FootyEdge used independently verified last-10 aggregate records plus venue splits. No statistic was invented.",
-      "generatedAt": "2026-10-07T07:13:19Z"
+      "generatedAt": "2026-10-07T07:13:19Z",
+      "priceReview": {
+        "checkedAt": "2026-10-07T08:02:00Z",
+        "selection": "Jordan ML",
+        "sportsbook": "PokerStars Sports",
+        "decimal": 1.5,
+        "american": -200,
+        "marketProbability": 0.6666666666666666,
+        "modelProbability": 0.7854608067571349,
+        "ev": 0.17819121013570238,
+        "decision": "ML replaces double chance as the risk-adjusted Pick #1 because it clears the -400 floor and offers materially better EV."
+      }
     }
   ]
 }

@@ -424,3 +424,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Jordan 1+ Goal remains N/A because the exact team-total price still is not verified.
 - Added a temporary archive-data compatibility sentinel so the currently deployed legacy renderer suppresses Team News on collapsed match cards while preserving both Jordan and Armenia team-news cards inside expanded analysis.
 - Permanent expanded-only Team News code is already on main; once Vercel's free deployment quota clears, the compatibility sentinel can be removed.
+
+
+## 2026-10-07 — v81 Jordan ML owner override / final lock
+**Status:** 🟡 Locked on GitHub main · deployment attempt required
+
+- Explicit owner override changed only Pick #1 for Jordan vs Armenia from **Jordan or Draw** to **Jordan ML** after a fresh risk/price review.
+- PokerStars Sports currently lists Jordan Match Result at **1.50 / -200**, which clears the normal -400 floor. FootyEdge's venue-rate Poisson estimate gives Jordan about **78.5%** win probability versus **66.7%** implied by -200, for approximately **+17.8% EV**.
+- Rationale: Jordan are **4-2-0 at home** (16-6), Armenia are **0-1-4 away** (4-16), and the model projection remains about **2.93-0.90**.
+- Pick #2 and Pick #3 were left unchanged because the owner asked specifically about Jordan ML.
+- Team News remains data-populated for both teams but is intended to display only inside expanded analysis. No collapsed-card Team News UI is authorized.
+- Board correction backup and audit preserved before the override.
