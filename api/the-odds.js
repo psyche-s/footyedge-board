@@ -1,6 +1,6 @@
 const API_BASE="https://api.the-odds-api.com/v4";
 const CACHE_SECONDS=60;
-const BUILD_TAG="v32";
+const BUILD_TAG="v33";
 
 const LEAGUE_HINTS={
   "uefa.nations":{keys:["soccer_uefa_nations_league"],aliases:["uefa nations league","nations league"]},
@@ -162,8 +162,8 @@ export default async function handler(req,res){
 
     const date=String(req.query.date||"");
     if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return res.status(400).json({error:"Invalid date"});
-    const today=torontoDate(),horizon=new Date(today+"T12:00:00Z");horizon.setUTCDate(horizon.getUTCDate()+3);const maxDate=horizon.toISOString().slice(0,10);
-    if(date<today||date>maxDate)return res.status(200).json({enabled:false,reason:"outside_4_day_horizon",today,maxDate,events:[]});
+    const today=torontoDate(),horizon=new Date(today+"T12:00:00Z");horizon.setUTCDate(horizon.getUTCDate()+4);const maxDate=horizon.toISOString().slice(0,10);
+    if(date<today||date>maxDate)return res.status(200).json({enabled:false,reason:"outside_5_day_horizon",today,maxDate,events:[]});
     const leagues=[...new Set(String(req.query.leagues||"").split(",").map(x=>x.trim()).filter(Boolean))].slice(0,12);
     if(!leagues.length)return res.status(200).json({enabled:true,events:[],sports:[]});
 
