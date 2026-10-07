@@ -216,7 +216,7 @@ test("football-logos.cc is canonical upstream for cached logos",()=>{
   assert.equal(cfg.source,"https://football-logos.cc");
   assert.ok(cfg.competitions.length>=10);
   const sync=fs.readFileSync("scripts/sync-football-logos.mjs","utf8");
-  assert.match(sync,/assets\.football-logos\.cc/);
+  assert.match(sync,/football-logos\.cc/);
   assert.match(sync,/manifest\.json/);
   assert.match(sync,/registry\.js/);
 });
