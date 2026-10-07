@@ -9,7 +9,7 @@ const code=full.slice(0,full.lastIndexOf('document.getElementById("prev").onclic
 function context(search=""){
   const nodes=new Map(),element=()=>({innerHTML:'',textContent:'',classList:{contains:()=>false,toggle(){},add(){},remove(){}},style:{setProperty(){}},querySelectorAll:()=>[]});
   const ctx=vm.createContext({console,Intl,URL,URLSearchParams,Date,setTimeout:()=>0,clearTimeout(){},window:{location:{search}},document:{getElementById(id){if(!nodes.has(id))nodes.set(id,element());return nodes.get(id)},querySelectorAll:()=>[]},localStorage:{getItem:()=>null,setItem(){}},fetch:async()=>{throw new Error('Unexpected network/model call')}});
-  vm.runInContext(code,ctx);return ctx;
+  vm.runInContext(fs.readFileSync('assets/board-availability.js','utf8'),ctx);vm.runInContext(code,ctx);return ctx;
 }
 const board=JSON.parse(fs.readFileSync('data/boards/2026-10-06.json','utf8'));
 const input=board.games.map(g=>({id:g.id,date:g.date,league:g.league,leagueName:g.leagueName,home:{...g.teams.home,score:2},away:{...g.teams.away,score:0},done:true,model:{top:{label:'Recalculated replacement',score:99},top3:[{label:'Recalculated replacement',score:99}],candidates:[{label:'Player Anytime Goalscorer',category:'Player',score:99}]}}));
@@ -65,7 +65,7 @@ test('Integrity rejects an unaudited overwrite',async()=>{
   }finally{fs.writeFileSync(file,saved)}
 });
 test('Tracking renders month and YTD separately with requested labels',()=>{
-  const c=context();c.summary=JSON.parse(fs.readFileSync('data/performance/summary.json','utf8'));
+  const c=context();c.summary={month:{key:'2026-10',hits:7,misses:3,settled:10,hitRate:70},year:{key:'2026',hits:7,misses:3,settled:10,hitRate:70}};
   vm.runInContext('S.performance=summary;renderPerformance()',c);
   assert.equal(vm.runInContext('document.getElementById("perfMonthLabel").textContent',c),'Oct Tracking');
   assert.equal(vm.runInContext('document.getElementById("perfYearLabel").textContent',c),'2026 Tracking');

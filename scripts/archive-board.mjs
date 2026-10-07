@@ -12,7 +12,8 @@ const DATE=process.env.ARCHIVE_DATE||`${p.year}-${p.month}-${p.day}`;
 async function main(){
   const file=path.join('data','boards',DATE+'.json');
   try{const existing=JSON.parse(await fs.readFile(file,'utf8'));validateBoard(existing);console.log('Published board already exists; unchanged:',file);return}catch(e){if(e.code!=='ENOENT')throw e}
-  if(DATE!==`${p.year}-${p.month}-${p.day}`)throw new Error('Cannot generate historical published selections. Restore verified originals only with an audited owner instruction.');
+  if(DATE<`${p.year}-${p.month}-${p.day}`)throw new Error('Cannot generate historical published selections. Restore verified originals only with an audited owner instruction.');
+  if(DATE>`${p.year}-${p.month}-${p.day}`&&process.env.FORCE_ARCHIVE!=='1')throw new Error('Advance publication requires an explicit dated capture.');
   if(process.env.FORCE_ARCHIVE!=='1'&&![7,8,23].includes(Number(p.hour))){console.log('Outside publication window');return}
   execFileSync(process.execPath,['scripts/validate-daily-board.mjs'],{env:{...process.env,BOARD_DATE:DATE},stdio:'inherit'});
   const {chromium}=require('playwright');
@@ -23,8 +24,8 @@ async function main(){
       if(u.pathname.startsWith('/api/')){
         const r=await fetch(SITE+req.url,{signal:AbortSignal.timeout(90000)});res.writeHead(r.status,{'content-type':'application/json'});res.end(await r.text());return;
       }
-      if(!/^\/(picks\.html|ui\/[a-z0-9-]+\.html|data\/[a-zA-Z0-9_./-]+\.json)$/.test(u.pathname)||u.pathname.includes('..')){res.writeHead(404);res.end();return}
-      const body=await fs.readFile(path.join(process.cwd(),u.pathname.slice(1)));res.writeHead(200,{'content-type':u.pathname.endsWith('.json')?'application/json':'text/html'});res.end(body);
+      if(!/^\/(picks\.html|assets\/board-availability\.js|ui\/[a-z0-9-]+\.html|data\/[a-zA-Z0-9_./-]+\.json)$/.test(u.pathname)||u.pathname.includes('..')){res.writeHead(404);res.end();return}
+      const body=await fs.readFile(path.join(process.cwd(),u.pathname.slice(1)));res.writeHead(200,{'content-type':u.pathname.endsWith('.json')?'application/json':u.pathname.endsWith('.js')?'text/javascript':'text/html'});res.end(body);
     }catch{res.writeHead(503);res.end('{}')}
   });
   await new Promise(r=>server.listen(0,'127.0.0.1',r));

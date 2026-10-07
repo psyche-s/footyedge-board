@@ -1,3 +1,4 @@
+import '../assets/board-availability.js';
 const LEAGUE_NAMES = {
   "uefa.nations":"UEFA Nations League",
   "uefa.champions":"UEFA Champions League",
@@ -10,11 +11,7 @@ const LEAGUE_NAMES = {
   "arg.1":"Argentina Primera","uru.1":"Uruguay Primera","col.1":"Colombia Primera A","par.1":"Paraguay Primera"
 };
 
-const UID_LEAGUE_MAP = {
-  "2395":"uefa.nations","775":"uefa.champions","776":"uefa.europa","2310":"uefa.europa.conf",
-  "700":"eng.1","760":"esp.1","720":"ger.1","730":"ita.1","740":"fra.1","707":"ned.1","763":"por.1",
-  "770":"usa.1","701":"mex.1","4":"fifa.world","745":"arg.1","680":"uru.1","650":"col.1","3934":"par.1"
-};
+
 
 function americanToDecimal(v){
   if(v===null||v===undefined||v==="") return null;
@@ -22,17 +19,7 @@ function americanToDecimal(v){
   if(!Number.isFinite(n)||n===0) return null;
   return Number((n>0?1+n/100:1+100/Math.abs(n)).toFixed(3));
 }
-function leagueCode(event){
-  const odds=event?.competitions?.[0]?.odds?.[0];
-  const candidates=[
-    odds?.moneyline?.home?.close?.link?.tracking?.tags?.league,
-    odds?.total?.over?.close?.link?.tracking?.tags?.league,
-    odds?.pointSpread?.home?.close?.link?.tracking?.tags?.league
-  ];
-  for(const c of candidates) if(typeof c==="string"&&c) return c;
-  const m=String(event?.uid||"").match(/~l:(\d+)/);
-  return m ? (UID_LEAGUE_MAP[m[1]]||null) : null;
-}
+function leagueCode(event){return globalThis.FootyEdgeAvailability.leagueOf(event)}
 function numericLeagueId(event){
   const m=String(event?.uid||"").match(/~l:(\d+)/);
   return m ? Number(m[1]) : 0;
@@ -171,7 +158,8 @@ export default async function handler(req, res) {
     }
 
     const quotaHit=Boolean(data?.errors?.requests)||status===429;
-    const unusable=!data||quotaHit||(!key);
+    const providerError=Object.values(data?.errors||{}).some(Boolean);
+    const unusable=!data||quotaHit||providerError||status>=400||(!key);
 
     if(unusable){
       data=await fallback(endpoint,query);

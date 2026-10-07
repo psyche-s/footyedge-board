@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-08",
+  "generatedAt": "2026-10-07T05:15:45.805Z",
+  "source": "FootyEdge deterministic schedule history",
+  "fixtures": [
+    {
+      "id": "401925167",
+      "date": "2026-10-08T18:00Z",
+      "league": "fifa.friendly",
+      "season": 2026,
+      "home": {
+        "id": "20885",
+        "name": "India"
+      },
+      "away": {
+        "id": "2763",
+        "name": "Russia "
+      },
+      "history": {
+        "home": 10,
+        "away": 10
+      },
+      "facts": [
+        {
+          "text": "India are winless in their last 10 matches.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "streak",
+            "metric": "winless",
+            "games": 10
+          },
+          "priority": 5
+        },
+        {
+          "text": "9 of India's last 10 matches produced over 2.5 goals.",
+          "tags": [
+            "over"
+          ],
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 9,
+            "sample": 10
+          },
+          "priority": 5
+        },
+        {
+          "text": "7 of Russia 's last 10 matches finished under 2.5 goals.",
+          "tags": [
+            "under"
+          ],
+          "evidence": {
+            "type": "rate",
+            "metric": "under_2_5",
+            "hits": 7,
+            "sample": 10
+          },
+          "priority": 5
+        },
+        {
+          "text": "India have conceded in 10 straight matches.",
+          "tags": [
+            "defense",
+            "team goals",
+            "btts"
+          ],
+          "evidence": {
+            "type": "streak",
+            "metric": "conceded",
+            "games": 10
+          },
+          "priority": 4
+        },
+        {
+          "text": "India are winless across their last 5 home matches in this sample.",
+          "tags": [
+            "form",
+            "result",
+            "home"
+          ],
+          "evidence": {
+            "type": "split",
+            "venue": "home",
+            "w": 0,
+            "d": 0,
+            "l": 5,
+            "sample": 5
+          },
+          "priority": 4
+        },
+        {
+          "text": "Russia  kept a clean sheet in 6 of their last 10 matches.",
+          "tags": [
+            "defense",
+            "btts"
+          ],
+          "evidence": {
+            "type": "rate",
+            "metric": "clean_sheet",
+            "hits": 6,
+            "sample": 10
+          },
+          "priority": 4
+        },
+        {
+          "text": "India are 0-0-10 across their last 10 matches.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "record",
+            "sample": 10,
+            "w": 0,
+            "d": 0,
+            "l": 10
+          },
+          "priority": 1
+        },
+        {
+          "text": "Russia  are 5-3-2 across their last 10 matches.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "record",
+            "sample": 10,
+            "w": 5,
+            "d": 3,
+            "l": 2
+          },
+          "priority": 1
+        }
+      ],
+      "marketSignals": [
+        "BTTS — Yes"
+      ],
+      "generatedAt": "2026-10-07T05:15:45.805Z"
+    }
+  ]
+}

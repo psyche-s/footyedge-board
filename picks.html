@@ -20,7 +20,7 @@ html,body{margin:0;min-height:100%;background:#031008;color:#fff;font-family:sys
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
-const PARTS=["/ui/part0.html?v=65","/ui/part1.html?v=65","/ui/part2.html?v=65"];
+const PARTS=["/ui/part0.html?v=66","/ui/part1.html?v=66","/ui/part2.html?v=66"];
 Promise.all(PARTS.map(url=>fetch(url,{cache:"no-store"}).then(r=>{
   if(!r.ok) throw new Error("UI bundle "+r.status);
   return r.text();

@@ -20,4 +20,4 @@ jobs:
           PUBLISHED_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: node scripts/validate-published-boards.mjs
       - name: Regression checks
-        run: node --test tests/published-board.test.mjs
+        run: node --test tests/*.test.mjs

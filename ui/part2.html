@@ -775,10 +775,13 @@ function topPicks(){
   }
   return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top)&&statusOK(g)).sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5)
 }
+function emptyBoardMessage(){
+  return FootyEdgeAvailability.message(S.games.length?{kind:"games",date:S.date,count:S.games.length}:S.availability,S.date===etDate(),!!S.archive);
+}
 function renderBest(){
   const a=topPicks(),el=document.getElementById("best");
   document.getElementById("topSub").textContent=S.archive?.date===S.date?"Frozen published board · one pick per match":"Highest confidence · one pick per match";
-  if(!a.length){el.innerHTML='<div class="empty">No pick has cleared the 80 confidence threshold for this view.</div>';return}
+  if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.archiveTopPick||g.model.top,px=priceInfo(p);
     return '<article class="bestRow" data-game-id="'+esc(g.id)+'" onclick="openGame(\''+g.id+'\')">'+
@@ -797,7 +800,7 @@ function renderGames(){
   list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.score||0)-(viewPick(a)?.score||0):(a,b)=>new Date(a.date)-new Date(b.date));
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
-  if(!list.length){el.innerHTML='<div class="empty">No matches fit this filter.</div>';return}
+  if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
     const top3=viewCandidates(g),p=viewPick(g),px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
@@ -816,8 +819,8 @@ function renderGames(){
     const news=teamNewsSummary(g,p);
     if(news)html+='<div class="teamNewsLine"><span>TEAM NEWS</span><div class="newsText">'+esc(news.text)+'</div>'+(news.impact?'<div class="newsImpact">'+esc(news.impact)+'</div>':'')+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
-      '<div class="statStrip"><div class="statCell"><b>'+(h?.gf||0).toFixed(1)+'</b><small>HOME GF AVG</small></div>'+
-      '<div class="statCell"><b>'+(a?.gf||0).toFixed(1)+'</b><small>AWAY GF AVG</small></div>'+
+      '<div class="statStrip"><div class="statCell"><b>'+(h?.gf==null?"—":Number(h.gf).toFixed(1))+'</b><small>HOME GF AVG</small></div>'+
+      '<div class="statCell"><b>'+(a?.gf==null?"—":Number(a.gf).toFixed(1))+'</b><small>AWAY GF AVG</small></div>'+
       '<div class="statCell"><b>'+pctInt(btts)+'</b><small>BTTS</small></div>'+
       '<div class="statCell"><b>'+pctInt(o25)+'</b><small>OVER 2.5</small></div>'+
       '<div class="statCell"><b>'+projectedScore(g)+'</b><small>PROJ. SCORE</small></div></div></div></div>';
@@ -890,14 +893,14 @@ function render(){
 }
 async function load(date=S.date){
   S.date=date||etDate();
-  S.boardReady=false;
+  S.boardReady=false;S.availability={kind:"loading",date:S.date};
   defaultStatusForDate(S.date);
   document.getElementById("best").innerHTML='<div class="loading"><div class="spin"></div>Ranking today’s best plays…</div>';
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
     const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload]=await Promise.all([
-      json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>({events:[]})):repoData("data/"+S.date+"/scoreboard.json").catch(()=>({events:[]}))),
+      json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-fixtures.json").catch(()=>null):null),
       json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
@@ -913,14 +916,14 @@ async function load(date=S.date){
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
     const researchBaseMap=new Map((researchBasePayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home?.name||x.home,x.away?.name||x.away),x]));
-    let games=(p.events||[]).map(e=>{
+    let games=(p?.events||[]).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
       const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
       const base=marketOdds(c.odds?.[0]||{}),extra=oddsFromFootball(oddsEntries.get(apiFixtureId)||oddsEntries.get(String(e.id)),homeName,awayName);
       const apiPrimary=Boolean(apiFixture)&&!fixturesPayload?._footyedgeFallback,apiStatus=apiFixture?.fixture?.status||{},apiShort=String(apiStatus.short||"");
       const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null,baseResearch:researchBaseMap.get(fixtureMatchKey(homeName,awayName))||null}
-    }).filter(g=>isMajorLeague(g.league));
+    }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
 
     if(archivePayload?.date===S.date){
       S.games=applyBoardArchive(games,archivePayload);S.boardReady=true;S.dataSource="Frozen published board";render();planRefresh();return;
@@ -928,7 +931,11 @@ async function load(date=S.date){
     if(!ARCHIVE_CAPTURE){
       for(const g of games)g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
       S.games=games;S.dataSource="Awaiting published board";render();
-      document.getElementById("best").innerHTML='<div class="empty">No board has been published for this date yet.</div>';
+      if(!games.length){
+        const info=await FootyEdgeAvailability.load(date,json,p);
+        if(S.date!==date)return;
+        S.availability=info;render();
+      }
       planRefresh();return;
     }
     let liveOddsPayload=null,dailyOddsPayload=null;

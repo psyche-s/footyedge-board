@@ -219,3 +219,20 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Owner-requested tracking panel implemented on Home and Picks: month tracking on left, 2026/YTD on right, center divider, `Hit Rate` capitalization. YTD counts only saved official picks for the current calendar year. No example 24-11/35-pick totals were invented.
 - Model/data impact: future research and model changes affect future boards; no model scoring formula redesigned here. UI impact limited to the explicitly requested tracking panel and accurate unavailable-history states.
 - Validation: nine regression checks plus daily-board validation, published-history integrity and JavaScript syntax checks. Browser QA could not run because the environment lacks a browser executable; production source/deployment verification remains required.
+
+## 2026-10-07 — v65 deployed and verified
+**Status:** 🟢 Deployed / verified
+
+- Production deployment dpl_6wgQMHQmiqQScVPX62CvVcQ4wP36 reached READY from commit f570a06 and was assigned footyedge-board.vercel.app. Cloud browser verification confirmed the Home/Picks month/YTD records and October 6's screenshot-restored Top 5, prices, ranks and confidence.
+- Complete October 6 recovery remains unavailable; no missing original picks or explanations were invented. Production review also identified missing historical GF/GA being shown as zero; v66 displays unavailable values as dashes.
+
+## 2026-10-07 — v66 schedule availability and advance-board readiness
+**Status:** 🟡 Code ready / deployment pending
+
+- Explicit owner request: both Home and Picks explain a verified empty slate with no games and the next confirmed game date. A shared schedule helper checks Toronto calendar dates up to 14 days ahead. Provider failures and scheduled-but-unpublished picks have distinct messages. Filtered-out games still use the existing filter-empty message.
+- Fixed supported league detection before odds are posted. Actual ESPN competition IDs identify Premier League, LaLiga, Bundesliga, Ligue 1, Eredivisie, Primeira Liga and international friendlies without relying on sportsbook metadata. Applied consistently to board display, deterministic research and provider fallback.
+- API-Football nonempty errors/status failures now use the existing ESPN fallback, rather than accepting a provider restriction as an empty successful response. No pricing or model guardrail weakened.
+- Checked October 8–11 fixtures and odds readiness. Fixtures exist; no future board is published. API-Football returned a suspended-account error for October 8 and free-plan date restrictions for October 9–11. The ESPN fallback has native posted sportsbook prices for October 9–11; October 8 has none. Deterministic research was prepared for all 97 supported fixtures across the four dates with zero fetch errors; readiness is recorded in data/board-readiness.json. Editorial/team-news checks, exact-market frozen odds and complete board capture remain pending. No selections, prices or future tracking results were invented. The morning automation now checks/prepares the next four days and reports readiness gaps.
+- Advance publication supports an explicit future board_date through the archive workflow after all normal validation passes; historical generation remains prohibited and existing future boards cannot be overwritten. Research generation exits if the date already has a published board. Automatic pushes no longer force out-of-window publication.
+- Model/data impact: fixture visibility fixed, scoring unchanged. UI impact: requested empty-state wording and accurate missing-history dashes only. Tracking/history impact: preserved every published selection and previous correction audit.
+- Validation: all 16 regression tests passed, including empty schedules, next-game dates, missing odds, provider failure, Toronto midnight boundaries and immutable same-day/history boards. Published-history integrity passed against f570a06. Production verification pending for v66.

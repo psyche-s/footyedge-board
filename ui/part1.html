@@ -1287,6 +1287,7 @@ body{background:#031008}
 </div>
 <div class="drawer" id="drawer"><div class="modal"><div class="modalHead"><b id="modalTitle">Match Breakdown</b><button class="close" id="close" aria-label="Close">×</button></div><div class="modalBody" id="modalBody"></div></div></div>
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
+<script src="/assets/board-availability.js?v=66"></script>
 <script>
 const TZ="America/Toronto";
 const S={date:null,games:[],filter:"all",league:"all",status:"all",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
@@ -1313,7 +1314,7 @@ function displayLeagueName(id,raw){
     return w.charAt(0).toUpperCase()+w.slice(1);
   }).join(" ");
 }
-const uidLeague={2395:"uefa.nations",3922:"fifa.friendly",19267:"concacaf.nations.league"};
+const uidLeague=FootyEdgeAvailability.uidLeague;
 const MAJOR_LEAGUES=new Set(Object.keys(leagueNames));
 function isMajorLeague(id){return !!id&&MAJOR_LEAGUES.has(id)};
 const MATCH_CONTEXT={"2026-10-05":{
@@ -1613,11 +1614,7 @@ async function json(url){
   if(!r.ok){const e=new Error(r.status===429?"Data provider request limit reached. Using cached data when available.":`Data request failed (${r.status})`);e.status=r.status;throw e}
   return r.json();
 }
-function leagueOf(e){
-  const o=e?.competitions?.[0]?.odds?.[0];
-  const x=o?.moneyline?.home?.close?.link?.tracking?.tags?.league||o?.moneyline?.away?.close?.link?.tracking?.tags?.league||o?.total?.over?.close?.link?.tracking?.tags?.league||o?.pointSpread?.home?.close?.link?.tracking?.tags?.league;
-  if(x)return x; const m=String(e?.uid||"").match(/~l:(\d+)/); return m?uidLeague[m[1]]||null:null;
-}
+function leagueOf(e){return FootyEdgeAvailability.leagueOf(e)}
 function marketOdds(o){
   const clean=v=>{if(v==null)return null;const n=Number(String(v).replace("+",""));return Number.isFinite(n)&&n!==0?n:null};
   const ml=o?.moneyline||{},t=o?.total||{},ps=o?.pointSpread||{},markets={},marketBooks={},totalProbs={},spreads=[];

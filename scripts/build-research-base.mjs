@@ -1,12 +1,10 @@
+import '../assets/board-availability.js';
 import fs from "node:fs/promises";
 import path from "node:path";
 
 const SITE=(process.env.FOOTYEDGE_URL||"https://footyedge-board.vercel.app").replace(/\/$/,"");
 const TZ="America/Toronto";
-const UID_LEAGUE={
-  "2395":"uefa.nations","19267":"concacaf.nations.league","3922":"fifa.friendly",
-  "2021":"eng.1","760":"esp.1","730":"ita.1","740":"ger.1","773":"fra.1"
-};
+
 const TRACKED=new Set([
   "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
   "eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
@@ -33,15 +31,7 @@ async function json(url){
   if(!r.ok)throw new Error(`HTTP ${r.status} for ${url}`);
   return r.json();
 }
-function leagueOf(e){
-  const o=e?.competitions?.[0]?.odds?.[0];
-  const tracked=o?.moneyline?.home?.close?.link?.tracking?.tags?.league||
-    o?.moneyline?.away?.close?.link?.tracking?.tags?.league||
-    o?.total?.over?.close?.link?.tracking?.tags?.league;
-  if(tracked)return tracked;
-  const m=String(e?.uid||"").match(/~l:(\d+)/);
-  return m?UID_LEAGUE[m[1]]||null:null;
-}
+function leagueOf(e){return globalThis.FootyEdgeAvailability.leagueOf(e)}
 function fixtureInfo(e){
   const c=e?.competitions?.[0]||{},cs=c.competitors||[];
   const h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1];
@@ -154,9 +144,10 @@ async function buildFixture(g){
   }
 }
 async function main(){
+  try{await fs.access(path.join('data','boards',DATE+'.json'));console.log('Published research remains frozen:',DATE);return}catch(e){if(e.code!=='ENOENT')throw e}
   if(!FORCE&&torontoHour()!=="06"){console.log("Skip: Toronto hour is",torontoHour(),"not 06");return}
   const board=await json(`${SITE}/api/espn-scoreboard?dates=${DATE.replaceAll("-","")}&limit=1000`);
-  const games=(board.events||[]).map(fixtureInfo).filter(Boolean);
+  const games=globalThis.FootyEdgeAvailability.eventsForDay(board,DATE).map(fixtureInfo).filter(Boolean);
   const fixtures=[];
   for(let i=0;i<games.length;i+=4){
     fixtures.push(...await Promise.all(games.slice(i,i+4).map(buildFixture)));

@@ -10,3 +10,5 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - Explicit owner corrections preserve the previous board in `data/board-revisions/` and append an audit entry with the exact instruction, before/after SHA256 and backup path. They must never erase prior records or silently improve the performance record.
 - Before commit/deploy run `node scripts/validate-published-boards.mjs --base <main SHA before your changes>` and meaningful regression tests. Do not change a published board, historical odds or research to satisfy newer model validation.
 - No UI redesign is authorized by model/data/publishing tasks. The owner explicitly requested the existing tracking panel display `Oct Tracking | 2026 Tracking`, a center divider and `Hit Rate` capitalization; use actual official monthly/YTD results only.
+
+- Owner also explicitly requested accurate no-game states on Home and Picks: say no games and display the next confirmed game date. Distinguish unpublished picks and provider failures from an empty schedule. Check and prepare the next four days; never invent picks or odds to fill future dates.

@@ -104,3 +104,8 @@ A failed validation means the board is not ready to publish.
 
 ## Published selections
 All picks are locked at first publication, including every game and player prop, not just Top 5. Follow `AGENTS.md`. Publish a complete durable snapshot before displaying picks; scores and settlements update separately. Missing original history is unavailable, never regenerated.
+
+## Four-day readiness and no-game states
+Check today's slate plus the next four Toronto dates. Scheduled fixtures remain visible even when prices are not posted. Prepare future research/verified native prices separately; a future board may be captured through Archive Published Board's explicit `board_date` input after the usual validation succeeds. Past dates cannot be regenerated. Every future board becomes immutable at first publication.
+
+On Home and Picks, verified empty schedules say no games and give the next confirmed game date within the checked 14-day horizon. Missing providers are unavailable, not empty. Scheduled dates without a saved board say picks have not been published yet.

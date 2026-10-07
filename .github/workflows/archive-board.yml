@@ -18,6 +18,11 @@ on:
     - cron: "50 3 * * *"
     - cron: "50 4 * * *"
   workflow_dispatch:
+    inputs:
+      board_date:
+        description: 'Optional Toronto board date (today or future; validated inputs required)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -44,7 +49,8 @@ jobs:
       - name: Capture immutable published board
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          FORCE_ARCHIVE: ${{ github.event_name == 'schedule' && '0' || '1' }}
+          ARCHIVE_DATE: ${{ inputs.board_date }}
+          FORCE_ARCHIVE: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: node scripts/archive-board.mjs
       - name: Commit board archive
         run: |
