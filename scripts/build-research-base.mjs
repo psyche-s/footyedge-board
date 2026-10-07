@@ -33,6 +33,7 @@ async function json(url){
 }
 function leagueOf(e){return globalThis.FootyEdgeAvailability.leagueOf(e)}
 function fixtureInfo(e){
+  if(globalThis.FootyEdgeAvailability.excludedTaggedEvent?.(e))return null;
   const c=e?.competitions?.[0]||{},cs=c.competitors||[];
   const h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1];
   const league=leagueOf(e);
