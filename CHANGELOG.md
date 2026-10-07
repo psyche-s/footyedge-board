@@ -194,3 +194,14 @@ Every material FootyEdge update must append a dated entry containing:
 - **Deployment result/blocker** when applicable
 
 Do **not** rewrite older entries to make history look cleaner. Corrections must be appended as new dated notes explaining the correction.
+
+
+## 2026-10-06 — Logo consistency fixes queued
+**Status:** 🔵 Planned for next morning refresh
+
+- Club/team crests in Top Picks, standard match cards and expanded matchup views should no longer be forced into circular frames/crops.
+- Club crests should use a consistent bounding box with contain-style sizing so both teams' logos appear balanced at the same maximum visual size while preserving each crest's natural shape and transparency.
+- National-team/country imagery should keep the current circular treatment and continue filling the circle cleanly.
+- League-filter icons should use the correct competition logo instead of generic soccer-ball placeholders where assets are available; specifically fix Serie A, Bundesliga and Ligue 1 and extend the same treatment to other supported filters.
+- League logos inside match-card/header rows must stay within the existing header height. Serie A's tall logo currently bleeds outside the header and must be constrained/centered without increasing header height.
+- These are targeted visual consistency fixes only. No redesign, card/layout/theme/spacing changes are authorized beyond the already planned game-search control and these logo fixes.
