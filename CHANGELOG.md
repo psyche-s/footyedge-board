@@ -266,3 +266,19 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Live Hit Rate page verified: real October/YTD 7-3 and 70% from 10 official picks; October 6 then October 5, five vertical rows each, correct hit/miss marks and numeric-only scores. Month rollover and full-month history checks pass. Preview captured from production.
 - All 22 regression tests and published-history integrity passed; GitHub Published board integrity CI succeeded. Existing published boards, selections, prices and historical grade files remain unchanged by these UI changes.
 - Immediate morning automation run was requested successfully at the owner's instruction. Execution/delivery are asynchronous; this log does not claim the board run has completed. The recurring Codex task now starts October 8 at 07:00 America/Toronto and therefore skips October 7's 07:00 occurrence. Its prompt includes the current header, Hit Rate layout, immutability and four-day readiness rules plus force flags for the authorized early run.
+
+## 2026-10-07 — v69 early morning board run / publication gates
+**Status:** 🟡 Code ready · today’s board intentionally blocked by validation
+
+- Owner-triggered morning workflow ran before 7:00 AM Toronto; the scheduled October 7 run remains skipped and normal 7:00 AM scheduling resumes October 8.
+- October 7 review found Jordan vs Armenia in the women’s international schedule. No FootyEdge pick was published because a publication-grade all-competition last-10 and exact native qualifying sportsbook price were not both verified. The site must show the scheduled/unpublished state rather than inventing a pick.
+- “Why this pick” now sits directly inside Pick #1 and prioritizes deterministic FootyEdge research over preview prose while preserving archived explanations/evidence unchanged.
+- Team news is gated to current sourced structured items; model impact requires confirmed role/importance/replacement/evidence. Uncertain news is not promoted to confirmed.
+- Player props require expected-start, 60+ expected minutes, current sources and no material rotation/injury flag.
+- Complete archive capture excludes unpriced/display-only alternatives so frozen selections cannot bypass the exact-price rule.
+- Research now uses current plus prior-season all-competition schedules, excludes unfinished fixtures and stores last-10/last-5 evidence. Postmatch diagnostics are ingested without automatic recalibration.
+- Added dated postmatch diagnostics. Historical missing Top-3 selections are not reconstructed; result grading remains separate from process-quality review.
+- Approved UI-only changes: visible compact game search, club crest contain sizing, circular country imagery preserved, Bundesliga/Ligue 1/Serie A and other supported league marks normalized, and league-header logos constrained against overflow.
+- October 8–11 research inventory remains prepared; no future board is published until current team-news, price and validation gates pass.
+- Tracking/history impact: October 5–6 immutable selections and results are unchanged. No October 7 tracking denominator is created because no board was published.
+- Deployment result: pending this commit’s Vercel production verification.

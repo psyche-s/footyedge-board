@@ -45,9 +45,12 @@ async function main(){
   if(base.date!==date)fail("Research base date mismatch");
   if(insights.date!==date)fail("Daily insights date mismatch");
   if(odds.date!==date)fail("Daily odds date mismatch");
+  if(insights.status&&insights.status!=="ready")fail("Research/team-news review is not ready for publication");
+  if(odds.status==="blocked")fail("Verified native sportsbook odds are not ready for publication");
 
   const fixtures=new Map((base.fixtures||[]).map(x=>[norm(x.home?.name||x.home)+"|"+norm(x.away?.name||x.away),x]));
   if(!fixtures.size)fail("Research base has no fixtures");
+  for(const f of fixtures.values())if(Number(f.history?.home)<10||Number(f.history?.away)<10)fail("Incomplete all-competition last-10 history: "+(f.home?.name||f.home)+" vs "+(f.away?.name||f.away));
 
   const insightKeys=new Set();
   for(const item of insights.fixtures||[]){
@@ -64,6 +67,8 @@ async function main(){
       if(words(text)>30)fail("Fact too long (>30 words): "+item.home+" vs "+item.away+" :: "+text);
       const nk=norm(text);if(seen.has(nk))fail("Duplicate fact: "+text);seen.add(nk);
     }
+    if(item.reviewStatus&&item.reviewStatus!=="ready")fail("Fixture review is not ready: "+item.home+" vs "+item.away);
+    if(item.teamNewsReview?.status!=="reviewed")fail("Team-news review is incomplete: "+item.home+" vs "+item.away);
     const sources=item.sources||[];
     for(const s of sources){
       if(!/^https:\/\//i.test(String(s.url||"")))fail("Invalid source URL for "+item.home+" vs "+item.away);
@@ -72,8 +77,8 @@ async function main(){
       else warn("Non-primary research source used: "+host+" for "+item.home+" vs "+item.away);
       if(s.checkedAt){
         const age=Math.abs(Date.now()-new Date(s.checkedAt).getTime());
-        if(!Number.isFinite(age)||age>48*3600000)warn("Research source check is older than 48h: "+item.home+" vs "+item.away+" :: "+host);
-      }
+        if(!Number.isFinite(age)||age>48*3600000)fail("Research source check is older than 48h: "+item.home+" vs "+item.away+" :: "+host);
+      }else fail("Research source lacks checkedAt: "+item.home+" vs "+item.away+" :: "+host);
     }
     const baseFixture=fixtures.get(k);
     if((item.supportedMarkets||[]).length&&!sources.length)fail("Supported market has no external source: "+item.home+" vs "+item.away);
@@ -82,13 +87,23 @@ async function main(){
         fail("Supported market lacks matching deterministic evidence: "+item.home+" vs "+item.away+" :: "+market);
       }
     }
+    for(const news of item.teamNews||[]){
+      if(!news?.text||!["confirmed","doubtful","projected","unknown"].includes(news.status)||news.fixtureDate!==date)fail("Team-news claim lacks current status/date: "+item.home+" vs "+item.away);
+      if(!(news.sources||[]).length)fail("Team-news claim lacks sources: "+item.home+" vs "+item.away);
+      if(news.status!=="confirmed"&&/\b(will miss|ruled out|definitely|certainly)\b/i.test(String(news.text||"")+" "+String(news.impact||"")))fail("Uncertain team news is overstated: "+item.home+" vs "+item.away);
+      if(news.modelImpact&&(!news.modelImpact.role||!news.modelImpact.importance||!news.modelImpact.replacement||!news.modelImpact.evidence))fail("Team-news model adjustment lacks role/replacement evidence: "+item.home+" vs "+item.away);
+    }
     for(const market of item.markets||[]){
       const d=Number(market?.decimal);
       if(!market?.label||!market?.price||!Number.isFinite(d)||d<=1)fail("Research market lacks verified native price metadata: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
       if(d<1.25)fail("Research market is worse than the -400 floor: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
       if(!market?.source||!market?.reason)fail("Research market lacks source/reason: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
+      if(market.category==="Player"){const n=market.playerNews;if(!n||n.expectedStart!==true||Number(n.expectedMinutes)<60||n.status!=="expected"||n.rotationRisk||n.injuryRisk||!(n.sources||[]).length)fail("Player prop lacks credible expected-start/minutes evidence: "+String(market.label||""));}
     }
   }
+
+  for(const k of fixtures.keys())if(!insightKeys.has(k))fail("Tracked fixture lacks current research/team-news review: "+k);
+  if(fixtures.size&&!(odds.events||[]).length)fail("No verified native sportsbook odds available for the tracked slate");
 
   const oddsKeys=new Set();
   for(const e of odds.events||[]){

@@ -34,6 +34,7 @@ jobs:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           FORCE_TRACK: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: node scripts/track-performance.mjs
+          node scripts/postmatch-learning.mjs
 
       - name: Commit performance data
         run: |

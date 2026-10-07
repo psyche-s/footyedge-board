@@ -1233,6 +1233,17 @@ body{background:#031008}
 .siteLogo{font-size:23px;font-weight:950;letter-spacing:-1px;text-decoration:none;color:#f4f8f5;white-space:nowrap}.siteLogo span{color:#47e590}
 .siteLinks{display:flex;align-items:center;gap:26px}.siteLinks a{color:#9eb0a6;text-decoration:none;font-size:13px;font-weight:750;white-space:nowrap}.siteLinks a.active,.siteLinks a:hover{color:#fff}.siteLinks a.active:after{content:"";display:block;height:2px;background:#47e590;margin-top:7px;border-radius:2px}
 @media(max-width:640px){.siteNav{height:58px;padding:0 14px;gap:12px;margin:0 -12px}.siteLogo{font-size:19px}.siteLinks{gap:10px}.siteLinks a{font-size:10px}}
+
+/* v69 owner-authorized compact search + logo normalization only */
+.teamLogo.clubCrest,.bestFlags img.clubCrest,.modalTeam img.clubCrest,.newsTeamLogo.clubCrest{
+  object-fit:contain!important;object-position:center!important;clip-path:none!important;border-radius:0!important;
+  border:0!important;background:transparent!important;padding:0!important;transform:none!important;box-sizing:border-box;
+}
+.leagueIcon{overflow:hidden!important;align-items:center!important;justify-content:center!important}
+.leagueLogoImg{max-width:100%!important;max-height:100%!important;object-fit:contain!important;object-position:center!important;display:block!important}
+.gameTop .leagueIcon{height:18px!important;max-height:18px!important;width:24px!important;max-width:24px!important;flex:0 0 24px!important}
+.gameTop .leagueBrand{align-items:center!important;overflow:hidden!important}
+.gameSearchBtn{display:grid!important;place-items:center!important;flex-shrink:0!important}
 </style>
 </head>
 <body>
@@ -1241,11 +1252,10 @@ body{background:#031008}
     <a class="siteLogo" href="/">Footy<span>Edge</span></a>
     <div class="siteLinks"><a href="/">Home</a><a class="active" href="/picks.html">Today’s Picks</a><a href="/hit-rate.html">Hit Rate</a><a href="/about.html">About</a></div>
   </nav>
-  <button id="searchBtn" hidden aria-hidden="true"></button>
   <button id="settingsBtn" hidden aria-hidden="true"></button>
 
-  <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="todayBtn" id="todayShortcut">Today</button><button class="navBtn" id="next">›</button></section>
-  <div class="searchBar" id="searchBar"><input id="searchInput" type="search" placeholder="Search team or competition…"></div>
+  <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="todayBtn" id="todayShortcut">Today</button><button class="navBtn gameSearchBtn" id="searchBtn" aria-label="Search games" aria-controls="searchBar" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button><button class="navBtn" id="next">›</button></section>
+  <div class="searchBar" id="searchBar"><input id="searchInput" aria-label="Search team, country or fixture" type="search" placeholder="Search team, country or fixture…"></div>
 
   <section class="filters" id="filters">
     <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
@@ -1432,8 +1442,8 @@ function researchFactsForPick(g,p,limit=3){
     if(ts.has("h2h"))score+=2;
     pool.push({text,score})
   };
-  for(const f of g?.dailyInsight?.facts||[])typeof f==="string"?add(f,[],6):add(f.text,f.tags,6);
-  for(const f of g?.baseResearch?.facts||[])typeof f==="string"?add(f,[],4):add(f.text,f.tags,4);
+  for(const f of g?.dailyInsight?.facts||[])typeof f==="string"?add(f,[],1):add(f.text,f.tags,1);
+  for(const f of g?.baseResearch?.facts||[])typeof f==="string"?add(f,[],10):add(f.text,f.tags,10);
   for(const f of g?.context?.keyStats||[])add(f,[],3);
   for(const f of g?.model?.trendFacts||[])typeof f==="string"?add(f,[],2):add(f.text,f.tags,2);
   return pool.sort((a,b)=>b.score-a.score).slice(0,limit).map(x=>x.text)
@@ -1476,9 +1486,10 @@ function boardArchivePayload(){
     games:S.games.map(g=>({
       id:g.id,home:g.home.name,away:g.away.name,date:g.date,year:g.year,league:g.league,leagueName:g.leagueName,leagueLogo:g.leagueLogo,
       teams:{home:g.home,away:g.away},
-      top:clonePickForArchive(g.model?.top,g),top3:(g.model?.top3||[]).map(p=>clonePickForArchive(p,g)),
-      model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:clonePickForArchive(g.model.top,g),
-        ...Object.fromEntries(["top3","candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).map(p=>clonePickForArchive(p,g))]))}:null
+      teamNews:typeof latestNewsItems==="function"?latestNewsItems(g):[],
+      top:priceAllowed(g.model?.top)?clonePickForArchive(g.model?.top,g):null,top3:(g.model?.top3||[]).filter(priceAllowed).map(p=>clonePickForArchive(p,g)),
+      model:g.model?{...JSON.parse(JSON.stringify(g.model)),top:priceAllowed(g.model.top)?clonePickForArchive(g.model.top,g):null,
+        ...Object.fromEntries(["top3","candidates","rankedCandidates","researchCandidates"].map(k=>[k,(g.model[k]||[]).filter(priceAllowed).map(p=>clonePickForArchive(p,g))]))}:null
     }))
   }
 }
@@ -1495,7 +1506,7 @@ function applyBoardArchive(games,archive){
     const saved=a.model||{};
     g.model={...saved,top:restoreArchivedPick(a.top),top3:(a.top3||[]).map(restoreArchivedPick).filter(Boolean),
       ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(saved[k]||a.top3||[]).map(restoreArchivedPick).filter(Boolean)]))};
-    g.published=true;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
+    g.published=true;g.frozenTeamNews=a.teamNews||[];g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
     return g;
   });
   // Legacy partial archives must not fill gaps with today's model or add fresh props.

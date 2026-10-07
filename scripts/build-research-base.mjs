@@ -47,7 +47,7 @@ function fixtureInfo(e){
 function history(payload,teamId,before){
   const out=[];
   for(const e of payload?.events||[]){
-    if(!e?.date||new Date(e.date)>=new Date(before))continue;
+    if(!e?.date||new Date(e.date)>=new Date(before)||!(e.status?.type?.completed||e.competitions?.[0]?.status?.type?.completed))continue;
     const cs=e?.competitions?.[0]?.competitors||[];
     const me=cs.find(c=>String(c?.id??c?.team?.id)===String(teamId));
     const op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));
@@ -56,7 +56,7 @@ function history(payload,teamId,before){
     if(gf==null||ga==null)continue;
     out.push({
       id:String(e.id),date:e.date,venue:me.homeAway==="away"?"away":"home",
-      gf,ga,result:gf>ga?"W":gf<ga?"L":"D",
+      gf,ga,league:leagueOf(e),result:gf>ga?"W":gf<ga?"L":"D",
       oppId:String(op?.id??op?.team?.id??""),oppName:op?.team?.displayName||"Opponent"
     });
   }
@@ -127,10 +127,9 @@ function marketSignals(facts,g){
   return [...new Set(sig)].slice(0,4)
 }
 async function schedule(league,team,season){
-  // Pull ESPN's all-competition team schedule directly so research-base is
-  // independent of the currently deployed FootyEdge API version.
-  const u=`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(team)}/schedule?season=${encodeURIComponent(season)}`;
-  return json(u);
+  const years=[Number(season),Number(season)-1].filter((x,i,a)=>Number.isFinite(x)&&a.indexOf(x)===i);
+  const payloads=await Promise.all(years.map(y=>json(`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(team)}/schedule?season=${encodeURIComponent(y)}`)));
+  return{events:payloads.flatMap(x=>x?.events||[])}
 }
 async function buildFixture(g){
   try{
@@ -138,7 +137,7 @@ async function buildFixture(g){
     const hh=history(hp,g.home.id,g.date),ah=history(ap,g.away.id,g.date);
     const facts=[...teamFacts(g.home.name,hh,"home"),...teamFacts(g.away.name,ah,"away"),...h2hFacts(g,hh)]
       .sort((a,b)=>b.priority-a.priority).slice(0,12);
-    return{...g,history:{home:hh.length,away:ah.length},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
+    return{...g,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
   }catch(error){
     return{...g,history:{home:0,away:0},facts:[],marketSignals:[],error:String(error),generatedAt:new Date().toISOString()};
   }
@@ -152,7 +151,8 @@ async function main(){
   for(let i=0;i<games.length;i+=4){
     fixtures.push(...await Promise.all(games.slice(i,i+4).map(buildFixture)));
   }
-  const out={date:DATE,generatedAt:new Date().toISOString(),source:"FootyEdge deterministic schedule history",fixtures};
+  let learningIngested=null;try{const x=JSON.parse(await fs.readFile(path.join("data","postmortems","diagnostics.json"),"utf8"));learningIngested={generatedAt:x.generatedAt,decision:x.decision,modelChange:x.modelChange}}catch(e){if(e.code!=="ENOENT")throw e}
+  const out={date:DATE,modelVersion:"v69-gates",learningIngested,generatedAt:new Date().toISOString(),source:"FootyEdge deterministic all-competition history",fixtures};
   const file=path.join("data",`research-base-${DATE}.json`);
   await fs.mkdir("data",{recursive:true});
   await fs.writeFile(file,JSON.stringify(out,null,2)+"\n");

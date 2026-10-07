@@ -16,3 +16,10 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - Owner's subsequent UI instruction: move the Picks tracking/previous-picks section to a dedicated Hit Rate page, with navigation Home / Today's Picks / Hit Rate / About. Retain Home's summary. Hit Rate uses the Home style, month/YTD first, then current-month daily Top 5 tables newest first with uppercase left-aligned dates, hit/miss marks and score-only text. The visible history resets by the Toronto calendar month; stored history is preserved.
 
 - Owner's header instruction: Today’s Picks uses the same single-row header as Home/About/Hit Rate, with FootyEdge on the left and Home / Today's Picks / Hit Rate / About on the right. Remove the separate second branding/tagline row.
+
+## Morning publication gates, 2026-10-07
+- “Why this pick” belongs directly under Pick #1 and uses 1–3 strongest deterministic/model facts. Never rewrite archived explanations or evidence.
+- Team-news model adjustments require current sourced status plus explicit role, importance, replacement quality and causal evidence. Uncertain news stays uncertain.
+- ATGS, Score-or-Assist, assist and multi-goal player selections require credible expected-start and minutes evidence; material rotation/injury risk excludes the prop.
+- Exact native sportsbook prices are mandatory for every published selection/alternative; no synthetic or display-only pick may be frozen.
+- Postmatch learning grades saved Top-3 candidates at 85%+ separately from process quality. Never infer a red-card, injury, VAR or luck explanation from the score alone; verify it before learning from it.
