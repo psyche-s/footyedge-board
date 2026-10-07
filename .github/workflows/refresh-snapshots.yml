@@ -14,13 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Capture compact live board data — today + next 3 days
+      - name: Capture compact live board data — today + next 4 days
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
 
-          for OFFSET in 0 1 2 3; do
+          for OFFSET in 0 1 2 3 4; do
             SNAP_DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             KEY="${SNAP_DATE//-/}"
             mkdir -p "data/$SNAP_DATE"
