@@ -885,7 +885,15 @@ async function load(date=S.date){
       }
     }
 
-    await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date))}));
+    await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{
+      try{
+        const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);
+        g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date))
+      }catch(error){
+        g.researchError=String(error?.message||error||"schedule unavailable");
+        g.model={top:null,top3:[],rankedCandidates:[],candidates:[],researchCandidates:[],home:stats([]),away:stats([]),displayHome:stats([]),displayAway:stats([]),expectedGoals:{home:0,away:0,total:0},sample:{home:0,away:0,h2:0},trendFacts:[]}
+      }
+    }));
     const angleScore=g=>g.model?.top3?.[0]?.score||g.model?.candidates?.[0]?.score||0;
     const crossPool=games.filter(g=>angleScore(g)>=70).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,18);
     await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
