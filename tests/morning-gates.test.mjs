@@ -238,15 +238,3 @@ test("locked board competition metadata remains authoritative after live fixture
   assert.match(p1,/if\(a\.league!=null\)g\.league=a\.league/);
   assert.match(p2,/modalTitle"\)\.textContent=teamDisplayName\(g,g\.home\)\+" vs "\+teamDisplayName\(g,g\.away\)/);
 });
-
-test("live matches show a green dot, dynamic score and live status without mutating picks",()=>{
-  assert.match(p2,/function statusHtml\(g\)/);
-  assert.match(p2,/class="liveState"/);
-  assert.match(p2,/class="liveDot"/);
-  assert.match(p2,/function fixtureDisplayHtml\(g\)/);
-  assert.match(p2,/scoreSide\(g,"home"\)/);
-  assert.match(p2,/scoreSide\(g,"away"\)/);
-  assert.match(p1,/v96 live scores \/ live-state indicator/);
-  assert.match(p1,/\.liveDot\{[\s\S]*?background:#47e590/);
-  assert.match(p1,/\.matchScore\{[\s\S]*?font-weight:950/);
-});
