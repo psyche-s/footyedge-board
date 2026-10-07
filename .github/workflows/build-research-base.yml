@@ -25,14 +25,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Build deterministic stats research — today + next 3 days
+      - name: Build deterministic stats research — today + next 4 days
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          for OFFSET in 0 1 2 3; do
+          for OFFSET in 0 1 2 3 4; do
             DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             echo "Building research base for $DATE"
             FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs
