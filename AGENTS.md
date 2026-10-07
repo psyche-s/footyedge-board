@@ -12,3 +12,5 @@ Once any pick is published it cannot be altered unless Shaif explicitly asks for
 - No UI redesign is authorized by model/data/publishing tasks. The owner explicitly requested the existing tracking panel display `Oct Tracking | 2026 Tracking`, a center divider and `Hit Rate` capitalization; use actual official monthly/YTD results only.
 
 - Owner also explicitly requested accurate no-game states on Home and Picks: say no games and display the next confirmed game date. Distinguish unpublished picks and provider failures from an empty schedule. Check and prepare the next four days; never invent picks or odds to fill future dates.
+
+- Owner's subsequent UI instruction: move the Picks tracking/previous-picks section to a dedicated Hit Rate page, with navigation Home / Today's Picks / Hit Rate / About. Retain Home's summary. Hit Rate uses the Home style, month/YTD first, then current-month daily Top 5 tables newest first with uppercase left-aligned dates, hit/miss marks and score-only text. The visible history resets by the Toronto calendar month; stored history is preserved.

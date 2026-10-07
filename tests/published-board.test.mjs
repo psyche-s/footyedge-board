@@ -64,11 +64,3 @@ test('Integrity rejects an unaudited overwrite',async()=>{
     assert.throws(()=>validateIntegrity('HEAD'),/without preserved explicit owner correction/);
   }finally{fs.writeFileSync(file,saved)}
 });
-test('Tracking renders month and YTD separately with requested labels',()=>{
-  const c=context();c.summary={month:{key:'2026-10',hits:7,misses:3,settled:10,hitRate:70},year:{key:'2026',hits:7,misses:3,settled:10,hitRate:70}};
-  vm.runInContext('S.performance=summary;renderPerformance()',c);
-  assert.equal(vm.runInContext('document.getElementById("perfMonthLabel").textContent',c),'Oct Tracking');
-  assert.equal(vm.runInContext('document.getElementById("perfYearLabel").textContent',c),'2026 Tracking');
-  assert.equal(vm.runInContext('document.getElementById("perfYearRate").textContent',c),'70% Hit Rate');
-  assert.equal(vm.runInContext('document.getElementById("perfYearCount").textContent',c),'10 official picks tracked YTD');
-});

@@ -835,28 +835,6 @@ function renderLeagues(){
   row.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{S.league=b.dataset.league;renderLeagues();renderBest();renderGames()})
 }
 function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
-function perfMark(result){if(result==="hit")return"✓";if(result==="miss")return"✕";if(result==="push")return"—";return"•"}
-function renderPerformance(){
-  const p=S.performance||{},month=p.month||{},year=p.year||{};
-  const current=(p.recentDays||[]).find(x=>x.date===S.date);
-  const previous=(p.previousTop5||[]).length?p.previousTop5:(current?.top5||[]);
-  const showingCurrent=!(p.previousTop5||[]).length&&Boolean(current?.top5?.length);
-  document.getElementById("perfMonthLabel").textContent=month.key?new Date(month.key+"-01T12:00:00Z").toLocaleDateString("en-US",{month:"short",timeZone:"UTC"})+" Tracking":"Month Tracking";
-  document.getElementById("perfHitRate").textContent=pctRate(month.hitRate)+" Hit Rate";
-  document.getElementById("perfRecord").textContent=(month.hits||0)+"-"+(month.misses||0)+((month.pending||0)?" · "+month.pending+" pending":"");
-  document.getElementById("perfYearLabel").textContent=(year.key||etDate().slice(0,4))+" Tracking";
-  document.getElementById("perfYearRate").textContent=pctRate(year.hitRate)+" Hit Rate";
-  document.getElementById("perfYearRecord").textContent=year.hitRate==null?"—":(year.hits||0)+"-"+(year.misses||0)+((year.pending||0)?" · "+year.pending+" pending":"");
-  document.getElementById("perfMonthCount").textContent=(month.settled||0)+" official picks tracked this month";
-  document.getElementById("perfYearCount").textContent=(year.settled||0)+" official picks tracked YTD";
-  document.getElementById("previousDate").textContent=showingCurrent?"Today’s Top 5 · pending":p.previousDate?(niceDate(p.previousDate)+(p.previousBoardCount?" · "+p.previousBoardCount+" "+(p.previousBoardCount===1?"board":"boards"):"")+(p.previousRecord?" · "+p.previousRecord.hits+"-"+p.previousRecord.misses:"")):"No settled board yet";
-  const el=document.getElementById("previousList");
-  if(!previous.length){el.innerHTML='<span class="previousEmpty">No tracked picks yet</span>';return}
-  el.innerHTML=previous.slice(0,10).map((x,i)=>{
-    const result=x.result||"pending",score=x.finalScore?(" · "+esc(x.finalScore)):"";
-    return '<div class="previousPick '+esc(result)+'"><span class="resultMark">'+perfMark(result)+'</span><div class="previousPickText"><b>'+(x.board?"B"+x.board+" · ":"")+'#'+(x.rank||i+1)+' '+esc(x.selection||"Pick")+'</b><small>'+esc(x.home||"")+(x.away?" vs "+esc(x.away):"")+score+'</small></div></div>'
-  }).join("")
-}
 
 async function repoData(path){
   const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
@@ -885,7 +863,7 @@ function renderLanding(){
 }
 
 function render(){
-  renderMeta();renderPerformance();renderLeagues();renderBest();renderGames();renderLanding();
+  renderMeta();renderLeagues();renderBest();renderGames();renderLanding();
   if(S.openGameId&&document.getElementById("drawer").classList.contains("on")){
     const open=S.games.find(x=>x.id===String(S.openGameId));
     if(open)renderModal(open)

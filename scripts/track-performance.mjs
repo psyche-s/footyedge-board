@@ -145,6 +145,7 @@ function buildSummary(today){
     byFamily:familyStats(monthFiles),
     previousDate:prior?.date||null,
     previousTop5:prior?.top5||[],
+    monthDays:[...monthFiles].sort((a,b)=>b.date.localeCompare(a.date)).map(x=>({date:x.date,...statsFromFiles([x]),top5:x.top5||[]})),
     recentDays
   };
 }

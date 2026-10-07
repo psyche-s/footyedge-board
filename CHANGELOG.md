@@ -236,3 +236,18 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Advance publication supports an explicit future board_date through the archive workflow after all normal validation passes; historical generation remains prohibited and existing future boards cannot be overwritten. Research generation exits if the date already has a published board. Automatic pushes no longer force out-of-window publication.
 - Model/data impact: fixture visibility fixed, scoring unchanged. UI impact: requested empty-state wording and accurate missing-history dashes only. Tracking/history impact: preserved every published selection and previous correction audit.
 - Validation: all 16 regression tests passed, including empty schedules, next-game dates, missing odds, provider failure, Toronto midnight boundaries and immutable same-day/history boards. Published-history integrity passed against f570a06. Production verification pending for v66.
+
+## 2026-10-07 — v66 deployed and API fallback verified
+**Status:** 🟢 Deployed / API verified
+
+- Deployment dpl_2oCqmae3xyAggYCXdGDnNtzqK4VB reached READY from f6aa23d and was assigned footyedge-board.vercel.app. Production API checks confirmed restricted October 8 fixtures and October 9 odds use ESPN fallback without provider errors.
+- The subsequent owner instruction moves the tracking/previous-picks section to a dedicated Hit Rate page; see v67 below.
+
+## 2026-10-07 — v67 dedicated Hit Rate page
+**Status:** 🟡 Code ready / deployment pending
+
+- Explicit owner request: add Hit Rate before About in navigation on all pages. Move the tracking and previous-picks section from Today’s Picks to this page; retain the Home summary.
+- New page uses the Home dark green card style, starting with month/YTD records and Hit Rate labels. Below, each tracked day has a left-aligned uppercase green date and five vertical table rows. Latest day first; hit/miss marks, original pick rank/selection, matchup once and numeric score only. Pending/push outcomes are represented accurately.
+- History covers the full current Toronto calendar month, rather than only the seven-day recentDays window. Month rollover hides prior-month rows and starts the new monthly record; full stored history and YTD remain intact. Home labels also handle stale summary data at a calendar rollover.
+- Tracker summary now exports full monthDays. Saved selections, confidence, odds, grade/history data and correction audits are unchanged. No scoring/model changes.
+- Validation: 21 tests pass, covering monthly ordering, month/midnight rollover, complete month history, score-only rendering, navigation placement and published-pick integrity. Integrity verified against f6aa23d. Production UI verification pending.
