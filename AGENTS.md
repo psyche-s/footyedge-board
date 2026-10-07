@@ -52,3 +52,10 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - Preserve the established -400 qualifying floor for normal selection optimization. If the owner has already locked/overridden a selection before a later price is added, do not silently replace the pick; record the price-floor conflict and preserve the audit.
 - “WHY THIS PICK” is always uppercase in expanded analysis.
 - “TEAM NEWS” must always be visible in expanded analysis. If there is material verified news, show the concise football/market impact. If no material item meets the verification threshold, explicitly say so and state that no model adjustment was made.
+
+
+## Expanded Team News / form presentation rule — owner instruction 2026-10-07
+- Keep the established expanded-analysis Team News presentation as two team-specific cards, one for each side. Do not collapse it into a single generic research box.
+- Each team card should show the highest-value verified news/availability note and its model/market impact. If no material item is verified, keep that team's card and explicitly say no material verified update/no model adjustment.
+- Published/archive payloads must populate the recent-form string expected by the UI (for example: W D L W W) whenever verified results are available.
+- GF/GA display fields are per-match averages, not raw goal totals. Preserve raw totals separately if needed for evidence/audit.

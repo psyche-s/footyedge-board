@@ -384,3 +384,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Added explicit Team News review content to the October 7 archive. No role-specific confirmed absence/return with replacement evidence met the threshold for a confidence adjustment; player props remain excluded without expected-start/minutes evidence.
 - UI code changes “Why this pick” to **WHY THIS PICK**, keeps TEAM NEWS visible even when the verified review is a no-adjustment result, and displays EV for exact native display prices.
 - Historical correction backup and SHA256 audit were appended; October 7 selection/rank/confidence/explanation were not changed.
+
+
+## 2026-10-07 — v77 restore two-team Team News + form display
+**Status:** 🟡 Code/data ready · deployment verification pending
+
+- Restored the previous expanded-analysis Team News layout: separate Jordan and Armenia cards instead of the single generic fallback box.
+- Jordan's official federation update says all 24 named squad players took part in the final Aqaba session; this is shown as a continuity/availability note, not an artificial confidence boost.
+- Armenia keeps its own card; no late withdrawal, suspension or confirmed key omission met the verification threshold, so the card explicitly records no model adjustment.
+- Fixed the October 7 archive's missing form display. Jordan recent form is saved as W-W-L-W-W and Armenia as L-D-L-L-D from current women's-team results sources.
+- Corrected display GF/GA fields from raw totals (22/16 and 14/24) to per-match averages (2.20/1.60 and 1.40/2.40), while preserving totals separately.
+- No locked pick, rank, confidence, price, EV, market percentage or explanation changed. A second correction backup and SHA256 audit were appended.

@@ -110,3 +110,12 @@ test("verified native display prices can show EV while unavailable exact markets
   assert.match(p1,/p\.priceStatus/);
   assert.match(p1,/odds:"N\/A"/);
 });
+
+test("expanded Team News always renders one team card per side",()=>{
+  assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
+  assert.match(p2,/No material verified team-news update for/);
+});
+test("form chips support archived verified W D L strings",()=>{
+  assert.match(p2,/function formHTML/);
+  assert.match(p2,/\^\[WDL\]\$/);
+});
