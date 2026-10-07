@@ -1,5 +1,14 @@
 # FootyEdge project rules
 
+## Latest owner publication rule — 2026-10-07 (supersedes rolling future-board publication)
+- **October 7 only:** the owner explicitly instructed FootyEdge to publish and lock today's board immediately, before the normal morning lock. This one-time override is the official October 7 board and is immutable unless Shaif explicitly requests a correction.
+- **Starting October 8:** publish only the **current Toronto calendar day's** picks. Start the board workflow at **06:00 America/Toronto**, build the current-day board, and lock it as the official board in the same run. Do not publish future-date picks early.
+- Future schedule/research/odds snapshots may still be prepared in advance for readiness, but they are backend data only. They must not create a public pick board before that date's 06:00 run.
+- Pricing is not required to publish a pick. Missing odds stay blank/null. If an exact native sportsbook price is available, preserve it exactly, apply the -400 floor, and never infer/convert a fake official price.
+- At the moment the daily board is locked, every selection/rank/confidence/explanation becomes immutable. Automatic later news/price/model changes cannot rewrite it.
+- The evolving-model loop remains mandatory: grade every saved Top-3 candidate at 85%+ after completion, separate outcome from process quality, verify red cards/penalties/VAR/injuries/late lineup changes before learning from them, maintain market-family diagnostics, ingest those diagnostics before the next research run, and make only small documented/versioned model changes supported by repeated verified evidence.
+- Explanation-quality review remains part of the postmortem: check whether the original "Why this pick" used the strongest predictive evidence, missed opponent/team-news context, or made unsupported causal claims. Never rewrite the historical explanation after the fact.
+
 ## Rolling previews and official lock: owner rule, 2026-10-07
 The owner's latest instruction supersedes the earlier first-publication freeze. FootyEdge publishes rolling preview boards for today plus the next four Toronto calendar dates. Preview picks may change during morning refreshes. The official board becomes immutable at **06:00 America/Toronto on the fixture date** and cannot change afterward unless Shaif explicitly overrides that date.
 

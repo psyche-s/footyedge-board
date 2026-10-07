@@ -361,3 +361,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Converted/generic feed prices may inform model context but are scrubbed from the saved preview and can never become the official recorded price at the 06:00 lock.
 - The exact 06:00 Toronto lock schedule replaces the earlier 06:05 wording. A fallback lock check remains.
 - Board-publish concurrency now queues rather than cancels an in-progress pre-lock refresh, so the 06:00 lock cannot interrupt the final morning preview build.
+
+
+## 2026-10-07 — v75 owner lock-now / daily 06:00 publication
+**Status:** 🟢 October 7 board prepared for immediate immutable publication · recurring rule updated
+
+- Owner superseded the rolling future-board publication rule. October 7 is a one-time early owner override: publish today's board now and lock it immediately.
+- Starting October 8, only the current Toronto calendar date is published. The board workflow starts at 06:00 America/Toronto, builds today's board only, validates it, locks it, and commits the official immutable board. Future-date picks are no longer exposed early.
+- Future schedule/research/odds files may continue to be prepared as backend readiness data, but they do not create public selections.
+- October 7 pricing gate is waived per owner instruction. No price was invented: unavailable odds remain null.
+- October 7 deterministic evidence was refreshed from current Jordan/Armenia women's last-10 and venue aggregate records; player props remain excluded because expected-start/minutes evidence was not publication-grade.
+- Postmatch/model-evolution workflow fixed so both performance tracking and postmatch learning actually run and persist. Saved Top-3 candidates at 85%+ are graded, market-family diagnostics are regenerated, and those diagnostics are ingested before later research. Numerical model changes remain small/versioned and require repeated verified evidence.
+- No October 5–6 historical pick, odds, confidence, explanation or result was modified.

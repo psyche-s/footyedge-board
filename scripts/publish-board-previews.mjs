@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const SITE=(process.env.FOOTYEDGE_URL||'https://footyedge-board.vercel.app').replace(/\/$/,'');
-const TZ='America/Toronto',LOCK_HOUR=6,PREVIEW_DAYS=Math.max(1,Math.min(4,Number(process.env.PREVIEW_DAYS||4)));
+const TZ='America/Toronto',LOCK_HOUR=6,PREVIEW_DAYS=Math.max(0,Math.min(4,Number(process.env.PREVIEW_DAYS??4))),FORCE_TODAY_CAPTURE=process.env.FORCE_TODAY_CAPTURE==='1';
 const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
 const TODAY=`${parts.year}-${parts.month}-${parts.day}`,HOUR=Number(parts.hour);
 const addDate=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
@@ -32,7 +32,7 @@ async function main(){
     for(let offset=0;offset<=PREVIEW_DAYS;offset++){
       const date=addDate(TODAY,offset),locked=path.join('data','boards',date+'.json'),draftFile=path.join('data','board-drafts',date+'.json');
       if(await exists(locked)){console.log('Official board locked; preview unchanged:',date);continue}
-      if(date===TODAY&&HOUR>=LOCK_HOUR){console.log('Past 06:00 Toronto lock; refusing mutable refresh:',date);continue}
+      if(date===TODAY&&HOUR>=LOCK_HOUR&&!FORCE_TODAY_CAPTURE){console.log('Past 06:00 Toronto lock; refusing mutable refresh:',date);continue}
       const page=await browser.newPage({viewport:{width:1440,height:1200}});
       try{
         await page.route('https://raw.githubusercontent.com/**',route=>route.abort());

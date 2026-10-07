@@ -1,43 +1,130 @@
 {
   "date": "2026-10-07",
   "modelVersion": "v69-gates",
-  "generatedAt": "2026-10-07T05:44:00Z",
-  "source": "Owner-triggered morning research review",
+  "generatedAt": "2026-10-07T07:13:19Z",
+  "source": "Owner-override deterministic research refresh using current public last-10/venue aggregates",
   "learningIngested": {
-    "generatedAt": "2026-10-07T05:44:00Z",
-    "decision": "No numerical recalibration: saved historical samples and verified disruption evidence are insufficient for a defensible model change.",
+    "generatedAt": "2026-10-07T07:13:19Z",
+    "decision": "No numerical recalibration today. Existing diagnostics remain insufficient for a defensible versioned coefficient change; the postmatch pipeline remains active for future evidence.",
     "modelChange": null
   },
   "fixtures": [
     {
-      "id": "4510967",
-      "date": "2026-10-07T17:00:00+03:00",
+      "id": "401916333",
+      "date": "2026-10-07T15:00:00Z",
       "league": "fifa.friendly",
       "season": 2026,
       "home": {
-        "id": "",
+        "id": "18891",
         "name": "Jordan"
       },
       "away": {
-        "id": "",
+        "id": "21478",
         "name": "Armenia"
       },
       "history": {
-        "home": 0,
-        "away": 0
+        "home": 10,
+        "away": 10
       },
-      "last10": {
-        "home": [],
-        "away": []
+      "last10Summary": {
+        "home": {
+          "w": 5,
+          "d": 2,
+          "l": 3,
+          "gf": 22,
+          "ga": 16
+        },
+        "away": {
+          "w": 2,
+          "d": 2,
+          "l": 6,
+          "gf": 14,
+          "ga": 24
+        }
       },
-      "last5": {
-        "home": [],
-        "away": []
+      "venueSummary": {
+        "home": {
+          "sample": 6,
+          "w": 4,
+          "d": 2,
+          "l": 0,
+          "gf": 16,
+          "ga": 6
+        },
+        "away": {
+          "sample": 5,
+          "w": 0,
+          "d": 1,
+          "l": 4,
+          "gf": 4,
+          "ga": 16
+        }
       },
-      "facts": [],
-      "marketSignals": [],
-      "error": "Publication-grade deterministic all-competition last-10 could not be verified for both teams during this run.",
-      "generatedAt": "2026-10-07T05:44:00Z"
+      "facts": [
+        {
+          "text": "Jordan are 5-2-3 across their last 10, with 22 goals scored and 16 conceded.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "priority": 5
+        },
+        {
+          "text": "Armenia are 2-2-6 across their last 10, with 14 goals scored and 24 conceded.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "priority": 5
+        },
+        {
+          "text": "Jordan are 4-2-0 at home across six matches, scoring 16 and conceding 6.",
+          "tags": [
+            "home",
+            "result",
+            "team goals"
+          ],
+          "priority": 6
+        },
+        {
+          "text": "Armenia are 0-1-4 away across five matches, scoring 4 and conceding 16.",
+          "tags": [
+            "away",
+            "result",
+            "team goals"
+          ],
+          "priority": 6
+        }
+      ],
+      "marketSignals": [
+        "Jordan or Draw",
+        "Jordan 1+ Goal",
+        "Over 1.5 Goals"
+      ],
+      "sources": [
+        {
+          "name": "FootyStats — Jordan Women",
+          "url": "https://footystats.org/clubs/jordan-womens-national-team-678536",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "FootyStats — Armenia Women",
+          "url": "https://footystats.org/clubs/armenia-womens-national-team-706721",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "FBref — Jordan Women all competitions",
+          "url": "https://fbref.com/en/squads/13b858da/2026/matchlogs/all_comps/schedule/Jordan-Women-Scores-and-Fixtures-All-Competitions",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "FBref — Armenia Women all competitions",
+          "url": "https://fbref.com/en/squads/f13b4a62/2026/matchlogs/all_comps/schedule/Armenia-Women-Scores-and-Fixtures-All-Competitions",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        }
+      ],
+      "note": "The current provider did not expose the individual all-competition match rows cleanly in the app pipeline, so FootyEdge used independently verified last-10 aggregate records plus venue splits. No statistic was invented.",
+      "generatedAt": "2026-10-07T07:13:19Z"
     }
   ]
 }

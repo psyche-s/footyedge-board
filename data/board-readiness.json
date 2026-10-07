@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-07T06:34:01.241Z",
+  "checkedAt": "2026-10-07T07:13:19Z",
   "timeZone": "America/Toronto",
   "horizonDays": 5,
   "days": [
@@ -7,14 +7,11 @@
       "date": "2026-10-07",
       "scheduledGames": 1,
       "researchFixtures": 1,
-      "published": false,
-      "status": "publication-blocked",
-      "pending": [
-        "Complete verified all-competition last-10 for both teams",
-        "Verified exact native sportsbook prices",
-        "Publication-grade team-news/expected-XI review"
-      ],
+      "published": true,
+      "status": "owner-locked-now",
+      "pending": [],
       "researchFile": "data/research-base-2026-10-07.json",
+      "officialBoard": "data/boards/2026-10-07.json",
       "liveSnapshot": {
         "scoreboard": 64,
         "fixtures": 64,
@@ -26,11 +23,10 @@
       "scheduledGames": 1,
       "researchFixtures": 1,
       "published": false,
-      "status": "research-data-ready-no-exact-future-odds",
+      "status": "prepared-for-06am-day-of-lock",
       "pending": [
-        "Current editorial/team-news checks",
-        "No exact native-American future prices verified yet",
-        "Validate and freeze first published board"
+        "Re-run current research/team news at morning cycle",
+        "Publish and lock current-day board at 06:00 America/Toronto"
       ],
       "researchFile": "data/research-base-2026-10-08.json",
       "liveSnapshot": {
@@ -45,11 +41,9 @@
       "scheduledGames": 17,
       "researchFixtures": 17,
       "published": false,
-      "status": "partial-exact-odds-ready-awaiting-research-news",
+      "status": "future-data-only",
       "pending": [
-        "Refresh incomplete last-10 samples with prior-season all-competition history",
-        "Current editorial/team-news checks for every tracked fixture",
-        "Validate price coverage and freeze qualifying first publication"
+        "Day-of 06:00 Toronto publication/lock"
       ],
       "researchFile": "data/research-base-2026-10-09.json",
       "liveSnapshot": {
@@ -64,11 +58,9 @@
       "scheduledGames": 52,
       "researchFixtures": 52,
       "published": false,
-      "status": "exact-odds-present-awaiting-research-news",
+      "status": "future-data-only",
       "pending": [
-        "Refresh complete all-competition history where needed",
-        "Current editorial/team-news checks",
-        "Validate and freeze qualifying first publication"
+        "Day-of 06:00 Toronto publication/lock"
       ],
       "researchFile": "data/research-base-2026-10-10.json",
       "liveSnapshot": {
@@ -83,12 +75,9 @@
       "scheduledGames": 27,
       "researchFixtures": 27,
       "published": false,
-      "status": "partial-exact-odds-ready-awaiting-research-news",
+      "status": "future-data-only",
       "pending": [
-        "Refresh incomplete all-competition last-10 samples where needed",
-        "Current editorial/team-news checks for every tracked fixture",
-        "Validate exact-price coverage against tracked fixtures",
-        "Validate and freeze qualifying first publication"
+        "Day-of 06:00 Toronto publication/lock"
       ],
       "researchFile": "data/research-base-2026-10-11.json",
       "liveSnapshot": {
@@ -100,10 +89,9 @@
     }
   ],
   "notes": [
-    "Dated schedule/fixtures/market snapshots are saved for today + next 4 dates.",
-    "Future exact-odds lookup is enabled for the same 5-day horizon; future boards may publish early once ALL gates pass.",
-    "Oct 9 currently has 7 exact native-American priced fixtures and Oct 10 has 48. Picks remain unpublished where research/team-news validation is incomplete.",
-    "A future board freezes immediately when first published; no later automatic pick rewrites are allowed.",
-    "Oct 11 currently has 25 exact native-American priced events after Toronto-date filtering. Picks remain unpublished until research/team-news validation is complete."
+    "October 7 was explicitly owner-overridden and locked immediately before 06:00 Toronto.",
+    "Starting October 8, picks are not published early for future dates. Only the current Toronto date is published and locked during the 06:00 morning run.",
+    "Future schedule/research/odds snapshots may still be prepared in advance, but they are data only and do not create public picks.",
+    "Postmatch diagnostics remain part of the next morning research/model context; automatic coefficient changes require repeated verified evidence."
   ]
 }

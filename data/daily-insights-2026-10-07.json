@@ -1,42 +1,80 @@
 {
   "date": "2026-10-07",
-  "generatedAt": "2026-10-07T05:44:00Z",
+  "generatedAt": "2026-10-07T07:13:19Z",
   "modelVersion": "v69-gates",
-  "status": "blocked",
-  "policy": "Deterministic FootyEdge evidence leads; external sources cross-check current fixture/team context. No pick is published on incomplete history, unverified price or uncertain player minutes.",
+  "status": "published-owner-override",
+  "policy": "Deterministic FootyEdge evidence leads. For October 7 only, the owner explicitly waived sportsbook pricing as a publication gate; missing prices remain null.",
   "fixtures": [
     {
       "home": "Jordan",
       "away": "Armenia",
       "competition": "FIFA Friendlies — Women",
-      "reviewStatus": "blocked",
-      "facts": [],
-      "supportedMarkets": [],
-      "markets": [],
-      "sources": [
+      "reviewStatus": "published-owner-override",
+      "facts": [
+        "Jordan are 4-2-0 at home across six matches, scoring 16 and conceding 6.",
+        "Armenia are 0-1-4 away across five matches, scoring 4 and conceding 16.",
+        "Across the last 10 overall, Jordan are 5-2-3 (22-16) and Armenia are 2-2-6 (14-24)."
+      ],
+      "supportedMarkets": [
+        "Jordan or Draw",
+        "Jordan 1+ Goal",
+        "Over 1.5 Goals"
+      ],
+      "markets": [
         {
-          "name": "Global Sports Archive",
-          "url": "https://globalsportsarchive.com/en/soccer/match/2026-10-07/jordan-vs-armenia/4510967/overview",
-          "checkedAt": "2026-10-07T05:44:00Z"
+          "label": "Jordan or Draw",
+          "category": "Double Chance",
+          "confidence": 94,
+          "price": null,
+          "reason": "Protected Jordan result line best matches the verified home/away split."
         },
         {
-          "name": "Armenia Football Federation",
-          "url": "https://www.ffa.am/hy/national-teams/kananc-azgayin-havaqakan",
-          "checkedAt": "2026-10-07T05:44:00Z"
+          "label": "Jordan 1+ Goal",
+          "category": "Team Goals",
+          "confidence": 93,
+          "price": null,
+          "reason": "Venue scoring/conceding rates strongly support at least one Jordan goal."
+        },
+        {
+          "label": "Over 1.5 Goals",
+          "category": "Goals",
+          "confidence": 89,
+          "price": null,
+          "reason": "The blended venue scoring profile projects a multi-goal game."
+        }
+      ],
+      "sources": [
+        {
+          "name": "FootyStats — Jordan Women",
+          "url": "https://footystats.org/clubs/jordan-womens-national-team-678536",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "FootyStats — Armenia Women",
+          "url": "https://footystats.org/clubs/armenia-womens-national-team-706721",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "FBref — Jordan Women all competitions",
+          "url": "https://fbref.com/en/squads/13b858da/2026/matchlogs/all_comps/schedule/Jordan-Women-Scores-and-Fixtures-All-Competitions",
+          "checkedAt": "2026-10-07T07:13:19Z"
+        },
+        {
+          "name": "FBref — Armenia Women all competitions",
+          "url": "https://fbref.com/en/squads/f13b4a62/2026/matchlogs/all_comps/schedule/Armenia-Women-Scores-and-Fixtures-All-Competitions",
+          "checkedAt": "2026-10-07T07:13:19Z"
         }
       ],
       "teamNews": [],
       "teamNewsReview": {
-        "status": "reviewed",
+        "status": "reviewed-no-material-confirmed-impact",
         "checkedAt": "2026-10-07T05:44:00Z",
         "modelImpact": "No confidence adjustment: no role-specific confirmed absence/return with replacement evidence was verified.",
-        "playerProps": "Excluded: no credible expected-start/minutes evidence and no verified exact native price."
+        "playerProps": "Excluded: no credible expected-start/minutes evidence. Owner waived the pricing gate for team/market picks only."
       },
-      "publicationBlockers": [
-        "Complete all-competition last-10 unavailable for both sides",
-        "No verified exact native sportsbook odds found",
-        "No publication-grade expected XI/minutes evidence for player props"
-      ]
+      "playerProps": "Excluded: no credible expected-start/minutes evidence. No ATGS/SOA/assist/2+ prop was forced.",
+      "publicationBlockers": [],
+      "ownerOverride": "Pricing gate waived for October 7 only; board locked immediately."
     }
   ]
 }
