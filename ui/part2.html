@@ -734,16 +734,6 @@ function teamNewsSummary(g,p){
 }
 
 function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`}
-function statusHtml(g){
-  const label=esc(status(g));
-  return g.live?'<span class="liveState"><i class="liveDot"></i>'+label+'</span>':label
-}
-function fixtureDisplayHtml(g){
-  const home=esc(teamDisplayName(g,g.home)),away=esc(teamDisplayName(g,g.away));
-  if(!(g.live||g.done))return home+' <span>vs</span> '+away;
-  const hs=esc(g.home?.score??0),as=esc(g.away?.score??0);
-  return home+' <b class="inlineScore">'+hs+'</b> <span class="scoreDash">–</span> <b class="inlineScore">'+as+'</b> '+away
-}
 function statusOK(g){return S.status==="all"||(S.status==="upcoming"&&!g.done&&!g.live)||(S.status==="live"&&g.live)||(S.status==="completed"&&g.done)}
 function playerMarketType(p){
   if(p?.category!=="Player")return null;
@@ -794,8 +784,8 @@ function renderBest(){
     return '<article class="bestRow" data-game-id="'+esc(g.id)+'" onclick="openGame(\''+g.id+'\')">'+
       '<div class="rankBadge">'+(i+1)+'</div>'+
       '<div class="bestFlags">'+teamImgTag(g.home)+teamImgTag(g.away)+'</div>'+
-      '<div class="bestCore"><div class="bestFixture">'+fixtureDisplayHtml(g)+'</div>'+
-      '<div class="bestLeague">'+esc(g.leagueName)+' · '+statusHtml(g)+'</div>'+
+      '<div class="bestCore"><div class="bestFixture">'+esc(teamDisplayName(g,g.home))+' <span>vs</span> '+esc(teamDisplayName(g,g.away))+'</div>'+
+      '<div class="bestLeague">'+esc(g.leagueName)+' · '+timeET(g.date)+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
       '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
@@ -811,10 +801,10 @@ function renderGames(){
   el.innerHTML=list.map(g=>{
     const top3=viewCandidates(g),p=viewPick(g),px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
-      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(g.leagueName)+'</span></span><span class="'+(g.live?"liveText":"")+'">'+statusHtml(g)+'</span></div>'+
+      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(g.leagueName)+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
-      '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.home))+'</div><div class="form">'+formHTML(dh?.form)+'</div></div>'+((g.live||g.done)?scoreSide(g,"home"):"")+'</div>'+
-      '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div>'+((g.live||g.done)?scoreSide(g,"away"):"")+'</div></div>';
+      '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.home))+'</div><div class="form">'+formHTML(dh?.form)+'</div></div></div>'+
+      '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
     if(p){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
       '<div class="pickMetrics"><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
@@ -974,7 +964,7 @@ function renderModal(g){
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(teamDisplayName(g,team))+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(teamDisplayName(g,g.home))}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(teamDisplayName(g,g.away))}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${statusHtml(g)}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf!=null?g.model.home.gf.toFixed(2):"—")} / ${(g.model?.home?.ga!=null?g.model.home.ga.toFixed(2):"—")}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf!=null?g.model.away.gf.toFixed(2):"—")} / ${(g.model?.away?.ga!=null?g.model.away.ga.toFixed(2):"—")}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(teamDisplayName(g,g.home))}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(teamDisplayName(g,g.away))}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf!=null?g.model.home.gf.toFixed(2):"—")} / ${(g.model?.home?.ga!=null?g.model.home.ga.toFixed(2):"—")}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf!=null?g.model.away.gf.toFixed(2):"—")} / ${(g.model?.away?.ga!=null?g.model.away.ga.toFixed(2):"—")}</b></div></div><div class="modalTeamNews">${newsHtml}</div><p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
