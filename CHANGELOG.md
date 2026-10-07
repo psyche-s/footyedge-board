@@ -567,3 +567,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - The existing local Ligue 1 competition asset is now rendered white inside the same contained logo footprint; dimensions, spacing, filter layout and header height are unchanged.
 - Bumped the Picks UI bundle version to v94 so clients reload the corrected treatment.
 - No picks, odds, model logic, tracking or historical board data changed.
+
+
+## 2026-10-07 — v95 restore women metadata on locked/live merge
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Fixed a regression where a generic live-feed competition label could overwrite the locked board's more specific women’s competition metadata.
+- Locked-board metadata is now authoritative for league id/name/logo when the published fixture is merged with the live fixture.
+- This restores reader-facing labels such as International Friendlies — Women, Jordan (W), Armenia (W), and Jordan (W) ML wherever the existing women-display helper is used.
+- Updated the expanded fixture title to use the same women-aware display names.
+- Bumped the Today’s Picks UI bundle to v95.
+- No locked pick, odds, confidence, model output, tracking or historical board data changed.
