@@ -65,3 +65,8 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - FootyEdge displays sportsbook odds in **American format**. If a source publishes fractional/decimal odds, preserve that native source quote separately for audit, but convert only the display notation to its exact American equivalent.
 - Do not redesign or reformat the UI when the owner asks for data, odds, form, Team News, model, research or publishing corrections. Preserve the existing visual components and layout unless the owner explicitly requests a UI change.
 - For archived/current boards, verified form must populate the exact model fields consumed by the existing UI; do not replace verified form with dashes when the result sequence is available.
+
+
+## Team News visibility rule — owner instruction 2026-10-07
+- Team News appears **only inside expanded/full match analysis**. Do not render Team News on collapsed match cards, Top Picks rows, Home summaries, or other compact views unless the owner explicitly asks for it.
+- Preserve the existing two-team expanded Team News card layout.

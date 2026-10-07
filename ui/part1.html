@@ -1621,20 +1621,26 @@ function oddsWithLogo(px){
   if(!px||px.odds==="—")return '<span class="noLineDash">—</span>';
   return '<span class="oddsPlain">'+esc(px.odds)+'</span>'
 }
+function americanFromDecimalPrice(d){
+  const n=Number(d);if(!Number.isFinite(n)||n<=1)return null;
+  return n>=2?Math.round((n-1)*100):Math.round(-100/(n-1))
+}
+function displayAmericanOdds(p){
+  if(!p)return"—";
+  if(p.verifiedPrice&&Number.isFinite(Number(p.priceDecimal))){
+    const a=americanFromDecimalPrice(p.priceDecimal);
+    if(Number.isFinite(a))return a>0?("+"+a):String(a)
+  }
+  const raw=Number(String(p.odds??"").replace("+",""));
+  if(Number.isFinite(raw)&&Math.abs(raw)>=100)return raw>0?("+"+raw):String(raw);
+  return p.priceStatus?"N/A":"—"
+}
 function priceInfo(p){
   if(!p)return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
   const bookKey=p.bookKey||inferBookKey(p.provider);
-  if(p.odds!=null&&(bookKey||p.verifiedPrice))return{
+  if(p.verifiedPrice)return{
     oddsLabel:"",
-    odds:oddsText(p.odds),
-    evLabel:"EV",
-    ev:evText(p.ev),
-    cls:p.ev==null?"":p.ev>=0?"evPos":"evNeg",
-    bookKey
-  };
-  if(p.verifiedPrice&&p.oddsDisplay)return{
-    oddsLabel:"",
-    odds:String(p.oddsDisplay),
+    odds:displayAmericanOdds(p),
     evLabel:"EV",
     ev:p.ev==null?"—":evText(p.ev),
     cls:p.ev==null?"fair":p.ev>=0?"evPos":"evNeg",

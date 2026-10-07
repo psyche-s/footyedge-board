@@ -120,3 +120,14 @@ test("form chips support archived verified W D L strings",()=>{
   assert.match(p2,/function formHTML/);
   assert.match(p2,/\^\[WDL\]\$/);
 });
+
+test("collapsed match cards do not render Team News; expanded drawer keeps team cards",()=>{
+  assert.doesNotMatch(p2,/const news=teamNewsSummary\(g,p\);\s*if\(news\)html\+=/);
+  assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
+  assert.match(p2,/modalTeamNews/);
+});
+test("verified prices render in American format from exact decimal price",()=>{
+  assert.match(p1,/function americanFromDecimalPrice/);
+  assert.match(p1,/function displayAmericanOdds/);
+  assert.match(p1,/odds:displayAmericanOdds\(p\)/);
+});

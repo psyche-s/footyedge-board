@@ -406,3 +406,11 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Reaffirmed the verified archived form fields used by the existing modal: Jordan W-W-L-W-W; Armenia L-D-L-L-D. Per-match GF/GA remains 2.20/1.60 and 1.40/2.40.
 - Restored Team News rendering code on main to the pre-change team-card structure; no new layout/fallback presentation is introduced.
 - No pick, rank, confidence, Market %, EV, explanation or tracking record changed. Correction backup/audit appended.
+
+
+## 2026-10-07 — v79 American-odds renderer + expanded-only Team News
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Removed Team News from collapsed match cards; Team News remains only in the expanded matchup drawer using the existing two-team card layout.
+- Hardened odds rendering so any verified exact price is displayed in American format derived from the stored exact decimal price, preventing fractional notation from leaking into the visible UI.
+- No pick, confidence, EV, market probability, reasoning, form, tracking record, or card layout changed.
