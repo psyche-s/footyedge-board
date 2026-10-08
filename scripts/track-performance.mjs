@@ -115,7 +115,14 @@ function trackedFamily(p){
   if(cat.includes("double chance"))return"double_chance";
   if(cat.includes("team goals"))return"team_goals";
   if(cat.includes("btts"))return"btts";
-  if(cat.includes("goals"))return sel.includes("under")?"goals_under":"goals_over";
+  if(cat.includes("player")){
+    if(/score or assist|goal or assist/.test(sel))return"player_score_or_assist";
+    if(/assist/.test(sel))return"player_assist";
+    if(/2\+ goals|2 or more goals|to score 2/.test(sel))return"player_2plus_goals";
+    if(/anytime|atgs|to score/.test(sel))return"player_atgs";
+    return"player_other";
+  }
+  if(cat.includes("goals")){const line=sel.match(/(\d+(?:\.\d+)?)/)?.[1]?.replace(".","_")||"other";return(sel.includes("under")?"goals_under_":"goals_over_")+line}
   return cat.replace(/[^a-z0-9]+/g,"_")||"other"
 }
 function familyStats(files){
@@ -124,6 +131,25 @@ function familyStats(files){
     const k=trackedFamily(p);(groups[k]||(groups[k]=[])).push(p)
   }
   return Object.fromEntries(Object.entries(groups).map(([k,picks])=>[k,statsFromFiles([{top5:picks}])]))
+}
+function confidenceBand(value){const n=Number(value);if(!Number.isFinite(n))return"unavailable";if(n>=90)return"90-100";if(n>=85)return"85-89";if(n>=80)return"80-84";return"below-80"}
+function processCalibration(today){
+  const root=typeof ROOT==="string"?ROOT:".",dir=path.join(root,"data","postmortems"),dimensions={byMarketFamily:{},byConfidenceBand:{},byCompetition:{},byMatchupProfile:{},byEvidenceType:{}};
+  const add=(group,key,r,w)=>{const g=group[key||"unavailable"]||(group[key||"unavailable"]={reviews:0,reviewedWeight:0,good:0,mixed:0,bad:0,hits:0,misses:0,pending:0});g.reviews++;g.reviewedWeight+=w;g[String(r.processGrade||"MIXED").toLowerCase()]++;if(r.result==="hit")g.hits++;else if(r.result==="miss")g.misses++;else g.pending++};
+  if(fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x)&&x.slice(0,10)<today)){
+    const day=readJson(path.join(dir,name));
+    for(const r of day.reviews||[]){
+      const w=Math.max(0,Math.min(1,Number(r.reviewWeight??0)));
+      add(dimensions.byMarketFamily,r.marketFamily,r,w);add(dimensions.byConfidenceBand,confidenceBand(r.confidence),r,w);add(dimensions.byCompetition,r.competition,r,w);add(dimensions.byMatchupProfile,r.matchupProfile,r,w);
+      for(const evidence of r.evidenceTypes?.length?r.evidenceTypes:["unavailable"])add(dimensions.byEvidenceType,evidence,r,w);
+    }
+  }
+  for(const group of Object.values(dimensions))for(const [k,g] of Object.entries(group)){
+    const decisive=g.good+g.bad,goodRate=decisive?g.good/decisive*100:null;
+    const delta=g.reviewedWeight>=3&&goodRate!=null?Math.max(-.5,Math.min(.5,(goodRate-50)/50*.5)):0;
+    group[k]={...g,goodRate,confidenceDelta:delta};
+  }
+  return{policy:"All saved Top 3 picks are diagnosed. Model changes stay bounded to ±0.5 confidence and require at least 3 weighted, evidence-grade reviews in a repeated pattern.",byFamily:dimensions.byMarketFamily,...dimensions}
 }
 function buildSummary(today){
   const daily=fs.existsSync(PERF_DIR)?fs.readdirSync(PERF_DIR)
@@ -143,6 +169,7 @@ function buildSummary(today){
     year:{key:yearKey,label:yearKey,...statsFromFiles(yearFiles)},
     week:weekStats,
     byFamily:familyStats(monthFiles),
+    processCalibration:processCalibration(today),
     previousDate:prior?.date||null,
     previousTop5:prior?.top5||[],
     monthDays:[...monthFiles].sort((a,b)=>b.date.localeCompare(a.date)).map(x=>({date:x.date,...statsFromFiles([x]),top5:x.top5||[]})),
@@ -161,8 +188,8 @@ function publishedTop5(today){
 
 async function main(){
   const nowParts=torontoParts(),today=todayToronto();
-  if(!FORCE&&nowParts.hour!=="07"){
-    console.log("Skip: Toronto local hour is",nowParts.hour,"not 07");return;
+  if(!FORCE&&nowParts.hour!=="06"){
+    console.log("Skip: Toronto local hour is",nowParts.hour,"not 06");return;
   }
 
   fs.mkdirSync(PERF_DIR,{recursive:true});

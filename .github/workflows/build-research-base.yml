@@ -2,9 +2,9 @@ name: Build FootyEdge Research Base
 
 on:
   schedule:
-    # Dual UTC schedules for Toronto DST/standard time. Only the run landing in local hour 05 proceeds.
-    - cron: "5 9 * * *"
-    - cron: "5 10 * * *"
+    # Dual UTC schedules for Toronto DST/standard time. Script only runs at local hour 06.
+    - cron: "15 10 * * *"
+    - cron: "15 11 * * *"
   workflow_dispatch:
 
 permissions:
@@ -25,32 +25,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Build deterministic stats research — today + next 4 days
+      - name: Check today and next four men's fixture dates
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "05" ]]; then
-            echo "Skipping duplicate UTC schedule outside Toronto 05:00 hour."
-            exit 0
-          fi
-          TODAY="$(TZ=America/Toronto date +%F)"
-          for OFFSET in 0 1 2 3 4; do
-            DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
-            echo "Building research base for $DATE"
-            FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs
-          done
+        run: node scripts/check-board-readiness.mjs
+      - name: Build deterministic stats research
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_RESEARCH: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+        run: node scripts/build-research-base.mjs
       - name: Commit research base
         shell: bash
         run: |
-          if git diff --quiet -- data/research-base-*.json; then
+          if git diff --quiet -- data/research-base-*.json data/board-readiness.json; then
             echo "No research-base changes."
             exit 0
           fi
           git config user.name "FootyEdge Research Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/research-base-*.json
+          git add data/research-base-*.json data/board-readiness.json
           git commit -m "chore(research): build deterministic daily stats base [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main

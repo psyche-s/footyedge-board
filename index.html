@@ -13,20 +13,17 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
 .logo{font-weight:950;font-size:23px;letter-spacing:-1px}.logo span{color:var(--green)}
 .links{display:flex;align-items:center;gap:26px}.links a{font-size:13px;font-weight:750;color:#9eb0a6}.links a.active,.links a:hover{color:#fff}.links a.active:after{content:"";display:block;height:2px;background:var(--green);margin-top:7px;border-radius:2px}
 .hero{max-width:1180px;margin:0 auto;padding:28px 22px 24px}
-.heroVisual{position:relative;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:linear-gradient(180deg,#07160d,#05140c);box-shadow:0 28px 70px rgba(0,0,0,.28)}
-.heroStage{position:relative;height:clamp(300px,31vw,390px);overflow:hidden;background:#07150d}
-.heroStage>img{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover;object-position:center center}
-.heroStage:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,9,5,.04) 0%,rgba(2,10,6,.10) 28%,rgba(2,10,6,.34) 55%,rgba(2,10,6,.78) 82%,#07160d 100%),linear-gradient(90deg,rgba(2,10,6,.25),transparent 38%,transparent 68%,rgba(2,10,6,.22));pointer-events:none}
-.heroBrand{position:absolute;z-index:2;left:34px;right:34px;bottom:28px;max-width:820px}.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:900}.heroBrand h1{font-size:58px;line-height:.95;letter-spacing:-3px;margin:8px 0 10px}.heroBrand h1 span{color:var(--green)}.tag{font-size:18px;color:#dce7e0;font-weight:700;margin:0}
-.heroCopy{padding:22px 34px 32px;max-width:820px}.heroIntro{margin:0;color:#b6c6bd;font-size:13px;line-height:1.62}.heroMicro{margin:12px 0 0;color:#7f9588;font-size:11px;line-height:1.55}
-.grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:14px;margin-top:14px}.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(8,27,16,.94),rgba(5,20,12,.94));border-radius:18px;padding:20px;min-width:0}.card h2{font-size:18px;margin:0 0 11px}.card h2 span{color:var(--green)}
+.heroVisual{position:relative;min-height:365px;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#07150d center/cover no-repeat;display:flex;align-items:flex-end;box-shadow:0 28px 70px rgba(0,0,0,.28)}
+.heroVisual:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,9,5,.08) 5%,rgba(2,10,6,.15) 36%,rgba(2,10,6,.88) 100%),linear-gradient(90deg,rgba(2,10,6,.55),transparent 38%,transparent 62%,rgba(2,10,6,.42))}
+.heroCopy{position:relative;z-index:1;padding:34px;max-width:720px}.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--green);font-weight:900}.heroCopy h1{font-size:58px;line-height:.95;letter-spacing:-3px;margin:8px 0 10px}.heroCopy h1 span{color:var(--green)}.tag{font-size:18px;color:#dce7e0;font-weight:700;margin:0}
+.grid{display:grid;grid-template-columns:1.1fr .75fr 1.15fr;gap:14px;margin-top:14px}.card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(8,27,16,.94),rgba(5,20,12,.94));border-radius:18px;padding:20px;min-width:0}.card h2{font-size:18px;margin:0 0 11px}.card h2 span{color:var(--green)}.about p{margin:0;color:#b6c6bd;font-size:13px;line-height:1.62}.about .micro{margin-top:12px;color:#7f9588;font-size:11px}
 .rate{display:grid;place-items:center;text-align:center}.rateLabel{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8da194;font-weight:850}.rateStrong{font-size:50px;font-weight:950;letter-spacing:-2px;margin:8px 0 0}.ratePct{font-size:17px;color:var(--green);font-weight:900}.rateMeta{font-size:11px;color:#809589;margin-top:8px}
-.rateColumns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;align-items:center}.ratePeriod{min-width:0;padding:0 8px}.ratePeriod+.ratePeriod{border-left:1px solid #1c442d}.rateColumns .rateStrong{font-size:clamp(26px,3vw,40px);letter-spacing:-1px}.rateColumns .ratePct{font-size:clamp(11px,1.4vw,15px)}.rateColumns .rateMeta{font-size:9px;line-height:1.5}.support{margin-top:16px}.supportCta{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px;padding:0 16px;border-radius:12px;background:#5f7fff;color:#fff;font-family:inherit;font-size:13px;font-weight:900;line-height:1;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}.supportIcon{width:24px;height:30px;display:block;object-fit:contain;flex:0 0 auto}.supportArrow{font-size:14px;line-height:1;opacity:.9}
-.topCard{padding:0;overflow:hidden}.topHead{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid #12301f}.topHead h2{margin:0}.topHead small{color:#71887b;font-size:10px}.topList{display:grid;padding:9px 12px}.pick{display:grid;grid-template-columns:27px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 6px;border-bottom:1px solid #10291b}.pick:last-child{border-bottom:0}.rank{width:26px;height:26px;border-radius:8px;background:#123522;color:var(--green);display:grid;place-items:center;font-size:10px;font-weight:900}.fixture{font-size:12px;font-weight:800}.selection{font-size:10px;color:#88a095;margin-top:3px}.confidence{font-size:11px;color:#d9e7de;font-weight:850}.cta{display:flex;justify-content:center;align-items:center;gap:9px;min-height:46px;margin:5px 12px 13px;padding:0 16px;border-radius:12px;background:linear-gradient(135deg,#4be995,#27cc76);color:#031008;font-family:inherit;font-weight:900;font-size:13px;line-height:1}.loading{padding:24px;text-align:center;color:#73897c;font-size:11px}
+.rateColumns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;align-items:center}.ratePeriod{min-width:0;padding:0 8px}.ratePeriod+.ratePeriod{border-left:1px solid #1c442d}.rateColumns .rateStrong{font-size:clamp(26px,3vw,40px);letter-spacing:-1px}.rateColumns .ratePct{font-size:clamp(11px,1.4vw,15px)}.rateColumns .rateMeta{font-size:9px;line-height:1.5}.support{margin-top:16px}.support img{max-width:100%;height:auto;display:block}
+.topCard{padding:0;overflow:hidden}.topHead{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:18px 20px;border-bottom:1px solid #12301f}.topHead h2{margin:0}.topHead small{color:#71887b;font-size:10px}.topList{display:grid;padding:9px 12px}.pick{display:grid;grid-template-columns:27px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 6px;border-bottom:1px solid #10291b}.pick:last-child{border-bottom:0}.rank{width:26px;height:26px;border-radius:8px;background:#123522;color:var(--green);display:grid;place-items:center;font-size:10px;font-weight:900}.fixture{font-size:12px;font-weight:800}.selection{font-size:10px;color:#88a095;margin-top:3px}.confidence{font-size:11px;color:#d9e7de;font-weight:850}.cta{display:flex;justify-content:center;align-items:center;gap:9px;margin:5px 12px 13px;padding:13px 16px;border-radius:12px;background:linear-gradient(135deg,#4be995,#27cc76);color:#031008;font-weight:900;font-size:13px}.loading{padding:24px;text-align:center;color:#73897c;font-size:11px}
 .footer{max-width:1180px;margin:0 auto;padding:0 22px 28px;color:#5f7769;font-size:10px;text-align:center}
 #boardProbe{position:absolute!important;left:-10000px!important;top:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;border:0!important}
-@media(max-width:900px){.grid{grid-template-columns:.8fr 1.2fr}}
-@media(max-width:640px){.nav{height:58px;padding:0 14px;gap:12px}.logo{font-size:19px}.links{gap:10px}.links a{font-size:10px}.hero{padding:16px 12px 18px}.heroVisual{border-radius:17px}.heroStage{height:285px}.heroStage>img{object-fit:cover;object-position:center center}.heroStage:after{background:linear-gradient(180deg,rgba(2,9,5,.03) 0%,rgba(2,10,6,.12) 24%,rgba(2,10,6,.38) 53%,rgba(2,10,6,.82) 82%,#07160d 100%)}.heroBrand{left:22px;right:22px;bottom:22px}.heroBrand h1{font-size:39px;letter-spacing:-2px}.tag{font-size:13px}.heroCopy{padding:16px 22px 22px}.heroIntro{font-size:12px;line-height:1.58}.heroMicro{margin-top:10px;font-size:10.5px}.grid{grid-template-columns:1fr;gap:10px;margin-top:10px}.topCard{grid-column:auto}.card{border-radius:14px;padding:16px}.topCard{padding:0}.rateStrong{font-size:43px}.supportCta{min-height:46px;font-size:13px}.footer{padding:0 14px 22px}}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.topCard{grid-column:1/-1}}
+@media(max-width:640px){.nav{height:58px;padding:0 14px;gap:12px}.logo{font-size:19px}.links{gap:10px}.links a{font-size:10px}.hero{padding:16px 12px 18px}.heroVisual{min-height:250px;border-radius:17px;background-position:center}.heroCopy{padding:22px}.heroCopy h1{font-size:39px;letter-spacing:-2px}.tag{font-size:13px}.grid{grid-template-columns:1fr;gap:10px;margin-top:10px}.topCard{grid-column:auto}.card{border-radius:14px;padding:16px}.topCard{padding:0}.rateStrong{font-size:43px}.footer{padding:0 14px 22px}}
 </style>
 </head>
 <body>
@@ -42,26 +39,23 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
 
   <main class="hero">
     <section class="heroVisual" id="heroVisual">
-      <div class="heroStage">
-        <img id="heroImage" alt="" aria-hidden="true">
-        <div class="heroBrand">
-          <div class="eyebrow">Soccer intelligence</div>
-          <h1>Footy<span>Edge</span></h1>
-          <p class="tag">Sharper soccer research. Smarter picks.</p>
-        </div>
-      </div>
       <div class="heroCopy">
-        <p class="heroIntro">FootyEdge is completely free to use. It brings stats, trends, form, H2H, market pricing and model-based analysis into one clean place so you can research matches and make your own picks.</p>
-        <p class="heroMicro">Nothing is behind a paywall. No picks are guaranteed. Gamble responsibly.</p>
-        <div class="support">
-          <a class="supportCta" href="https://www.buymeacoffee.com/sPsyche" target="_blank" rel="noopener" aria-label="Support FootyEdge">
-            <img class="supportIcon" src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="" aria-hidden="true"><span>Support FootyEdge</span><span class="supportArrow" aria-hidden="true">↗</span>
-          </a>
-        </div>
+        <div class="eyebrow">Soccer intelligence</div>
+        <h1>Footy<span>Edge</span></h1>
+        <p class="tag">Sharper soccer research. Smarter picks.</p>
       </div>
     </section>
 
     <section class="grid">
+      <article class="card about">
+        <h2><span>About</span> FootyEdge</h2>
+        <p>FootyEdge is completely free to use. It brings stats, trends, form, H2H, market pricing and model-based analysis into one clean place so you can research matches and make your own picks.</p>
+        <p class="micro">Nothing is behind a paywall. No picks are guaranteed. Gamble responsibly.</p>
+        <div class="support">
+          <a href="https://www.buymeacoffee.com/sPsyche" target="_blank" rel="noopener"><img src="https://img.buymeacoffee.com/button-api/?text=Support%20FootyEdge&emoji=%E2%98%95&slug=sPsyche&button_colour=5F7FFF&font_colour=ffffff&font_family=Poppins&outline_colour=000000&coffee_colour=FFDD00" alt="Support FootyEdge"></a>
+        </div>
+      </article>
+
       <article class="card rate">
         <div class="rateColumns">
           <div class="ratePeriod"><div class="rateLabel" id="monthTrackingLabel">Oct Tracking</div>
@@ -88,9 +82,9 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script src="/assets/hero-0.js?v=2"></script><script src="/assets/hero-1.js?v=2"></script><script src="/assets/hero-2.js?v=2"></script><script src="/assets/hero-3.js?v=2"></script><script src="/assets/hero-4.js?v=2"></script><script src="/assets/hero-5.js?v=2"></script>
-<script src="/assets/board-availability.js?v=66"></script>
+<script src="/assets/board-availability.js?v=69"></script>
 <script>
-if(window.__FOOTYEDGE_HERO){document.getElementById("heroImage").src="data:image/webp;base64,"+window.__FOOTYEDGE_HERO}
+if(window.__FOOTYEDGE_HERO){document.getElementById("heroVisual").style.backgroundImage="url(data:image/webp;base64,"+window.__FOOTYEDGE_HERO+")"}
 const GH_RAW="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/";
 async function repoJson(path){
   const bust=Date.now();
@@ -104,31 +98,13 @@ async function repoJson(path){
 }
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
 const todayToronto=()=>{const p=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()),o=Object.fromEntries(p.map(x=>[x.type,x.value]));return o.year+"-"+o.month+"-"+o.day};
-function homeWomenFixture(board,x){
-  const game=(board?.games||[]).find(g=>String(g.id)===String(x?.gameId)||(g.home===x?.home&&g.away===x?.away));
-  return /women|female/i.test(String(game?.leagueName||game?.competition||game?.gender||""))
-}
-function homeTeamName(name,women){
-  const s=String(name||"");
-  return women&&s&&!/\(W\)$/i.test(s)?s+" (W)":s
-}
-function homeSelectionLabel(label,x,women){
-  let s=String(label||"Pick");
-  if(!women)return s;
-  for(const raw of [x?.home,x?.away]){
-    const n=String(raw||"");
-    if(n&&!/\(W\)$/i.test(n))s=s.split(n).join(n+" (W)")
-  }
-  return s
-}
-function renderTop5(top,emptyMessage="Checking the game schedule…",board=null){
+function renderTop5(top,emptyMessage="Checking the game schedule…"){
   const el=document.getElementById("topList");
   if(!top?.length){el.innerHTML='<div class="loading">'+esc(emptyMessage)+'</div>';return}
   el.innerHTML=top.slice(0,5).map((x,i)=>{
-    const p=x.pick||x,women=homeWomenFixture(board,x);
-    const home=homeTeamName(x.home,women),away=homeTeamName(x.away,women);
-    const fixture=home+(away?" vs "+away:"");
-    const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
+    const p=x.pick||x;
+    const fixture=(x.home||"")+(x.away?" vs "+x.away:"");
+    const selection=p.label||x.selection||"Pick";
     const conf=p.score??x.confidence;
     return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%":"")+'</div></div>';
   }).join("");
@@ -151,11 +127,7 @@ repoJson("data/performance/summary.json").then(p=>{
   let board=null;
   try{
     board=await repoJson("data/boards/"+date+".json");
-    if(board?.top5?.length){renderTop5(board.top5,"",board);return}
-    if(Array.isArray(board?.games)&&board.games.length===0&&board?.nextGameDate){
-      renderTop5([],FootyEdgeAvailability.message({kind:"empty",date,count:0,nextGameDate:board.nextGameDate,searchComplete:true},true,true),board);
-      return;
-    }
+    if(board?.top5?.length){renderTop5(board.top5);return}
   }catch{}
   const info=board?.games?.length?{kind:"games",date,count:board.games.length}:await FootyEdgeAvailability.load(date,async path=>{
     const r=await fetch(path,{cache:"no-store"});if(!r.ok)throw new Error("Schedule unavailable");return r.json();

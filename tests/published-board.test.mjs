@@ -64,3 +64,31 @@ test('Integrity rejects an unaudited overwrite',async()=>{
     assert.throws(()=>validateIntegrity('HEAD'),/without preserved explicit owner correction/);
   }finally{fs.writeFileSync(file,saved)}
 });
+test('Search filters both games and frozen Top Picks and clears cleanly',()=>{
+  const c=context();c.board=structuredClone(board);c.games=structuredClone(input);
+  vm.runInContext('S.date=board.date;S.archive=board;S.status="all";S.league="all";S.games=applyBoardArchive(games,board);S.search="switzerland"',c);
+  assert.equal(vm.runInContext('S.games.filter(filterOK).length',c),1);
+  assert.equal(vm.runInContext('topPicks().length',c),1);
+  vm.runInContext('S.search=""',c);assert.equal(vm.runInContext('topPicks().length',c),5);
+});
+test('Player props require native price plus expected start and minutes',()=>{
+  const c=context();
+  c.g={dailyInsight:{supportedMarkets:['A Player Anytime Goalscorer'],markets:[{label:'A Player Anytime Goalscorer',player:'A Player',category:'Player',confidence:82,price:'-120',americanOdds:-120,decimal:1.83,source:'DraftKings',reason:'Role and matchup support the angle.'}]},model:{candidates:[]}};
+  assert.equal(vm.runInContext('researchAngleCandidates(g)[0].qualifiesForRanking',c),false);
+  c.g.dailyInsight.markets[0]={...c.g.dailyInsight.markets[0],priceVerified:true,bookmaker:'DraftKings',priceSourceUrl:'https://sportsbook.draftkings.com/event/example',expectedStart:'expected starter',expectedMinutes:75};
+  assert.equal(vm.runInContext('researchAngleCandidates(g)[0].qualifiesForRanking',c),true);
+});
+test('Club crests, country flags and league headers use separate bounded treatments',()=>{
+  const css=fs.readFileSync('ui/part1.html','utf8'),js=fs.readFileSync('ui/part2.html','utf8');
+  assert.match(css,/\.clubCrest\{[\s\S]*?border-radius:0!important/);
+  assert.match(css,/\.countryFlag\{[\s\S]*?border-radius:50%!important/);
+  assert.match(css,/\.gameTop \.leagueIcon\{[\s\S]*?overflow:hidden!important/);
+  for(const id of ['ita.1','ger.1','fra.1'])assert.match(js,new RegExp('"'+id+'":"https://'));
+});
+test('Publication is today-only and postmortems review every saved Top 3 rank',()=>{
+  const archive=fs.readFileSync('scripts/archive-board.mjs','utf8'),review=fs.readFileSync('scripts/review-performance.mjs','utf8');
+  assert.match(archive,/Future boards are schedule-only and cannot be published/);
+  assert.match(review,/for\(const \[i,p\] of \(g\.top3\|\|\[\]\)\.entries\(\)\)/);
+  assert.doesNotMatch(review,/Number\(p\.score\)>=85/);
+  assert.match(review,/processGrade/);
+});

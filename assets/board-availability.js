@@ -10,21 +10,28 @@
     const id=String(event?.uid||'').match(/~l:(\d+)/)?.[1];
     return code||uidLeague[id]||null;
   }
-  function excludedTaggedEvent(event){
-    const meta=[event?.season?.slug,event?.season?.name,event?.league?.name,event?.league?.slug,event?.competitions?.[0]?.type?.slug,event?.competitions?.[0]?.type?.name].filter(Boolean).join(' ').toLowerCase();
-    const tags=['wo'+'men','fe'+'male'];
-    return tags.some(tag=>meta.includes(tag))
-  }
-  function excludedArchivedGame(game){
-    const meta=[game?.leagueName,game?.competition,game?.gender,game?.seasonSlug,game?.source].filter(Boolean).join(' ').toLowerCase();
-    return ['women','female'].some(tag=>meta.includes(tag));
-  }
   function eventDay(event){
     if(!event?.date||!Number.isFinite(new Date(event.date).getTime()))return null;
     const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(event.date));
     const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;
   }
-  function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&eventDay(e)===date&&!excludedTaggedEvent(e)&&!/CANCEL/i.test(e.status?.type?.name||''))}
+  function isWomensEvent(event){
+    const c=event?.competitions?.[0]||{};
+    const teams=(c.competitors||[]).flatMap(x=>[
+      x?.team?.displayName,x?.team?.shortDisplayName,x?.team?.name,x?.team?.slug,x?.team?.gender
+    ]);
+    const fields=[
+      event?.gender,event?.name,event?.shortName,event?.slug,
+      event?.season?.slug,event?.season?.name,event?.season?.displayName,
+      event?.league?.slug,event?.league?.name,event?.league?.abbreviation,
+      c?.league?.slug,c?.league?.name,c?.type?.name,c?.type?.abbreviation,
+      ...teams
+    ].filter(Boolean).join(' ').toLowerCase();
+    return /(^|[^a-z])(women|womens|women's|female|feminine|féminine|femminile|frauen|damallsvenskan|nwsl|uwcl|wsl)([^a-z]|$)/i.test(fields)
+      || /(^|[^a-z])liga\s+f([^a-z]|$)/i.test(fields)
+      || /(^|[^a-z])d1f([^a-z]|$)/i.test(fields);
+  }
+  function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&!isWomensEvent(e)&&eventDay(e)===date&&!/CANCEL/i.test(e.status?.type?.name||''))}
   function formatDate(date){return new Date(date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})}
   function message(info,today,hasBoard=false){
     if(!info||info.kind==='loading')return 'Checking the game schedule…';
@@ -32,21 +39,6 @@
     if(info.kind==='games')return hasBoard?'No qualifying Top 5 picks for this date.':(today?'Today’s picks have not been published yet.':'Picks for '+formatDate(info.date)+' have not been published yet.');
     const first=today?'No games today.':'No games on '+formatDate(info.date)+'.';
     return first+' '+(info.nextGameDate?'Next game on '+formatDate(info.nextGameDate)+'.':info.searchComplete?'Next game date is not available yet.':'Next game date could not be confirmed.');
-  }
-  async function loadNext(date,readJson){
-    const read=async day=>{
-      const saved=cache.get(day);if(saved&&Date.now()-saved.at<15*60*1000)return saved.payload;
-      const payload=await readJson('/api/espn-scoreboard?dates='+day.replaceAll('-','')+'&limit=1000');
-      if(!Array.isArray(payload?.events))throw new Error('Schedule response unavailable');
-      cache.set(day,{at:Date.now(),payload});return payload;
-    };
-    for(let offset=1;offset<=21;offset++){
-      const day=addDate(date,offset);
-      let payload=null;
-      try{payload=await read(day)}catch{return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:false}}
-      if(eventsForDay(payload,day).length)return {kind:'empty',date,count:0,nextGameDate:day,searchComplete:true};
-    }
-    return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
   }
   async function load(date,readJson,seed){
     const read=async day=>{
@@ -75,5 +67,5 @@
     }
     return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
   }
-  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,excludedArchivedGame,eventsForDay,formatDate,message,load,loadNext};
+  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,isWomensEvent,eventsForDay,formatDate,message,load};
 })(globalThis);

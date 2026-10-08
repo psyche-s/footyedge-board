@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const source=fs.readFileSync('assets/board-availability.js','utf8');
 function helper(){const c=vm.createContext({Intl,Date,Map,Set});vm.runInContext(source,c);return c.FootyEdgeAvailability}
-const event=(date,id='g1',league=700)=>({id,date,uid:'s:600~l:'+league+'~e:'+id,status:{type:{name:'STATUS_SCHEDULED'}}});
+const event=(date,id='g1',league=700,seasonSlug='2026-27-men')=>({id,date,uid:'s:600~l:'+league+'~e:'+id,season:{slug:seasonSlug},status:{type:{name:'STATUS_SCHEDULED'}}});
 test('A verified empty day names the first future game on both pages',async()=>{
   const h=helper();const read=async url=>({events:url.includes('20261009')?[event('2026-10-09T18:00:00Z')]:[]});
   const info=await h.load('2026-10-07',read);
@@ -35,6 +35,12 @@ test('A missing earlier future schedule cannot make a later game the next game',
 test('After-midnight UTC fixtures belong to the Toronto calendar date',async()=>{
   const h=helper();const info=await h.load('2026-10-07',async url=>({events:url.includes('20261008')?[event('2026-10-08T01:30Z')]:[]}));
   assert.equal(info.kind,'games');assert.equal(info.date,'2026-10-07');
+});
+test('Women\'s club and international fixtures are excluded before slate discovery',async()=>{
+  const h=helper(),women=event('2026-10-08T12:30Z','w1',3923,'2026-womens-international-friendly'),men=event('2026-10-09T18:30Z','m1',720,'2026-27-german-bundesliga');
+  assert.equal(h.isWomensEvent(women),true);assert.equal(h.eventsForDay({events:[women]},'2026-10-08').length,0);
+  const info=await h.load('2026-10-08',async url=>({events:url.includes('20261009')?[men]:[women]}));
+  assert.equal(info.kind,'empty');assert.equal(info.nextGameDate,'2026-10-09');
 });
 test('Home and Picks load the same availability helper',()=>{
   for(const file of ['index.html','ui/part1.html'])assert.match(fs.readFileSync(file,'utf8'),/assets\/board-availability\.js/);
