@@ -1,157 +1,108 @@
 {
   "date": "2026-10-06",
-  "generatedAt": "2026-10-08T10:08:59.594Z",
-  "sourceBoard": "data/boards/2026-10-06.json",
-  "policy": "Every saved frozen Top 3 pick is reviewed regardless of confidence. Official result and process quality are separate. Disruptions are context, not automatic excuses. Historical explanations are never rewritten.",
-  "coverage": "verified-original-top5-only",
-  "savedTop3Count": 5,
-  "reviewCount": 5,
-  "missingHistoricalPositions": "Only selections actually preserved in the immutable board can be reviewed; unsaved historical Pick #2/#3 positions remain explicitly unavailable and are never reconstructed.",
-  "reviews": [
+  "createdAt": "2026-10-07T05:44:00Z",
+  "coverage": "saved-original-only",
+  "coverageNote": "Only saved original published selections can be graded. Missing historical Top-3 selections/explanations are never reconstructed.",
+  "games": [
     {
-      "gameId": "401861135",
-      "home": "Kazakhstan",
-      "away": "Faroe Islands",
-      "rank": 1,
-      "competition": "uefa.nations",
-      "matchupProfile": "total-under",
-      "marketFamily": "goals_under_2_5",
-      "evidenceTypes": [],
-      "selection": "Under 2.5 Goals",
-      "confidence": 96,
-      "originalOdds": -185,
-      "result": "miss",
-      "finalScore": "2-2",
-      "processGrade": "GOOD",
-      "classification": "good_process_unlucky_result",
-      "reviewWeight": 1,
-      "reviewStatus": "reviewed",
-      "disruptions": [
-        {
-          "type": "second-yellow-red-card",
-          "minute": 65,
-          "team": "Faroe Islands",
-          "player": "Martin Agnarsson",
-          "stateAtEvent": "Kazakhstan 0-2 Faroe Islands"
-        },
-        {
-          "type": "post-disruption-goals",
-          "minutes": [
-            68,
-            76
-          ],
-          "team": "Kazakhstan"
-        }
-      ],
-      "saferLineReview": "Under 3.5 was not recorded in the frozen native-price snapshot; Under 4.5 would have won but cannot be treated as an available alternative without a verified price.",
-      "explanationReview": "Original explanation unavailable. The saved pre-match research supported a low-total angle, but its exact wording cannot be reconstructed.",
-      "processConfidence": "medium",
-      "lesson": "Record the bet as a loss, retain the underlying low-total signal, and flag the red card as a material game-state change rather than teaching that every under was misread.",
-      "sources": [
-        "https://www.uefa.com/uefanationsleague/match/2047949--kazakhstan-vs-faroe-islands/",
-        "https://www.espn.com/soccer/match/_/gameId/401861135/faroe-islands-kazakhstan"
-      ]
-    },
-    {
-      "gameId": "401861140",
-      "home": "Albania",
-      "away": "San Marino",
-      "rank": 1,
-      "competition": "uefa.nations",
-      "matchupProfile": "total-under",
-      "marketFamily": "goals_under_4_5",
-      "evidenceTypes": [],
-      "selection": "Under 4.5 Goals",
-      "confidence": 94,
-      "originalOdds": -135,
-      "result": "hit",
-      "finalScore": "2-1",
-      "processGrade": "GOOD",
-      "classification": "good_process_good_result",
-      "reviewWeight": 0.25,
-      "reviewStatus": "reviewed",
-      "disruptions": [],
-      "saferLineReview": "The published pick already used the verified 4.5 safety line.",
-      "explanationReview": "Original explanation unavailable; its wording cannot be graded or rewritten.",
-      "processConfidence": "low",
-      "lesson": "The safety-line approach worked, but give the process grade limited learning weight because the original full reasoning is unavailable."
-    },
-    {
-      "gameId": "401861136",
-      "home": "Estonia",
-      "away": "Iceland",
-      "rank": 1,
-      "competition": "uefa.nations",
-      "matchupProfile": "protected-result",
-      "marketFamily": "handicap",
-      "evidenceTypes": [],
-      "selection": "Estonia +0.5",
-      "confidence": 93,
-      "originalOdds": 130,
-      "result": "hit",
-      "finalScore": "0-0",
-      "processGrade": "GOOD",
-      "classification": "good_process_good_result",
-      "reviewWeight": 0.25,
-      "reviewStatus": "reviewed",
-      "disruptions": [],
-      "saferLineReview": "The protected +0.5 result line performed as intended.",
-      "explanationReview": "Original explanation unavailable; its wording cannot be graded or rewritten.",
-      "processConfidence": "low",
-      "lesson": "Retain the value of protected result markets, with limited learning weight until complete pre-match reasoning is available."
-    },
-    {
-      "gameId": "401861143",
-      "home": "Scotland",
-      "away": "Slovenia",
-      "rank": 1,
-      "competition": "uefa.nations",
-      "matchupProfile": "total-under",
-      "marketFamily": "goals_under_2_5",
-      "evidenceTypes": [],
-      "selection": "Under 2.5 Goals",
-      "confidence": 94,
-      "originalOdds": -165,
-      "result": "miss",
-      "finalScore": "1-2",
-      "processGrade": "BAD",
-      "classification": "weak_process_bad_result",
-      "reviewWeight": 1,
-      "reviewStatus": "reviewed",
-      "disruptions": [],
-      "saferLineReview": "Under 3.5 would have won, but it was not present in the frozen exact-price snapshot and cannot be treated as a pre-match option after the fact.",
-      "explanationReview": "Original explanation unavailable. Post-match reporting described Scotland as defensively disorganized and Slovenia as deserving the comeback.",
-      "processConfidence": "medium",
-      "lesson": "Do not let a recent low-scoring H2H or broad under trend dominate when current tactical instability and opponent chance creation point to three-goal risk.",
-      "sources": [
-        "https://www.espn.com/soccer/match/_/gameId/401861143/slovenia-scotland",
-        "https://www.theguardian.com/football/2026/oct/06/scotland-slovenia-nations-league-match-report"
-      ]
-    },
-    {
-      "gameId": "401861139",
       "home": "Switzerland",
       "away": "North Macedonia",
-      "rank": 1,
-      "competition": "uefa.nations",
-      "matchupProfile": "total-under",
-      "marketFamily": "goals_under_3_5",
-      "evidenceTypes": [],
-      "selection": "Under 3.5 Goals",
-      "confidence": 96,
-      "originalOdds": -135,
-      "result": "hit",
-      "finalScore": "3-0",
-      "processGrade": "GOOD",
-      "classification": "good_process_good_result",
-      "reviewWeight": 0.25,
-      "reviewStatus": "reviewed",
-      "disruptions": [],
-      "saferLineReview": "The frozen snapshot already used the posted 3.5 line; no additional safer line was recorded.",
-      "explanationReview": "Original explanation unavailable; its wording cannot be graded or rewritten.",
-      "processConfidence": "low",
-      "lesson": "Keep the official hit, but give it limited learning weight because the original full reasoning is unavailable."
+      "candidates": [
+        {
+          "rank": 1,
+          "selection": "Under 3.5 Goals",
+          "category": "Goals",
+          "confidence": 96,
+          "originalOdds": -135,
+          "result": "hit",
+          "finalScore": "3-0",
+          "processQuality": "unreviewed",
+          "incidentReviewStatus": "No reliable incident source verified during this run",
+          "verifiedDisruptions": [],
+          "explanationQuality": "Original explanation/evidence unavailable for historical recovery; do not rewrite it.",
+          "decision": "Result graded; no model adjustment without verified causal evidence."
+        }
+      ]
+    },
+    {
+      "home": "Kazakhstan",
+      "away": "Faroe Islands",
+      "candidates": [
+        {
+          "rank": 2,
+          "selection": "Under 2.5 Goals",
+          "category": "Goals",
+          "confidence": 96,
+          "originalOdds": -185,
+          "result": "miss",
+          "finalScore": "2-2",
+          "processQuality": "unreviewed",
+          "incidentReviewStatus": "No reliable incident source verified during this run",
+          "verifiedDisruptions": [],
+          "explanationQuality": "Original explanation/evidence unavailable for historical recovery; do not rewrite it.",
+          "decision": "Result graded; no model adjustment without verified causal evidence."
+        }
+      ]
+    },
+    {
+      "home": "Albania",
+      "away": "San Marino",
+      "candidates": [
+        {
+          "rank": 3,
+          "selection": "Under 4.5 Goals",
+          "category": "Goals",
+          "confidence": 94,
+          "originalOdds": -135,
+          "result": "hit",
+          "finalScore": "2-1",
+          "processQuality": "unreviewed",
+          "incidentReviewStatus": "No reliable incident source verified during this run",
+          "verifiedDisruptions": [],
+          "explanationQuality": "Original explanation/evidence unavailable for historical recovery; do not rewrite it.",
+          "decision": "Result graded; no model adjustment without verified causal evidence."
+        }
+      ]
+    },
+    {
+      "home": "Scotland",
+      "away": "Slovenia",
+      "candidates": [
+        {
+          "rank": 4,
+          "selection": "Under 2.5 Goals",
+          "category": "Goals",
+          "confidence": 94,
+          "originalOdds": -165,
+          "result": "miss",
+          "finalScore": "1-2",
+          "processQuality": "unreviewed",
+          "incidentReviewStatus": "No reliable incident source verified during this run",
+          "verifiedDisruptions": [],
+          "explanationQuality": "Original explanation/evidence unavailable for historical recovery; do not rewrite it.",
+          "decision": "Result graded; no model adjustment without verified causal evidence."
+        }
+      ]
+    },
+    {
+      "home": "Estonia",
+      "away": "Iceland",
+      "candidates": [
+        {
+          "rank": 5,
+          "selection": "Estonia +0.5",
+          "category": "Handicap",
+          "confidence": 93,
+          "originalOdds": 130,
+          "result": "hit",
+          "finalScore": "0-0",
+          "processQuality": "unreviewed",
+          "incidentReviewStatus": "No reliable incident source verified during this run",
+          "verifiedDisruptions": [],
+          "explanationQuality": "Original explanation/evidence unavailable for historical recovery; do not rewrite it.",
+          "decision": "Result graded; no model adjustment without verified causal evidence."
+        }
+      ]
     }
-  ],
-  "historyLimit": "The complete original Top 3 and original explanations were not saved. This review covers only the five verified official selections and does not backfill historical prose."
+  ]
 }

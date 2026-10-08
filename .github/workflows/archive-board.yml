@@ -1,67 +1,85 @@
-name: Archive FootyEdge Published Board
+name: Publish and Lock FootyEdge Board
 
 on:
   push:
     branches: [main]
     paths:
       - ".github/workflows/archive-board.yml"
-      - "data/daily-odds-*.json"
-      - "data/daily-insights-*.json"
   schedule:
-    # 06:40 Toronto, both DST and standard-time UTC offsets.
-    - cron: "40 10 * * *"
-    - cron: "40 11 * * *"
-    # 07:55 fallback if the morning capture was delayed/missed.
-    - cron: "55 11 * * *"
-    - cron: "55 12 * * *"
-    # 23:50 final fallback for the current day.
-    - cron: "50 3 * * *"
-    - cron: "50 4 * * *"
+    # One of these is 06:00 Toronto depending on DST; the gate below allows only local 06.
+    - cron: "0 10 * * *"
+    - cron: "0 11 * * *"
   workflow_dispatch:
-    inputs:
-      board_date:
-        description: 'Optional Toronto board date (today only; validated inputs required)'
-        required: false
-        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: footyedge-board-archive
-  cancel-in-progress: false
+  group: footyedge-board-publish
+  cancel-in-progress: true
 
 jobs:
-  archive:
+  publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Toronto 06:00 gate
+        id: gate
+        shell: bash
+        run: |
+          DATE="$(TZ=America/Toronto date +%F)"
+          HOUR="$(TZ=America/Toronto date +%H)"
+          RUN=false
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            RUN=true
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && "$HOUR" == "06" && "$DATE" != "2026-10-07" ]]; then
+            RUN=true
+          fi
+          echo "run=$RUN" >> "$GITHUB_OUTPUT"
+          echo "Toronto date/hour: $DATE $HOUR; run=$RUN"
+
       - uses: actions/setup-node@v4
+        if: steps.gate.outputs.run == 'true'
         with:
           node-version: "22"
+
       - name: Install browser
+        if: steps.gate.outputs.run == 'true'
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Capture immutable published board
+
+      - name: Build today's complete board only
+        if: steps.gate.outputs.run == 'true'
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          ARCHIVE_DATE: ${{ inputs.board_date }}
-          FORCE_ARCHIVE: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          PREVIEW_DAYS: "0"
+          FORCE_TODAY_CAPTURE: "1"
+        run: node scripts/publish-board-previews.mjs
+
+      - name: Lock today's official board
+        if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
-      - name: Commit board archive
+
+      - name: Validate and commit official board
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
         run: |
-          if git diff --quiet -- data/boards; then
-            echo "No new board archive."
+          TODAY="$(TZ=America/Toronto date +%F)"
+          mkdir -p data/board-drafts data/boards
+          node scripts/validate-published-boards.mjs --base origin/main
+          git config user.name "FootyEdge Board Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A -- "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json"
+          if git diff --cached --quiet; then
+            echo "No board changes."
             exit 0
           fi
-          git config user.name "FootyEdge Archive Bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add data/boards
-          git commit -m "chore(board): freeze published FootyEdge board [skip ci]"
+          git commit -m "chore(board): publish and lock $TODAY at 6am Toronto [skip ci]"
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main

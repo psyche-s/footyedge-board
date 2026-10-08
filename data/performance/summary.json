@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-08T10:08:59.681Z",
+  "generatedAt": "2026-10-07T05:20:43.575Z",
   "trackingStarted": "2026-10-05",
   "month": {
     "key": "2026-10",
@@ -30,13 +30,13 @@
     "hitRate": 70
   },
   "byFamily": {
-    "goals_under_3_5": {
-      "hits": 3,
-      "misses": 0,
+    "goals_under": {
+      "hits": 4,
+      "misses": 2,
       "pushes": 0,
       "pending": 0,
-      "settled": 3,
-      "hitRate": 100
+      "settled": 6,
+      "hitRate": 66.66666666666666
     },
     "match_result": {
       "hits": 2,
@@ -46,22 +46,6 @@
       "settled": 3,
       "hitRate": 66.66666666666666
     },
-    "goals_under_2_5": {
-      "hits": 0,
-      "misses": 2,
-      "pushes": 0,
-      "pending": 0,
-      "settled": 2,
-      "hitRate": 0
-    },
-    "goals_under_4_5": {
-      "hits": 1,
-      "misses": 0,
-      "pushes": 0,
-      "pending": 0,
-      "settled": 1,
-      "hitRate": 100
-    },
     "handicap": {
       "hits": 1,
       "misses": 0,
@@ -69,237 +53,6 @@
       "pending": 0,
       "settled": 1,
       "hitRate": 100
-    }
-  },
-  "processCalibration": {
-    "policy": "All saved Top 3 picks are diagnosed. Model changes stay bounded to ±0.5 confidence and require at least 3 weighted, evidence-grade reviews in a repeated pattern.",
-    "byFamily": {
-      "goals_under_3_5": {
-        "reviews": 3,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 2,
-        "bad": 0,
-        "hits": 3,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      },
-      "match_result": {
-        "reviews": 3,
-        "reviewedWeight": 0,
-        "good": 0,
-        "mixed": 3,
-        "bad": 0,
-        "hits": 2,
-        "misses": 1,
-        "pending": 0,
-        "goodRate": null,
-        "confidenceDelta": 0
-      },
-      "goals_under_2_5": {
-        "reviews": 2,
-        "reviewedWeight": 2,
-        "good": 1,
-        "mixed": 0,
-        "bad": 1,
-        "hits": 0,
-        "misses": 2,
-        "pending": 0,
-        "goodRate": 50,
-        "confidenceDelta": 0
-      },
-      "goals_under_4_5": {
-        "reviews": 1,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 0,
-        "bad": 0,
-        "hits": 1,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      },
-      "handicap": {
-        "reviews": 1,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 0,
-        "bad": 0,
-        "hits": 1,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      }
-    },
-    "byMarketFamily": {
-      "goals_under_3_5": {
-        "reviews": 3,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 2,
-        "bad": 0,
-        "hits": 3,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      },
-      "match_result": {
-        "reviews": 3,
-        "reviewedWeight": 0,
-        "good": 0,
-        "mixed": 3,
-        "bad": 0,
-        "hits": 2,
-        "misses": 1,
-        "pending": 0,
-        "goodRate": null,
-        "confidenceDelta": 0
-      },
-      "goals_under_2_5": {
-        "reviews": 2,
-        "reviewedWeight": 2,
-        "good": 1,
-        "mixed": 0,
-        "bad": 1,
-        "hits": 0,
-        "misses": 2,
-        "pending": 0,
-        "goodRate": 50,
-        "confidenceDelta": 0
-      },
-      "goals_under_4_5": {
-        "reviews": 1,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 0,
-        "bad": 0,
-        "hits": 1,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      },
-      "handicap": {
-        "reviews": 1,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 0,
-        "bad": 0,
-        "hits": 1,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      }
-    },
-    "byConfidenceBand": {
-      "90-100": {
-        "reviews": 9,
-        "reviewedWeight": 2.75,
-        "good": 4,
-        "mixed": 4,
-        "bad": 1,
-        "hits": 6,
-        "misses": 3,
-        "pending": 0,
-        "goodRate": 80,
-        "confidenceDelta": 0
-      },
-      "85-89": {
-        "reviews": 1,
-        "reviewedWeight": 0,
-        "good": 0,
-        "mixed": 1,
-        "bad": 0,
-        "hits": 1,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": null,
-        "confidenceDelta": 0
-      }
-    },
-    "byCompetition": {
-      "unavailable": {
-        "reviews": 5,
-        "reviewedWeight": 0,
-        "good": 0,
-        "mixed": 5,
-        "bad": 0,
-        "hits": 4,
-        "misses": 1,
-        "pending": 0,
-        "goodRate": null,
-        "confidenceDelta": 0
-      },
-      "uefa.nations": {
-        "reviews": 5,
-        "reviewedWeight": 2.75,
-        "good": 4,
-        "mixed": 0,
-        "bad": 1,
-        "hits": 3,
-        "misses": 2,
-        "pending": 0,
-        "goodRate": 80,
-        "confidenceDelta": 0
-      }
-    },
-    "byMatchupProfile": {
-      "total-under": {
-        "reviews": 6,
-        "reviewedWeight": 2.5,
-        "good": 3,
-        "mixed": 2,
-        "bad": 1,
-        "hits": 4,
-        "misses": 2,
-        "pending": 0,
-        "goodRate": 75,
-        "confidenceDelta": 0
-      },
-      "moneyline": {
-        "reviews": 3,
-        "reviewedWeight": 0,
-        "good": 0,
-        "mixed": 3,
-        "bad": 0,
-        "hits": 2,
-        "misses": 1,
-        "pending": 0,
-        "goodRate": null,
-        "confidenceDelta": 0
-      },
-      "protected-result": {
-        "reviews": 1,
-        "reviewedWeight": 0.25,
-        "good": 1,
-        "mixed": 0,
-        "bad": 0,
-        "hits": 1,
-        "misses": 0,
-        "pending": 0,
-        "goodRate": 100,
-        "confidenceDelta": 0
-      }
-    },
-    "byEvidenceType": {
-      "unavailable": {
-        "reviews": 10,
-        "reviewedWeight": 2.75,
-        "good": 4,
-        "mixed": 5,
-        "bad": 1,
-        "hits": 7,
-        "misses": 3,
-        "pending": 0,
-        "goodRate": 80,
-        "confidenceDelta": 0
-      }
     }
   },
   "previousDate": "2026-10-06",

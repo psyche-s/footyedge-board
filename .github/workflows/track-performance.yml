@@ -2,9 +2,9 @@ name: Track FootyEdge Performance
 
 on:
   schedule:
-    # Run at both possible UTC offsets; the script proceeds only when Toronto local hour is 06.
-    - cron: "20 10 * * *"
+    # One of these is 07:20 Toronto depending on DST; script itself enforces local hour 07.
     - cron: "20 11 * * *"
+    - cron: "20 12 * * *"
   workflow_dispatch:
 
 permissions:
@@ -17,7 +17,7 @@ concurrency:
 jobs:
   track:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -29,27 +29,23 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Review every saved frozen Top 3 pick
+      - name: Track official Top 5 and run postmatch learning
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           FORCE_TRACK: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
-        run: node scripts/review-performance.mjs
+        run: |
+          node scripts/track-performance.mjs
+          node scripts/postmatch-learning.mjs
 
-      - name: Archive and grade Top 5
-        env:
-          FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          FORCE_TRACK: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
-        run: node scripts/track-performance.mjs
-
-      - name: Commit performance data
+      - name: Commit performance and learning data
         run: |
           if git diff --quiet -- data/performance data/postmortems; then
-            echo "No performance changes to commit."
+            echo "No performance/postmortem changes to commit."
             exit 0
           fi
           git config user.name "FootyEdge Tracker"
           git config user.email "actions@users.noreply.github.com"
           git add data/performance data/postmortems
-          git commit -m "Update FootyEdge performance and postmortems"
+          git commit -m "Update FootyEdge performance and postmatch learning"
           git pull --rebase origin main
           git push origin HEAD:main

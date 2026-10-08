@@ -8,6 +8,16 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-07 — Men's-only scope + verified empty-slate fix
+**Status:** ✅ Live
+
+- Women's soccer removed from the FootyEdge tracked/public slate going forward.
+- October 7 corrected back to a locked, verified empty men's board; the previously restored Jordan–Armenia women's pick was removed.
+- October 8's India–Russia women's friendly is excluded, making October 9, 2026 the next eligible tracked slate.
+- Empty current-day boards now render immediately as “No games today. Next game on Oct 9, 2026.” instead of remaining on “Checking the game schedule…”.
+- Archived board rows are also filtered for women's/female competition metadata so excluded fixtures cannot reappear from a saved board.
+- Home and Today’s Picks now share the same verified empty-slate behavior.
+
 ## 2026-10-03 — Project foundation
 **Status:** ✅ Complete
 
@@ -259,14 +269,375 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Owner requested the October 7 morning automation run immediately and skip its normal 7 AM occurrence. Recurring schedule moved to DTSTART October 8 at 7 AM America/Toronto, retaining daily runs. Early run submission follows this header deployment so it uses current main.
 - Hit Rate deployment dpl_A4PPBGUeiMjG5QzK6AfUjXN7Hrqh reached READY on production from fc25c0a. Full live-page verification follows the matching header deployment. Published history remains preserved.
 
-## 2026-10-08 — v69 men-only, today-only morning workflow
+## 2026-10-07 — v67/v68 production verification and early-run request
+**Status:** 🟢 UI deployed / verified; morning run requested asynchronously
+
+- Production dpl_9xEjEpU4UuG6FzXtz3wgL7ED3JTk reached READY from d5c4a26 and was assigned footyedge-board.vercel.app. Live browser verification confirmed the single-row Picks header, navigation with Hit Rate before About and removal of the old tracking strip from Picks.
+- Live Hit Rate page verified: real October/YTD 7-3 and 70% from 10 official picks; October 6 then October 5, five vertical rows each, correct hit/miss marks and numeric-only scores. Month rollover and full-month history checks pass. Preview captured from production.
+- All 22 regression tests and published-history integrity passed; GitHub Published board integrity CI succeeded. Existing published boards, selections, prices and historical grade files remain unchanged by these UI changes.
+- Immediate morning automation run was requested successfully at the owner's instruction. Execution/delivery are asynchronous; this log does not claim the board run has completed. The recurring Codex task now starts October 8 at 07:00 America/Toronto and therefore skips October 7's 07:00 occurrence. Its prompt includes the current header, Hit Rate layout, immutability and four-day readiness rules plus force flags for the authorized early run.
+
+## 2026-10-07 — v69 early morning board run / publication gates
+**Status:** 🟡 Code ready · today’s board intentionally blocked by validation
+
+- Owner-triggered morning workflow ran before 7:00 AM Toronto; the scheduled October 7 run remains skipped and normal 7:00 AM scheduling resumes October 8.
+- October 7 review found Jordan vs Armenia in the women’s international schedule. No FootyEdge pick was published because a publication-grade all-competition last-10 and exact native qualifying sportsbook price were not both verified. The site must show the scheduled/unpublished state rather than inventing a pick.
+- “Why this pick” now sits directly inside Pick #1 and prioritizes deterministic FootyEdge research over preview prose while preserving archived explanations/evidence unchanged.
+- Team news is gated to current sourced structured items; model impact requires confirmed role/importance/replacement/evidence. Uncertain news is not promoted to confirmed.
+- Player props require expected-start, 60+ expected minutes, current sources and no material rotation/injury flag.
+- Complete archive capture excludes unpriced/display-only alternatives so frozen selections cannot bypass the exact-price rule.
+- Research now uses current plus prior-season all-competition schedules, excludes unfinished fixtures and stores last-10/last-5 evidence. Postmatch diagnostics are ingested without automatic recalibration.
+- Added dated postmatch diagnostics. Historical missing Top-3 selections are not reconstructed; result grading remains separate from process-quality review.
+- Approved UI-only changes: visible compact game search, club crest contain sizing, circular country imagery preserved, Bundesliga/Ligue 1/Serie A and other supported league marks normalized, and league-header logos constrained against overflow.
+- October 8–11 research inventory remains prepared; no future board is published until current team-news, price and validation gates pass.
+- Tracking/history impact: October 5–6 immutable selections and results are unchanged. No October 7 tracking denominator is created because no board was published.
+- Deployment result: pending this commit’s Vercel production verification.
+
+## 2026-10-07 — v69 deployed and verified
+**Status:** 🟢 Deployed / verified
+
+- Commit `dc47dbf93b1fc773d1ff14ab69b06b4108618d03` deployed to Vercel production as `dpl_G2N3dSgfcgRpcg74kAmrqLRnKDrN` and reached READY.
+- Production alias `footyedge-board.vercel.app` is assigned to the deployment.
+- GitHub Published board integrity passed, including immutable-history enforcement and the complete regression test suite.
+- The archive workflow completed without creating an October 7 board. This is intentional: the publication gates remain blocked by incomplete verified last-10 inputs and the absence of a verified exact native sportsbook price for the tracked fixture.
+- October 5–6 published selections remain byte-preserved by the integrity guard. No October 7 tracking denominator was added.
+
+## 2026-10-07 — v70 mobile navigation, league filters, 4-day live-data horizon
 **Status:** 🟡 Code ready / deployment pending
 
-- Today's Toronto slate was rechecked from the live provider before modeling. The only tracked event was a women's international friendly, which is now filtered before schedule discovery, research, odds, model ranking, archives, tracking and UI rendering. The verified men's slate is empty, so no October 8 board, Top 3, Top 5, props, confidence or odds were invented or frozen.
-- Home and Today's Picks now resolve the successful empty check to `No games today` and the next confirmed men's date, October 9. Provider failure and unpublished-pick states remain separate.
-- The next four dates are schedule-awareness only: October 9 has 6 tracked men's fixtures, October 10 has 45, October 11 has 25 and October 12 has 5. Removed previously prepared future research bases; future-day betting research, odds and recommendations are prohibited until that Toronto date is today.
-- Postmatch learning now reviews every saved frozen Top-3 pick, regardless of confidence, with rank and independent GOOD/MIXED/BAD process grades. Missing historical Pick #2/#3 positions remain explicitly unavailable rather than reconstructed. Rolling diagnostics now group by market family, confidence band, competition, matchup profile and evidence type; current sample gates produced no confidence adjustment.
-- Preserved the authorized v69 UI work only: compact game search; natural-shape bounded club crests; circular national-team imagery; real league-filter marks; contained league-header marks; and `Why this pick` directly under Pick #1. No card, layout, theme or filter redesign was introduced.
-- Strict player-prop eligibility requires a verified native sportsbook price, credible expected start and at least 60 expected minutes. Team-news validation requires current source/status metadata and conservative uncertainty wording.
-- Tracking/history impact: official October record remains 7-3 (70%). Published October 5-6 selections, odds, ranks, confidence and available original history were not changed.
-- Validation: 27 regression tests passed; October 8 daily validation passed with a verified zero-game men's slate; published-board integrity passed against `d5c4a26`; JavaScript syntax checks passed. Deployment and production DOM verification remain pending.
+- Fixed the Picks date bar regression introduced by adding Today + Search: all five controls now occupy one row on mobile instead of wrapping the Next arrow below Previous.
+- Restored/expanded competition-logo mappings in league filters, including FIFA friendlies and Europa League coverage, while retaining the existing major-league marks.
+- Replaced the emoji football fallback with a fully transparent inline SVG football so unknown competitions never render an opaque/boxed emoji background.
+- League logos remain contain-sized and transparent; failed/unknown competition artwork falls back cleanly.
+- Morning deterministic research now rebuilds and pushes the Toronto current date plus the next 3 calendar dates.
+- Hourly live snapshots now push dated scoreboard/fixtures/odds data for today + next 3 dates; `latest-*` continues to represent today only.
+- Future data/research does NOT publish future picks. Picks still require all verification gates and become immutable only on first publication.
+- No historical pick, confidence, odds, explanation or tracking record was modified.
+
+## 2026-10-07 — v70 deployed / verified
+**Status:** 🟢 Deployed and integrity-verified
+
+- Commit `bfe9107e9caff6007f851db691b48ffebb48899e` deployed to Vercel production and reached READY on the production aliases.
+- Published board integrity completed successfully; October 5–6 immutable board history remains unchanged.
+- Mobile date controls, transparent league fallback, restored league mappings, and the today + next-3-days live-data/research horizon are now on main.
+
+## 2026-10-07 — v71 future-board publication horizon
+**Status:** 🟡 Code/data update in progress
+
+- Corrected the future-date odds gate: exact native sportsbook lookup now permits the Toronto current date plus the next 3 dates instead of returning `live_date_only`.
+- Added International Friendlies resolution hints for the exact-odds provider.
+- Clarified the owner rule: future boards SHOULD publish early when their complete research, current team-news, qualifying exact-price and validation gates already pass. They do not have to wait until game day.
+- Future published boards become immutable immediately at first publication, exactly like same-day boards.
+- October 9 currently has scheduled fixtures and DraftKings market data, but no saved publication-grade daily insights/team-news review and no frozen board yet; this is why the UI correctly shows "Picks have not been published yet."
+
+## 2026-10-07 — v72 five-date horizon / October 11 readiness
+**Status:** 🟡 Data verified · latest production verification pending
+
+- Corrected the morning/data horizon to today plus the next four Toronto calendar dates (five dates total).
+- Saved October 11 scoreboard/fixtures/market snapshots and verified 25 exact native-American sportsbook events after filtering strictly to the October 11 Toronto calendar date.
+- Added a hard Toronto-date filter to the exact-odds endpoint so adjacent UTC-date events cannot leak into a requested board.
+- October 11 picks remain unpublished because current publication-grade research/team-news validation is not yet complete; no gate was weakened.
+- No previously published selection, price, confidence, explanation or tracking record changed.
+
+
+## 2026-10-07 — v73 rolling previews / 06:00 official lock
+**Status:** 🟡 Code ready · immediate preview publication triggered by main push
+
+- Owner rule changed: FootyEdge now publishes rolling model boards for today plus the next four Toronto dates without waiting for sportsbook pricing.
+- Future/current pre-lock boards live separately in `data/board-drafts/` and may change on each morning refresh as research, team news, confidence, pricing and adjacent-line choices update.
+- Missing odds no longer block a preview pick. If an exact price is already posted, it must still satisfy the existing -400 floor; an unavailable price displays as pending/blank rather than being invented.
+- The fixture-date board hard-locks at 06:00 America/Toronto. The latest preview is promoted to the immutable official `data/boards/` record and no automatic selection, rank, confidence, price or explanation can change afterward.
+- Post-lock changes remain owner-only and continue to require the existing backup/audit process. Tracking continues to use official locked boards only; preview boards never enter the hit-rate denominator.
+- Deterministic research was moved to the Toronto 05:00 hour so the final morning re-run happens before the 06:00 lock. Rolling preview capture is scheduled around 05:35 with 06:05 + fallback lock checks.
+- UI impact: no redesign. Picks pages simply load the rolling preview when no locked board exists and prefer the official board once locked.
+- Deployment result: pending Git/Vercel and preview-workflow verification.
+
+
+## 2026-10-07 — v74 league artwork / international flag coverage
+**Status:** 🟡 Code ready / production deployment pending
+
+- Replaced the generic/ESPN league-filter artwork for MLS, Bundesliga and Ligue 1 with recognizable Wikimedia-hosted marks matching the owner-provided visual references. Existing Premier League, LaLiga and Serie A mappings remain unchanged.
+- Extended the national-team flag map for the currently researched international slate (including Bolivia, El Salvador, Haiti, India, Indonesia, Jamaica, Jordan, Malaysia, New Zealand, Panama, Philippines, Russia and Saudi Arabia) plus common adjacent international teams.
+- Country images retain the existing circular treatment; club crests remain natural-shape contain images. No card/layout/theme redesign.
+- Added regression coverage for the three requested league marks and current-slate country flags.
+- Tracking/model impact: none. Published historical boards remain unchanged.
+- Deployment result: pending.
+
+
+## 2026-10-07 — v73 preview pricing safety follow-up
+**Status:** 🟡 Code ready / preview refresh queued
+
+- Mutable previews now prefer saved exact native-American daily sportsbook snapshots when available, while still publishing picks when no exact price exists.
+- Converted/generic feed prices may inform model context but are scrubbed from the saved preview and can never become the official recorded price at the 06:00 lock.
+- The exact 06:00 Toronto lock schedule replaces the earlier 06:05 wording. A fallback lock check remains.
+- Board-publish concurrency now queues rather than cancels an in-progress pre-lock refresh, so the 06:00 lock cannot interrupt the final morning preview build.
+
+
+## 2026-10-07 — v75 owner lock-now / daily 06:00 publication
+**Status:** 🟢 October 7 board prepared for immediate immutable publication · recurring rule updated
+
+- Owner superseded the rolling future-board publication rule. October 7 is a one-time early owner override: publish today's board now and lock it immediately.
+- Starting October 8, only the current Toronto calendar date is published. The board workflow starts at 06:00 America/Toronto, builds today's board only, validates it, locks it, and commits the official immutable board. Future-date picks are no longer exposed early.
+- Future schedule/research/odds files may continue to be prepared as backend readiness data, but they do not create public selections.
+- October 7 pricing gate is waived per owner instruction. No price was invented: unavailable odds remain null.
+- October 7 deterministic evidence was refreshed from current Jordan/Armenia women's last-10 and venue aggregate records; player props remain excluded because expected-start/minutes evidence was not publication-grade.
+- Postmatch/model-evolution workflow fixed so both performance tracking and postmatch learning actually run and persist. Saved Top-3 candidates at 85%+ are graded, market-family diagnostics are regenerated, and those diagnostics are ingested before later research. Numerical model changes remain small/versioned and require repeated verified evidence.
+- No October 5–6 historical pick, odds, confidence, explanation or result was modified.
+
+
+## 2026-10-07 — v76 odds / EV / market + Team News correction
+**Status:** 🟡 Data published on main · UI deployment subject to Vercel quota
+
+- Explicit owner correction to the locked October 7 board: keep the selections/ranks/confidences unchanged, but publish current exact sportsbook pricing, implied market probability and EV where the exact market can be verified.
+- Paddy Power current market page verified Jordan or Draw at **1/10** and Over 1.5 Goals at **1/7**. FootyEdge stores the sportsbook’s native fractional prices without converting them. Market probability and EV are derived from those exact prices and the already-saved model probability.
+- No exact native price for the exact **Jordan 1+ Goal** team-total selection was verified in the current review, so its price/market/EV remain explicitly unavailable rather than inferred.
+- Added explicit Team News review content to the October 7 archive. No role-specific confirmed absence/return with replacement evidence met the threshold for a confidence adjustment; player props remain excluded without expected-start/minutes evidence.
+- UI code changes “Why this pick” to **WHY THIS PICK**, keeps TEAM NEWS visible even when the verified review is a no-adjustment result, and displays EV for exact native display prices.
+- Historical correction backup and SHA256 audit were appended; October 7 selection/rank/confidence/explanation were not changed.
+
+
+## 2026-10-07 — v77 restore two-team Team News + form display
+**Status:** 🟡 Code/data ready · deployment verification pending
+
+- Restored the previous expanded-analysis Team News layout: separate Jordan and Armenia cards instead of the single generic fallback box.
+- Jordan's official federation update says all 24 named squad players took part in the final Aqaba session; this is shown as a continuity/availability note, not an artificial confidence boost.
+- Armenia keeps its own card; no late withdrawal, suspension or confirmed key omission met the verification threshold, so the card explicitly records no model adjustment.
+- Fixed the October 7 archive's missing form display. Jordan recent form is saved as W-W-L-W-W and Armenia as L-D-L-L-D from current women's-team results sources.
+- Corrected display GF/GA fields from raw totals (22/16 and 14/24) to per-match averages (2.20/1.60 and 1.40/2.40), while preserving totals separately.
+- No locked pick, rank, confidence, price, EV, market percentage or explanation changed. A second correction backup and SHA256 audit were appended.
+
+
+## 2026-10-07 — v78 American odds + no-UI-change correction
+**Status:** 🟡 Data/code on main · production UI unchanged until normal deploy availability
+
+- Owner clarified that FootyEdge must display odds in American format and that data corrections must not alter the existing UI.
+- October 7 exact source prices are now displayed as **-1000** for Jordan or Draw (native source quote 1/10) and **-700** for Over 1.5 Goals (native source quote 1/7). Native fractional quotes remain stored separately for audit/source fidelity.
+- Jordan 1+ Goal remains N/A because an exact sportsbook price for that exact market was not verified.
+- Reaffirmed the verified archived form fields used by the existing modal: Jordan W-W-L-W-W; Armenia L-D-L-L-D. Per-match GF/GA remains 2.20/1.60 and 1.40/2.40.
+- Restored Team News rendering code on main to the pre-change team-card structure; no new layout/fallback presentation is introduced.
+- No pick, rank, confidence, Market %, EV, explanation or tracking record changed. Correction backup/audit appended.
+
+
+## 2026-10-07 — v79 American-odds renderer + expanded-only Team News
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Removed Team News from collapsed match cards; Team News remains only in the expanded matchup drawer using the existing two-team card layout.
+- Hardened odds rendering so any verified exact price is displayed in American format derived from the stored exact decimal price, preventing fractional notation from leaking into the visible UI.
+- No pick, confidence, EV, market probability, reasoning, form, tracking record, or card layout changed.
+
+
+## 2026-10-07 — v80 live odds refresh + expanded-only Team News compatibility
+**Status:** 🟢 Data ready on main · works through live GitHub-backed board loader
+
+- Refreshed October 7 exact current prices from PokerStars Sports: Jordan or Draw **1.08** (display **-1250 American**) and Over 1.5 Goals **1.17** (display **-588 American**).
+- Updated implied Market % and EV from those exact current prices while keeping the locked selections/ranks/confidences unchanged.
+- Jordan 1+ Goal remains N/A because the exact team-total price still is not verified.
+- Added a temporary archive-data compatibility sentinel so the currently deployed legacy renderer suppresses Team News on collapsed match cards while preserving both Jordan and Armenia team-news cards inside expanded analysis.
+- Permanent expanded-only Team News code is already on main; once Vercel's free deployment quota clears, the compatibility sentinel can be removed.
+
+
+## 2026-10-07 — v81 Jordan ML owner override / final lock
+**Status:** 🟡 Locked on GitHub main · deployment attempt required
+
+- Explicit owner override changed only Pick #1 for Jordan vs Armenia from **Jordan or Draw** to **Jordan ML** after a fresh risk/price review.
+- PokerStars Sports currently lists Jordan Match Result at **1.50 / -200**, which clears the normal -400 floor. FootyEdge's venue-rate Poisson estimate gives Jordan about **78.5%** win probability versus **66.7%** implied by -200, for approximately **+17.8% EV**.
+- Rationale: Jordan are **4-2-0 at home** (16-6), Armenia are **0-1-4 away** (4-16), and the model projection remains about **2.93-0.90**.
+- Pick #2 and Pick #3 were left unchanged because the owner asked specifically about Jordan ML.
+- Team News remains data-populated for both teams but is intended to display only inside expanded analysis. No collapsed-card Team News UI is authorized.
+- Board correction backup and audit preserved before the override.
+
+
+## 2026-10-07 — v82 editorial rewrite standard + women’s-team labels
+**Status:** 🟡 Code/rules ready for next morning board
+
+- Added `EDITORIAL_STYLE.md` as the canonical reader-facing writing guide.
+- Future WHY THIS PICK, match summaries, Team News, supporting picks and player-prop notes now follow a plain-English football-preview style inspired by current Football Whispers structure without copying its prose.
+- Removed model-report wording from the deterministic commentary generator. Reader-facing copy should no longer use phrases such as venue-rate blend, Poisson translation, risk-adjusted fit, positive availability/continuity signal, or FootyEdge/model self-reference.
+- Team News impact text no longer adds a mechanical `Impact:` prefix; the sentence should read naturally.
+- Women’s fixtures now display `(W)` after team names at the presentation layer, including fixture names, team headers and visible pick labels, without changing provider IDs or odds-matching keys.
+- No card layout, theme, spacing or component redesign is part of this change.
+- Historical locked explanations remain unchanged unless the owner explicitly asks to rewrite a specific historical board.
+
+
+## 2026-10-07 — v83 compact Top 3 / stat-box spacing
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Owner-requested spacing-only cleanup to the existing game card; no redesign.
+- Top 3 selection labels now stay on one line whenever the available card width allows it. The odds/confidence column keeps a fixed compact footprint so text cannot overlap it; genuinely overlong labels truncate rather than creating unnecessary multi-line height.
+- Removed unnecessary minimum height / bottom whitespace from the three Top 3 pick boxes and reduced their vertical padding.
+- Trimmed the five lower stat boxes vertically while keeping the value and label centered with even spacing.
+- Mobile receives the same proportional tightening without changing card structure, colors, typography hierarchy or data.
+- No model, pick, odds, confidence, write-up, tracking or historical data changed.
+
+
+## 2026-10-07 — v84 expanded modal metric / VS alignment
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Owner-requested alignment-only cleanup in expanded analysis; no redesign.
+- Centered the VS marker vertically between the two flag circles by giving the middle column the same visual height as the flags.
+- Tightened the four form/GF-GA tiles and centered each label/value pair as one unit.
+- Removed inherited form margin/min-height inside those tiles so W/D/L chips align consistently with the numeric GF/GA row.
+- Mobile uses the same alignment with proportional 58px flag/VS height and more compact metric tiles.
+- No picks, odds, write-ups, Team News content, model logic, tracking or historical data changed.
+
+
+## 2026-10-07 — v85 equal expanded metric tiles
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Made the four expanded-analysis metric boxes exactly equal in width and height as a uniform 2×2 grid.
+- Desktop/tablet tiles are fixed to the same 42px row height; mobile tiles use the same 36px row height.
+- No content, data, picks, odds, model logic, Team News, or other layout elements changed.
+
+
+## 2026-10-07 — v86 Home women’s-team labels
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Fixed the Home “Today’s Top 5 Picks” renderer so women’s fixtures use the same `(W)` display convention as Today’s Picks.
+- Example: `Jordan (W) vs Armenia (W)` and `Jordan (W) ML`.
+- This is display-layer only; raw team names, provider IDs, odds matching, locked picks and historical data remain unchanged.
+
+
+## 2026-10-07 — v87 Hit Rate row cleanup
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Removed #1/#2/#3/#4/#5 prefixes from the saved Top 5 result rows; the table now shows only the actual pick text.
+- Centered the result glyph inside the circular hit/miss marker, including the miss X.
+- No tracking records, scores, hit/miss outcomes, dates, or other Hit Rate page layout changed.
+
+
+## 2026-10-07 — v88 support CTA / About title / mobile hero fit
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Kept Support FootyEdge blue so support remains visually distinct from the green primary action, but replaced the externally rendered image button with a native FootyEdge CTA using the site font, weight, radius and 46px height.
+- Applied the same support CTA treatment on Home and About.
+- Home About heading is now **ABOUT FOOTYEDGE**; the About page eyebrow uses the same wording in caps.
+- On mobile, the Home hero now prioritizes showing the complete banner artwork with contain-style sizing instead of aggressive cover cropping.
+- No board data, model logic, picks, odds, tracking or content logic changed.
+
+
+## 2026-10-07 — v89 restore original support cup mark
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Kept the new native FootyEdge support-button typography/height/radius, but restored the original Buy Me a Coffee yellow cup mark on Home and About.
+- No other layout, content, board or model changes.
+
+
+## 2026-10-07 — v90 unified Home hero / full banner
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Combined the Home hero and separate About FootyEdge card into one continuous hero card.
+- Removed the redundant ABOUT FOOTYEDGE heading and eliminated the visual break between “Sharper soccer research. Smarter picks.” and the introductory/free-to-use copy.
+- Support FootyEdge now lives inside the same hero card below the intro copy.
+- Replaced the banner background treatment with the exact embedded panoramic image as a real image element, preserving its full natural width/height instead of cropping it.
+- On mobile the banner area uses the source image’s approximately 8:1 panoramic ratio so the full artwork is visible and the hero card sizes naturally around it.
+- Tracking and Today’s Top 5 remain as the next two cards; no board/model/pick/tracking data changed.
+
+
+## 2026-10-07 — v91 tall hero image with text fade
+**Status:** 🟡 Code ready · deployment verification pending
+
+- Clarified the Home banner treatment after checking the source asset: the banner itself is 1672×210 (about 8:1), so there is no hidden vertical artwork to reveal.
+- Changed the upper hero into a taller image stage that extends through “SOCCER INTELLIGENCE”, the FootyEdge wordmark and “Sharper soccer research. Smarter picks.”
+- The same source image is proportionally zoomed to fill that taller area without vertical stretching; the lower part receives a progressive dark overlay so the branding/tagline remains readable.
+- After the tagline, the image fades fully into the existing dark hero body containing the free-to-use copy and Support button.
+- Mobile uses a 285px image stage with the same fade treatment.
+- No board, picks, odds, tracking or model data changed.
+
+
+## 2026-10-07 — v92 repository logo cache / football-logos.cc source
+**Status:** 🟡 Code ready · logo-sync workflow pending
+
+- Made `football-logos.cc` the canonical upstream source for FootyEdge competition and club/team logos.
+- Added a repo-local logo cache under `assets/logos/` with generated manifest/registry source metadata and attribution.
+- Added a GitHub Actions sync workflow that refreshes configured competition marks and crawls their listed teams, storing 256×256 transparent PNG copies in the FootyEdge repository.
+- Seeded supported sources for Premier League, La Liga, Serie A, Bundesliga, Ligue 1, Eredivisie, Primeira Liga, MLS, UEFA Champions League, UEFA Europa League, UEFA Nations League, CONCACAF Nations League and FIFA World Cup 2026.
+- Today’s Picks now prefers repo-local competition/team assets. Existing remote/API logos remain fallback-only so the UI does not break before or between cache refreshes.
+- Country/national-team display remains the existing circular flag treatment.
+- Added upstream credit/source documentation as requested by football-logos.cc.
+
+
+## 2026-10-07 — v93 competition-logo visual variants / containment
+**Status:** 🟡 Code ready · logo resync/deploy verification pending
+
+- Kept football-logos.cc as the upstream logo source, with the FootyEdge repository cache remaining the production source of truth.
+- Selected display variants for the dark UI instead of blindly using each competition's default mark:
+  - UEFA Champions League: compact **no-text** starball, rendered white on the FootyEdge dark background.
+  - UEFA Europa League: compact **no-text** mark.
+  - Ligue 1: **white** variant for dark-background legibility.
+  - Eredivisie: **no-text white** variant.
+- Added final logo containment rules so every competition mark stays inside the existing 24×24 footprint with `object-fit: contain`, centered alignment and hidden overflow.
+- Added small per-mark scale normalization for tall/narrow Serie A, Bundesliga and Champions League marks so they read consistently without changing filter/header dimensions.
+- No picks, model logic, odds, tracking or historical board data changed.
+
+
+## 2026-10-07 — v94 Ligue 1 white-logo completion
+**Status:** 🟢 Code pushed to main · deployment verification pending
+
+- Completed the previously planned Ligue 1 white-logo treatment for the dark FootyEdge UI.
+- The existing local Ligue 1 competition asset is now rendered white inside the same contained logo footprint; dimensions, spacing, filter layout and header height are unchanged.
+- Bumped the Picks UI bundle version to v94 so clients reload the corrected treatment.
+- No picks, odds, model logic, tracking or historical board data changed.
+
+
+## 2026-10-07 — v95 restore women metadata on locked/live merge
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Fixed a regression where a generic live-feed competition label could overwrite the locked board's more specific women’s competition metadata.
+- Locked-board metadata is now authoritative for league id/name/logo when the published fixture is merged with the live fixture.
+- This restores reader-facing labels such as International Friendlies — Women, Jordan (W), Armenia (W), and Jordan (W) ML wherever the existing women-display helper is used.
+- Updated the expanded fixture title to use the same women-aware display names.
+- Bumped the Today’s Picks UI bundle to v95.
+- No locked pick, odds, confidence, model output, tracking or historical board data changed.
+
+
+## 2026-10-07 — v96 live scores / green live indicator
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Added a small green live dot and live status/minute wherever a match is actively in progress.
+- Today’s game cards now show the current score beside each team while live and retain the final score after FT.
+- Today’s Top Picks now swaps the scheduled kickoff line for live/FT status and includes the live/final score in the fixture line.
+- Expanded analysis uses the same live-state indicator.
+- Live score/status data remains a separate dynamic layer; frozen picks, odds, confidence, reasoning and tracking remain unchanged.
+- Bumped the Today’s Picks UI bundle to v96.
+
+
+## 2026-10-07 — v96 live-score experiment reverted
+**Status:** 🟢 Reverted to last known-good UI baseline
+
+- Reverted the live-score/green-dot UI experiment after the assembled UI bundle failed the full published-board regression parser.
+- Restored Today’s Picks UI files and regression coverage to commit `9d22c7a`, the last known-good state before live-score work began.
+- Preserved the women’s competition metadata fix, `(W)` display behavior, logo-source changes, locked picks, odds, confidence, tracking and historical board data.
+- Live scores are not currently enabled in production.
+
+
+## 2026-10-07 — v97 public competition-scope correction / cleared Oct 7 board
+**Status:** 🟡 Code/data pushed · deployment verification pending
+
+- Applied the owner-selected public competition scope consistently across schedule availability, live game rendering and deterministic research generation.
+- Raw upstream snapshots remain untouched for audit/debugging, but out-of-scope tagged fixtures no longer flow into public boards, research candidates or future tracking.
+- Backed up the prior October 7 locked board before correction and appended an audit entry with before/after SHA256 values.
+- Cleared and re-locked the official October 7 board. The corrected board is immutable with 0 games and 0 Top 5 picks because no eligible tracked fixtures remain in scope today.
+- Cleared the October 7 research fixture list and updated board readiness to 0 scheduled/research fixtures for the public scope.
+- Bumped the Picks bundle to v96 and the board-availability helper cache to v67.
+- No prior audit entries or backup files were rewritten.
+
+
+## 2026-10-07 — v98 empty-day next-game state
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Kept the corrected October 7 official board locked at 0 games after the owner removed women’s soccer from the public scope.
+- Fixed the empty locked-board path so Today’s Picks and Today’s Games no longer remain stuck on “Checking the game schedule…”.
+- Empty current-day boards now render “No games today.” and look ahead for the next confirmed eligible fixture date using the same public competition scope.
+- The look-ahead excludes tagged women’s/female fixtures and searches up to 21 days ahead.
+- Bumped the board-availability helper to v68 and Today’s Picks UI bundle to v98.
+- No locked picks, odds, tracking, historical audit entries or prior board backups were rewritten.
+
+
+## 2026-10-07 — v99 Premier League / MLS logo containment
+**Status:** 🟡 Code pushed · deployment verification pending
+
+- Reduced only the rendered Premier League and MLS competition marks inside the existing league-logo footprint so their full artwork remains visible instead of touching/cropping against the icon boundary.
+- Kept the existing 24×24 competition container, filter spacing, header height and card layout unchanged.
+- Bumped Today’s Picks UI bundle to v99.
+- October 7 remains the corrected immutable locked board with women’s soccer removed from the public scope.
+- No picks, odds, model logic, tracking or historical board data changed.
