@@ -1,0 +1,53 @@
+name: Owner five league logos (GitHub data only)
+on:
+  push:
+    branches: [main]
+    paths: ["scripts/owner-five-logos-oct09.mjs",".github/workflows/owner-five-logos-oct09.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["scripts/owner-five-logos-oct09.mjs",".github/workflows/owner-five-logos-oct09.yml"]
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-five-logos-20261009
+  cancel-in-progress: false
+jobs:
+  logos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate exact logo sources and historical data preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/owner-five-logos-oct09.mjs
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-five-logos-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import assert from "node:assert/strict";
+          const b=JSON.parse(fs.readFileSync("data/boards/2026-10-09.json","utf8"));
+          assert.equal(b.games.length,12);
+          assert.equal(b.games.reduce((n,g)=>n+g.top3.length,0),26);
+          assert.ok(b.games.filter(g=>["cze.1","tur.1","ksa.1","por.1","eng.2"].includes(g.league)).every(g=>g.leagueLogo.startsWith("https://assets.football-logos.cc/logos/")));
+          JS
+      - name: Update logo metadata in the dated GitHub board only
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "FootyEdge Logo Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(logos): apply owner's five exact league crest assets to board JSON [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
