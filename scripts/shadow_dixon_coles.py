@@ -214,8 +214,8 @@ def market_probabilities(pred) -> dict:
         raise ValueError("Totals normalization failed")
     return {k: round(v, 6) for k, v in probs.items()}
 
-def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter=fit_model) -> dict:
-    path = root / "data" / f"research-base-{day.isoformat()}.json"
+def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter=fit_model, research_file=None) -> dict:
+    path = research_file or root / "data" / f"research-base-{day.isoformat()}.json"
     output = {
         "date": day.isoformat(), "asOf": asof.isoformat(), "modelVersion": VERSION,
         "mode": "shadow_only", "promotedToPicks": False,
@@ -341,7 +341,8 @@ def main() -> int:
     if not need_original and not need_candidate and not need_expanded:
         print(f"Immutable original and candidate unchanged: {day}")
         return 0
-    result = forecast_day(args.repo, day, asof)
+    expanded_base = args.repo / "data" / f"research-base-expanded-{day.isoformat()}.json"
+    result = forecast_day(args.repo, day, asof, research_file=expanded_base if need_expanded and expanded_base.exists() else None)
     if result["status"] != "completed":
         print(f"Research incomplete; no original or candidate archived: {result['status']}")
         return 0
