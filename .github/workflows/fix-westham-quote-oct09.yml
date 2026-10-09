@@ -1,0 +1,44 @@
+name: Owner West Ham price recovery (GitHub data only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/fix-westham-quote-oct09.mjs"
+      - ".github/workflows/fix-westham-quote-oct09.yml"
+permissions:
+  contents: write
+concurrency:
+  group: owner-oct09-westham-quote
+  cancel-in-progress: false
+jobs:
+  correct-native-price:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate pre-match timing and code
+        run: |
+          node --check scripts/fix-westham-quote-oct09.mjs
+          node --input-type=module -e 'if(Date.now()>=Date.parse("2026-10-09T19:00:00Z"))throw Error("Cannot recover a pre-match quote after kickoff")'
+      - name: Apply exact native quote and validate immutable-history audit
+        run: |
+          set -euo pipefail
+          BASE="$(git rev-parse HEAD)"
+          node scripts/fix-westham-quote-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+      - name: Commit GitHub JSON only
+        run: |
+          set -euo pipefail
+          git add data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "FootyEdge Owner Audit Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): recover verified West Ham ML price from archived feed [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
