@@ -8,6 +8,18 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Morning refresh now audits shadow model readiness
+**Status:** 🟡 Workflow integration code — does not promote shadow predictions
+
+- Official 06:00 Toronto board workflow now checks the latest original daily
+  shadow forecast after model generation and before board capture.
+- GitHub Actions step summary reports model availability, version, source
+  coverage, missing/partial status and date integrity.
+- Uses a non-blocking validation check: missing/late/stale shadow data cannot
+  block or rewrite an official board. Experimental probabilities remain
+  excluded from Top 3, Top 5, prices and rankings.
+- Added Node regression tests and model-workflow CI gate.
+
 ## 2026-10-09 — Verified club aliases, shadow v0.2
 **Status:** 🟡 Alias improvements committed; next scheduled day will measure coverage
 

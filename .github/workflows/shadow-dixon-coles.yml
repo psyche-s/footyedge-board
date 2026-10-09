@@ -7,12 +7,18 @@ on:
     paths:
       - "scripts/shadow_dixon_coles.py"
       - "tests/test_shadow_model.py"
+      - "scripts/audit-shadow-refresh.mjs"
+      - "tests/audit-shadow-refresh.test.mjs"
+      - ".github/workflows/archive-board.yml"
       - ".github/workflows/shadow-dixon-coles.yml"
   pull_request:
     branches: [main]
     paths:
       - "scripts/shadow_dixon_coles.py"
       - "tests/test_shadow_model.py"
+      - "scripts/audit-shadow-refresh.mjs"
+      - "tests/audit-shadow-refresh.test.mjs"
+      - ".github/workflows/archive-board.yml"
       - ".github/workflows/shadow-dixon-coles.yml"
       - "requirements-shadow.txt"
   schedule:
@@ -40,6 +46,11 @@ jobs:
           python-version: "3.11"
           cache: "pip"
           cache-dependency-path: "requirements-shadow.txt"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Morning audit unit tests
+        run: node --test tests/audit-shadow-refresh.test.mjs
       - name: Install modeling dependencies
         run: pip install -r requirements-shadow.txt
       - name: Unit tests
