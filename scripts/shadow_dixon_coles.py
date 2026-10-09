@@ -272,11 +272,11 @@ def main() -> int:
         return 0
     if need_original:
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(json.dumps(result, indent=2, allow_nan=False) + "\\n", encoding="utf-8")
+        dest.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
         print(f"Original shadow archived: {dest}")
     if need_candidate:
         candidate.parent.mkdir(parents=True, exist_ok=True)
-        candidate.write_text(json.dumps(result, indent=2, allow_nan=False) + "\\n", encoding="utf-8")
+        candidate.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
         print(f"Separate pre-match candidate archived: {candidate}")
     print(f"Shadow: {day} coverage={result.get('coverage')} status={result['status']}")
     return 0
