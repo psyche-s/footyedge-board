@@ -6,6 +6,10 @@ on:
     branches: [main]
     paths:
       - "scripts/shadow_dixon_coles.py"
+      - "scripts/backtest_shadow.py"
+      - "scripts/compare-frozen-slates.mjs"
+      - "scripts/review-shadow.mjs"
+      - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
       - "scripts/audit-shadow-refresh.mjs"
       - "tests/audit-shadow-refresh.test.mjs"
@@ -15,6 +19,10 @@ on:
     branches: [main]
     paths:
       - "scripts/shadow_dixon_coles.py"
+      - "scripts/backtest_shadow.py"
+      - "scripts/compare-frozen-slates.mjs"
+      - "scripts/review-shadow.mjs"
+      - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
       - "scripts/audit-shadow-refresh.mjs"
       - "tests/audit-shadow-refresh.test.mjs"
@@ -55,6 +63,26 @@ jobs:
         run: pip install -r requirements-shadow.txt
       - name: Unit tests
         run: python -m unittest discover -s tests -p 'test_shadow_model.py' -v
+      - name: Historical domestic holdout (research only)
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            python scripts/backtest_shadow.py --dry-run
+          elif [[ ! -f "data/model-backtests/2026-09-12_2026-09-21.json" ]]; then
+            python scripts/backtest_shadow.py
+          else
+            echo "Immutable historical holdout result already archived."
+          fi
+      - name: Postmatch review JavaScript tests
+        run: node --test tests/review-shadow.test.mjs
+      - name: Original archived slate scorecard (not a DC comparison)
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            node scripts/compare-frozen-slates.mjs --dry-run
+          else
+            node scripts/compare-frozen-slates.mjs
+          fi
       - name: Build shadow forecast (today only, Toronto)
         shell: bash
         run: |
@@ -67,25 +95,28 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             python scripts/shadow_dixon_coles.py --dry-run
           else
-            python scripts/shadow_dixon_coles.py
+            git fetch --quiet origin main
+            git pull --ff-only origin main
+            python scripts/shadow_dixon_coles.py --capture-candidate
           fi
-      - name: Archive immutable shadow output (main only)
+      - name: Archive immutable model snapshots and fixed holdout
         if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          FILE="data/model-shadow/$TODAY.json"
-          if [[ ! -f "$FILE" ]]; then
-            echo "No shadow output generated."; exit 0
-          fi
-          if git ls-files --error-unmatch "$FILE" >/dev/null 2>&1; then
-            echo "Daily shadow record exists, preserving original."
-            exit 0
-          fi
+          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json")
           git config user.name "FootyEdge Model Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -- "$FILE"
-          git commit -m "chore(model): archive Dixon-Coles shadow $TODAY [skip ci]"
+          for FILE in "${FILES[@]}"; do
+            if [[ -f "$FILE" ]] && ! git ls-files --error-unmatch "$FILE" >/dev/null 2>&1; then
+              git add "$FILE"
+            fi
+          done
+          if git diff --cached --quiet; then
+            echo "All model snapshots already archived; no overwrite."
+            exit 0
+          fi
+          git commit -m "chore(model): archive pre-match evidence and holdout [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main

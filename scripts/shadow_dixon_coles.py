@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import re
@@ -15,7 +16,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.2"
+VERSION = "dc-shadow-v0.3"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
@@ -157,7 +158,24 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
     if not path.exists():
         output["status"] = "missing_research_base"
         return output
-    slate = json.loads(path.read_text(encoding="utf-8"))
+    research_bytes = path.read_bytes()
+    slate = json.loads(research_bytes.decode("utf-8"))
+    output["researchInputSha256"] = hashlib.sha256(research_bytes).hexdigest()
+    output["researchGeneratedAt"] = slate.get("generatedAt")
+    stamp = slate.get("generatedAt")
+    if stamp:
+        try:
+            parsed = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+            if parsed.tzinfo is None or parsed > asof + timedelta(minutes=5):
+                output["status"] = "research_timestamp_invalid"
+                return output
+            output["researchAgeHours"] = round((asof - parsed).total_seconds() / 3600, 3)
+            if output["researchAgeHours"] > 36:
+                output["status"] = "stale_research_base"
+                return output
+        except (ValueError, TypeError):
+            output["status"] = "research_timestamp_invalid"
+            return output
     if slate.get("date") != day.isoformat():
         raise ValueError("Research base date does not match requested date")
     games = slate.get("fixtures", [])
@@ -227,6 +245,7 @@ def main() -> int:
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--as-of", help="UTC ISO-8601 time (for reproducible tests)")
     parser.add_argument("--dry-run", action="store_true", help="Compute from sources without modifying immutable archives")
+    parser.add_argument("--capture-candidate", action="store_true", help="Archive separate pre-match v0.3 candidate for future scoring")
     args = parser.parse_args()
     asof = (datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
             if args.as_of else datetime.now(timezone.utc))
@@ -236,20 +255,30 @@ def main() -> int:
     if day < asof.astimezone(TORONTO).date():
         parser.error("Historical dates must not be backfilled as original pre-match forecasts")
     dest = args.repo / "data" / "model-shadow" / f"{day.isoformat()}.json"
+    candidate = args.repo / "data" / "model-candidates" / f"{day.isoformat()}.json"
     if args.dry_run:
         result = forecast_day(args.repo, day, asof)
         print(f"Shadow dry run: {day} status={result['status']} "
               f"coverage={result.get('coverage')}")
         return 0
-    # Preserve the first daily forecast: later results must not revise historical predictions.
-    if dest.exists():
-        print(f"Shadow prediction already archived (unchanged): {dest}")
+    need_original = not dest.exists()
+    need_candidate = args.capture_candidate and not candidate.exists()
+    if not need_original and not need_candidate:
+        print(f"Immutable original and candidate unchanged: {day}")
         return 0
     result = forecast_day(args.repo, day, asof)
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-    print(f"Shadow: {day} status={result['status']} "
-          f"coverage={result.get('coverage')} -> {dest}")
+    if result["status"] != "completed":
+        print(f"Research incomplete; no original or candidate archived: {result['status']}")
+        return 0
+    if need_original:
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+        print(f"Original shadow archived: {dest}")
+    if need_candidate:
+        candidate.parent.mkdir(parents=True, exist_ok=True)
+        candidate.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+        print(f"Separate pre-match candidate archived: {candidate}")
+    print(f"Shadow: {day} coverage={result.get('coverage')} status={result['status']}")
     return 0
 
 if __name__ == "__main__":

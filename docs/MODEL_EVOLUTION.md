@@ -1,7 +1,7 @@
 # FootyEdge model evolution — research track
 
 ## Status (2026-10-09)
-Version: dc-shadow-v0.2. **Experimental/shadow only.** Do not cite its output as a
+Version: dc-shadow-v0.3. **Experimental/shadow only.** Do not cite its output as a
 validated percentage or use it to modify the live board, Top 3, Top 5 or archives.
 
 ## Why
@@ -70,6 +70,31 @@ For deterministic local investigation, specify --date YYYY-MM-DD and --as-of
 UTC_ISO_TIMESTAMP (same day or future only). Do not backfill forecasts after
 matches have been played and misrepresent them as contemporaneous predictions.
 
+## October 9 pilot and original result comparison
+- The original October 5/6 FootyEdge boards are national-team matches,
+  outside Dixon-Coles' *domestic-league-only* training scope. Their real
+  outcomes are graded in `data/model-backtests/archived-originals-2026-10-05_06.json`
+  without pretending a new-model prediction existed.
+- `scripts/backtest_shadow.py` makes a separate **domestic-league historical
+  holdout**: fit solely to pre-2026-09-12 results and score actual final matches
+  through 2026-09-20. Scores are retrospectively sourced from OpenFootball;
+  their availability at the old clock time cannot be independently verified.
+  This is an initial sample, not proof of calibration or betting profitability.
+- Today's original `data/model-shadow/2026-10-09.json` v0.1 is **immutable**.
+  v0.3 saves an independent, time-stamped pre-kickoff
+  `data/model-candidates/2026-10-09.json`, with the research-input SHA256.
+  NEVER overwrite the original or backfill the new candidate after kickoff.
+- `scripts/review-shadow.mjs` grades original and candidate forecasts only
+  against authoritative completed scores; compares market-level outcomes
+  with original published selections without changing those picks.
+  Unfinished games stay pending, process-quality conclusions stay unreviewed.
+- The 05:05 Toronto research workflow ingests any completed previous-day
+  model review **before** refreshing its statistics; the model is still
+  independent and its weights are not automatically changed on a one-day sample.
+- Odds remain exact-native sportsbook quotations only. Where the sportsbook
+  lacks a verified market/line, do not invent a new price or label one
+  available merely because Dixon-Coles estimates its probability.
+
 ## Acceptance gates before ANY public influence
 1. Check coverage/source freshness and expand legally available league history.
 2. Walk-forward historical replay with time-appropriate training data, genuine
@@ -93,7 +118,7 @@ matches have been played and misrepresent them as contemporaneous predictions.
 
 ## Proposed next milestones (NOT IMPLEMENTED)
 - Historical canonical team ID mapping and stable league source checks.
-- Rolling-origin holdout evaluation and monthly calibration dashboard.
+- Expanded rolling-origin holdout evaluation and monthly calibration dashboard.
 - Licensed xG/shot quality, field tilt and PPDA when permitted, with
   opponent-adjusted matchups and verified team-news modifiers.
 - Calibrated model/blend only after statistically meaningful validation.

@@ -25,6 +25,18 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Grade prior archived model forecasts before the next research run
+        shell: bash
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "05" ]]; then
+            echo "Skip duplicate local-hour research/review run."
+            exit 0
+          fi
+          # Outcome grades are independent from unchanged official pick history.
+          node scripts/review-shadow.mjs || echo "Optional model review unavailable; preserve official research run."
       - name: Build deterministic stats research — today + next 4 days
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
@@ -44,13 +56,14 @@ jobs:
       - name: Commit research base
         shell: bash
         run: |
-          if git diff --quiet -- data/research-base-*.json; then
+          git add -A -- data/research-base-*.json
+          if [[ -d data/model-reviews ]]; then git add -A -- data/model-reviews/; fi
+          if git diff --cached --quiet; then
             echo "No research-base changes."
             exit 0
           fi
           git config user.name "FootyEdge Research Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/research-base-*.json
           git commit -m "chore(research): build deterministic daily stats base [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
