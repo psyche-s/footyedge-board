@@ -190,6 +190,22 @@ matches have been played and misrepresent them as contemporaneous predictions.
   change. Its successful completion triggers a new model refresh,
   avoiding the former six-game source mismatch.
 
+## October 9 owner price-floor and research-pick repair
+- Exact verified American prices as low as **-500 inclusive** qualify for
+  consideration; all other model-confidence, fair-line and source checks
+  remain in place. This corresponds to decimal odds **1.20**.
+- A one-time explicit owner correction fills empty match analyses from
+  the *original saved pre-kickoff v0.5* model and verified archived
+  DraftKings moneyline/goal-total prices. This is a versioned revision
+  with original Oct 9 board SHA256 backup and NOT a claim that today's
+  06:00 official picks were originally different.
+- Where the model supports a market but there is no exact quoted price,
+  it is marked unavailable, not estimated. The Turkish market-only
+  lean is marked as bookmaker-derived rather than assigned an
+  invented fitted probability.
+- Previous Dortmund, PSV Top 3 and global Top 5 are unchanged.
+  New game research picks are **not automatically validated 85% bets**.
+
 ## Acceptance gates before ANY public influence
 1. Check coverage/source freshness and expand legally available league history.
 2. Walk-forward historical replay with time-appropriate training data, genuine
@@ -202,7 +218,7 @@ matches have been played and misrepresent them as contemporaneous predictions.
    leaking results. Validate uncertainty, sample counts and reliability bins
    (including whether stated 85% picks hit approximately 85%).
 5. Compare selections at exact verified sportsbook odds, apply the established
-   -400 floor and safer-line tests, track no-vig prices, closing-line value,
+   -500 floor and safer-line tests, track no-vig prices, closing-line value,
    push rules, model EV and risk-adjusted ROI with realistic availability.
 6. Require documented, repeatable out-of-sample improvement before adjusting
    published confidence/selection weights; version each change, never modify

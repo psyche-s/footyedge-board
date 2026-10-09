@@ -1850,9 +1850,9 @@ function priceAllowed(p){
   if(!p)return false;
   if(p.odds!=null){
     const n=Number(String(p.odds).replace("+",""));
-    if(Number.isFinite(n))return n>=-400
+    if(Number.isFinite(n))return n>=-500
   }
-  if(p.verifiedPrice&&Number.isFinite(Number(p.priceDecimal)))return Number(p.priceDecimal)>=1.25;
+  if(p.verifiedPrice&&Number.isFinite(Number(p.priceDecimal)))return Number(p.priceDecimal)>=1.2;
   return false
 }
 const BOOK_META={

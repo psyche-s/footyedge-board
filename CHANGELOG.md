@@ -1,3 +1,12 @@
+## 2026-10-09 — Owner raises allowed odds floor to -500 and fills unranked games
+**Status:** Model-derived research selections, not reissued 06:00 official picks
+
+- Owner raised the verified sportsbook price limit from -400 to -500 (inclusive; decimal 1.20).
+- Added an audited GitHub-only correction workflow to show today's as-of Dixon–Coles market research for five previously blank games, and transparently mark Galatasaray's ML as a market-only research lean because the current Turkish training data cannot support model confidence.
+- Raw pre-match model probabilities may be shown, explicitly marked uncalibrated; never artificially assign 85% confidence or fabricate a missing sportsbook quote.
+- Corrected original eight-game board with before/after SHA256 backup, preserving original Dortmund/PSV picks and global Top 5.
+- Production Vercel redeployment is not required for GitHub raw board JSON, which the existing UI reads from main; updated source-code price-floor handling will only appear after the next successful frontend deploy.
+
 ## 2026-10-09 — Audited addition of today's missing Championship and Turkish games
 **Status:** 🟡 One-time scope correction workflow verified by board integrity checks
 
