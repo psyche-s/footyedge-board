@@ -7,6 +7,21 @@
 - Add CI that syntax-checks the complete browser JavaScript assembled from the split HTML parts.
 - The existing live website must successfully redeploy to receive this frontend formatting change; the corrected board pick text itself is already served from raw GitHub data.
 
+## 2026-10-09 — Saudi Pro League men's fixture/odds expansion
+**Status:** Owner-authorized GitHub-only after-lock addition and permanent league coverage
+
+- Added Saudi Pro League `ksa.1` / ESPN 21231 to tracked men's fixtures,
+  daily research, display filters, odds-provider discovery and model scope.
+- Preserved the 8 prior match selections/Top 5 and archived a new
+  before/after SHA256 correction containing three Saudi fixtures.
+  Earlier-started Saudi games receive NO fabricated pre-match selections.
+- Saved real DraftKings 1X2 and single posted goal-total quotes where
+  available. Added machine-readable dated price coverage audit documenting
+  unavailable BTTS, Double Chance and non-posted alternate goal lines.
+- Saudi current-season OpenFootball modeling source is missing, so the
+  shadow model correctly reports no trained Saudi probability rather than
+  claiming unfounded high confidence.
+
 ## 2026-10-09 — Owner raises allowed odds floor to -500 and fills unranked games
 **Status:** Model-derived research selections, not reissued 06:00 official picks
 
