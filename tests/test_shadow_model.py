@@ -48,6 +48,23 @@ class ShadowModelTests(unittest.TestCase):
         # Source availability must be checked by the live model; adding league
         # code does not imply a valid current-season OpenFootball file exists.
 
+    def test_czech_public_domain_results_strict_cutoff(self):
+        fixture = """= Czech Republic | First League 2026/27
+Sun Sep 20
+  18:00   Slavia Praha  2-1 (0-0)  Viktoria Plzeň
+Fri Oct 9
+  18:00   FC Fastav Zlín   v   Slavia Praha
+Sat Oct 10
+  15:00   Viktoria Plzeň   v   FK Mlada Boleslav
+"""
+        pre = m.parse_czech_results(fixture, 2026, date(2026, 10, 9))
+        self.assertEqual(len(pre), 1)
+        self.assertEqual([pre[0]["hg"], pre[0]["ag"]], [2, 1])
+        self.assertEqual(pre[0]["date"], date(2026, 9, 20))
+        later = m.parse_czech_results(fixture, 2026, date(2026, 10, 11))
+        self.assertEqual(len(later), 1)
+        self.assertEqual(m.LEAGUES["cze.1"], "cz.1")
+
     def test_english_championship_and_turkey_mens_model_scope(self):
         self.assertEqual(m.LEAGUES["eng.2"], "en.2")
         self.assertEqual(m.LEAGUES["tur.1"], "tr.1")

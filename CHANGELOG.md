@@ -1,3 +1,11 @@
+## 2026-10-09 — Add Czech Chance Liga and five exact league crests
+**Status:** Source-tracked men-only Czech fixtures plus source-accurate logos
+
+- Added `cze.1` Czech First League fixture discovery from public-domain current-season completed results and schedules, including Friday October 9 Zlín vs Slavia Prague and Saturday/Sunday upcoming games.
+- Connected Czech schedule + last-ten form/H2H to daily research, safe separate shadow model and exact odds market discovery; the source is not a live results feed and missing real odds remain N/A.
+- Set the five competition badges to the exact owner-provided image URLs: Czech, Turkey, Saudi Arabia, Portugal and EFL Championship, contained within their existing logo bounds.
+- Existing October 9 board receives one owner-audited additional fixture without creating retroactive picks; existing 26 selections/Top 5/history remain unchanged.
+
 ## 2026-10-09 — First-person plural voice throughout FootyEdge
 **Status:** Public wording simplified, underlying research sources retained internally
 

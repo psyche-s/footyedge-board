@@ -1,13 +1,14 @@
 import '../assets/board-availability.js';
 import fs from "node:fs/promises";
 import path from "node:path";
+import {loadCzechSeason,eventsForCzechDate} from "../assets/czech-first-league.mjs";
 
 const SITE=(process.env.FOOTYEDGE_URL||"https://footyedge-board.vercel.app").replace(/\/$/,"");
 const TZ="America/Toronto";
 
 const TRACKED=new Set([
   "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
-  "eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
+  "cze.1","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
   "uefa.euro","uefa.euroq","fifa.world","fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf"
 ]);
 
@@ -132,10 +133,32 @@ async function schedule(league,team,season){
   const payloads=await Promise.all(years.map(y=>json(`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(team)}/schedule?season=${encodeURIComponent(y)}`)));
   return{events:payloads.flatMap(x=>x?.events||[])}
 }
+let czechFixtures=[];
+function czechHistory(teamId,before){
+  return czechFixtures.filter(m=>Array.isArray(m.score)&&new Date(m.kickoff)<new Date(before))
+    .filter(m=>"cz1-"+key(m.home).replace(/ /g,"-")===teamId||"cz1-"+key(m.away).replace(/ /g,"-")===teamId)
+    .map(m=>{
+      const isHome=("cz1-"+key(m.home).replace(/ /g,"-"))===teamId;
+      const gf=isHome?m.score[0]:m.score[1],ga=isHome?m.score[1]:m.score[0];
+      const other=isHome?m.away:m.home;
+      return{id:m.id,date:m.kickoff,venue:isHome?"home":"away",gf,ga,league:"cze.1",
+        result:gf>ga?"W":gf<ga?"L":"D",
+        oppId:"cz1-"+key(other).replace(/ /g,"-"),oppName:other};
+    }).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,10);
+}
 async function buildFixture(g){
   try{
-    const [hp,ap]=await Promise.all([schedule(g.league,g.home.id,g.season),schedule(g.league,g.away.id,g.season)]);
-    const hh=history(hp,g.home.id,g.date),ah=history(ap,g.away.id,g.date);
+    let hh,ah;
+    if(g.league==="cze.1"){
+      // ESPN has no reliable Czech team-history endpoint; use completed
+      // matches strictly predating this kickoff from the same dated source.
+      hh=czechHistory(g.home.id,g.date);
+      ah=czechHistory(g.away.id,g.date);
+    }else{
+      const [hp,ap]=await Promise.all([schedule(g.league,g.home.id,g.season),schedule(g.league,g.away.id,g.season)]);
+      hh=history(hp,g.home.id,g.date);
+      ah=history(ap,g.away.id,g.date);
+    }
     const facts=[...teamFacts(g.home.name,hh,"home"),...teamFacts(g.away.name,ah,"away"),...h2hFacts(g,hh)]
       .sort((a,b)=>b.priority-a.priority).slice(0,12);
     return{...g,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
@@ -156,6 +179,20 @@ async function main(){
   catch(error){
     if(!correction)throw error;
     board=JSON.parse(await fs.readFile(path.join("data",DATE,"scoreboard.json"),"utf8"));
+  }
+  // The public Czech top-flight source is independent from ESPN.
+  // The site may already have these events after a deploy: dedupe by stable ID.
+  try{
+    const supplement=await loadCzechSeason(DATE);
+    czechFixtures=supplement.matches;
+    const events=eventsForCzechDate(czechFixtures,DATE);
+    const seen=new Set((board.events||[]).map(e=>String(e.id)));
+    if(!Array.isArray(board.events))board.events=[];
+    for(const event of events)if(!seen.has(String(event.id))){
+      board.events.push(event);seen.add(String(event.id));
+    }
+  }catch(error){
+    console.warn("Czech public-domain results unavailable; do not invent this league's form or fixtures",String(error));
   }
   const games=globalThis.FootyEdgeAvailability.eventsForDay(board,DATE).map(fixtureInfo).filter(Boolean);
   const fixtures=[];

@@ -34,7 +34,7 @@ function displayPickLabel(g,p){
   return label
 }
 function flagCode(name){return FLAG_CODES[String(name||"").toLowerCase().trim()]||null}
-const REMOTE_LEAGUE_LOGOS={"uefa.nations":"https://cdn.prod.website-files.com/68f550992570ca0322737dc2/69fe89ba12923df17d6c7a4b_uefa-nations-league-footylogos.png","concacaf.nations.league":"https://commons.wikimedia.org/wiki/Special:Redirect/file/CONCACAF_Nations_League_(2026).svg","uefa.champions":"https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg","uefa.europa":"https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png","fifa.friendly":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.world":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.uefa":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.conmebol":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.concacaf":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","eng.1":"https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg","esp.1":"https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg","ita.1":"https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg","ger.1":"https://upload.wikimedia.org/wikinews/en/1/15/Bundesliga_logo.svg","fra.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_Ligue_1_McDonald%27s_2024.svg","ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png","por.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/715.png","usa.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Major_League_Soccer_logo.svg"};
+const REMOTE_LEAGUE_LOGOS={"uefa.nations":"https://cdn.prod.website-files.com/68f550992570ca0322737dc2/69fe89ba12923df17d6c7a4b_uefa-nations-league-footylogos.png","concacaf.nations.league":"https://commons.wikimedia.org/wiki/Special:Redirect/file/CONCACAF_Nations_League_(2026).svg","uefa.champions":"https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg","uefa.europa":"https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png","fifa.friendly":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.world":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.uefa":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.conmebol":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.concacaf":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","eng.1":"https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg","esp.1":"https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg","ita.1":"https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg","ger.1":"https://upload.wikimedia.org/wikinews/en/1/15/Bundesliga_logo.svg","fra.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_Ligue_1_McDonald%27s_2024.svg","ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png","por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png","usa.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Major_League_Soccer_logo.svg","cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png","tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png","ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png","eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png"};
 const LEAGUE_LOGOS={
 "uefa.nations":"/assets/logos/competitions/uefa.nations.png",
 "concacaf.nations.league":"/assets/logos/competitions/concacaf.nations.league.png",
@@ -47,13 +47,16 @@ const LEAGUE_LOGOS={
 "ger.1":"/assets/logos/competitions/ger.1.png",
 "fra.1":"/assets/logos/competitions/fra.1.png",
 "ned.1":"/assets/logos/competitions/ned.1.png",
-"por.1":"/assets/logos/competitions/por.1.png",
+"por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
 "usa.1":"/assets/logos/competitions/usa.1.png",
 "fifa.friendly":REMOTE_LEAGUE_LOGOS["fifa.friendly"],
 "fifa.worldq.uefa":REMOTE_LEAGUE_LOGOS["fifa.worldq.uefa"],
 "fifa.worldq.conmebol":REMOTE_LEAGUE_LOGOS["fifa.worldq.conmebol"],
-"fifa.worldq.concacaf":REMOTE_LEAGUE_LOGOS["fifa.worldq.concacaf"]
-};
+"fifa.worldq.concacaf":REMOTE_LEAGUE_LOGOS["fifa.worldq.concacaf"],
+"cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png",
+"tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png",
+"ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png",
+"eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png",};
 function teamImage(t){
   const code=flagCode(t&&t.name);
   if(code)return "https://flagcdn.com/w160/"+code+".png";
@@ -823,7 +826,7 @@ function renderGames(){
   }).join("")
 }
 function renderLeagues(){
-  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
+  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","cze.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
   row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":leagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");

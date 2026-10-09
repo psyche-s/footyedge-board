@@ -16,6 +16,9 @@ on:
       - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
       - "tests/saudi-league.test.mjs"
+      - "tests/czech-league.test.mjs"
+      - "assets/czech-first-league.mjs"
+      - "api/espn-scoreboard.js"
       - "api/the-odds.js"
       - "scripts/audit-shadow-refresh.mjs"
       - "scripts/build-model-board.mjs"
@@ -71,7 +74,7 @@ jobs:
         with:
           node-version: "22"
       - name: Morning audit and model-board unit tests
-        run: node --test tests/audit-shadow-refresh.test.mjs tests/model-board.test.mjs tests/saudi-league.test.mjs
+        run: node --test tests/audit-shadow-refresh.test.mjs tests/model-board.test.mjs tests/saudi-league.test.mjs tests/czech-league.test.mjs
       - name: Install modeling dependencies
         run: pip install -r requirements-shadow.txt
       - name: Unit tests

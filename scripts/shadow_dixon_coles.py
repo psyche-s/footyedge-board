@@ -16,11 +16,11 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.6"
+VERSION = "dc-shadow-v0.7"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
-    "eng.1": "en.1", "eng.2": "en.2", "tur.1": "tr.1", "ksa.1": "sa.1", "ger.1": "de.1", "esp.1": "es.1",
+    "eng.1": "en.1", "eng.2": "en.2", "tur.1": "tr.1", "ksa.1": "sa.1", "cze.1": "cz.1", "ger.1": "de.1", "esp.1": "es.1",
     "ita.1": "it.1", "fra.1": "fr.1", "ned.1": "nl.1",
     "por.1": "pt.1",
 }
@@ -98,7 +98,71 @@ def fetch_json(url: str) -> dict:
     with urllib.request.urlopen(req, timeout=25) as response:
         return json.load(response)
 
+CZECH_ROOT = "https://raw.githubusercontent.com/openfootball/europe/master/czech-republic"
+
+def fetch_text(url: str) -> str:
+    req = urllib.request.Request(url, headers={"User-Agent": "FootyEdgeResearch/0.1",
+                                               "Accept": "text/plain"})
+    with urllib.request.urlopen(req, timeout=25) as response:
+        return response.read().decode("utf-8")
+
+def parse_czech_results(source: str, season_start: int, cutoff: date) -> list[dict]:
+    """Parse only real full-time Czech league results strictly before cutoff.
+
+    Fixture rows with 'v' have no scores and are ignored, even when
+    the source already contains future fixtures.
+    """
+    months = {m: i + 1 for i, m in enumerate(
+        ("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))}
+    current = None
+    rows = []
+    for line in source.splitlines():
+        day = re.match(r"^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) "
+                       r"(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) "
+                       r"(\d{1,2})(?: (\d{4}))?$", line.strip())
+        if day:
+            month = months[day[1]]
+            year = int(day[3]) if day[3] else season_start if month >= 7 else season_start + 1
+            current = date(year, month, int(day[2]))
+            continue
+        if current is None or current >= cutoff:
+            continue
+        match = re.match(
+            r"^\s*(?:(?:\d{1,2}):(?:\d{2})\s+)?(.+?)\s{2,}"
+            r"(\d+)-(\d+)\s+\(\d+-\d+\)\s{2,}(.+?)\s*$", line)
+        if not match:
+            continue
+        h, a = int(match[2]), int(match[3])
+        if min(h, a) < 0 or max(h, a) > 20:
+            continue
+        home, away = key(match[1]), key(match[4])
+        if not home or not away or home == away:
+            continue
+        rows.append({"date": current, "home": home, "away": away,
+                     "hg": h, "ag": a})
+    return rows
+
+def get_czech_data(cutoff: date, read=fetch_text) -> tuple[list[dict], list[str], list[str]]:
+    start = cutoff.year if cutoff.month >= 7 else cutoff.year - 1
+    seasons = (start - 2, start)
+    rows, sources, errors = [], [], []
+    for year in seasons:
+        code = f"{year}-{(year + 1) % 100:02d}"
+        url = f"{CZECH_ROOT}/{code}_cz1.txt"
+        try:
+            text = read(url)
+            rows.extend(parse_czech_results(text, year, cutoff))
+            sources.append(url)
+        except (urllib.error.URLError, TimeoutError, ValueError, KeyError, OSError) as exc:
+            errors.append(f"{code}: {type(exc).__name__}")
+    distinct = {(x["date"], x["home"], x["away"]): x for x in rows}
+    return sorted(distinct.values(), key=lambda x: (x["date"], x["home"], x["away"])), sources, errors
+
+
 def get_league_data(league: str, cutoff: date, fetch=fetch_json) -> tuple[list[dict], list[str], list[str]]:
+    if league == "cze.1":
+        return get_czech_data(cutoff)
     matches, fetched, errors = [], [], []
     for season in season_codes(cutoff):
         url = f"{SOURCE_ROOT}/{season}/{LEAGUES[league]}.json"
