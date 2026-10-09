@@ -1,9 +1,16 @@
+## 2026-10-09 — First-person plural voice throughout FootyEdge
+**Status:** Public wording simplified, underlying research sources retained internally
+
+- Show **we** and **our analysis** instead of naming other tip sites in published WHY THIS PICK and match commentary.
+- Keep external URLs in internal evidence metadata, not in user-facing promotional footers. Stats, head-to-head findings, selection grades, odds and original tracking stay unchanged.
+- This rule applies to future daily refreshes.
+
 ## 2026-10-09 — Simplify the expanded match analysis for supporters
 **Status:** Frontend change queued for the next successful Vercel deployment
 
 - For the owner-curated October 9 game picks, cards now prioritize odds, model estimate and a short football explanation, not misleading raw model EV.
 - Expanded analysis puts **WHY THIS PICK** and H2H under pick #1 and keeps simple paragraphs for picks #2 and #3; hide the extra engineering-only Dixon–Coles diagnostic box for these games.
-- Add the original Football Whispers/match preview reference link in expanded analysis, while preserving official prices and pick history.
+- Add the original independent match preview reference link in expanded analysis, while preserving official prices and pick history.
 - Add CI that syntax-checks the complete browser JavaScript assembled from the split HTML parts.
 - The existing live website must successfully redeploy to receive this frontend formatting change; the corrected board pick text itself is already served from raw GitHub data.
 
@@ -158,7 +165,7 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 **Status:** ✅ Complete
 
 - FootyEdge established as a free soccer research/picks site combining stats, trends, form, H2H, model analysis and market context.
-- Dark Football Whispers-inspired match-card direction established while keeping original FootyEdge branding.
+- Dark independent match-preview-inspired match-card direction established while keeping original FootyEdge branding.
 - Core board direction: today's fixtures, Top Picks, confidence scores, expandable match analysis and major market types.
 - Live-data/API direction established with Toronto-local date handling required.
 - Early custom-domain work began.
@@ -174,7 +181,7 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 - Live scores/data-refresh direction incorporated.
 - Visual direction changed from red accents to the current green FootyEdge theme.
 - Team/country and player imagery incorporated where available.
-- Match-card presentation refined toward the cleaner Football Whispers-style layout.
+- Match-card presentation refined toward the cleaner match-preview-style layout.
 - Team news, injuries, suspensions and projected-lineup context added as research inputs.
 - External current-preview research added as a cross-check layer rather than the statistical source of truth.
 
@@ -195,7 +202,7 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 - Match cards, team circles and stat boxes made more compact.
 - Team-news display/filtering cleaned up.
 - Official pending picks seeded for tracking.
-- Football Whispers cross-checking remained active.
+- Independent preview cross-checking remained active.
 - Early historical sample treated as calibration context, not proof of future performance.
 
 ## 2026-10-06 — v57
@@ -211,7 +218,7 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 - Deterministic daily research base established as the statistical source of truth.
 - True all-competition last-10 became the primary form sample; last-5 and competition-only form are secondary lenses.
 - Required evidence includes W-D-L, GF/GA, scoring/failed-to-score, clean sheets/conceding, BTTS, O/U, meaningful home/away splits, streaks and useful H2H.
-- Football Whispers and Sportskeeda exact-fixture previews used as bounded external cross-checks when useful.
+- Independent previews, including Sportskeeda exact-fixture previews used as bounded external cross-checks when useful.
 - External article claims cannot override conflicting deterministic stats.
 - Official odds collected only after research.
 - Only actual posted sportsbook prices qualify; synthetic, inferred, converted or model-fair prices are prohibited.
@@ -587,7 +594,7 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 **Status:** 🟡 Code/rules ready for next morning board
 
 - Added `EDITORIAL_STYLE.md` as the canonical reader-facing writing guide.
-- Future WHY THIS PICK, match summaries, Team News, supporting picks and player-prop notes now follow a plain-English football-preview style inspired by current Football Whispers structure without copying its prose.
+- Future WHY THIS PICK, match summaries, Team News, supporting picks and player-prop notes now follow a plain-English football-preview style inspired by current independent football match-preview structure without copying its prose.
 - Removed model-report wording from the deterministic commentary generator. Reader-facing copy should no longer use phrases such as venue-rate blend, Poisson translation, risk-adjusted fit, positive availability/continuity signal, or FootyEdge/model self-reference.
 - Team News impact text no longer adds a mechanical `Impact:` prefix; the sentence should read naturally.
 - Women’s fixtures now display `(W)` after team names at the presentation layer, including fixture names, team headers and visible pick labels, without changing provider IDs or odds-matching keys.

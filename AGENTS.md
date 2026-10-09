@@ -6,7 +6,7 @@
 - The board is **men's soccer only**,- The board is **men's soccer only**, across all tracked men's leagues including `eng.2` and `tur.1`. Do not add women's games.
 - A fixture's Top 3 should consider result/DC/handicap, goal lines, BTTS and eligible player markets fairly; offer three only if supported by real match evidence, never force all three as 85%+ predictions.
 - Write simple, grounded explanations. **WHY THIS PICK** directly under Pick #1; one short useful sentence for Picks #2 and #3. Add recent H2H results, home/away context, team news when confirmed and cite match previews in editorial metadata.
-- Football Whispers is a **cross-check** and source of possible alternative angles, not a replacement for the actual team statistics or model; call out material contradictions.
+- Use reputable external football previews as an internal cross-check, but write every published analysis in our own voice: **we / our analysis**. Don’t name third-party tip sites on the cards or in WHY THIS PICK; keep the underlying research URLs in internal source metadata for traceability.
 - Reader-facing prose should never include version numbers, Dixon–Coles implementation, internal fallback status, unsupported EV claims, artificial confidence boosts or technical qualification text.
 - Exact native sportsbook odds only. Maximum favourite price **-500 inclusive** (decimal 1.20). If the actual exact market is unquoted, show N/A and don't invent.
 - The Toronto morning publication lock, original Top 5, archived old picks, score settlements and audit backups remain immutable except for clearly authorized, versioned corrections.
@@ -87,7 +87,7 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 
 ## Editorial writing standard — owner instruction 2026-10-07
 - Read and follow `EDITORIAL_STYLE.md` before generating any reader-facing summary, Team News, WHY THIS PICK, Pick #2/#3 commentary or player-prop explanation.
-- Current Football Whispers previews are an editorial reference for clarity and structure only: short key stats, simple form language, concise team news and an easy-to-follow reason for the pick. Never copy source prose.
+- Current independently sourced match previews are an internal editorial reference for clarity and structure only: short key stats, simple form language, concise team news and an easy-to-follow reason for the pick. Never copy source prose.
 - Reader-facing copy must sound like a football preview written for a person, not a model report.
 - Do not mention FootyEdge, the model, Poisson calculations, internal scoring, venue-rate blends, risk-adjusted fit, probability-edge jargon or internal process language in normal write-ups. Keep those calculations internal or in dedicated numeric UI fields.
 - WHY THIS PICK should normally be 2-4 short sentences or up to three compact evidence bullets. Lead with the football reason, then the strongest supporting stat(s), then a plain conclusion.

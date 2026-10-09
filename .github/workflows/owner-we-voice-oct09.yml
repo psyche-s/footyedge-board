@@ -1,0 +1,75 @@
+name: FootyEdge We voice public editorial cleanup
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/owner-we-voice-oct09.mjs"
+      - ".github/workflows/owner-we-voice-oct09.yml"
+      - "ui/part2.html"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/owner-we-voice-oct09.mjs"
+      - ".github/workflows/owner-we-voice-oct09.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-we-voice-oct09
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate visitor copy, audit and picks
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/owner-we-voice-oct09.mjs
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-we-voice-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import assert from "node:assert/strict";
+          const board=JSON.parse(fs.readFileSync("data/boards/2026-10-09.json","utf8"));
+          function visible(node){
+            if(typeof node==="string")return !/^https?:\/\//.test(node)&&/football[\s-]*whispers/i.test(node)?[node]:[];
+            if(Array.isArray(node))return node.flatMap(visible);
+            if(node&&typeof node==="object")return Object.values(node).flatMap(visible);
+            return [];
+          }
+          assert.equal(visible(board).length,0,"Third-party site name must not appear in visitor prose");
+          assert.equal(board.games.length,11);
+          assert.equal(board.games.reduce((n,g)=>n+g.top3.length,0),26);
+          assert.equal(board.top5.length,2);
+          assert.equal(board.ownerCorrection.editorialVoice,"we-20261009");
+          const ui=fs.readFileSync("ui/part2.html","utf8");
+          assert.ok(!/football[\s-]*whispers/i.test(ui));
+          console.log("Validated 11 fixtures, 26 original selections, two unchanged original Top 5 slots and We editorial voice.");
+          JS
+      - name: Commit audited GitHub board copy — no Vercel
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then
+            echo "Owner copy revision already applied"; exit 0
+          fi
+          git config user.name "FootyEdge Editorial Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): say We instead of naming third-party tip sites [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main

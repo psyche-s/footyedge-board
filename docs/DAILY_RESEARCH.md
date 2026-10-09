@@ -10,7 +10,7 @@ FootyEdge separates the statistical model from editorial research.
 ## Research hierarchy
 1. FootyEdge's own last-10 / home-away / competition form and H2H data.
 2. Confirmed injuries, suspensions and lineups from API-Football.
-3. Football Whispers exact-fixture preview/key stats.
+3. Independent exact-fixture football preview/key stats (internal source check; not a named public-facing attribution).
 4. Sportskeeda exact-fixture preview/key numbers when available.
 5. Other reputable public sources only when they add a verifiable fact.
 
@@ -55,7 +55,7 @@ For each fixture:
       "supportedMarkets": ["Home Team or Draw", "Under 3.5 Goals"],
       "sources": [
         {
-          "name": "Football Whispers",
+          "name": "Independent match preview",
           "url": "https://...",
           "checkedAt": "ISO timestamp"
         }
