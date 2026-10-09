@@ -1,6 +1,8 @@
 # FootyEdge project rules
 
 ## Owner-approved publication and writing rules (2026-10-09)
+- The Czech men\u0027s top flight `cze.1` is sourced from public-domain OpenFootball Europe Czech fixtures, not a made-up ESPN league UID. Its earlier completed results supply true form and H2H; missing or unverified sportsbook odds must remain N/A. Never backfill pre-match picks for already started games.
+- The Czech/Turkish/Saudi/Portugal/English Championship logos are the exact owner-supplied HTTPS assets, displayed with `object-fit:contain` in the same existing filter/header size.
 - Tracked Saudi Pro League men's code is `ksa.1` (ESPN competition UID 21231). Its public results data currently lacks timely enough OpenFootball history for fitted Dixon–Coles probabilities, so never infer a market confidence from a raw sportsbook price.
 - Match odds are only complete for exact markets actually carried by the provider: ESPN/DraftKings saves 1X2 plus its one posted totals line; The Odds API currently requests only `h2h` and `totals`, **not** Double Chance, BTTS or arbitrary alternate lines. These should remain N/A unless separately verified with an exact real provider quote, not inferred from neighbouring lines.
 - The board is **men's soccer only**,- The board is **men's soccer only**, across all tracked men's leagues including `eng.2` and `tur.1`. Do not add women's games.
