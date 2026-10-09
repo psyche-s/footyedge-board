@@ -56,7 +56,8 @@ jobs:
       - name: Commit research base
         shell: bash
         run: |
-          git add -A -- data/research-base-*.json data/model-reviews/
+          git add -A -- data/research-base-*.json
+          if [[ -d data/model-reviews ]]; then git add -A -- data/model-reviews/; fi
           if git diff --cached --quiet; then
             echo "No research-base changes."
             exit 0
