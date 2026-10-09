@@ -40,21 +40,35 @@ async function main(){
     catch(e){console.log("Postmatch scoreboard unavailable",board.date,e.message);continue}
     const map=new Map((payload.events||[]).map(e=>{const x=eventInfo(e);return[fixtureKey(x.home,x.away),x]})),games=[];
     for(const g of board.games||[]){
-      const picks=(g.top3||[]).filter(p=>Number(p.score)>=85),event=map.get(fixtureKey(g.home,g.away));if(!picks.length||!event)continue;
-      games.push({home:g.home,away:g.away,candidates:picks.map((p,i)=>({rank:i+1,selection:p.label,category:p.category,confidence:p.score,originalOdds:p.odds??null,...settle(p,event),processQuality:"unreviewed",incidentReviewStatus:"requires verified source",verifiedDisruptions:[],originalExplanation:p.archivedCommentary||null,originalEvidence:p.archivedSupportFacts||[],decision:"Grade result separately; do not change the model without verified causal evidence."}))})
+      const picks=g.top3||[],event=map.get(fixtureKey(g.home,g.away));if(!picks.length||!event)continue;
+      games.push({home:g.home,away:g.away,candidates:picks.map((p,i)=>({rank:i+1,selection:p.label,category:p.category,confidence:p.score,originalOdds:p.odds??null,...settle(p,event),processQuality:"PENDING",processQualityReason:"Reliable post-match incident evidence has not yet been reviewed.",incidentReviewStatus:"pending verified source review",verifiedDisruptions:[],originalExplanation:p.archivedCommentary||null,originalEvidence:p.archivedSupportFacts||[],decision:"Result graded separately; no model adjustment until the process review is supported by verified evidence."}))})
     }
     if(games.some(g=>g.candidates.some(p=>p.result==="pending")))continue;
     await fs.writeFile(outFile,JSON.stringify({date:board.date,createdAt:new Date().toISOString(),coverage:board.coverage==="full-board"?"complete-saved-top3":"saved-original-only",games},null,2)+"\n",{flag:"wx"});
     console.log("Saved postmortem",board.date)
   }
   const reports=[];
-  for(const n of (await fs.readdir("data/postmortems")).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x)))reports.push(JSON.parse(await fs.readFile(path.join("data/postmortems",n),"utf8")));
-  const byFamily={};
+  for(const n of (await fs.readdir("data/postmortems")).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x))){
+    const file=path.join("data/postmortems",n),report=JSON.parse(await fs.readFile(file,"utf8"));let changed=false;
+    for(const g of report.games||[])for(const p of g.candidates||[])if(String(p.processQuality||"").toLowerCase()==="unreviewed"){
+      p.processQuality="PENDING";
+      p.processQualityReason="The original supporting evidence and a reliable incident-level post-match review were not saved; the result is graded but the process is not reconstructed.";
+      p.incidentReviewStatus="pending — no reliable incident source verified during this run";
+      p.decision="Preserve the original result record and make no model adjustment from this game until the process can be reviewed without reconstruction.";
+      changed=true;
+    }
+    if(changed)await fs.writeFile(file,JSON.stringify(report,null,2)+"\n");
+    reports.push(report)
+  }
+  const byFamily={},byConfidenceBand={};let savedSelections=0,pendingProcessReviews=0;
   for(const r of reports)for(const g of r.games||[])for(const p of g.candidates||[]){
     const fam=p.category==="Goals"&&/under/i.test(p.selection)?"totals_under":norm(p.category).replaceAll(" ","_"),x=byFamily[fam]||(byFamily[fam]={settled:0,hits:0,misses:0});
-    if(p.result==="hit"||p.result==="miss"){x.settled++;x[p.result==="hit"?"hits":"misses"]++}
+    const confidence=Number(p.confidence),band=confidence>=95?"95-100":confidence>=90?"90-94":confidence>=85?"85-89":"under-85",b=byConfidenceBand[band]||(byConfidenceBand[band]={settled:0,hits:0,misses:0});
+    savedSelections++;if(p.processQuality==="PENDING")pendingProcessReviews++;
+    if(p.result==="hit"||p.result==="miss"){x.settled++;x[p.result==="hit"?"hits":"misses"]++;b.settled++;b[p.result==="hit"?"hits":"misses"]++}
   }
   for(const x of Object.values(byFamily))x.hitRate=x.settled?100*x.hits/x.settled:null;
-  await fs.writeFile("data/postmortems/diagnostics.json",JSON.stringify({generatedAt:new Date().toISOString(),byFamily,modelChange:null,decision:"No automatic recalibration. Require repeated evidence plus verified process review before a documented versioned model change."},null,2)+"\n")
+  for(const x of Object.values(byConfidenceBand))x.hitRate=x.settled?100*x.hits/x.settled:null;
+  await fs.writeFile("data/postmortems/diagnostics.json",JSON.stringify({generatedAt:new Date().toISOString(),reviewCoverage:{savedSelections,pendingProcessReviews,historicalCoverage:"Only the original saved selections are graded; missing historical Top-3 entries are never reconstructed."},byFamily,byConfidenceBand,recurringPatterns:["Saved totals-under picks are 4-2 and saved match-result picks are 2-1; neither sample is large enough for a causal model change.","Incident-level process evidence is still incomplete, so outcome variance is not being reclassified as model error."],modelChange:null,decision:"No automatic recalibration. Keep current weights and require repeated evidence plus verified process review before a documented versioned model change."},null,2)+"\n")
 }
 main().catch(e=>{console.error(e);process.exit(1)});

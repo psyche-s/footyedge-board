@@ -670,3 +670,16 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Bumped Today’s Picks UI bundle to v99.
 - October 7 remains the corrected immutable locked board with women’s soccer removed from the public scope.
 - No picks, odds, model logic, tracking or historical board data changed.
+
+
+## 2026-10-09 — Official men's morning board and full-sample learning gate
+**Status:** 🟡 Code/data ready · deployment verification pending
+
+- Refreshed the October 9 men's slate to six tracked fixtures and rebuilt every research profile from the deterministic all-competition last 10, with last-five and competition form retained as secondary context.
+- Rechecked current team news and exact native DraftKings 1X2 prices. Only Borussia Dortmund ML (-290, 96%) and PSV Eindhoven ML (-310, 84%) cleared the price and confidence gates; the other four matches are explicit passes rather than unpriced recommendations.
+- Froze the complete six-game board, its two qualifying global picks, original prices, confidence, evidence-led explanations and team-news context. No player props or totals were published because no qualifying exact native prices passed the morning gate.
+- Expanded postmatch learning so all saved Top-3 entries are graded in future, regardless of confidence. Older records remain limited to the selections that were actually preserved; missing historical alternatives are never reconstructed.
+- Historical process reviews without reliable incident evidence are now explicitly `PENDING` instead of being left `unreviewed`; no model coefficients changed because the saved sample is too small and incident-level evidence remains incomplete.
+- UI impact: none. No layout, styling, navigation, component, logo, filter or page-structure files changed.
+- Tracking/history impact: October 9's two official selections were added as frozen pending results; October 5–7 records and all original historical selection fields remain unchanged.
+- Deployment: pending GitHub main push and production verification.

@@ -1,5 +1,10 @@
 {
-  "generatedAt": "2026-10-08T17:53:06.932Z",
+  "generatedAt": "2026-10-09T10:17:18.635Z",
+  "reviewCoverage": {
+    "savedSelections": 10,
+    "pendingProcessReviews": 10,
+    "historicalCoverage": "Only the original saved selections are graded; missing historical Top-3 entries are never reconstructed."
+  },
   "byFamily": {
     "totals_under": {
       "settled": 6,
@@ -20,6 +25,30 @@
       "hitRate": 100
     }
   },
+  "byConfidenceBand": {
+    "90-94": {
+      "settled": 7,
+      "hits": 5,
+      "misses": 2,
+      "hitRate": 71.42857142857143
+    },
+    "85-89": {
+      "settled": 1,
+      "hits": 1,
+      "misses": 0,
+      "hitRate": 100
+    },
+    "95-100": {
+      "settled": 2,
+      "hits": 1,
+      "misses": 1,
+      "hitRate": 50
+    }
+  },
+  "recurringPatterns": [
+    "Saved totals-under picks are 4-2 and saved match-result picks are 2-1; neither sample is large enough for a causal model change.",
+    "Incident-level process evidence is still incomplete, so outcome variance is not being reclassified as model error."
+  ],
   "modelChange": null,
-  "decision": "No automatic recalibration. Require repeated evidence plus verified process review before a documented versioned model change."
+  "decision": "No automatic recalibration. Keep current weights and require repeated evidence plus verified process review before a documented versioned model change."
 }
