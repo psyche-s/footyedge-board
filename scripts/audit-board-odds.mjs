@@ -12,7 +12,7 @@ const es=new Map((score?.events||[]).map(e=>[String(e.id),e]));
 const found=[],missing=[];
 for(const g of board.games){
  const event=es.get(String(g.id));
- const book=event?.competitions?.[0]?.odds?.find(o=>["DraftKings"].includes(o.provider?.name||o.provider?.displayName));
+ const book=event?.competitions?.[0]?.odds?.find(o=>["DraftKings"].includes(o?.provider?.name||o?.provider?.displayName));
  for(const pick of g.top3||[]){
   const item={fixtureId:String(g.id),match:g.home+" vs "+g.away,market:pick.label,quote:pick.odds??null};
   if(pick.odds!=null){found.push(item);continue}
