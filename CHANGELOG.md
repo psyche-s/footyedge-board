@@ -8,6 +8,13 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Verified club aliases, shadow v0.2
+**Status:** 🟡 Alias improvements committed; next scheduled day will measure coverage
+
+- Inspected OpenFootball 2026-27 primary team labels against six eligible October 9 fixtures; initial experiment generated 1/6 forecasts, with five explicit unknown-team skips.
+- Added and regression-tested seven exact mappings (Espanyol, Lens, Lyon, Werder Bremen, Heerenveen, Braga, Sporting CP). No fuzzy team matching.
+- Retained immutable original October 9 shadow forecast; new model version applies to subsequent runs only.
+
 ## 2026-10-09 — Experimental Dixon–Coles pipeline (shadow only)
 **Status:** 🟡 Python model and scheduled workflow committed; CI/first production shadow snapshot subject to verification
 

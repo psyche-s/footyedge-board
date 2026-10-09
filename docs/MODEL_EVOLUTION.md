@@ -1,7 +1,7 @@
 # FootyEdge model evolution — research track
 
 ## Status (2026-10-09)
-Version: dc-shadow-v0.1. **Experimental/shadow only.** Do not cite its output as a
+Version: dc-shadow-v0.2. **Experimental/shadow only.** Do not cite its output as a
 validated percentage or use it to modify the live board, Top 3, Top 5 or archives.
 
 ## Why
@@ -31,7 +31,10 @@ and BTTS probabilities. Its superiority must be proven out of sample, not assume
   Eredivisie and Primeira Liga. Cup/international and women's fixtures are
   excluded from modeling; they are never relabeled as zero-probability games.
 - Strict team-key normalization plus explicit aliases (no unreviewed fuzzy
-  entity matching). Unknown/promoted teams without four observations skip.
+  entity matching). v0.2 adds seven verified source-name aliases following the
+  first 2026-10-09 coverage audit (1/6 eligible fixtures forecast). Original
+  October 9 shadow output remains immutable. Unknown/promoted teams without
+  four observations skip.
 - At least 90 finished league matches and recent source results (<=30 days
   old) required. OpenFootball's upstream updates are not guaranteed; report
   stale or unavailable status instead of generating synthetic predictions.
@@ -48,6 +51,9 @@ Run:
     python -m pip install -r requirements-shadow.txt
     python -m unittest discover -s tests -p test_shadow_model.py -v
     python scripts/shadow_dixon_coles.py
+    python scripts/shadow_dixon_coles.py --dry-run
+A dry run computes current forecasts but does not alter stored original output.
+Pull-request CI always performs a dry run, even if today is already archived.
 For deterministic local investigation, specify --date YYYY-MM-DD and --as-of
 UTC_ISO_TIMESTAMP (same day or future only). Do not backfill forecasts after
 matches have been played and misrepresent them as contemporaneous predictions.

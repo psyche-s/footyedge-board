@@ -15,7 +15,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.1"
+VERSION = "dc-shadow-v0.2"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
@@ -39,6 +39,14 @@ ALIASES = {
     "bayern munich": "bayern munchen",
     "bayern munchen": "bayern munchen",
     "borussia monchengladbach": "borussia monchengladbach",
+    # Official source labels verified against OpenFootball 2026-27 club lists.
+    "espanyol": "rcd espanyol de barcelona",
+    "lens": "racing club de lens",
+    "lyon": "olympique lyonnais",
+    "werder bremen": "sv werder bremen",
+    "heerenveen": "sc heerenveen",
+    "braga": "sporting clube de braga",
+    "sporting cp": "sporting clube de portugal",
 }
 
 def key(name: str) -> str:
@@ -218,6 +226,7 @@ def main() -> int:
     parser.add_argument("--date", help="Toronto YYYY-MM-DD; default today")
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--as-of", help="UTC ISO-8601 time (for reproducible tests)")
+    parser.add_argument("--dry-run", action="store_true", help="Compute from sources without modifying immutable archives")
     args = parser.parse_args()
     asof = (datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
             if args.as_of else datetime.now(timezone.utc))
@@ -227,6 +236,11 @@ def main() -> int:
     if day < asof.astimezone(TORONTO).date():
         parser.error("Historical dates must not be backfilled as original pre-match forecasts")
     dest = args.repo / "data" / "model-shadow" / f"{day.isoformat()}.json"
+    if args.dry_run:
+        result = forecast_day(args.repo, day, asof)
+        print(f"Shadow dry run: {day} status={result['status']} "
+              f"coverage={result.get('coverage')}")
+        return 0
     # Preserve the first daily forecast: later results must not revise historical predictions.
     if dest.exists():
         print(f"Shadow prediction already archived (unchanged): {dest}")
