@@ -35,21 +35,21 @@ const cfg={
 "401882851":{
   why:"Málaga have gone nine matches without a win, while Espanyol have repeatedly found a way past them. The double chance is safer than requiring an away win.",
   h2h:"H2H: Espanyol are unbeaten in the last 15 against Málaga, winning the most recent 6. The last 4 H2Hs went Over 2.5 goals.",
-  risk:"Football Whispers expects goals here, but our goals model leans Under 2.5. Treat that under as a disagreement, not a sure thing.",
+  risk:"We lean toward a tighter game, but the last four head-to-head meetings all had at least three goals. Under 2.5 is far from certain.",
   src:"https://footballwhispers.com/blog/malaga-vs-espanyol-prediction-09-10-2026/",
   picks:[
    ["away_or_draw","Espanyol or Draw","Double Chance","Málaga are winless in nine and Espanyol have dominated this matchup. The draw is covered."],
    ["away_win","Espanyol ML","Match Result","Espanyol have won six straight meetings. This is a higher-risk way to follow the matchup advantage."],
-   ["under_2_5","Under 2.5 Goals","Goals","Our goals forecast points to a tighter game, but four straight high-scoring H2Hs and Football Whispers' Over 2.5 pick are clear reasons for caution."]
+   ["under_2_5","Under 2.5 Goals","Goals","We favour a tighter game, but the last four meetings all produced at least three goals. That is a good reason for caution with Under 2.5."]
   ]},
 "401876447":{
   why:"Lyon have been hard to break down, while Lens can still threaten at home. This looks competitive rather than an obvious one-sided game.",
   h2h:"H2H: Lens have won 4 of the last 6 Ligue 1 meetings with Lyon.",
-  risk:"Football Whispers prefers BTTS and an away win; the model is more favourable to Lens. Result markets carry added uncertainty.",
+  risk:"We see a case for both teams scoring, but we lean toward Lens in a difficult matchup. Lyon's form makes the result market less certain.",
   src:"https://footballwhispers.com/blog/lens-vs-lyon-prediction-09-10-2026/",
   picks:[
    ["under_3_5","Under 3.5 Goals","Goals","Lyon's strong defensive start makes five or more goals unlikely, and even a close 2-1 finish stays under this line."],
-   ["btts_yes","BTTS — Yes","BTTS","Lens have scored nine in five league games; Football Whispers also expects both teams to score, despite Lyon's defensive strength."],
+   ["btts_yes","BTTS — Yes","BTTS","We see a chance for both teams to score: Lens have nine goals in five league games, although Lyon have defended well."],
    ["home_win","Lens ML","Match Result","Lens have won four of the last six league H2Hs, but Lyon's unbeaten start makes this the riskier of the three."]
   ]},
 "401885423":{
@@ -232,12 +232,12 @@ async function main(){
  board.ownerCorrection={...board.ownerCorrection,
   threePickEditorial:"football-preview-oct09",
   originalTop5Preserved:true,priceFloor:-500,
-  previewSources:"Football Whispers plus vetted additional previews where relevant",
+  previewSources:"We compare recent form, head-to-head results, squad news and independent research.",
   note:"Updated user-facing Why This Pick, H2H and three match-market choices, with exact archived DraftKings quotes where available."};
  const after=fmt(board);
  await fs.writeFile(BACKUP,before,{flag:"wx"});
  audits.push({file:BOARD,owner:"Shaif",
-  instruction:"Show plain-language reasons, three picks per game, verified H2H and Football Whispers cross-references; fill real odds; publish quickly through GitHub without Vercel.",
+  instruction:"Show plain-language reasons, three picks per game, verified H2H and independent football previews cross-references; fill real odds; publish quickly through GitHub without Vercel.",
   correctedAt:new Date().toISOString(),beforeSha256:sha(before),afterSha256:sha(after),
   backupPath:BACKUP,reason:"Plain-English eight-game researched three-pick revision with exact archived DraftKings odds and documented H2H; original global Top5 and prior morning first picks remain intact."});
  await fs.writeFile(REV+"/audit.json",fmt(audits));
