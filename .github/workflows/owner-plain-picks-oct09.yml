@@ -1,0 +1,54 @@
+name: Owner plain-language Top 3 refresh (GitHub JSON only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/owner-plain-picks-oct09.mjs"
+      - ".github/workflows/owner-plain-picks-oct09.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/owner-plain-picks-oct09.mjs"
+      - ".github/workflows/owner-plain-picks-oct09.yml"
+permissions:
+  contents: write
+concurrency:
+  group: owner-oct09-three-research-picks
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Confirm no rewritten post-kickoff forecast
+        run: |
+          node --input-type=module -e 'if(Date.now()>=Date.parse("2026-10-09T17:00:00Z"))throw Error("Oct 9 matches have started: do not backfill pregame predictions.")'
+          node --check scripts/owner-plain-picks-oct09.mjs
+      - name: Write 3 researched selections with football-only write-ups
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-plain-picks-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+      - name: Publish data directly in GitHub; no Vercel
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then
+            echo "No new data to publish"; exit 0
+          fi
+          git config user.name "FootyEdge Research Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): three plain-language Football Whispers cross-checked choices per game [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
