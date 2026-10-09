@@ -1,7 +1,7 @@
 (function(root){
   // ESPN competition identities are available even before sportsbook prices.
-  const uidLeague={700:'eng.1',740:'esp.1',730:'ita.1',720:'ger.1',710:'fra.1',725:'ned.1',715:'por.1',770:'usa.1',775:'uefa.champions',776:'uefa.europa',2310:'uefa.europa.conf',2395:'uefa.nations',3922:'fifa.friendly',3923:'fifa.friendly',19267:'concacaf.nations.league',4:'fifa.world'};
-  const tracked=new Set(['eng.1','esp.1','ita.1','ger.1','fra.1','ned.1','por.1','usa.1','uefa.champions','uefa.europa','uefa.europa.conf','uefa.nations','uefa.euro','uefa.euroq','fifa.world','fifa.worldq.uefa','fifa.worldq.conmebol','fifa.worldq.concacaf','fifa.friendly','concacaf.nations.league','conmebol.copa_america']);
+  const uidLeague={700:'eng.1',3914:'eng.2',3946:'tur.1',740:'esp.1',730:'ita.1',720:'ger.1',710:'fra.1',725:'ned.1',715:'por.1',770:'usa.1',775:'uefa.champions',776:'uefa.europa',2310:'uefa.europa.conf',2395:'uefa.nations',3922:'fifa.friendly',3923:'fifa.friendly',19267:'concacaf.nations.league',4:'fifa.world'};
+  const tracked=new Set(['eng.1','eng.2','tur.1','esp.1','ita.1','ger.1','fra.1','ned.1','por.1','usa.1','uefa.champions','uefa.europa','uefa.europa.conf','uefa.nations','uefa.euro','uefa.euroq','fifa.world','fifa.worldq.uefa','fifa.worldq.conmebol','fifa.worldq.concacaf','fifa.friendly','concacaf.nations.league','conmebol.copa_america']);
   const cache=new Map();
   function addDate(date,n){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
   function leagueOf(event){

@@ -43,6 +43,12 @@ class ShadowModelTests(unittest.TestCase):
             with self.subTest(public=public):
                 self.assertEqual(m.key(public), m.key(source))
 
+    def test_english_championship_and_turkey_mens_model_scope(self):
+        self.assertEqual(m.LEAGUES["eng.2"], "en.2")
+        self.assertEqual(m.LEAGUES["tur.1"], "tr.1")
+        self.assertEqual(m.key("Kasımpaşa"), m.key("Kasimpasa"))
+        self.assertEqual(m.key("West Ham United FC"), m.key("West Ham United"))
+
     def test_source_dates_and_score_variants(self):
         rows = m.completed_matches({"matches": [
             {"date": "2026-10-08", "team1": "A FC", "team2": "B FC", "score": {"ft": [1, 0]}},

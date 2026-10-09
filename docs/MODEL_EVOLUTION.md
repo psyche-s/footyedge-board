@@ -1,7 +1,7 @@
 # FootyEdge model evolution — research track
 
 ## Status (2026-10-09)
-Version: dc-shadow-v0.4. **Experimental/shadow only.** Do not cite its output as a
+Version: dc-shadow-v0.5. **Experimental/shadow only.** Do not cite its output as a
 validated percentage or use it to modify the live board, Top 3, Top 5 or archives.
 
 ## Why
@@ -38,7 +38,7 @@ and BTTS probabilities. Its superiority must be proven out of sample, not assume
 
 ## Current limited scope and fail-closed rules
 - Eligible male top flights only: EPL, Bundesliga, La Liga, Serie A, Ligue 1,
-  Eredivisie and Primeira Liga. Cup/international and women's fixtures are
+  Eredivisie, Primeira Liga, English Championship and Turkish Süper Lig. Cup/international and women's fixtures are
   excluded from modeling; they are never relabeled as zero-probability games.
 - Strict team-key normalization plus explicit aliases (no unreviewed fuzzy
   entity matching). v0.2 adds seven verified source-name aliases following the
@@ -147,6 +147,25 @@ matches have been played and misrepresent them as contemporaneous predictions.
   it does not manufacture results or force a coefficient adjustment.
 - The independent post-match process/incident review remains separate;
   one day's hit or miss is not enough to adjust market weighting.
+
+## Added competition expansion — October 9
+- Added ESPN male competition uid 3914 (`eng.2`, Championship) and uid
+  3946 (`tur.1`, Turkish Süper Lig) to tracked fixture schedules and
+  all-competition deterministic last-10 research.
+- OpenFootball `en.2` 2025–26 and 2026–27 match-result feeds exist.
+  OpenFootball `tr.1` 2025–26 exists but the 2026–27 file is
+  **not available**. This is a documented source gap, NOT permission
+  to fabricate current-season results or label stale odds as current.
+- Model forecasts for Turkish fixtures must fail closed until sufficient
+  recent, permission-safe completed league scores are available.
+- The newly expanded pre-match candidate is stored separately under
+  `data/model-candidates-expanded/YYYY-MM-DD.json` and may only be
+  archived if both new leagues are in the daily research file and
+  both fixtures are still pre-kickoff. The original October 9
+  model-v0.3 forecast is preserved.
+- The deterministic research refresh is invoked on this league-scope
+  change. Its successful completion triggers a new model refresh,
+  avoiding the former six-game source mismatch.
 
 ## Acceptance gates before ANY public influence
 1. Check coverage/source freshness and expand legally available league history.

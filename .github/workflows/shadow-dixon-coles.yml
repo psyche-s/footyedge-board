@@ -1,11 +1,15 @@
 name: FootyEdge Dixon-Coles shadow model
 
 on:
+  workflow_run:
+    workflows: ['Build FootyEdge Research Base']
+    types: [completed]
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - "scripts/shadow_dixon_coles.py"
+      - "assets/board-availability.js"
       - "scripts/backtest_shadow.py"
       - "scripts/compare-frozen-slates.mjs"
       - "scripts/review-shadow.mjs"
@@ -49,6 +53,7 @@ concurrency:
 
 jobs:
   train-and-forecast:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -103,7 +108,7 @@ jobs:
           else
             git fetch --quiet origin main
             git pull --ff-only origin main
-            python scripts/shadow_dixon_coles.py --capture-candidate
+            python scripts/shadow_dixon_coles.py --capture-candidate --capture-expansion
           fi
       - name: Create model-vs-verified-odds sideboard (read-only)
         shell: bash
@@ -125,7 +130,7 @@ jobs:
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json" "data/model-boards-v3/$TODAY.json")
+          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-candidates-expanded/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json" "data/model-boards-v3/$TODAY.json")
           git config user.name "FootyEdge Model Bot"
           git config user.email "actions@users.noreply.github.com"
           for FILE in "${FILES[@]}"; do
