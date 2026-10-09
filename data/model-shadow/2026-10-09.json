@@ -1,0 +1,166 @@
+{
+  "date": "2026-10-09",
+  "asOf": "2026-10-09T05:29:21.749565+00:00",
+  "modelVersion": "dc-shadow-v0.1",
+  "mode": "shadow_only",
+  "promotedToPicks": false,
+  "assumptions": {
+    "decayXiPerDay": 0.001,
+    "minTrainingMatches": 90,
+    "minTeamMatches": 4,
+    "maxDataAgeDays": 30
+  },
+  "source": "OpenFootball public-domain match results (not xG or live odds)",
+  "fixtures": [
+    {
+      "fixtureId": "401882851",
+      "league": "esp.1",
+      "kickoff": "2026-10-09T19:00Z",
+      "home": "M\u00e1laga",
+      "away": "Espanyol",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "malaga",
+        "espanyol"
+      ]
+    },
+    {
+      "fixtureId": "401876447",
+      "league": "fra.1",
+      "kickoff": "2026-10-09T18:45Z",
+      "home": "Lens",
+      "away": "Lyon",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "lens",
+        "lyon"
+      ]
+    },
+    {
+      "fixtureId": "401884781",
+      "league": "ger.1",
+      "kickoff": "2026-10-09T18:30Z",
+      "home": "Borussia Dortmund",
+      "away": "Werder Bremen",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "borussia dortmund",
+        "werder bremen"
+      ]
+    },
+    {
+      "fixtureId": "401875592",
+      "league": "ned.1",
+      "kickoff": "2026-10-09T18:00Z",
+      "home": "PSV Eindhoven",
+      "away": "Heerenveen",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "psv",
+        "heerenveen"
+      ]
+    },
+    {
+      "fixtureId": "401885423",
+      "league": "por.1",
+      "kickoff": "2026-10-09T17:45Z",
+      "home": "Moreirense",
+      "away": "Gil Vicente",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.280424,
+        "draw": 0.27675,
+        "away_win": 0.442826,
+        "home_or_draw": 0.557174,
+        "away_or_draw": 0.719576,
+        "over_1_5": 0.66554,
+        "under_2_5": 0.598632,
+        "over_2_5": 0.401368,
+        "under_3_5": 0.801331,
+        "btts_yes": 0.454851,
+        "btts_no": 0.545149
+      },
+      "expectedGoals": {
+        "home": 0.9802,
+        "away": 1.31
+      },
+      "trainingMatches": 368
+    },
+    {
+      "fixtureId": "401885427",
+      "league": "por.1",
+      "kickoff": "2026-10-09T19:15Z",
+      "home": "Braga",
+      "away": "Sporting CP",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "braga",
+        "sporting cp"
+      ]
+    }
+  ],
+  "leagueDiagnostics": {
+    "esp.1": {
+      "trainingMatches": 449,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 19,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/es.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/es.1.json"
+      ],
+      "sourceErrors": [],
+      "status": "ready"
+    },
+    "fra.1": {
+      "trainingMatches": 350,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 19,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/fr.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/fr.1.json"
+      ],
+      "sourceErrors": [],
+      "status": "ready"
+    },
+    "ger.1": {
+      "trainingMatches": 342,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 19,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/de.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/de.1.json"
+      ],
+      "sourceErrors": [],
+      "status": "ready"
+    },
+    "ned.1": {
+      "trainingMatches": 368,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 19,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/nl.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/nl.1.json"
+      ],
+      "sourceErrors": [],
+      "status": "ready"
+    },
+    "por.1": {
+      "trainingMatches": 368,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 19,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/pt.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/pt.1.json"
+      ],
+      "sourceErrors": [],
+      "status": "ready"
+    }
+  },
+  "status": "completed",
+  "unmodeledFixtureCount": 11,
+  "coverage": {
+    "inputFixtures": 17,
+    "eligibleLeagueFixtures": 6,
+    "predicted": 1
+  }
+}
