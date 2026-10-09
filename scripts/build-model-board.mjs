@@ -21,7 +21,7 @@ export function buildOverlay({candidate,odds,date}){
     throw new Error("Bookmaker snapshot missing exact-native provenance");
   const asof=Date.parse(candidate.asOf);
   if(!Number.isFinite(asof))throw new Error("Model as-of timestamp missing");
-  const list=[],verifiedPrice=0;
+  const list=[];let verifiedPrice=0;
   for(const fixture of candidate.fixtures||[]){
     if(fixture.status!=="shadow_prediction")continue;
     if(Date.parse(fixture.kickoff)<=asof||!Number.isFinite(Date.parse(fixture.kickoff)))continue;
