@@ -226,6 +226,7 @@ def main() -> int:
     parser.add_argument("--date", help="Toronto YYYY-MM-DD; default today")
     parser.add_argument("--repo", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--as-of", help="UTC ISO-8601 time (for reproducible tests)")
+    parser.add_argument("--dry-run", action="store_true", help="Compute from sources without modifying immutable archives")
     args = parser.parse_args()
     asof = (datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
             if args.as_of else datetime.now(timezone.utc))
@@ -235,6 +236,11 @@ def main() -> int:
     if day < asof.astimezone(TORONTO).date():
         parser.error("Historical dates must not be backfilled as original pre-match forecasts")
     dest = args.repo / "data" / "model-shadow" / f"{day.isoformat()}.json"
+    if args.dry_run:
+        result = forecast_day(args.repo, day, asof)
+        print(f"Shadow dry run: {day} status={result['status']} "
+              f"coverage={result.get('coverage')}")
+        return 0
     # Preserve the first daily forecast: later results must not revise historical predictions.
     if dest.exists():
         print(f"Shadow prediction already archived (unchanged): {dest}")
