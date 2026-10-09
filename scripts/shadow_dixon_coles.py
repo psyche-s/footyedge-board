@@ -218,7 +218,7 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
         "mode": "shadow_only", "promotedToPicks": False,
         "assumptions": {"decayXiPerDay": DECAY_XI, "minTrainingMatches": MIN_TRAIN_MATCHES,
                         "minTeamMatches": MIN_TEAM_MATCHES, "maxDataAgeDays": MAX_SOURCE_AGE_DAYS},
-        "source": "OpenFootball public-domain match results (not xG or live odds)",
+        "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
         "fixtures": [], "leagueDiagnostics": {},
     }
     if not path.exists():
