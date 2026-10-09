@@ -89,6 +89,51 @@ class ShadowModelTests(unittest.TestCase):
             self.assertEqual(report["coverage"]["predicted"], 1)
             self.assertEqual(report["fixtures"][0]["status"], "shadow_prediction")
 
+    def test_verified_final_scores_only_as_next_day_training_input(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            (root / "data" / "boards").mkdir(parents=True)
+            day = date(2026, 10, 9)
+            import json
+            (root / "data" / "boards" / "2026-10-09.json").write_text(json.dumps({
+                "date": "2026-10-09",
+                "games": [
+                    {"id": "100", "league": "ger.1", "home": "Borussia Dortmund", "away": "Werder Bremen"},
+                    {"id": "200", "league": "eng.1", "home": "Arsenal", "away": "Chelsea"},
+                    {"id": "300", "league": "ger.1", "home": "Bayern (W)", "away": "Essen (W)"}
+                ]
+            }))
+            (root / "data" / "2026-10-09").mkdir(parents=True)
+            (root / "data" / "2026-10-09" / "scoreboard.json").write_text(json.dumps({
+                "events": [
+                    {"id": "100", "status": {"type": {"completed": True}},
+                     "competitions": [{"competitors": [
+                         {"homeAway": "home", "score": "2"},
+                         {"homeAway": "away", "score": "1"}]}]},
+                    {"id": "300", "status": {"type": {"completed": True}},
+                     "competitions": [{"competitors": [
+                         {"homeAway": "home", "score": "4"},
+                         {"homeAway": "away", "score": "0"}]}]},
+                    {"id": "200", "status": {"type": {"completed": False}},
+                     "competitions": [{"competitors": [
+                         {"homeAway": "home", "score": "0"},
+                         {"homeAway": "away", "score": "0"}]}]}
+                ]}))
+            rows, ids = m.load_verified_prior_scores(root, "ger.1", date(2026, 10, 10))
+            self.assertEqual(ids, ["100"])
+            self.assertEqual(rows[0]["hg"], 2)
+            self.assertEqual(rows[0]["date"], day)
+            previous, ids = m.load_verified_prior_scores(root, "ger.1", date(2026, 10, 9))
+            self.assertEqual(previous, [])
+            self.assertEqual(ids, [])
+
+    def test_supplement_duplicates_are_deduplicated_and_conflicts_exposed(self):
+        day = date(2026, 10, 9)
+        a = {"date": day, "home": "dortmund", "away": "bremen", "hg": 2, "ag": 1}
+        more, bad = m.merge_results([a], [dict(a), {**a, "hg": 3}])
+        self.assertEqual(len(more), 1)
+        self.assertEqual(bad, 1)
+
     def test_missing_research_does_not_invent_games(self):
         with tempfile.TemporaryDirectory() as folder:
             report = m.forecast_day(Path(folder), date(2026, 10, 9),
