@@ -104,7 +104,7 @@ async function main(){
     year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
   const date=idx>=0?a[idx+1]:p.year+"-"+p.month+"-"+p.day;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error("Bad date");
-  const file=path.join("data","model-boards",date+".json");
+  const file=path.join("data","model-boards-v2",date+".json");
   try{await fs.access(file);console.log("Model cross-check preserved:",file);return;}catch(e){if(e.code!=="ENOENT")throw e;}
   const [c,o,scoreboard]=await Promise.all([
     fs.readFile("data/model-candidates/"+date+".json","utf8").then(JSON.parse),
