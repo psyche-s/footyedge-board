@@ -36,3 +36,32 @@ test("rejects any already-started forecast in dated research overlay",()=>{
  const x=payload();x.candidate.fixtures[0].kickoff="2026-10-09T12:00:00Z";
  const r=buildOverlay({...x,date});assert.equal(r.leagueFixtures,0);
 });
+
+test("accepts exact ESPN DraftKings Under 3.5 while withholding unsupported Over 3.5 probabilities",()=>{
+ const x=payload();
+ x.candidate.fixtures[0].probabilities.under_3_5=.70;
+ x.scoreboard={events:[{id:"abc-1",competitions:[{odds:[{
+  provider:{displayName:"DraftKings"},overUnder:3.5,
+  total:{over:{close:{line:"o3.5",odds:"-105"}},
+         under:{close:{line:"u3.5",odds:"-120"}}}
+ }]}]}]};
+ const r=buildOverlay({...x,date});
+ assert.equal(r.verifiedTotalsQuotes,2);
+ assert.equal(r.matchups[0].totalMarkets.length,2);
+ const under=r.matchups[0].totalMarkets.find(m=>m.market==="under_3_5");
+ const over=r.matchups[0].totalMarkets.find(m=>m.market==="over_3_5");
+ assert.equal(under.odds,-120);
+ assert.equal(under.modelProbability,.70);
+ assert.ok(under.rawModelEV>0);
+ assert.equal(over.odds,-105);
+ assert.equal(over.modelProbability,null);
+ assert.equal(over.rawModelEV,null);
+});
+test("rejects mismatched total lines and fabricated sportsbook provider",()=>{
+ const x=payload();
+ x.scoreboard={events:[{id:"abc-1",competitions:[{odds:[{
+  provider:{displayName:"NotDraftKings"},overUnder:3.5,
+  total:{under:{close:{line:"u2.5",odds:"-120"}}}
+ }]}]}]};
+ assert.equal(buildOverlay({...x,date}).verifiedTotalsQuotes,0);
+});
