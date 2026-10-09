@@ -1,0 +1,60 @@
+name: Owner Saudi Pro League slate expansion (GitHub data only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/owner-add-saudi-oct09.mjs"
+      - "scripts/audit-board-odds.mjs"
+      - ".github/workflows/owner-saudi-oct09.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/owner-add-saudi-oct09.mjs"
+      - "scripts/audit-board-odds.mjs"
+      - ".github/workflows/owner-saudi-oct09.yml"
+permissions:
+  contents: write
+concurrency:
+  group: owner-saudi-oct09
+  cancel-in-progress: false
+jobs:
+  add-scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check kickoff safety and scope code
+        shell: bash
+        run: |
+          node --check scripts/owner-add-saudi-oct09.mjs
+          node --check scripts/audit-board-odds.mjs
+          node --input-type=module <<'JS'
+          const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+          if(p.year+"-"+p.month+"-"+p.day!=="2026-10-09")throw Error("October 9 owner correction only, do not retroactively amend other dates");
+          JS
+      - name: Append validated Saudi fixtures and report unavailable exact odds
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-add-saudi-oct09.mjs
+          node scripts/audit-board-odds.mjs --date 2026-10-09
+          node scripts/validate-published-boards.mjs --base "$BASE"
+      - name: Push auditable updated match data to GitHub directly
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/boards/2026-10-09.json data/board-revisions/2026-10-09 data/odds-coverage/2026-10-09.json
+          if git diff --cached --quiet; then echo "Owner expansion already committed";exit 0; fi
+          git config user.name "FootyEdge Owner Research Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): add Saudi Pro League and exact price coverage audit [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main

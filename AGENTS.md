@@ -1,7 +1,9 @@
 # FootyEdge project rules
 
 ## Owner-approved publication and writing rules (2026-10-09)
-- The board is **men's soccer only**, across all tracked men's leagues including `eng.2` and `tur.1`. Do not add women's games.
+- Tracked Saudi Pro League men's code is `ksa.1` (ESPN competition UID 21231). Its public results data currently lacks timely enough OpenFootball history for fitted Dixon–Coles probabilities, so never infer a market confidence from a raw sportsbook price.
+- Match odds are only complete for exact markets actually carried by the provider: ESPN/DraftKings saves 1X2 plus its one posted totals line; The Odds API currently requests only `h2h` and `totals`, **not** Double Chance, BTTS or arbitrary alternate lines. These should remain N/A unless separately verified with an exact real provider quote, not inferred from neighbouring lines.
+- The board is **men's soccer only**,- The board is **men's soccer only**, across all tracked men's leagues including `eng.2` and `tur.1`. Do not add women's games.
 - A fixture's Top 3 should consider result/DC/handicap, goal lines, BTTS and eligible player markets fairly; offer three only if supported by real match evidence, never force all three as 85%+ predictions.
 - Write simple, grounded explanations. **WHY THIS PICK** directly under Pick #1; one short useful sentence for Picks #2 and #3. Add recent H2H results, home/away context, team news when confirmed and cite match previews in editorial metadata.
 - Football Whispers is a **cross-check** and source of possible alternative angles, not a replacement for the actual team statistics or model; call out material contradictions.
