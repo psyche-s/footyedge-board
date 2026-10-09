@@ -15,7 +15,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.1"
+VERSION = "dc-shadow-v0.2"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
@@ -39,6 +39,14 @@ ALIASES = {
     "bayern munich": "bayern munchen",
     "bayern munchen": "bayern munchen",
     "borussia monchengladbach": "borussia monchengladbach",
+    # Official source labels verified against OpenFootball 2026-27 club lists.
+    "espanyol": "rcd espanyol de barcelona",
+    "lens": "racing club de lens",
+    "lyon": "olympique lyonnais",
+    "werder bremen": "sv werder bremen",
+    "heerenveen": "sc heerenveen",
+    "braga": "sporting clube de braga",
+    "sporting cp": "sporting clube de portugal",
 }
 
 def key(name: str) -> str:
