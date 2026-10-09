@@ -8,6 +8,18 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Complete saved DraftKings total odds in model comparison
+**Status:** 🟡 Versioned odds-provider expansion
+
+- Saved ESPN/DraftKings scoreboard carries original posted American total
+  odds for today's six supported matches, even though the dedicated
+  daily-odds feed includes only 1X2. The new `model-boards-v2` adds
+  those EXACT posted lines rather than guessing a different line.
+- When Dixon–Coles has no corresponding total-line probability, the
+  posted sportsbook quote can show but model EV stays N/A.
+- The original model-boards v1 archive, official picks and
+  original confidence remain unchanged.
+
 ## 2026-10-09 — Tomorrow's model now uses verified prior-day finals
 **Status:** 🟡 CI pending, scheduled from next daily model run
 
