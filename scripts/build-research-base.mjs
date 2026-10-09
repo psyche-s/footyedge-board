@@ -144,9 +144,19 @@ async function buildFixture(g){
   }
 }
 async function main(){
-  try{await fs.access(path.join('data','boards',DATE+'.json'));console.log('Published research remains frozen:',DATE);return}catch(e){if(e.code!=='ENOENT')throw e}
+  // Explicit owner-specified October 9 league expansion: write a NEW research
+  // source, never modify the frozen original deterministic research base.
+  const correction=process.env.OWNER_SCOPE_EXPANSION==="2026-10-09"&&DATE==="2026-10-09";
+  if(!correction){
+    try{await fs.access(path.join('data','boards',DATE+'.json'));console.log('Published research remains frozen:',DATE);return}catch(e){if(e.code!=='ENOENT')throw e}
+  }
   if(!FORCE&&torontoHour()!=="06"){console.log("Skip: Toronto hour is",torontoHour(),"not 06");return}
-  const board=await json(`${SITE}/api/espn-scoreboard?dates=${DATE.replaceAll("-","")}&limit=1000`);
+  let board;
+  try{board=await json(`${SITE}/api/espn-scoreboard?dates=${DATE.replaceAll("-","")}&limit=1000`)}
+  catch(error){
+    if(!correction)throw error;
+    board=JSON.parse(await fs.readFile(path.join("data",DATE,"scoreboard.json"),"utf8"));
+  }
   const games=globalThis.FootyEdgeAvailability.eventsForDay(board,DATE).map(fixtureInfo).filter(Boolean);
   const fixtures=[];
   for(let i=0;i<games.length;i+=4){
@@ -154,7 +164,7 @@ async function main(){
   }
   let learningIngested=null;try{const x=JSON.parse(await fs.readFile(path.join("data","postmortems","diagnostics.json"),"utf8"));learningIngested={generatedAt:x.generatedAt,decision:x.decision,modelChange:x.modelChange}}catch(e){if(e.code!=="ENOENT")throw e}
   const out={date:DATE,modelVersion:"v69-gates",learningIngested,generatedAt:new Date().toISOString(),source:"FootyEdge deterministic all-competition history",fixtures};
-  const file=path.join("data",`research-base-${DATE}.json`);
+  const file=path.join("data",correction?`research-base-expanded-${DATE}.json`:`research-base-${DATE}.json`);
   await fs.mkdir("data",{recursive:true});
   await fs.writeFile(file,JSON.stringify(out,null,2)+"\n");
   console.log("Wrote",file,"with",fixtures.length,"fixtures");
