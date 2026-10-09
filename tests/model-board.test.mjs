@@ -41,7 +41,7 @@ test("accepts exact ESPN DraftKings Under 3.5 while withholding unsupported Over
  const x=payload();
  x.candidate.fixtures[0].probabilities.under_3_5=.70;
  x.scoreboard={events:[{id:"abc-1",competitions:[{odds:[{
-  provider:{displayName:"DraftKings"},overUnder:3.5,
+  provider:{name:"DraftKings"},overUnder:3.5,
   total:{over:{close:{line:"o3.5",odds:"-105"}},
          under:{close:{line:"u3.5",odds:"-120"}}}
  }]}]}]};
