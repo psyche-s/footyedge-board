@@ -12,6 +12,9 @@ on:
       - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
       - "scripts/audit-shadow-refresh.mjs"
+      - "scripts/build-model-board.mjs"
+      - "tests/model-board.test.mjs"
+      - "ui/part2.html"
       - "tests/audit-shadow-refresh.test.mjs"
       - ".github/workflows/archive-board.yml"
       - ".github/workflows/shadow-dixon-coles.yml"
@@ -25,6 +28,9 @@ on:
       - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
       - "scripts/audit-shadow-refresh.mjs"
+      - "scripts/build-model-board.mjs"
+      - "tests/model-board.test.mjs"
+      - "ui/part2.html"
       - "tests/audit-shadow-refresh.test.mjs"
       - ".github/workflows/archive-board.yml"
       - ".github/workflows/shadow-dixon-coles.yml"
@@ -57,8 +63,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Morning audit unit tests
-        run: node --test tests/audit-shadow-refresh.test.mjs
+      - name: Morning audit and model-board unit tests
+        run: node --test tests/audit-shadow-refresh.test.mjs tests/model-board.test.mjs
       - name: Install modeling dependencies
         run: pip install -r requirements-shadow.txt
       - name: Unit tests
@@ -99,13 +105,27 @@ jobs:
             git pull --ff-only origin main
             python scripts/shadow_dixon_coles.py --capture-candidate
           fi
+      - name: Create model-vs-verified-odds sideboard (read-only)
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            # Dry-run against a mock fixture when dated live candidate is not yet archived.
+            node --test tests/model-board.test.mjs
+          else
+            TODAY="$(TZ=America/Toronto date +%F)"
+            if [[ -f "data/model-candidates/$TODAY.json" && -f "data/daily-odds-$TODAY.json" ]]; then
+              node scripts/build-model-board.mjs --date "$TODAY"
+            else
+              echo "New model candidate or native odds not yet available; preserve official board."
+            fi
+          fi
       - name: Archive immutable model snapshots and fixed holdout
         if: github.ref == 'refs/heads/main'
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json")
+          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json" "data/model-boards/$TODAY.json")
           git config user.name "FootyEdge Model Bot"
           git config user.email "actions@users.noreply.github.com"
           for FILE in "${FILES[@]}"; do
