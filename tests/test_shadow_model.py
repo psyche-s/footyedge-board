@@ -43,6 +43,11 @@ class ShadowModelTests(unittest.TestCase):
             with self.subTest(public=public):
                 self.assertEqual(m.key(public), m.key(source))
 
+    def test_saudi_pro_league_in_mens_model_scope_but_not_guaranteed_fitted(self):
+        self.assertEqual(m.LEAGUES["ksa.1"], "sa.1")
+        # Source availability must be checked by the live model; adding league
+        # code does not imply a valid current-season OpenFootball file exists.
+
     def test_english_championship_and_turkey_mens_model_scope(self):
         self.assertEqual(m.LEAGUES["eng.2"], "en.2")
         self.assertEqual(m.LEAGUES["tur.1"], "tr.1")
