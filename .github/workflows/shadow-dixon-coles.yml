@@ -7,6 +7,7 @@ on:
     paths:
       - "scripts/shadow_dixon_coles.py"
       - "scripts/backtest_shadow.py"
+      - "scripts/compare-frozen-slates.mjs"
       - "scripts/review-shadow.mjs"
       - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
@@ -19,6 +20,7 @@ on:
     paths:
       - "scripts/shadow_dixon_coles.py"
       - "scripts/backtest_shadow.py"
+      - "scripts/compare-frozen-slates.mjs"
       - "scripts/review-shadow.mjs"
       - "tests/review-shadow.test.mjs"
       - "tests/test_shadow_model.py"
@@ -73,6 +75,14 @@ jobs:
           fi
       - name: Postmatch review JavaScript tests
         run: node --test tests/review-shadow.test.mjs
+      - name: Original archived slate scorecard (not a DC comparison)
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            node scripts/compare-frozen-slates.mjs --dry-run
+          else
+            node scripts/compare-frozen-slates.mjs
+          fi
       - name: Build shadow forecast (today only, Toronto)
         shell: bash
         run: |
@@ -95,7 +105,7 @@ jobs:
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json")
+          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json")
           git config user.name "FootyEdge Model Bot"
           git config user.email "actions@users.noreply.github.com"
           for FILE in "${FILES[@]}"; do
