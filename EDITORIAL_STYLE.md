@@ -2,6 +2,20 @@
 
 This is the writing standard for all reader-facing FootyEdge copy: WHY THIS PICK, match summaries, Team News, supporting pick commentary, player-prop notes and future morning-board write-ups.
 
+## Permanent men's-only Top 3 board standard
+
+For each eligible fixture, research up to three distinct football angles across results/double chance, totals, team totals, BTTS and legitimate player markets. Show three only when there is real evidence; otherwise make the PASS state explicit instead of manufacturing confident selections. This is the default daily refresh, not a one-day exception.
+
+- Put **WHY THIS PICK** directly under Pick #1 in expanded analysis. State the actual matchup reason in two or three natural sentences.
+- Show relevant **last-10 form, home/away splits and recent H2H** with the sample size. Treat sparse or dated H2H cautiously; do not make up history.
+- Check current **Football Whispers** match previews as a second opinion when available. Cross-check their form, team news and H2H with FootyEdge's own dated sources. Explain conflicting evidence rather than automatically copying their tip.
+- Under Picks #2 and #3, explain in one sentence why those specific markets make football sense. Clearly distinguish a safer line from a higher-risk alternative.
+- Display only exact original sportsbook odds from trustworthy saved/live sportsbook feeds. An unavailable quote is **N/A**; never infer a made-up alternative line, convert a preview writer's indicative price into a verified bookmaker quote, or price a missing player prop.
+- The owner's current exact American favourite price cap is **-500 inclusive**. A short price alone does not prove a pick is safe.
+- Keep engineering terms, data fallback states, training warnings, version codes, source hashes and raw EV calculations in internal logs. Do not expose them as commentary to visitors.
+- Confidence must not be presented as independently calibrated when the experimental model has not passed a historical calibration check. A bookmaker-based view is not a FootyEdge forecast.
+- Public slate and write-ups include **men's fixtures only**. Women's leagues are not in the eligible board.
+
 ## Core voice
 
 Write like a knowledgeable football preview writer speaking to a normal fan.
@@ -101,13 +115,3 @@ Use current Football Whispers previews as an editorial reference only: short key
 
 Never copy their sentences or distinctive phrasing. FootyEdge must write original copy from its own verified evidence.
 
-## Women's teams
-
-Any reader-facing women's team name must end with **(W)**.
-
-Examples:
-- Jordan (W)
-- Armenia (W)
-- Chelsea (W)
-
-Do not change internal provider IDs, raw API names or odds-matching keys just to add the suffix. Add it at the display/writing layer.

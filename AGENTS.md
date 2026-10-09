@@ -1,5 +1,16 @@
 # FootyEdge project rules
 
+## Owner-approved publication and writing rules (2026-10-09)
+- The board is **men's soccer only**, across all tracked men's leagues including `eng.2` and `tur.1`. Do not add women's games.
+- A fixture's Top 3 should consider result/DC/handicap, goal lines, BTTS and eligible player markets fairly; offer three only if supported by real match evidence, never force all three as 85%+ predictions.
+- Write simple, grounded explanations. **WHY THIS PICK** directly under Pick #1; one short useful sentence for Picks #2 and #3. Add recent H2H results, home/away context, team news when confirmed and cite match previews in editorial metadata.
+- Football Whispers is a **cross-check** and source of possible alternative angles, not a replacement for the actual team statistics or model; call out material contradictions.
+- Reader-facing prose should never include version numbers, Dixon–Coles implementation, internal fallback status, unsupported EV claims, artificial confidence boosts or technical qualification text.
+- Exact native sportsbook odds only. Maximum favourite price **-500 inclusive** (decimal 1.20). If the actual exact market is unquoted, show N/A and don't invent.
+- The Toronto morning publication lock, original Top 5, archived old picks, score settlements and audit backups remain immutable except for clearly authorized, versioned corrections.
+- Continue tracking every pick after full time, separating matchup-analysis errors from variance.
+
+
 ## Latest owner publication rule — 2026-10-07 (supersedes rolling future-board publication)
 - **October 7 only:** the owner explicitly instructed FootyEdge to publish and lock today's board immediately, before the normal morning lock. This one-time override is the official October 7 board and is immutable unless Shaif explicitly requests a correction.
 - **Starting October 8:** publish only the **current Toronto calendar day's** picks. Start the board workflow at **06:00 America/Toronto**, build the current-day board, and lock it as the official board in the same run. Do not publish future-date picks early.
