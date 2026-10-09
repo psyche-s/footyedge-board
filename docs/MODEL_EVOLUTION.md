@@ -95,6 +95,27 @@ matches have been played and misrepresent them as contemporaneous predictions.
   lacks a verified market/line, do not invent a new price or label one
   available merely because Dixon-Coles estimates its probability.
 
+## Current board's independently labeled model analysis
+- A separate `data/model-boards/YYYY-MM-DD.json` is generated after a
+  genuine time-stamped pre-match candidate and saved verified native odds
+  become available. It contains dated model-only 1X2 probabilities,
+  corresponding *exact* American sportsbook ML quotations, model-vs-quote
+  EV and unavailable statuses for unquoted lines.
+- The existing full-match analysis optionally shows this under
+  **DIXON–COLES MODEL CHECK · EXPERIMENTAL**, without changing its
+  published Top 3, Top 5, price, confidence, historical ranking or
+  settled performance. No other visual layout change is intended.
+- Domestic holdout (Sep 12–20, 2026): 118 supported matches, DC
+  1X2 argmax correct in 50.0%, multiclass Brier 0.590688 and
+  log-loss 0.992190. This small sample does not establish
+  calibration/ROI or justify automatically increasing scores.
+- The model report can disagree with official published scores or
+  prices; those disagreements are part of the morning research and
+  next-day post-match review, not hidden by refitting past games.
+- Until a longer direct head-to-head is available, the DC forecast is
+  a real **second-opinion input**, not an untested replacement
+  for saved original selections or an invented 85%-confidence source.
+
 ## Acceptance gates before ANY public influence
 1. Check coverage/source freshness and expand legally available league history.
 2. Walk-forward historical replay with time-appropriate training data, genuine
