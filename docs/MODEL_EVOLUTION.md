@@ -202,7 +202,7 @@ matches have been played and misrepresent them as contemporaneous predictions.
    leaking results. Validate uncertainty, sample counts and reliability bins
    (including whether stated 85% picks hit approximately 85%).
 5. Compare selections at exact verified sportsbook odds, apply the established
-   -400 floor and safer-line tests, track no-vig prices, closing-line value,
+   -500 floor and safer-line tests, track no-vig prices, closing-line value,
    push rules, model EV and risk-adjusted ROI with realistic availability.
 6. Require documented, repeatable out-of-sample improvement before adjusting
    published confidence/selection weights; version each change, never modify
