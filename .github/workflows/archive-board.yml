@@ -53,6 +53,14 @@ jobs:
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
 
+      - name: Verify shadow model arrived before morning publication (advisory only)
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          # Refresh origin/main without changing the current checkout or official boards.
+          git fetch --quiet origin main || echo "Shadow source ref refresh unavailable; publishing remains independent."
+          node scripts/audit-shadow-refresh.mjs --ref origin/main
+
       - name: Build today's complete board only
         if: steps.gate.outputs.run == 'true'
         env:

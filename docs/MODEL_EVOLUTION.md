@@ -23,6 +23,16 @@ and BTTS probabilities. Its superiority must be proven out of sample, not assume
 - GitHub Actions executes daily around 05:35 Toronto, in parallel with the
   normal research and before the 06:00 official board lock. Runs on model-code
   changes and can be triggered manually in the GitHub Actions interface.
+- At the 06:00 Toronto official-publishing run, `archive-board.yml` fetches
+  the latest remote main ref without modifying its board checkout and runs
+  `scripts/audit-shadow-refresh.mjs --ref origin/main`. The GitHub Actions
+  step summary records availability, date, model version, source coverage and
+  whether the experimental forecast passed pre-match structure checks.
+- This is a **non-blocking visibility check**: if research/model data arrives
+  late, is stale or missing, the official publication still proceeds unchanged.
+  Neither 06:00 board selection nor odds/Top 3/Top 5 use shadow probabilities.
+  The model's original dated archive is immutable even after a later code
+  upgrade; no late replacement or hindsight backfill is permitted.
 - One daily shadow file is immutable when archived; reruns do not silently
   rewrite predictions. Git history also records the original source version.
 
@@ -52,6 +62,8 @@ Run:
     python -m unittest discover -s tests -p test_shadow_model.py -v
     python scripts/shadow_dixon_coles.py
     python scripts/shadow_dixon_coles.py --dry-run
+    node --test tests/audit-shadow-refresh.test.mjs
+    node scripts/audit-shadow-refresh.mjs
 A dry run computes current forecasts but does not alter stored original output.
 Pull-request CI always performs a dry run, even if today is already archived.
 For deterministic local investigation, specify --date YYYY-MM-DD and --as-of
