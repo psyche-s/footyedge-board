@@ -1,3 +1,10 @@
+## 2026-10-09 — First-person plural voice throughout FootyEdge
+**Status:** Public wording simplified, underlying research sources retained internally
+
+- Show **we** and **our analysis** instead of naming other tip sites in published WHY THIS PICK and match commentary.
+- Keep external URLs in internal evidence metadata, not in user-facing promotional footers. Stats, head-to-head findings, selection grades, odds and original tracking stay unchanged.
+- This rule applies to future daily refreshes.
+
 ## 2026-10-09 — Simplify the expanded match analysis for supporters
 **Status:** Frontend change queued for the next successful Vercel deployment
 
