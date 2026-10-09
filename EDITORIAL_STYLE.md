@@ -8,7 +8,7 @@ For each eligible fixture, research up to three distinct football angles across 
 
 - Put **WHY THIS PICK** directly under Pick #1 in expanded analysis. State the actual matchup reason in two or three natural sentences.
 - Show relevant **last-10 form, home/away splits and recent H2H** with the sample size. Treat sparse or dated H2H cautiously; do not make up history.
-- Check current **Football Whispers** match previews as a second opinion when available. Cross-check their form, team news and H2H with FootyEdge's own dated sources. Explain conflicting evidence rather than automatically copying their tip.
+- We cross-check current independent match previews against our own form, team news and head-to-head numbers. Publish the final reasoning in **our** voice, while retaining the original source URLs internally.
 - Under Picks #2 and #3, explain in one sentence why those specific markets make football sense. Clearly distinguish a safer line from a higher-risk alternative.
 - Display only exact original sportsbook odds from trustworthy saved/live sportsbook feeds. An unavailable quote is **N/A**; never infer a made-up alternative line, convert a preview writer's indicative price into a verified bookmaker quote, or price a missing player prop.
 - The owner's current exact American favourite price cap is **-500 inclusive**. A short price alone does not prove a pick is safe.
@@ -109,9 +109,9 @@ Example:
 - Do not show formulas in prose.
 - EV and Market % belong in their UI fields. Mention them in copy only when price/value is central to choosing one line over another.
 
-## Football Whispers reference
+## Our analysis and independent sources
 
-Use current Football Whispers previews as an editorial reference only: short key-stat framing, straightforward form sentences, team-news paragraphs that name the relevant players, and a simple explanation of why the selected market fits.
+Use independent previews as internal research references only: short key-stat framing, straightforward form sentences, team-news paragraphs that name the relevant players, and a simple explanation of why the selected market fits.
 
 Never copy their sentences or distinctive phrasing. FootyEdge must write original copy from its own verified evidence.
 
