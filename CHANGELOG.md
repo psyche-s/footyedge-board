@@ -8,6 +8,16 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Experimental Dixon–Coles pipeline (shadow only)
+**Status:** 🟡 Python model and scheduled workflow committed; CI/first production shadow snapshot subject to verification
+
+- Added `scripts/shadow_dixon_coles.py` using penaltyblog 1.12.0 and OpenFootball public-domain result datasets for seven supported men's top-flight leagues.
+- Added dated, non-public `data/model-shadow/YYYY-MM-DD.json` forecasts (result, double chance, goals, BTTS, expected goals) with coverage, source timestamps and source availability diagnostics.
+- Added strict pre-match time cutoff, training sample and freshness gates, audited team-key aliases, and safe failure statuses when data is insufficient.
+- Added `.github/workflows/shadow-dixon-coles.yml`, pinned isolated research requirements, Python tests and model evolution/rollout plan in `docs/MODEL_EVOLUTION.md`.
+- No automatic selection/rank/confidence changes, no new live-betting claims, no odds invention, no Vercel runtime dependency and no changes to official board, UI or historical archives.
+- Subsequent work: verify first CI/snapshot, add time-split backtests/calibration and broader approved source coverage before considering production integration.
+
 ## 2026-10-07 — Men's-only scope + verified empty-slate fix
 **Status:** ✅ Live
 
