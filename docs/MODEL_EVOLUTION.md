@@ -148,6 +148,29 @@ matches have been played and misrepresent them as contemporaneous predictions.
 - The independent post-match process/incident review remains separate;
   one day's hit or miss is not enough to adjust market weighting.
 
+## Owner-authorized October 9 board correction
+- A one-time, pre-kickoff GitHub Actions workflow reconstructs the
+  scope-expanded deterministic research in a NEW
+  `data/research-base-expanded-2026-10-09.json`, runs the current
+  Dixon–Coles model against it, and archives a separate
+  `data/model-candidates-expanded/2026-10-09.json` forecast if the
+  original two added fixtures have not kicked off.
+- The owner explicitly requested adding Championship West Ham–QPR and
+  Turkish Süper Lig Galatasaray–Kasımpaşa **after today's lock**.
+  `scripts/owner-extend-oct09.mjs` adds these verified ESPN fixtures
+  to the existing official board as a formal correction while backing up
+  the original complete JSON and recording before/after SHA256 values
+  in append-only `data/board-revisions/2026-10-09/audit.json`.
+- All six previously published teams and every saved Top 3 / Top 5
+  selection, price, rank and confidence stay byte-identical within
+  their objects. The added matches carry full plain-English research
+  notes, sources and exact saved DraftKings ML prices.
+- Because this is an uncalibrated 118-match holdout and Turkish current
+  season sources lack adequate freshness, the two new matchup ideas
+  remain clearly marked *research leans / PASS* instead of fabricated
+  85%-confidence picks. The new modeled probabilities (where actually
+  available) appear separately in the expanded game analysis.
+
 ## Added competition expansion — October 9
 - Added ESPN male competition uid 3914 (`eng.2`, Championship) and uid
   3946 (`tur.1`, Turkish Süper Lig) to tracked fixture schedules and
