@@ -34,7 +34,16 @@ function displayPickLabel(g,p){
   return label
 }
 function flagCode(name){return FLAG_CODES[String(name||"").toLowerCase().trim()]||null}
-const REMOTE_LEAGUE_LOGOS={"uefa.nations":"https://cdn.prod.website-files.com/68f550992570ca0322737dc2/69fe89ba12923df17d6c7a4b_uefa-nations-league-footylogos.png","concacaf.nations.league":"https://commons.wikimedia.org/wiki/Special:Redirect/file/CONCACAF_Nations_League_(2026).svg","uefa.champions":"https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg","uefa.europa":"https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png","fifa.friendly":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.world":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.uefa":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.conmebol":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.concacaf":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","eng.1":"https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg","esp.1":"https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg","ita.1":"https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg","ger.1":"https://upload.wikimedia.org/wikinews/en/1/15/Bundesliga_logo.svg","fra.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_Ligue_1_McDonald%27s_2024.svg","ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png","por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png","usa.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Major_League_Soccer_logo.svg","cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png","tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png","ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png","eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png"};
+
+/* Owner-supplied exact marks, shared by every competition badge. */
+const EXACT_LEAGUE_LOGOS=Object.freeze({
+  "cze.1": "https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png",
+  "tur.1": "https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png",
+  "ksa.1": "https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png",
+  "por.1": "https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
+  "eng.2": "https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png"
+});
+const REMOTE_LEAGUE_LOGOS={"uefa.nations":"https://cdn.prod.website-files.com/68f550992570ca0322737dc2/69fe89ba12923df17d6c7a4b_uefa-nations-league-footylogos.png","concacaf.nations.league":"https://commons.wikimedia.org/wiki/Special:Redirect/file/CONCACAF_Nations_League_(2026).svg","uefa.champions":"https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg","uefa.europa":"https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png","fifa.friendly":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.world":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.uefa":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.conmebol":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.concacaf":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","eng.1":"https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg","esp.1":"https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg","ita.1":"https://upload.wikimedia.org/wikipedia/commons/e/e9/Serie_A_logo_2022.svg","ger.1":"https://upload.wikimedia.org/wikinews/en/1/15/Bundesliga_logo.svg","fra.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Logo_Ligue_1_McDonald%27s_2024.svg","ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png","por.1":EXACT_LEAGUE_LOGOS["por.1"],"usa.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Major_League_Soccer_logo.svg","cze.1":EXACT_LEAGUE_LOGOS["cze.1"],"tur.1":EXACT_LEAGUE_LOGOS["tur.1"],"ksa.1":EXACT_LEAGUE_LOGOS["ksa.1"],"eng.2":EXACT_LEAGUE_LOGOS["eng.2"]};
 const LEAGUE_LOGOS={
 "uefa.nations":"/assets/logos/competitions/uefa.nations.png",
 "concacaf.nations.league":"/assets/logos/competitions/concacaf.nations.league.png",
@@ -47,16 +56,16 @@ const LEAGUE_LOGOS={
 "ger.1":"/assets/logos/competitions/ger.1.png",
 "fra.1":"/assets/logos/competitions/fra.1.png",
 "ned.1":"/assets/logos/competitions/ned.1.png",
-"por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
+"por.1":EXACT_LEAGUE_LOGOS["por.1"],
 "usa.1":"/assets/logos/competitions/usa.1.png",
 "fifa.friendly":REMOTE_LEAGUE_LOGOS["fifa.friendly"],
 "fifa.worldq.uefa":REMOTE_LEAGUE_LOGOS["fifa.worldq.uefa"],
 "fifa.worldq.conmebol":REMOTE_LEAGUE_LOGOS["fifa.worldq.conmebol"],
 "fifa.worldq.concacaf":REMOTE_LEAGUE_LOGOS["fifa.worldq.concacaf"],
-"cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png",
-"tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png",
-"ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png",
-"eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png",};
+"cze.1":EXACT_LEAGUE_LOGOS["cze.1"],
+"tur.1":EXACT_LEAGUE_LOGOS["tur.1"],
+"ksa.1":EXACT_LEAGUE_LOGOS["ksa.1"],
+"eng.2":EXACT_LEAGUE_LOGOS["eng.2"],};
 function teamImage(t){
   const code=flagCode(t&&t.name);
   if(code)return "https://flagcdn.com/w160/"+code+".png";
@@ -228,7 +237,7 @@ function mergeFootballPayloads(a,b){
 function buildFixtureMap(payload){const map=new Map();for(const entry of payload?.response||[]){const home=entry?.teams?.home?.name,away=entry?.teams?.away?.name;if(home&&away)map.set(fixtureMatchKey(home,away),entry)}return map}
 function leagueFallbackHtml(){return '<span class="leagueFallback" aria-hidden="true"><svg viewBox="0 0 24 24" role="presentation"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="m12 7 3 2.2-1.1 3.6h-3.8L9 9.2 12 7Zm-6.2 4.1 3.2-1.9m6 0 3.2 1.9M8.9 12.8l-2.1 3m8.3-3 2.1 3m-7 1.1h3.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'}
 function leagueIconHtml(id,fallback){
-  const src=LEAGUE_LOGOS[id]||window.FOOTYEDGE_LOGOS?.competitions?.[id]||fallback||REMOTE_LEAGUE_LOGOS[id]||"";
+  const src=EXACT_LEAGUE_LOGOS[id]||LEAGUE_LOGOS[id]||window.FOOTYEDGE_LOGOS?.competitions?.[id]||fallback||REMOTE_LEAGUE_LOGOS[id]||"";
   const remote=REMOTE_LEAGUE_LOGOS[id]||fallback||"";
   if(!src)return leagueFallbackHtml();
   const safeId=String(id||"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
@@ -788,7 +797,7 @@ function renderBest(){
       '<div class="rankBadge">'+(i+1)+'</div>'+
       '<div class="bestFlags">'+teamImgTag(g.home)+teamImgTag(g.away)+'</div>'+
       '<div class="bestCore"><div class="bestFixture">'+esc(teamDisplayName(g,g.home))+' <span>vs</span> '+esc(teamDisplayName(g,g.away))+'</div>'+
-      '<div class="bestLeague">'+esc(g.leagueName)+' · '+timeET(g.date)+'</div>'+
+      '<div class="bestLeague">'+esc(displayLeagueName(g.league,g.leagueName))+' · '+timeET(g.date)+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
       '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
@@ -804,7 +813,7 @@ function renderGames(){
   el.innerHTML=list.map(g=>{
     const top3=viewCandidates(g),p=viewPick(g),px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
-      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(g.leagueName)+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
+      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
       '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.home))+'</div><div class="form">'+formHTML(dh?.form)+'</div></div></div>'+
       '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
@@ -998,7 +1007,7 @@ function renderModal(g){
       '</span></div>').join('')+'</div>'+
     '<p class="modelFootnote">Independent, uncalibrated pre-match estimate; does not change official picks or confidence. Only verified morning moneyline and exact posted goal-total prices are shown. Unpriced markets remain unavailable.</p></section>':'';
   const modelApproach=g.ownerEditorial?'<p class="modelFootnote">We weigh recent form, head-to-head results and matchup trends for each pick.</p>':'';
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(teamDisplayName(g,g.home))}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(teamDisplayName(g,g.away))}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(g.leagueName)} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf!=null?g.model.home.gf.toFixed(2):"—")} / ${(g.model?.home?.ga!=null?g.model.home.ga.toFixed(2):"—")}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf!=null?g.model.away.gf.toFixed(2):"—")} / ${(g.model?.away?.ga!=null?g.model.away.ga.toFixed(2):"—")}</b></div></div><div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(teamDisplayName(g,g.home))}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(teamDisplayName(g,g.away))}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(displayLeagueName(g.league,g.leagueName))} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf!=null?g.model.home.gf.toFixed(2):"—")} / ${(g.model?.home?.ga!=null?g.model.home.ga.toFixed(2):"—")}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf!=null?g.model.away.gf.toFixed(2):"—")} / ${(g.model?.away?.ga!=null?g.model.away.ga.toFixed(2):"—")}</b></div></div><div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
 }
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;

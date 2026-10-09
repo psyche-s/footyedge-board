@@ -1516,6 +1516,73 @@ body{background:#031008}
   overflow:hidden!important;
 }
 
+/* Competition identity: consistent uncropped logos and aligned names in filters, match headers and breakdowns. */
+.filterPill[data-league]:not([data-league="all"]){
+  display:inline-grid!important;
+  grid-template-columns:24px max-content!important;
+  column-gap:8px!important;
+  align-items:center!important;
+  justify-items:start!important;
+}
+.filterPill[data-league]:not([data-league="all"])>.leagueIcon,
+.filterPill[data-league]:not([data-league="all"])>.leagueFallback{
+  box-sizing:border-box!important;
+  width:24px!important;height:24px!important;
+  min-width:24px!important;min-height:24px!important;
+  max-width:24px!important;max-height:24px!important;
+  display:grid!important;place-items:center!important;
+  padding:1px!important;margin:0!important;
+  border:0!important;border-radius:0!important;overflow:hidden!important;
+}
+.filterPill[data-league]:not([data-league="all"])>span:last-child{
+  line-height:1.15!important;
+  justify-self:start!important;text-align:left!important;white-space:nowrap!important;
+}
+.gameTop .leagueBrand{
+  display:grid!important;
+  grid-template-columns:24px minmax(0,1fr)!important;
+  column-gap:8px!important;
+  align-items:center!important;justify-items:start!important;
+}
+.gameTop .leagueBrand>.leagueIcon,
+.gameTop .leagueBrand>.leagueFallback{
+  box-sizing:border-box!important;
+  width:24px!important;height:22px!important;
+  min-width:24px!important;min-height:22px!important;
+  max-width:24px!important;max-height:22px!important;
+  padding:1px!important;margin:0!important;
+  border-radius:0!important;place-self:center!important;
+}
+.gameTop .leagueBrand>span:last-child{
+  min-width:0!important;
+  line-height:1.15!important;text-align:left!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+.modalLeague>.leagueIcon,.modalLeague>.leagueFallback{
+  box-sizing:border-box!important;
+  width:24px!important;height:24px!important;flex:0 0 24px!important;
+  border-radius:0!important;
+}
+.modalLeague>span:last-child{line-height:1.2!important;text-align:left!important}
+.filterPill .leagueLogoImg,.gameTop .leagueLogoImg,.modalLeague .leagueLogoImg{
+  width:100%!important;height:100%!important;
+  max-width:100%!important;max-height:100%!important;
+  object-fit:contain!important;object-position:center!important;border-radius:0!important;
+}
+@media(max-width:500px){
+  .filterPill[data-league]:not([data-league="all"]){
+    grid-template-columns:20px max-content!important;
+    column-gap:6px!important;
+  }
+  .filterPill[data-league]:not([data-league="all"])>.leagueIcon,
+  .filterPill[data-league]:not([data-league="all"])>.leagueFallback{
+    width:20px!important;height:20px!important;
+    min-width:20px!important;min-height:20px!important;
+    max-width:20px!important;max-height:20px!important;
+  }
+  .gameTop .leagueBrand{column-gap:6px!important}
+}
+
 </style>
 </head>
 <body>
@@ -1552,7 +1619,7 @@ const TZ="America/Toronto";
 const S={date:null,games:[],filter:"all",league:"all",status:"all",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
 const leagueNames={
   "eng.1":"Premier League","eng.2":"EFL Championship","tur.1":"Turkish Süper Lig","ksa.1":"Saudi Pro League","cze.1":"Czech First League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
-  "ned.1":"Eredivisie","por.1":"Primeira Liga","usa.1":"MLS",
+  "ned.1":"Eredivisie","por.1":"Liga Portugal","usa.1":"MLS",
   "uefa.champions":"UEFA Champions League","uefa.europa":"UEFA Europa League","uefa.europa.conf":"UEFA Conference League",
   "uefa.nations":"UEFA Nations League","uefa.euro":"UEFA Euro","uefa.euroq":"Euro Qualifying",
   "fifa.world":"FIFA World Cup","fifa.worldq.uefa":"World Cup Qualifying","fifa.worldq.conmebol":"World Cup Qualifying","fifa.worldq.concacaf":"World Cup Qualifying",
