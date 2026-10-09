@@ -8,6 +8,14 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Versioned Dixon–Coles candidate, historical holdout and postmatch review
+**Status:** 🟡 Code and automated research checks; official pick promotion remains guarded
+
+- Added separate original-preserving pre-kickoff v0.3 candidate snapshots, research-input SHA256 provenance and freshness safeguards.
+- Added retrospective September 12–20 domestic-club held-out score review; original October 5/6 national-team picks are graded separately without manufacturing unavailable model picks.
+- Added original-vs-candidate match-result/BTTS/totals comparison against verified finished scoreboards, scheduled before the next morning research refresh.
+- Original frozen boards, odds, prices, Top 3 and Top 5 remain unchanged unless a separately audited owner-authorized correction passes the board preservation gates.
+
 ## 2026-10-09 — Morning refresh now audits shadow model readiness
 **Status:** 🟡 Workflow integration code — does not promote shadow predictions
 
