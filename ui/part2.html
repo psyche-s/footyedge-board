@@ -883,7 +883,7 @@ async function load(date=S.date){
       repoData('data/research-base-'+S.date+'.json').catch(()=>null),
       repoData('data/boards/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/board-drafts/'+S.date+'.json').catch(()=>null),
-      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null))
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null)))
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;S.archive=archivePayload;S.draft=draftPayload;

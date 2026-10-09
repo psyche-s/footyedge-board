@@ -98,15 +98,18 @@ matches have been played and misrepresent them as contemporaneous predictions.
 ## Exact sportsbook total lines (sideboard v2)
 - The dated ESPN scoreboard snapshot retains native DraftKings
   goal-total lines with exact posted American odds (2.5, 3.5, 4.5).
-  The updated model sideboard `data/model-boards-v2/YYYY-MM-DD.json`
+  The updated model sideboard `data/model-boards-v3/YYYY-MM-DD.json`
   uses those quoted *specific* lines in addition to the morning
   verified moneyline snapshot. It does **not** derive adjacent lines.
 - If the Dixon-Coles pre-match candidate lacks that precise modeled
   total (for example 4.5), the exact posted price may still display
   but **model probability and EV are unavailable**, not fabricated.
 - Existing v1 sideboard remains as historical source evidence.
-  The expanded analysis prefers the versioned v2 sideboard when
+  The expanded analysis prefers the versioned v3 sideboard when
   present, preserving the existing UI layout and locked Top 3/Top 5.
+- The feed uses both `provider.name` and `provider.displayName` depending on
+  the event; version 3 handles either verified DraftKings identifier and
+  leaves the earlier incomplete v2 research artifact unchanged.
 
 ## Current board's independently labeled model analysis
 - A separate `data/model-boards/YYYY-MM-DD.json` is generated after a

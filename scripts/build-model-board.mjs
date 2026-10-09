@@ -50,7 +50,7 @@ export function buildOverlay({candidate,odds,date,scoreboard=null}){
     const quote=event?.competitions?.[0]?.odds?.[0];
     const line=Number(quote?.overUnder);
     const totalMarkets=[];
-    if(quote?.provider?.displayName==="DraftKings"&&Number.isFinite(line)&&
+    if((quote?.provider?.displayName||quote?.provider?.name)==="DraftKings"&&Number.isFinite(line)&&
        line>=0.5&&line<=10.5){
       for(const [side,prefix] of [["over","o"],["under","u"]]){
         const item=quote?.total?.[side]?.close;
@@ -104,7 +104,7 @@ async function main(){
     year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
   const date=idx>=0?a[idx+1]:p.year+"-"+p.month+"-"+p.day;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error("Bad date");
-  const file=path.join("data","model-boards-v2",date+".json");
+  const file=path.join("data","model-boards-v3",date+".json");
   try{await fs.access(file);console.log("Model cross-check preserved:",file);return;}catch(e){if(e.code!=="ENOENT")throw e;}
   const [c,o,scoreboard]=await Promise.all([
     fs.readFile("data/model-candidates/"+date+".json","utf8").then(JSON.parse),
