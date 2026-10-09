@@ -114,7 +114,7 @@ test("verified native display prices can show EV while unavailable exact markets
 });
 
 test("expanded Team News keeps the original team-card layout",()=>{
-  assert.match(p2,/if\(!items\.length\)return ""/);
+  assert.match(p2,/No verified absence or lineup change has been reported yet/);
   assert.match(p2,/teamNewsCard/);
   assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
@@ -263,7 +263,31 @@ test("empty locked boards resolve and show the next eligible game date",()=>{
   assert.match(availability,/nextGameDate:day/);
   assert.match(availability,/No games today\./);
   assert.match(p2,/FootyEdgeAvailability\.loadNext\(date,json\)/);
-  assert.match(p1,/board-availability\.js\?v=68/);
+  assert.match(p1,/board-availability\.js\?v=\d+/);
+});
+
+test("five owner-supplied league logos remain shared across competition surfaces",()=>{
+  const urls=[
+    "chance-liga.8511af91.png",
+    "super-lig.e5930ec5.png",
+    "saudi-professional-league.59d5c8af.png",
+    "primeira-liga--white.c5c27520.png",
+    "efl-championship.2766b536.png"
+  ];
+  for(const url of urls)assert.ok(p2.includes(url),url+" must stay in the exact logo mapping");
+  for(const id of ["cze.1","tur.1","ksa.1","por.1","eng.2"]){
+    assert.ok(p2.includes('"'+id+'":EXACT_LEAGUE_LOGOS["'+id+'"]'),id+" must reference the shared logo map");
+  }
+  assert.match(p2,/const src=EXACT_LEAGUE_LOGOS\[id\]\|\|LEAGUE_LOGOS\[id\]/);
+  assert.match(p2,/leagueIconHtml\(id\)/);
+  assert.match(p2,/leagueIconHtml\(g\.league,g\.leagueLogo\)/);
+});
+test("competition names and icon columns align in filters and match headers",()=>{
+  assert.ok(p1.includes('"por.1":"Liga Portugal"'));
+  assert.match(p1,/grid-template-columns:24px max-content!important/);
+  assert.match(p1,/grid-template-columns:24px minmax\(0,1fr\)!important/);
+  assert.match(p1,/\.filterPill \.leagueLogoImg,\.gameTop \.leagueLogoImg,\.modalLeague \.leagueLogoImg/);
+  assert.match(p2,/esc\(displayLeagueName\(g\.league,g\.leagueName\)\)/);
 });
 
 test("Premier League and MLS logos fit fully inside the existing competition icon box",()=>{
