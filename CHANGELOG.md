@@ -1,3 +1,12 @@
+## 2026-10-09 — Simplify the expanded match analysis for supporters
+**Status:** Frontend change queued for the next successful Vercel deployment
+
+- For the owner-curated October 9 game picks, cards now prioritize odds, model estimate and a short football explanation, not misleading raw model EV.
+- Expanded analysis puts **WHY THIS PICK** and H2H under pick #1 and keeps simple paragraphs for picks #2 and #3; hide the extra engineering-only Dixon–Coles diagnostic box for these games.
+- Add the original Football Whispers/match preview reference link in expanded analysis, while preserving official prices and pick history.
+- Add CI that syntax-checks the complete browser JavaScript assembled from the split HTML parts.
+- The existing live website must successfully redeploy to receive this frontend formatting change; the corrected board pick text itself is already served from raw GitHub data.
+
 ## 2026-10-09 — Owner raises allowed odds floor to -500 and fills unranked games
 **Status:** Model-derived research selections, not reissued 06:00 official picks
 
