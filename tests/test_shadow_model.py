@@ -29,6 +29,20 @@ class ShadowModelTests(unittest.TestCase):
         self.assertEqual(m.key("Arsenal FC"), m.key("Arsenal"))
         self.assertEqual(m.key("Manchester City"), m.key("Man City"))
 
+    def test_verified_club_aliases(self):
+        aliases = [
+            ("Espanyol", "RCD Espanyol de Barcelona"),
+            ("Lens", "Racing Club de Lens"),
+            ("Lyon", "Olympique Lyonnais"),
+            ("Werder Bremen", "SV Werder Bremen"),
+            ("Heerenveen", "SC Heerenveen"),
+            ("Braga", "Sporting Clube de Braga"),
+            ("Sporting CP", "Sporting Clube de Portugal"),
+        ]
+        for public, source in aliases:
+            with self.subTest(public=public):
+                self.assertEqual(m.key(public), m.key(source))
+
     def test_source_dates_and_score_variants(self):
         rows = m.completed_matches({"matches": [
             {"date": "2026-10-08", "team1": "A FC", "team2": "B FC", "score": {"ft": [1, 0]}},
