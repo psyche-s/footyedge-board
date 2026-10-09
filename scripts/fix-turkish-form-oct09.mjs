@@ -55,7 +55,7 @@ async function main(){
     return;
   }
   const source=await read(SOURCE);
-  if(source.date!==DAY||source.league!=="tur.1"||source.kickoff!==g.date.replace("+00:00","Z")||
+  if(source.date!==DAY||source.league!=="tur.1"||Date.parse(source.kickoff)!==Date.parse(g.date)||
      !Array.isArray(source.sources)||source.sources.length<2)
     throw Error("Unverified form source or fixture mismatch");
   const home=calc(source.teams["432"],source.kickoff),
