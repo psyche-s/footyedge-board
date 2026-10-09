@@ -1,3 +1,7 @@
+## Czech First League additions
+
+We cover men's Czech First League (Chance Liga) fixtures. Use real completed match results from our date-specific Czech public-domain football data for last-five/last-ten form and head-to-head. Do not backfill a pick for any match after kickoff. Display the correct Chance Liga competition crest. No invented odds or model probability.
+
 # FootyEdge Editorial Style
 
 This is the writing standard for all reader-facing FootyEdge copy: WHY THIS PICK, match summaries, Team News, supporting pick commentary, player-prop notes and future morning-board write-ups.
