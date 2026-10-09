@@ -8,6 +8,14 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Native total provider identity correction (v3)
+**Status:** 🟡 Correction candidate for provider-field variation
+
+- Some saved ESPN total odds name the verified DraftKings provider under
+  `provider.name` instead of `provider.displayName`. v3 handles either
+  source representation, while preserving v1/v2 model-board files.
+- Original official picks, confidence and tracked outcomes remain unchanged.
+
 ## 2026-10-09 — Complete saved DraftKings total odds in model comparison
 **Status:** 🟡 Versioned odds-provider expansion
 
