@@ -1,0 +1,60 @@
+name: Owner October 9 model research picks (GitHub data only)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/owner-picks-oct09.mjs"
+      - ".github/workflows/owner-picks-oct09.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-owner-model-picks-oct09
+  cancel-in-progress: false
+
+jobs:
+  publish-owner-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Guard against in-play or retroactive research publication
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module -e '
+          const now=new Date();
+          const kickoff=new Date("2026-10-09T17:00:00Z");
+          if(now>=kickoff)throw Error("Owner model picks can no longer be added as pre-match research");
+          console.log("Before earliest affected kickoff",now.toISOString());
+          '
+      - name: Validate code
+        run: node --check scripts/owner-picks-oct09.mjs
+      - name: Apply audited owner correction using archived models and odds
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-picks-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+      - name: Commit direct GitHub JSON update — no Vercel dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then
+            echo "Already corrected"; exit 0
+          fi
+          git config user.name "FootyEdge Owner Audit Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): owner-requested model leans for remaining Oct 9 fixtures [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
