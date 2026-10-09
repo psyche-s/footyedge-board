@@ -54,7 +54,7 @@ export function buildOverlay({candidate,odds,date,scoreboard=null}){
        line>=0.5&&line<=10.5){
       for(const [side,prefix] of [["over","o"],["under","u"]]){
         const item=quote?.total?.[side]?.close;
-        if(item?.line!==prefix+String(line)||!/^[-+]\\d{2,5}$/.test(String(item.odds||"")))continue;
+        if(item?.line!==prefix+String(line)||!/^[-+]\d{2,5}$/.test(String(item.odds||"")))continue;
         const american=Number(item.odds),key=side+"_"+String(line).replace(".","_");
         if(!Number.isInteger(american)||!american)continue;
         verifiedTotals++;
