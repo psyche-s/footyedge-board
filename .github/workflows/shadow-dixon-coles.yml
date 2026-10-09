@@ -8,6 +8,13 @@ on:
       - "scripts/shadow_dixon_coles.py"
       - "tests/test_shadow_model.py"
       - ".github/workflows/shadow-dixon-coles.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/shadow_dixon_coles.py"
+      - "tests/test_shadow_model.py"
+      - ".github/workflows/shadow-dixon-coles.yml"
+      - "requirements-shadow.txt"
   schedule:
     # One daily Toronto 05:35 run (DST/EST alternatives); local-hour gate below.
     - cron: "35 9 * * *"
