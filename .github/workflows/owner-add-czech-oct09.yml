@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test tests/czech-league.test.mjs
+          node --test tests/czech-league.test.mjs tests/league-logos.test.mjs
           node --check scripts/owner-add-czech-oct09.mjs
           BASE="$(git rev-parse HEAD)"
           node scripts/owner-add-czech-oct09.mjs
