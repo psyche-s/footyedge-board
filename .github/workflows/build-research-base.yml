@@ -1,6 +1,12 @@
 name: Build FootyEdge Research Base
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'assets/board-availability.js'
+      - 'scripts/build-research-base.mjs'
+      - '.github/workflows/build-research-base.yml'
   schedule:
     # Dual UTC schedules for Toronto DST/standard time. Only the run landing in local hour 05 proceeds.
     - cron: "5 9 * * *"
