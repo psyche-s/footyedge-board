@@ -53,7 +53,11 @@ jobs:
             exit 0
           fi
           # Production picks are NEVER read or modified by this job.
-          python scripts/shadow_dixon_coles.py
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            python scripts/shadow_dixon_coles.py --dry-run
+          else
+            python scripts/shadow_dixon_coles.py
+          fi
       - name: Archive immutable shadow output (main only)
         if: github.ref == 'refs/heads/main'
         shell: bash
