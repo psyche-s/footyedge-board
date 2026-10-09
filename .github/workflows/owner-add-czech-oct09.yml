@@ -1,0 +1,63 @@
+name: Add Czech First League to October 9 board (GitHub JSON only)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/owner-add-czech-oct09.mjs"
+      - ".github/workflows/owner-add-czech-oct09.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/owner-add-czech-oct09.mjs"
+      - ".github/workflows/owner-add-czech-oct09.yml"
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-czech-owner-correction-20261009
+  cancel-in-progress: false
+jobs:
+  verified-correction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate parser and append only confirmed Czech men's match
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/czech-league.test.mjs
+          node --check scripts/owner-add-czech-oct09.mjs
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-add-czech-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import assert from "node:assert/strict";
+          const b=JSON.parse(fs.readFileSync("data/boards/2026-10-09.json","utf8"));
+          assert.equal(b.games.filter(x=>x.league==="cze.1").length,1);
+          assert.equal(b.games.length,12);
+          assert.equal(b.games.reduce((a,g)=>a+g.top3.length,0),26);
+          assert.equal(b.games.find(x=>x.league==="cze.1").top3.length,0);
+          assert.deepEqual(b.top5.map(x=>x.pick.label),["Borussia Dortmund ML","PSV Eindhoven ML"]);
+          console.log("Audited 12 men's games; Czech source included; original 26 picks untouched");
+          JS
+      - name: Publish today's Czech fixture and audit directly through GitHub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then
+            echo "Czech source fixture already archived"; exit 0
+          fi
+          git config user.name "FootyEdge League Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): add verified Czech top-flight fixture with five-game form [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
