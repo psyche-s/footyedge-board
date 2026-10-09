@@ -823,7 +823,7 @@ function renderGames(){
   }).join("")
 }
 function renderLeagues(){
-  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
+  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
   row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":leagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
