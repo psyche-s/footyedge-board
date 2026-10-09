@@ -683,3 +683,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - UI impact: none. No layout, styling, navigation, component, logo, filter or page-structure files changed.
 - Tracking/history impact: October 9's two official selections were added as frozen pending results; October 5–7 records and all original historical selection fields remain unchanged.
 - Deployment: pending GitHub main push and production verification.
+
+
+## 2026-10-09 — Morning board deployment verification
+**Status:** ✅ Deployed and verified
+
+- Published the frozen October 9 men's board from GitHub main and verified the production deployment reached `READY`.
+- Production serves the immutable six-game board with Borussia Dortmund ML (-290, 96%) and PSV Eindhoven ML (-310, 84%) as the only qualifying exact-priced selections.
+- Verified the production board matches the committed snapshot byte-for-byte and that Home, Today's Picks, Hit Rate, About and shared UI assets are unchanged.
+- Model/data impact: none beyond the board, research, odds, tracking and postmatch-learning records documented in the preceding entry.
+- UI impact: none.
+- Tracking/history impact: the two October 9 selections remain frozen with their original rank, odds, confidence and explanation.
+- Deployment result: successful and production-verified at `https://footyedge-board.vercel.app`.
