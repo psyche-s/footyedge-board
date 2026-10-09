@@ -1,3 +1,16 @@
+## 2026-10-09 — Add English Championship and Turkish Süper Lig
+**Status:** 🟡 Broaden today's fixture eligibility, with safe model-source failure
+
+- Tracked `eng.2` and `tur.1` male league IDs for the daily research base,
+  public league filters, fixture coverage and modeling workflow.
+- Verified today's fixtures are West Ham vs QPR and Galatasaray vs Kasımpaşa.
+- English Championship current-season results available; Turkish current-season
+  public-domain results missing, so do not invent a fitted confidence.
+- Added revised research/model workflow dependency and separate versioned
+  expanded snapshot with pre-kickoff gating. Existing October 9
+  official selections and previous model archives remain intact until an
+  owner-audited slate correction is published.
+
 # FootyEdge Change Log
 
 Canonical running history of FootyEdge releases, model/data changes, UI changes, tracking rules, deployments, and planned work.
