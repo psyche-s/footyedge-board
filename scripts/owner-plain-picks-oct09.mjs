@@ -169,7 +169,9 @@ async function main(){
    throw Error("No dated eight-game model");
  const forecasts=new Map(model.fixtures.map(f=>[String(f.fixtureId),f]));
  const events=new Map(scoreboard.events.map(e=>[String(e.id),e]));
- const originalTop5=JSON.stringify(board.top5);
+ const trackedSignature=refs=>refs.map(x=>({rank:x.rank,gameId:String(x.gameId),
+  label:x.pick?.label,score:x.pick?.score,odds:x.pick?.odds}));
+ const originalTop5=JSON.stringify(trackedSignature(board.top5));
  const originalFirsts=new Map(board.games.map(g=>[String(g.id),{label:g.top3?.[0]?.label,odds:g.top3?.[0]?.odds}]));
  for(const g of board.games){
   const id=String(g.id), config=cfg[id], f=forecasts.get(id),event=events.get(id);
@@ -211,7 +213,18 @@ async function main(){
   }
   if(g.top3.length!==3)throw Error("Not exactly three selections for "+id);
  }
- if(JSON.stringify(board.top5)!==originalTop5)throw Error("Original global Top5 modified");
+ // Keep every original Top5 position, selection, score and price. Reuse
+ // the updated, plain-English explanation in the reference copy so the
+ // archive schema stays consistent with each game's saved Top 3.
+ for(const refs of [board.top5,...Object.values(board.leagueTop5||{})]){
+   for(const ref of refs){
+     const game=board.games.find(g=>String(g.id)===String(ref.gameId));
+     if(!game||ref.pick?.label!==game.top?.label)throw Error("Unexpected ranked pick identity");
+     ref.pick=JSON.parse(JSON.stringify(game.top));
+   }
+ }
+ if(JSON.stringify(trackedSignature(board.top5))!==originalTop5)
+   throw Error("Original global Top 5 rankings, confidence or sportsbook prices changed");
  for(const id of ["401884781","401875592"]){
   const g=board.games.find(x=>String(x.id)===id),old=originalFirsts.get(id);
   if(g.top3[0].odds!==old.odds||g.top3[0].label!==old.label)throw Error("Original first pick's price changed");
