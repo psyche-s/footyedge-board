@@ -1,14 +1,14 @@
 (function(root){
   // ESPN competition identities are available even before sportsbook prices.
   const uidLeague={700:'eng.1',3914:'eng.2',3946:'tur.1',21231:'ksa.1',740:'esp.1',730:'ita.1',720:'ger.1',710:'fra.1',725:'ned.1',715:'por.1',770:'usa.1',775:'uefa.champions',776:'uefa.europa',2310:'uefa.europa.conf',2395:'uefa.nations',3922:'fifa.friendly',3923:'fifa.friendly',19267:'concacaf.nations.league',4:'fifa.world'};
-  const tracked=new Set(['eng.1','eng.2','tur.1','ksa.1','esp.1','ita.1','ger.1','fra.1','ned.1','por.1','usa.1','uefa.champions','uefa.europa','uefa.europa.conf','uefa.nations','uefa.euro','uefa.euroq','fifa.world','fifa.worldq.uefa','fifa.worldq.conmebol','fifa.worldq.concacaf','fifa.friendly','concacaf.nations.league','conmebol.copa_america']);
+  const tracked=new Set(['cze.1','eng.1','eng.2','tur.1','ksa.1','esp.1','ita.1','ger.1','fra.1','ned.1','por.1','usa.1','uefa.champions','uefa.europa','uefa.europa.conf','uefa.nations','uefa.euro','uefa.euroq','fifa.world','fifa.worldq.uefa','fifa.worldq.conmebol','fifa.worldq.concacaf','fifa.friendly','concacaf.nations.league','conmebol.copa_america']);
   const cache=new Map();
   function addDate(date,n){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
   function leagueOf(event){
     const o=event?.competitions?.[0]?.odds?.[0];
     const code=o?.moneyline?.home?.close?.link?.tracking?.tags?.league||o?.moneyline?.away?.close?.link?.tracking?.tags?.league||o?.total?.over?.close?.link?.tracking?.tags?.league||o?.pointSpread?.home?.close?.link?.tracking?.tags?.league;
     const id=String(event?.uid||'').match(/~l:(\d+)/)?.[1];
-    return code||uidLeague[id]||null;
+    return event?.footyedgeLeague||code||uidLeague[id]||null;
   }
   function excludedTaggedEvent(event){
     const meta=[event?.season?.slug,event?.season?.name,event?.league?.name,event?.league?.slug,event?.competitions?.[0]?.type?.slug,event?.competitions?.[0]?.type?.name].filter(Boolean).join(' ').toLowerCase();
