@@ -1,0 +1,40 @@
+name: Check FootyEdge UI JavaScript syntax
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "ui/part0.html"
+      - "ui/part1.html"
+      - "ui/part2.html"
+      - ".github/workflows/check-ui-syntax.yml"
+  push:
+    branches: [main]
+    paths:
+      - "ui/part0.html"
+      - "ui/part1.html"
+      - "ui/part2.html"
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Compile all concatenated inline JavaScript in the actual site HTML
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          import fs from "node:fs";
+          import vm from "node:vm";
+          const html=["ui/part0.html","ui/part1.html","ui/part2.html"]
+            .map(f=>fs.readFileSync(f,"utf8")).join("");
+          const blocks=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+            .filter(m=>!/\bsrc\s*=/.test(m[1]));
+          if(blocks.length<1)throw Error("Could not locate any inline scripts");
+          for(let i=0;i<blocks.length;i++)new vm.Script(blocks[i][2],{filename:"FootyEdge-inline-"+i+".js"});
+          console.log("Valid HTML source: "+blocks.length+" inline JavaScript blocks compile");
+          JS
