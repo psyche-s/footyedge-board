@@ -51,6 +51,9 @@ Run:
     python -m pip install -r requirements-shadow.txt
     python -m unittest discover -s tests -p test_shadow_model.py -v
     python scripts/shadow_dixon_coles.py
+    python scripts/shadow_dixon_coles.py --dry-run
+A dry run computes current forecasts but does not alter stored original output.
+Pull-request CI always performs a dry run, even if today is already archived.
 For deterministic local investigation, specify --date YYYY-MM-DD and --as-of
 UTC_ISO_TIMESTAMP (same day or future only). Do not backfill forecasts after
 matches have been played and misrepresent them as contemporaneous predictions.
