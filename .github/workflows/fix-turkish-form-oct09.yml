@@ -1,0 +1,58 @@
+name: Fix verified October 9 Turkish league form (GitHub data only)
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/fix-turkish-form-oct09.mjs"
+      - "data/form-sources/2026-10-09-tur1.json"
+      - ".github/workflows/fix-turkish-form-oct09.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/fix-turkish-form-oct09.mjs"
+      - "data/form-sources/2026-10-09-tur1.json"
+      - ".github/workflows/fix-turkish-form-oct09.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-gala-form-oct09
+  cancel-in-progress: false
+
+jobs:
+  correct-form:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate source and apply form-only correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/fix-turkish-form-oct09.mjs
+          BASE="$(git rev-parse HEAD)"
+          node scripts/fix-turkish-form-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+      - name: Publish updated form JSON directly to GitHub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/boards/2026-10-09.json data/board-revisions/2026-10-09
+          if git diff --cached --quiet; then
+            echo "Form already published"
+            exit 0
+          fi
+          git config user.name "FootyEdge Form Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(form): display verified Turkish Super Lig last five [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
