@@ -54,7 +54,7 @@ ALIASES = {
 }
 
 def key(name: str) -> str:
-    name = unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode().lower()
+    name = unicodedata.normalize("NFKD", str(name).replace("ı", "i").replace("İ", "I")).encode("ascii", "ignore").decode().lower()
     name = name.replace("&", "and").replace("st.", "saint")
     name = re.sub(r"[^a-z0-9 ]+", " ", name)
     parts = [p for p in name.split() if p]
@@ -318,6 +318,7 @@ def main() -> int:
     parser.add_argument("--as-of", help="UTC ISO-8601 time (for reproducible tests)")
     parser.add_argument("--dry-run", action="store_true", help="Compute from sources without modifying immutable archives")
     parser.add_argument("--capture-candidate", action="store_true", help="Archive separate pre-match v0.3 candidate for future scoring")
+    parser.add_argument("--capture-expansion", action="store_true", help="Archive updated league-scope candidate separately")
     args = parser.parse_args()
     asof = (datetime.fromisoformat(args.as_of.replace("Z", "+00:00"))
             if args.as_of else datetime.now(timezone.utc))
@@ -328,6 +329,7 @@ def main() -> int:
         parser.error("Historical dates must not be backfilled as original pre-match forecasts")
     dest = args.repo / "data" / "model-shadow" / f"{day.isoformat()}.json"
     candidate = args.repo / "data" / "model-candidates" / f"{day.isoformat()}.json"
+    expanded = args.repo / "data" / "model-candidates-expanded" / f"{day.isoformat()}.json"
     if args.dry_run:
         result = forecast_day(args.repo, day, asof)
         print(f"Shadow dry run: {day} status={result['status']} "
@@ -335,13 +337,24 @@ def main() -> int:
         return 0
     need_original = not dest.exists()
     need_candidate = args.capture_candidate and not candidate.exists()
-    if not need_original and not need_candidate:
+    need_expanded = args.capture_expansion and not expanded.exists()
+    if not need_original and not need_candidate and not need_expanded:
         print(f"Immutable original and candidate unchanged: {day}")
         return 0
     result = forecast_day(args.repo, day, asof)
     if result["status"] != "completed":
         print(f"Research incomplete; no original or candidate archived: {result['status']}")
         return 0
+    if need_expanded:
+        scope = {f.get("league") for f in result["fixtures"]}
+        if not {"eng.2", "tur.1"}.issubset(scope):
+            print("Expanded snapshot withheld: both new competition fixtures must be present")
+        elif any(datetime.fromisoformat(f["kickoff"].replace("Z", "+00:00")) <= asof for f in result["fixtures"] if f.get("league") in ("eng.2", "tur.1")):
+            print("Expanded snapshot withheld: one newly added match has already started")
+        else:
+            expanded.parent.mkdir(parents=True, exist_ok=True)
+            expanded.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+            print(f"Expanded pre-match candidate saved: {expanded}")
     if need_original:
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
