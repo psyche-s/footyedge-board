@@ -1,3 +1,12 @@
+## 2026-10-09 — Czech First League, real research and verified branding
+
+- New men's competition `cze.1` covers Chance Liga. ESPN's existing all-league scoreboard does not supply these fixtures, so our server combines it with the public-domain 2026–27 Czech league calendar from `openfootball/europe/czech-republic/2026-27_cz1.txt`. Stable internal fixture identifiers are not misrepresented as ESPN IDs.
+- The feed preserves published Europe/Prague kickoff times, source score status and source attribution. It is **not** a live Czech results service.
+- Last-10 and last-5 form/H2H are derived only from matches with recorded full-time scores before kickoff. Shadow Dixon–Coles v0.7 also supports Czech scored matches via public-domain season files, with its existing sample-size, age and no-lookahead safeguards.
+- Today's Czech First League game Zlín vs Slavia Prague began at 12 PM Toronto. The locked board can show it after the original freeze with no retroactive betting selection. All prior Top 3, global Top 5 and exact bookmaker quotes remain intact.
+- Five user-supplied league crest URLs for Chance Liga, Turkish Süper Lig, Saudi Pro League, Portuguese Primeira Liga and EFL Championship are used unchanged. All crests remain within fixed-size non-circular logos (`object-fit: contain`).
+- Those frontend and server proxy changes require a successful Vercel deployment. Dated GitHub archive JSON is independently publishable without Vercel.
+
 # FootyEdge model evolution — research track
 
 ## Status (2026-10-09)
