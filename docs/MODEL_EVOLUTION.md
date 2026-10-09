@@ -206,6 +206,30 @@ matches have been played and misrepresent them as contemporaneous predictions.
 - Previous Dortmund, PSV Top 3 and global Top 5 are unchanged.
   New game research picks are **not automatically validated 85% bets**.
 
+## Men's Saudi Pro League expansion — October 9
+- Added tracked ESPN men's Saudi Professional League ID **21231** and canonical
+  league code `ksa.1` to the slate, daily+next-four fixture research, odds
+  provider selection, league filters and independent Dixon–Coles model v0.6.
+- Verified three October 9 games from an original stored ESPN scoreboard:
+  Al Kholood–Al Qadsiah (13:50 UTC), Al Fateh–Al Ahli (14:55 UTC), and
+  Al Nassr–Al Diriyah (18:00 UTC).
+- An owner-authorized after-lock JSON correction appends all three games
+  and preserves the original six A-grade picks/other tracked games, odds,
+  Top 5 and every original 8-game Top 3. Fixtures already underway are
+  displayed but **never given new retroactive pre-match picks**.
+- Exact DraftKings quotes for Saudi match-winner and original 3.5-total
+  lines were verified in the saved pre-match ESPN scoreboard. Other
+  sportsbook prices (BTTS, double chance, player props, alternative total
+  lines) require the actual matching quote and remain N/A otherwise.
+- Both `sa.1` and `ksa.1` 2026–27 files are absent from OpenFootball.
+  Saudi predictions consequently **fail closed** until a timely licensed
+  or otherwise permission-safe result source passes the training gates.
+  Bookmaker implied probabilities are explicitly not FootyEdge model estimates.
+- `scripts/audit-board-odds.mjs` produces a distinct dated, read-only
+  report explaining each missing price, with no inferred or synthetic quotes.
+- Raw board updates are served from GitHub without Vercel deployment;
+  league-logo/filter *code* updates require the next successful Vercel build.
+
 ## Acceptance gates before ANY public influence
 1. Check coverage/source freshness and expand legally available league history.
 2. Walk-forward historical replay with time-appropriate training data, genuine
