@@ -125,7 +125,7 @@ jobs:
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json" "data/model-boards-v2/$TODAY.json")
+          FILES=("data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-backtests/2026-09-12_2026-09-21.json" "data/model-backtests/archived-originals-2026-10-05_06.json" "data/model-boards-v3/$TODAY.json")
           git config user.name "FootyEdge Model Bot"
           git config user.email "actions@users.noreply.github.com"
           for FILE in "${FILES[@]}"; do
