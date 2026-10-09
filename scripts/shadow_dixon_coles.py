@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.3"
+VERSION = "dc-shadow-v0.4"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
@@ -109,6 +109,72 @@ def get_league_data(league: str, cutoff: date, fetch=fetch_json) -> tuple[list[d
     uniq = {(x["date"], x["home"], x["away"]): x for x in matches}
     return sorted(uniq.values(), key=lambda x: (x["date"], x["home"], x["away"])), fetched, errors
 
+def load_verified_prior_scores(root: Path, league: str, cutoff: date, lookback: int = 7) -> tuple[list[dict], list[str]]:
+    """Use only truly completed prior-day men's board fixtures in dated ESPN archives.
+
+    This supplements stale OpenFootball training data without guessing results,
+    fetching a future game or claiming the new score was available earlier.
+    """
+    rows, ids = [], []
+    for back in range(1, lookback + 1):
+        day = cutoff - timedelta(days=back)
+        board_path = root / "data" / "boards" / f"{day.isoformat()}.json"
+        scoreboard_path = root / "data" / day.isoformat() / "scoreboard.json"
+        if not board_path.exists() or not scoreboard_path.exists():
+            continue
+        try:
+            board = json.loads(board_path.read_text(encoding="utf-8"))
+            scoreboard = json.loads(scoreboard_path.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            continue
+        if board.get("date") != day.isoformat():
+            continue
+        events = {str(e.get("id")): e for e in scoreboard.get("events", [])
+                  if isinstance(e, dict) and e.get("status", {}).get("type", {}).get("completed") is True}
+        for fixture in board.get("games", []):
+            if fixture.get("league") != league:
+                continue
+            if any("(w)" in str(fixture.get(k, "")).lower() for k in ("home", "away")):
+                continue
+            game_id = str(fixture.get("id", ""))
+            event = events.get(game_id)
+            if not event:
+                continue
+            try:
+                competitors = event["competitions"][0]["competitors"]
+                home = next(x for x in competitors if x["homeAway"] == "home")
+                away = next(x for x in competitors if x["homeAway"] == "away")
+                home_score, away_score = home["score"], away["score"]
+                if not (isinstance(home_score, str) and home_score.isdigit() and
+                        isinstance(away_score, str) and away_score.isdigit()):
+                    continue
+                hg, ag = int(home_score), int(away_score)
+                if max(hg, ag) > 20:
+                    continue
+                h, a = key(fixture["home"]), key(fixture["away"])
+                if h == a or not h or not a:
+                    continue
+                rows.append({"date": day, "home": h, "away": a, "hg": hg, "ag": ag})
+                ids.append(game_id)
+            except (KeyError, IndexError, StopIteration, TypeError, ValueError):
+                continue
+    return rows, ids
+
+
+def merge_results(source: list[dict], supplement: list[dict]) -> tuple[list[dict], int]:
+    """Prefer original source where identical match keys conflict; flag conflicts."""
+    seen = {(x["date"], x["home"], x["away"]): x for x in source}
+    conflicts = 0
+    for x in supplement:
+        k = (x["date"], x["home"], x["away"])
+        old = seen.get(k)
+        if old and (old["hg"], old["ag"]) != (x["hg"], x["ag"]):
+            conflicts += 1
+        elif not old:
+            seen[k] = x
+    return sorted(seen.values(), key=lambda x: (x["date"], x["home"], x["away"])), conflicts
+
+
 def fit_model(matches: list[dict], cutoff: date):
     """Fit official penaltyblog Dixon-Coles with explicit exponential recency weights."""
     import penaltyblog as pb
@@ -152,7 +218,7 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
         "mode": "shadow_only", "promotedToPicks": False,
         "assumptions": {"decayXiPerDay": DECAY_XI, "minTrainingMatches": MIN_TRAIN_MATCHES,
                         "minTeamMatches": MIN_TEAM_MATCHES, "maxDataAgeDays": MAX_SOURCE_AGE_DAYS},
-        "source": "OpenFootball public-domain match results (not xG or live odds)",
+        "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
         "fixtures": [], "leagueDiagnostics": {},
     }
     if not path.exists():
@@ -189,6 +255,8 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
         # from the fixture's calendar date, nor results beyond the as-of date.
         first_cutoff = min(day, asof.date())
         rows, urls, errors = get_league_data(league, first_cutoff, fetch)
+        completed, completed_ids = load_verified_prior_scores(root, league, first_cutoff)
+        rows, conflicting = merge_results(rows, completed)
         count = Counter(t for x in rows for t in (x["home"], x["away"]))
         recent = max((x["date"] for x in rows), default=None)
         age = (first_cutoff - recent).days if recent else None
@@ -196,6 +264,7 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
                    and age is not None and age <= MAX_SOURCE_AGE_DAYS)
         info = {"trainingMatches": len(rows), "latestResultDate": recent.isoformat() if recent else None,
                 "resultAgeDays": age, "sourceUrls": urls, "sourceErrors": errors,
+                "supplementalCompletedESPN": completed_ids, "sourceConflictCount": conflicting,
                 "status": "ready" if quality else "insufficient_or_stale_data"}
         output["leagueDiagnostics"][league] = info
         model = None

@@ -8,6 +8,18 @@ Canonical running history of FootyEdge releases, model/data changes, UI changes,
 
 ---
 
+## 2026-10-09 — Tomorrow's model now uses verified prior-day finals
+**Status:** 🟡 CI pending, scheduled from next daily model run
+
+- v0.4 supplements the public OpenFootball score history with finalized
+  matches only from preserved dated ESPN board/scoreboard snapshots in the
+  prior seven Toronto dates.
+- No ongoing fixtures, absent scores, unsupported leagues or women's
+  matches can enter tomorrow's training data. Original result provenance
+  and conflicting-source flags remain auditable.
+- Post-match results review still separates process quality and luck and
+  does not automatically rewrite scoring weights after one matchday.
+
 ## 2026-10-09 — Board research integration and missing-odds provenance
 **Status:** 🟡 Experimental dated board view, no historical pick rewriting
 

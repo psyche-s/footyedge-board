@@ -1,7 +1,7 @@
 # FootyEdge model evolution — research track
 
 ## Status (2026-10-09)
-Version: dc-shadow-v0.3. **Experimental/shadow only.** Do not cite its output as a
+Version: dc-shadow-v0.4. **Experimental/shadow only.** Do not cite its output as a
 validated percentage or use it to modify the live board, Top 3, Top 5 or archives.
 
 ## Why
@@ -115,6 +115,22 @@ matches have been played and misrepresent them as contemporaneous predictions.
 - Until a longer direct head-to-head is available, the DC forecast is
   a real **second-opinion input**, not an untested replacement
   for saved original selections or an invented 85%-confidence source.
+
+## 2026-10-10 refresh: verified final-score supplement
+- OpenFootball's public results can lag the slate. Starting with v0.4,
+  `scripts/shadow_dixon_coles.py` also reads prior seven days of
+  **genuinely completed** men-only games from the repo's *dated ESPN
+  scoreboard snapshots*, gated by the original official fixture ID and
+  supported league code.
+- This is training input only from **prior Toronto dates**. Today's
+  scores, in-progress states, no-score entries, missing archived boards
+  and women's games are excluded. The source reports fixture IDs and
+  any conflicting full-time scores; original source rows are preserved.
+- Tomorrow's model therefore can learn from October 9 results **if**
+  complete trusted scoreboard rows are available. If any are missing,
+  it does not manufacture results or force a coefficient adjustment.
+- The independent post-match process/incident review remains separate;
+  one day's hit or miss is not enough to adjust market weighting.
 
 ## Acceptance gates before ANY public influence
 1. Check coverage/source freshness and expand legally available league history.
