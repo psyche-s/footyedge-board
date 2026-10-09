@@ -13,6 +13,7 @@ const LEAGUE_HINTS={
   "eng.2":{keys:["soccer_efl_championship"],aliases:["english championship","efl championship","england championship"]},
   "tur.1":{keys:["soccer_turkey_super_league"],aliases:["turkish super lig","turkey super league"]},
   "ksa.1":{keys:["soccer_saudi_arabia_league"],aliases:["saudi arabian league","saudi pro league"]},
+  "cze.1":{keys:["soccer_czech_first_league"],aliases:["czech first league","czech chance liga","czech liga","czech republic first league"]},
   "esp.1":{keys:["soccer_spain_la_liga"],aliases:["la liga","spain la liga"]},
   "ger.1":{keys:["soccer_germany_bundesliga"],aliases:["germany bundesliga","bundesliga"]},
   "ita.1":{keys:["soccer_italy_serie_a"],aliases:["italy serie a","serie a"]},
