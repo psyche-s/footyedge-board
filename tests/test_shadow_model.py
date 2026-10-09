@@ -61,7 +61,7 @@ class ShadowModelTests(unittest.TestCase):
                 ]}))
             # Many unique completed match days; no future data.
             matchdata = {"matches": [
-                {"date": (date(2026, 8, 1) + __import__("datetime").timedelta(days=i // 4)).isoformat(),
+                {"date": (date(2026, 9, 10) + __import__("datetime").timedelta(days=i // 4)).isoformat(),
                  "team1": "Arsenal FC" if i % 2 else "Chelsea FC",
                  "team2": "Chelsea FC" if i % 2 else "Arsenal FC", "score": {"ft": [1, 0]}}
                 for i in range(100)
