@@ -4,7 +4,7 @@
 - **October 7 only:** the owner explicitly instructed FootyEdge to publish and lock today's board immediately, before the normal morning lock. This one-time override is the official October 7 board and is immutable unless Shaif explicitly requests a correction.
 - **Starting October 8:** publish only the **current Toronto calendar day's** picks. Start the board workflow at **06:00 America/Toronto**, build the current-day board, and lock it as the official board in the same run. Do not publish future-date picks early.
 - Future schedule/research/odds snapshots may still be prepared in advance for readiness, but they are backend data only. They must not create a public pick board before that date's 06:00 run.
-- Pricing is not required to publish a pick. Missing odds stay blank/null. If an exact native sportsbook price is available, preserve it exactly, apply the -400 floor, and never infer/convert a fake official price.
+- Pricing is not required to publish a pick. Missing odds stay blank/null. If an exact native sportsbook price is available, preserve it exactly, apply the -500 floor, and never infer/convert a fake official price.
 - At the moment the daily board is locked, every selection/rank/confidence/explanation becomes immutable. Automatic later news/price/model changes cannot rewrite it.
 - The evolving-model loop remains mandatory: grade every saved Top-3 candidate at 85%+ after completion, separate outcome from process quality, verify red cards/penalties/VAR/injuries/late lineup changes before learning from them, maintain market-family diagnostics, ingest those diagnostics before the next research run, and make only small documented/versioned model changes supported by repeated verified evidence.
 - Explanation-quality review remains part of the postmortem: check whether the original "Why this pick" used the strongest predictive evidence, missed opponent/team-news context, or made unsupported causal claims. Never rewrite the historical explanation after the fact.
@@ -31,7 +31,7 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 - “Why this pick” belongs directly under Pick #1 and uses 1–3 strongest deterministic/model facts. Never rewrite archived explanations or evidence.
 - Team-news model adjustments require current sourced status plus explicit role, importance, replacement quality and causal evidence. Uncertain news stays uncertain.
 - ATGS, Score-or-Assist, assist and multi-goal player selections require credible expected-start and minutes evidence; material rotation/injury risk excludes the prop.
-- Pricing is **not** a publication gate for rolling previews. A strong model selection may publish with odds pending. When an exact price exists, it must be verified/native, the normal -400 floor still applies, and safer adjacent-line optimization remains active. At 06:00 the board locks with the latest available verified price; missing prices remain blank rather than blocking the lock or being backfilled later.
+- Pricing is **not** a publication gate for rolling previews. A strong model selection may publish with odds pending. When an exact price exists, it must be verified/native, the updated -500 floor still applies, and safer adjacent-line optimization remains active. At 06:00 the board locks with the latest available verified price; missing prices remain blank rather than blocking the lock or being backfilled later.
 - Postmatch learning grades saved Top-3 candidates at 85%+ separately from process quality. Never infer a red-card, injury, VAR or luck explanation from the score alone; verify it before learning from it.
 
 ## Live data horizon, 2026-10-07
@@ -49,7 +49,7 @@ The owner's latest instruction supersedes the earlier first-publication freeze. 
 ## Odds / EV / Market display rule — owner instruction 2026-10-07
 - For every published Top 3 selection, actively search for the exact selected market at a current reputable sportsbook before lock. When verified, publish the exact native price, its implied market probability, and EV computed from the saved FootyEdge model probability and that exact price.
 - Never infer, synthesize or convert an unavailable official price merely to fill the UI. When the exact selected market cannot be verified, show it explicitly as N/A/unavailable rather than pretending a price exists.
-- Preserve the established -400 qualifying floor for normal selection optimization. If the owner has already locked/overridden a selection before a later price is added, do not silently replace the pick; record the price-floor conflict and preserve the audit.
+- Preserve the established -500 qualifying floor for normal selection optimization. If the owner has already locked/overridden a selection before a later price is added, do not silently replace the pick; record the price-floor conflict and preserve the audit.
 - “WHY THIS PICK” is always uppercase in expanded analysis.
 - “TEAM NEWS” must always be visible in expanded analysis. If there is material verified news, show the concise football/market impact. If no material item meets the verification threshold, explicitly say so and state that no model adjustment was made.
 
