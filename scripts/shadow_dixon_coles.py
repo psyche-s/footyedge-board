@@ -16,11 +16,11 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.4"
+VERSION = "dc-shadow-v0.5"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
-    "eng.1": "en.1", "ger.1": "de.1", "esp.1": "es.1",
+    "eng.1": "en.1", "eng.2": "en.2", "tur.1": "tr.1", "ger.1": "de.1", "esp.1": "es.1",
     "ita.1": "it.1", "fra.1": "fr.1", "ned.1": "nl.1",
     "por.1": "pt.1",
 }
@@ -48,6 +48,9 @@ ALIASES = {
     "heerenveen": "sc heerenveen",
     "braga": "sporting clube de braga",
     "sporting cp": "sporting clube de portugal",
+    "west ham united": "west ham united",
+    "queens park rangers": "queens park rangers",
+    "kasimpasa": "kasimpasa",
 }
 
 def key(name: str) -> str:
