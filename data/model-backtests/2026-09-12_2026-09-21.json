@@ -1,0 +1,4637 @@
+{
+  "modelVersion": "dc-domestic-holdout-v0.1",
+  "trainedBefore": "2026-09-12",
+  "holdoutEndExclusive": "2026-09-21",
+  "mode": "retrospective_holdout_not_original_footyedge_picks",
+  "statement": "Training outcomes strictly predate cutoff. OpenFootball snapshot provenance is as observed today; real-time historical availability cannot be proven.",
+  "leagues": {
+    "eng.1": {
+      "trainingMatches": 410,
+      "candidateHoldout": 20,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/en.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/en.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 14,
+      "status": "evaluated"
+    },
+    "ger.1": {
+      "trainingMatches": 325,
+      "candidateHoldout": 17,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/de.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/de.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 13,
+      "status": "evaluated"
+    },
+    "esp.1": {
+      "trainingMatches": 422,
+      "candidateHoldout": 27,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/es.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/es.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 27,
+      "status": "evaluated"
+    },
+    "ita.1": {
+      "trainingMatches": 411,
+      "candidateHoldout": 19,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/it.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 15,
+      "status": "evaluated"
+    },
+    "fra.1": {
+      "trainingMatches": 333,
+      "candidateHoldout": 17,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/fr.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/fr.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 13,
+      "status": "evaluated"
+    },
+    "ned.1": {
+      "trainingMatches": 350,
+      "candidateHoldout": 18,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/nl.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/nl.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 18,
+      "status": "evaluated"
+    },
+    "por.1": {
+      "trainingMatches": 350,
+      "candidateHoldout": 18,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/pt.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/pt.1.json"
+      ],
+      "sourceErrors": [],
+      "evaluated": 18,
+      "status": "evaluated"
+    }
+  },
+  "evaluatedMatches": [
+    {
+      "league": "eng.1",
+      "date": "2026-09-12",
+      "home": "afc bournemouth",
+      "away": "brentford",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.431486,
+        "draw": 0.277711,
+        "away_win": 0.290803,
+        "home_or_draw": 0.709197,
+        "away_or_draw": 0.568514,
+        "over_1_5": 0.812629,
+        "under_2_5": 0.432573,
+        "over_2_5": 0.567427,
+        "under_3_5": 0.65655,
+        "btts_yes": 0.608526,
+        "btts_no": 0.391474
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-12",
+      "home": "aston villa",
+      "away": "nottingham forest",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.440382,
+        "draw": 0.303132,
+        "away_win": 0.256486,
+        "home_or_draw": 0.743514,
+        "away_or_draw": 0.559618,
+        "over_1_5": 0.735854,
+        "under_2_5": 0.539987,
+        "over_2_5": 0.460013,
+        "under_3_5": 0.754378,
+        "btts_yes": 0.52141,
+        "btts_no": 0.47859
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-12",
+      "home": "liverpool",
+      "away": "fulham",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.537274,
+        "draw": 0.256798,
+        "away_win": 0.205928,
+        "home_or_draw": 0.794072,
+        "away_or_draw": 0.462726,
+        "over_1_5": 0.820215,
+        "under_2_5": 0.419271,
+        "over_2_5": 0.580729,
+        "under_3_5": 0.643302,
+        "btts_yes": 0.589863,
+        "btts_no": 0.410137
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-12",
+      "home": "sunderland",
+      "away": "arsenal",
+      "fullTime": [
+        0,
+        2
+      ],
+      "pred": {
+        "home_win": 0.139448,
+        "draw": 0.303994,
+        "away_win": 0.556558,
+        "home_or_draw": 0.443442,
+        "away_or_draw": 0.860552,
+        "over_1_5": 0.630345,
+        "under_2_5": 0.658241,
+        "over_2_5": 0.341759,
+        "under_3_5": 0.844624,
+        "btts_yes": 0.370652,
+        "btts_no": 0.629348
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-12",
+      "home": "tottenham hotspur",
+      "away": "everton",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.329193,
+        "draw": 0.316542,
+        "away_win": 0.354265,
+        "home_or_draw": 0.645735,
+        "away_or_draw": 0.670807,
+        "over_1_5": 0.718341,
+        "under_2_5": 0.562649,
+        "over_2_5": 0.437351,
+        "under_3_5": 0.773043,
+        "btts_yes": 0.514739,
+        "btts_no": 0.485261
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-13",
+      "home": "manchester united",
+      "away": "manchester city",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.283708,
+        "draw": 0.259221,
+        "away_win": 0.457071,
+        "home_or_draw": 0.542929,
+        "away_or_draw": 0.716292,
+        "over_1_5": 0.852602,
+        "under_2_5": 0.36757,
+        "over_2_5": 0.63243,
+        "under_3_5": 0.589242,
+        "btts_yes": 0.654324,
+        "btts_no": 0.345676
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-14",
+      "home": "leeds united",
+      "away": "newcastle united",
+      "fullTime": [
+        4,
+        1
+      ],
+      "pred": {
+        "home_win": 0.401351,
+        "draw": 0.291265,
+        "away_win": 0.307384,
+        "home_or_draw": 0.692616,
+        "away_or_draw": 0.598649,
+        "over_1_5": 0.783202,
+        "under_2_5": 0.476368,
+        "over_2_5": 0.523632,
+        "under_3_5": 0.698357,
+        "btts_yes": 0.578796,
+        "btts_no": 0.421204
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-18",
+      "home": "brentford",
+      "away": "chelsea",
+      "fullTime": [
+        3,
+        0
+      ],
+      "pred": {
+        "home_win": 0.430265,
+        "draw": 0.268559,
+        "away_win": 0.301176,
+        "home_or_draw": 0.698824,
+        "away_or_draw": 0.569735,
+        "over_1_5": 0.836631,
+        "under_2_5": 0.39454,
+        "over_2_5": 0.60546,
+        "under_3_5": 0.617962,
+        "btts_yes": 0.638031,
+        "btts_no": 0.361969
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-19",
+      "home": "brighton and hove albion",
+      "away": "arsenal",
+      "fullTime": [
+        3,
+        0
+      ],
+      "pred": {
+        "home_win": 0.19141,
+        "draw": 0.304659,
+        "away_win": 0.503931,
+        "home_or_draw": 0.496069,
+        "away_or_draw": 0.80859,
+        "over_1_5": 0.68817,
+        "under_2_5": 0.596793,
+        "over_2_5": 0.403207,
+        "under_3_5": 0.799925,
+        "btts_yes": 0.452852,
+        "btts_no": 0.547148
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-19",
+      "home": "tottenham hotspur",
+      "away": "aston villa",
+      "fullTime": [
+        2,
+        3
+      ],
+      "pred": {
+        "home_win": 0.311164,
+        "draw": 0.302878,
+        "away_win": 0.385958,
+        "home_or_draw": 0.614042,
+        "away_or_draw": 0.688836,
+        "over_1_5": 0.753608,
+        "under_2_5": 0.517291,
+        "over_2_5": 0.482709,
+        "under_3_5": 0.735014,
+        "btts_yes": 0.548488,
+        "btts_no": 0.451512
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-20",
+      "home": "afc bournemouth",
+      "away": "liverpool",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.413991,
+        "draw": 0.26485,
+        "away_win": 0.321159,
+        "home_or_draw": 0.678841,
+        "away_or_draw": 0.586009,
+        "over_1_5": 0.848868,
+        "under_2_5": 0.374262,
+        "over_2_5": 0.625738,
+        "under_3_5": 0.596477,
+        "btts_yes": 0.655503,
+        "btts_no": 0.344497
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-20",
+      "home": "fulham",
+      "away": "manchester united",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.29312,
+        "draw": 0.268471,
+        "away_win": 0.438408,
+        "home_or_draw": 0.561592,
+        "away_or_draw": 0.70688,
+        "over_1_5": 0.834806,
+        "under_2_5": 0.397452,
+        "over_2_5": 0.602548,
+        "under_3_5": 0.620995,
+        "btts_yes": 0.634533,
+        "btts_no": 0.365467
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-20",
+      "home": "leeds united",
+      "away": "crystal palace",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.469436,
+        "draw": 0.29938,
+        "away_win": 0.231184,
+        "home_or_draw": 0.768816,
+        "away_or_draw": 0.530564,
+        "over_1_5": 0.732133,
+        "under_2_5": 0.544298,
+        "over_2_5": 0.455702,
+        "under_3_5": 0.75798,
+        "btts_yes": 0.510106,
+        "btts_no": 0.489894
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "eng.1",
+      "date": "2026-09-20",
+      "home": "manchester city",
+      "away": "sunderland",
+      "fullTime": [
+        5,
+        3
+      ],
+      "pred": {
+        "home_win": 0.66956,
+        "draw": 0.229498,
+        "away_win": 0.100942,
+        "home_or_draw": 0.899058,
+        "away_or_draw": 0.33044,
+        "over_1_5": 0.759441,
+        "under_2_5": 0.502921,
+        "over_2_5": 0.497079,
+        "under_3_5": 0.7224,
+        "btts_yes": 0.437555,
+        "btts_no": 0.562445
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-12",
+      "home": "1 fc koln",
+      "away": "sv werder bremen",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.505816,
+        "draw": 0.241239,
+        "away_win": 0.252945,
+        "home_or_draw": 0.747055,
+        "away_or_draw": 0.494184,
+        "over_1_5": 0.798899,
+        "under_2_5": 0.431685,
+        "over_2_5": 0.568315,
+        "under_3_5": 0.655673,
+        "btts_yes": 0.58149,
+        "btts_no": 0.41851
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-12",
+      "home": "1 fsv mainz 05",
+      "away": "eintracht frankfurt",
+      "fullTime": [
+        1,
+        3
+      ],
+      "pred": {
+        "home_win": 0.49097,
+        "draw": 0.225255,
+        "away_win": 0.283775,
+        "home_or_draw": 0.716225,
+        "away_or_draw": 0.50903,
+        "over_1_5": 0.858389,
+        "under_2_5": 0.336305,
+        "over_2_5": 0.663695,
+        "under_3_5": 0.554454,
+        "btts_yes": 0.662313,
+        "btts_no": 0.337687
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-12",
+      "home": "fc augsburg",
+      "away": "bayer 04 leverkusen",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.277046,
+        "draw": 0.234086,
+        "away_win": 0.488868,
+        "home_or_draw": 0.511132,
+        "away_or_draw": 0.722954,
+        "over_1_5": 0.831419,
+        "under_2_5": 0.381317,
+        "over_2_5": 0.618683,
+        "under_3_5": 0.604026,
+        "btts_yes": 0.626657,
+        "btts_no": 0.373343
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-12",
+      "home": "sc freiburg",
+      "away": "borussia monchengladbach",
+      "fullTime": [
+        5,
+        0
+      ],
+      "pred": {
+        "home_win": 0.504609,
+        "draw": 0.247673,
+        "away_win": 0.247718,
+        "home_or_draw": 0.752282,
+        "away_or_draw": 0.495391,
+        "over_1_5": 0.777184,
+        "under_2_5": 0.463309,
+        "over_2_5": 0.536691,
+        "under_3_5": 0.686175,
+        "btts_yes": 0.555936,
+        "btts_no": 0.444064
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-12",
+      "home": "tsg 1899 hoffenheim",
+      "away": "vfb stuttgart",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.398962,
+        "draw": 0.215352,
+        "away_win": 0.385686,
+        "home_or_draw": 0.614314,
+        "away_or_draw": 0.601038,
+        "over_1_5": 0.902959,
+        "under_2_5": 0.254112,
+        "over_2_5": 0.745888,
+        "under_3_5": 0.454529,
+        "btts_yes": 0.737522,
+        "btts_no": 0.262478
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-13",
+      "home": "rb leipzig",
+      "away": "hamburger sv",
+      "fullTime": [
+        5,
+        0
+      ],
+      "pred": {
+        "home_win": 0.667851,
+        "draw": 0.195731,
+        "away_win": 0.136418,
+        "home_or_draw": 0.863582,
+        "away_or_draw": 0.332149,
+        "over_1_5": 0.815627,
+        "under_2_5": 0.405402,
+        "over_2_5": 0.594598,
+        "under_3_5": 0.629206,
+        "btts_yes": 0.525949,
+        "btts_no": 0.474051
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-18",
+      "home": "fc bayern munchen",
+      "away": "1 fc union berlin",
+      "fullTime": [
+        7,
+        0
+      ],
+      "pred": {
+        "home_win": 0.922174,
+        "draw": 0.053148,
+        "away_win": 0.024678,
+        "home_or_draw": 0.975322,
+        "away_or_draw": 0.077826,
+        "over_1_5": 0.965169,
+        "under_2_5": 0.112198,
+        "over_2_5": 0.887802,
+        "under_3_5": 0.243956,
+        "btts_yes": 0.543754,
+        "btts_no": 0.456246
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-19",
+      "home": "borussia monchengladbach",
+      "away": "1 fsv mainz 05",
+      "fullTime": [
+        3,
+        4
+      ],
+      "pred": {
+        "home_win": 0.365586,
+        "draw": 0.280931,
+        "away_win": 0.353483,
+        "home_or_draw": 0.646517,
+        "away_or_draw": 0.634414,
+        "over_1_5": 0.710518,
+        "under_2_5": 0.55203,
+        "over_2_5": 0.44797,
+        "under_3_5": 0.76438,
+        "btts_yes": 0.506902,
+        "btts_no": 0.493098
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-19",
+      "home": "eintracht frankfurt",
+      "away": "sc freiburg",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.43983,
+        "draw": 0.217074,
+        "away_win": 0.343097,
+        "home_or_draw": 0.656903,
+        "away_or_draw": 0.56017,
+        "over_1_5": 0.895157,
+        "under_2_5": 0.269331,
+        "over_2_5": 0.730669,
+        "under_3_5": 0.474034,
+        "btts_yes": 0.723401,
+        "btts_no": 0.276599
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-19",
+      "home": "hamburger sv",
+      "away": "1 fc koln",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.390217,
+        "draw": 0.259977,
+        "away_win": 0.349806,
+        "home_or_draw": 0.650194,
+        "away_or_draw": 0.609783,
+        "over_1_5": 0.775254,
+        "under_2_5": 0.466283,
+        "over_2_5": 0.533717,
+        "under_3_5": 0.688971,
+        "btts_yes": 0.573671,
+        "btts_no": 0.426329
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-19",
+      "home": "sv werder bremen",
+      "away": "fc augsburg",
+      "fullTime": [
+        3,
+        2
+      ],
+      "pred": {
+        "home_win": 0.341557,
+        "draw": 0.263438,
+        "away_win": 0.395005,
+        "home_or_draw": 0.604995,
+        "away_or_draw": 0.658443,
+        "over_1_5": 0.763779,
+        "under_2_5": 0.482335,
+        "over_2_5": 0.517665,
+        "under_3_5": 0.703844,
+        "btts_yes": 0.560844,
+        "btts_no": 0.439156
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-19",
+      "home": "vfb stuttgart",
+      "away": "borussia dortmund",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.333547,
+        "draw": 0.241782,
+        "away_win": 0.424671,
+        "home_or_draw": 0.575329,
+        "away_or_draw": 0.666453,
+        "over_1_5": 0.827181,
+        "under_2_5": 0.388233,
+        "over_2_5": 0.611767,
+        "under_3_5": 0.611349,
+        "btts_yes": 0.631833,
+        "btts_no": 0.368167
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ger.1",
+      "date": "2026-09-20",
+      "home": "bayer 04 leverkusen",
+      "away": "rb leipzig",
+      "fullTime": [
+        2,
+        0
+      ],
+      "pred": {
+        "home_win": 0.500102,
+        "draw": 0.226163,
+        "away_win": 0.273736,
+        "home_or_draw": 0.726264,
+        "away_or_draw": 0.499898,
+        "over_1_5": 0.851726,
+        "under_2_5": 0.347699,
+        "over_2_5": 0.652301,
+        "under_3_5": 0.567323,
+        "btts_yes": 0.651066,
+        "btts_no": 0.348934
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-12",
+      "home": "athletic club",
+      "away": "elche",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.494448,
+        "draw": 0.246922,
+        "away_win": 0.25863,
+        "home_or_draw": 0.74137,
+        "away_or_draw": 0.505552,
+        "over_1_5": 0.771496,
+        "under_2_5": 0.468689,
+        "over_2_5": 0.531311,
+        "under_3_5": 0.691224,
+        "btts_yes": 0.553107,
+        "btts_no": 0.446893
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-12",
+      "home": "ca osasuna",
+      "away": "rcd espanyol de barcelona",
+      "fullTime": [
+        0,
+        2
+      ],
+      "pred": {
+        "home_win": 0.48106,
+        "draw": 0.27028,
+        "away_win": 0.24866,
+        "home_or_draw": 0.75134,
+        "away_or_draw": 0.51894,
+        "over_1_5": 0.696072,
+        "under_2_5": 0.566938,
+        "over_2_5": 0.433062,
+        "under_3_5": 0.776502,
+        "btts_yes": 0.475063,
+        "btts_no": 0.524937
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-12",
+      "home": "real madrid",
+      "away": "rayo vallecano de madrid",
+      "fullTime": [
+        4,
+        1
+      ],
+      "pred": {
+        "home_win": 0.726501,
+        "draw": 0.178455,
+        "away_win": 0.095044,
+        "home_or_draw": 0.904956,
+        "away_or_draw": 0.273499,
+        "over_1_5": 0.780572,
+        "under_2_5": 0.45504,
+        "over_2_5": 0.54496,
+        "under_3_5": 0.678339,
+        "btts_yes": 0.430372,
+        "btts_no": 0.569628
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-12",
+      "home": "real racing club de santander",
+      "away": "deportivo alaves",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.471774,
+        "draw": 0.20353,
+        "away_win": 0.324696,
+        "home_or_draw": 0.675304,
+        "away_or_draw": 0.528226,
+        "over_1_5": 0.916502,
+        "under_2_5": 0.224219,
+        "over_2_5": 0.775781,
+        "under_3_5": 0.414735,
+        "btts_yes": 0.755146,
+        "btts_no": 0.244854
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-13",
+      "home": "getafe",
+      "away": "rc deportivo la coruna",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.321343,
+        "draw": 0.297917,
+        "away_win": 0.38074,
+        "home_or_draw": 0.61926,
+        "away_or_draw": 0.678657,
+        "over_1_5": 0.640011,
+        "under_2_5": 0.631216,
+        "over_2_5": 0.368784,
+        "under_3_5": 0.825543,
+        "btts_yes": 0.439204,
+        "btts_no": 0.560796
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-13",
+      "home": "levante ud",
+      "away": "fc barcelona",
+      "fullTime": [
+        2,
+        4
+      ],
+      "pred": {
+        "home_win": 0.130666,
+        "draw": 0.168077,
+        "away_win": 0.701257,
+        "home_or_draw": 0.298743,
+        "away_or_draw": 0.869334,
+        "over_1_5": 0.874379,
+        "under_2_5": 0.30494,
+        "over_2_5": 0.69506,
+        "under_3_5": 0.517843,
+        "btts_yes": 0.595198,
+        "btts_no": 0.404802
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-13",
+      "home": "rc celta de vigo",
+      "away": "malaga",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.71409,
+        "draw": 0.243163,
+        "away_win": 0.042747,
+        "home_or_draw": 0.957253,
+        "away_or_draw": 0.28591,
+        "over_1_5": 0.502876,
+        "under_2_5": 0.761282,
+        "over_2_5": 0.238718,
+        "under_3_5": 0.9091,
+        "btts_yes": 0.133543,
+        "btts_no": 0.866457
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-13",
+      "home": "real sociedad de futbol",
+      "away": "club atletico de madrid",
+      "fullTime": [
+        0,
+        3
+      ],
+      "pred": {
+        "home_win": 0.400982,
+        "draw": 0.234677,
+        "away_win": 0.364341,
+        "home_or_draw": 0.635659,
+        "away_or_draw": 0.599018,
+        "over_1_5": 0.839868,
+        "under_2_5": 0.364891,
+        "over_2_5": 0.635109,
+        "under_3_5": 0.586324,
+        "btts_yes": 0.649987,
+        "btts_no": 0.350013
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-14",
+      "home": "villarreal",
+      "away": "real betis balompie",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.557637,
+        "draw": 0.219317,
+        "away_win": 0.223046,
+        "home_or_draw": 0.776954,
+        "away_or_draw": 0.442363,
+        "over_1_5": 0.829138,
+        "under_2_5": 0.382131,
+        "over_2_5": 0.617869,
+        "under_3_5": 0.604892,
+        "btts_yes": 0.603997,
+        "btts_no": 0.396003
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-15",
+      "home": "deportivo alaves",
+      "away": "valencia",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.544922,
+        "draw": 0.244315,
+        "away_win": 0.210763,
+        "home_or_draw": 0.789237,
+        "away_or_draw": 0.455078,
+        "over_1_5": 0.745777,
+        "under_2_5": 0.503779,
+        "over_2_5": 0.496221,
+        "under_3_5": 0.723161,
+        "btts_yes": 0.506455,
+        "btts_no": 0.493545
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-15",
+      "home": "elche",
+      "away": "real madrid",
+      "fullTime": [
+        2,
+        3
+      ],
+      "pred": {
+        "home_win": 0.190668,
+        "draw": 0.217027,
+        "away_win": 0.592305,
+        "home_or_draw": 0.407695,
+        "away_or_draw": 0.809332,
+        "over_1_5": 0.807539,
+        "under_2_5": 0.415765,
+        "over_2_5": 0.584235,
+        "under_3_5": 0.639765,
+        "btts_yes": 0.560569,
+        "btts_no": 0.439431
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-15",
+      "home": "rayo vallecano de madrid",
+      "away": "rcd espanyol de barcelona",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.487583,
+        "draw": 0.27731,
+        "away_win": 0.235107,
+        "home_or_draw": 0.764893,
+        "away_or_draw": 0.512417,
+        "over_1_5": 0.667412,
+        "under_2_5": 0.600576,
+        "over_2_5": 0.399424,
+        "under_3_5": 0.802813,
+        "btts_yes": 0.444156,
+        "btts_no": 0.555844
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-16",
+      "home": "club atletico de madrid",
+      "away": "ca osasuna",
+      "fullTime": [
+        4,
+        0
+      ],
+      "pred": {
+        "home_win": 0.609709,
+        "draw": 0.220253,
+        "away_win": 0.170038,
+        "home_or_draw": 0.829962,
+        "away_or_draw": 0.390291,
+        "over_1_5": 0.775703,
+        "under_2_5": 0.462469,
+        "over_2_5": 0.537531,
+        "under_3_5": 0.685384,
+        "btts_yes": 0.510924,
+        "btts_no": 0.489076
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-16",
+      "home": "fc barcelona",
+      "away": "real racing club de santander",
+      "fullTime": [
+        7,
+        2
+      ],
+      "pred": {
+        "home_win": 0.936116,
+        "draw": 0.041129,
+        "away_win": 0.022755,
+        "home_or_draw": 0.977245,
+        "away_or_draw": 0.063884,
+        "over_1_5": 0.98516,
+        "under_2_5": 0.054936,
+        "over_2_5": 0.945064,
+        "under_3_5": 0.136954,
+        "btts_yes": 0.643031,
+        "btts_no": 0.356969
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-16",
+      "home": "rc deportivo la coruna",
+      "away": "sevilla",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.661838,
+        "draw": 0.178459,
+        "away_win": 0.159702,
+        "home_or_draw": 0.840298,
+        "away_or_draw": 0.338162,
+        "over_1_5": 0.882883,
+        "under_2_5": 0.289546,
+        "over_2_5": 0.710454,
+        "under_3_5": 0.499209,
+        "btts_yes": 0.635514,
+        "btts_no": 0.364486
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-17",
+      "home": "malaga",
+      "away": "villarreal",
+      "fullTime": [
+        1,
+        3
+      ],
+      "pred": {
+        "home_win": 0.061806,
+        "draw": 0.243034,
+        "away_win": 0.69516,
+        "home_or_draw": 0.30484,
+        "away_or_draw": 0.938194,
+        "over_1_5": 0.540982,
+        "under_2_5": 0.728276,
+        "over_2_5": 0.271724,
+        "under_3_5": 0.889881,
+        "btts_yes": 0.189747,
+        "btts_no": 0.810253
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-17",
+      "home": "real betis balompie",
+      "away": "getafe",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.534752,
+        "draw": 0.295688,
+        "away_win": 0.16956,
+        "home_or_draw": 0.83044,
+        "away_or_draw": 0.465248,
+        "over_1_5": 0.566848,
+        "under_2_5": 0.705107,
+        "over_2_5": 0.294893,
+        "under_3_5": 0.875579,
+        "btts_yes": 0.32908,
+        "btts_no": 0.67092
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-18",
+      "home": "rcd espanyol de barcelona",
+      "away": "elche",
+      "fullTime": [
+        1,
+        3
+      ],
+      "pred": {
+        "home_win": 0.484416,
+        "draw": 0.253324,
+        "away_win": 0.262261,
+        "home_or_draw": 0.737739,
+        "away_or_draw": 0.515584,
+        "over_1_5": 0.754251,
+        "under_2_5": 0.492515,
+        "over_2_5": 0.507485,
+        "under_3_5": 0.713093,
+        "btts_yes": 0.536263,
+        "btts_no": 0.463737
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-19",
+      "home": "athletic club",
+      "away": "deportivo alaves",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.437761,
+        "draw": 0.259913,
+        "away_win": 0.302326,
+        "home_or_draw": 0.697674,
+        "away_or_draw": 0.562239,
+        "over_1_5": 0.751187,
+        "under_2_5": 0.496717,
+        "over_2_5": 0.503283,
+        "under_3_5": 0.716869,
+        "btts_yes": 0.542783,
+        "btts_no": 0.457217
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-19",
+      "home": "ca osasuna",
+      "away": "rayo vallecano de madrid",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.437377,
+        "draw": 0.287852,
+        "away_win": 0.274771,
+        "home_or_draw": 0.725229,
+        "away_or_draw": 0.562623,
+        "over_1_5": 0.657197,
+        "under_2_5": 0.612217,
+        "over_2_5": 0.387783,
+        "under_3_5": 0.811586,
+        "btts_yes": 0.447288,
+        "btts_no": 0.552712
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-19",
+      "home": "rc celta de vigo",
+      "away": "real racing club de santander",
+      "fullTime": [
+        5,
+        0
+      ],
+      "pred": {
+        "home_win": 0.611241,
+        "draw": 0.187982,
+        "away_win": 0.200777,
+        "home_or_draw": 0.799223,
+        "away_or_draw": 0.388759,
+        "over_1_5": 0.89667,
+        "under_2_5": 0.263633,
+        "over_2_5": 0.736367,
+        "under_3_5": 0.466789,
+        "btts_yes": 0.684366,
+        "btts_no": 0.315634
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-19",
+      "home": "sevilla",
+      "away": "fc barcelona",
+      "fullTime": [
+        1,
+        3
+      ],
+      "pred": {
+        "home_win": 0.135462,
+        "draw": 0.173973,
+        "away_win": 0.690565,
+        "home_or_draw": 0.309435,
+        "away_or_draw": 0.864538,
+        "over_1_5": 0.86475,
+        "under_2_5": 0.322097,
+        "over_2_5": 0.677903,
+        "under_3_5": 0.53809,
+        "btts_yes": 0.586573,
+        "btts_no": 0.413427
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-20",
+      "home": "club atletico de madrid",
+      "away": "real madrid",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.322213,
+        "draw": 0.250902,
+        "away_win": 0.426885,
+        "home_or_draw": 0.573115,
+        "away_or_draw": 0.677787,
+        "over_1_5": 0.78434,
+        "under_2_5": 0.450459,
+        "over_2_5": 0.549541,
+        "under_3_5": 0.673955,
+        "btts_yes": 0.581182,
+        "btts_no": 0.418818
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-20",
+      "home": "getafe",
+      "away": "malaga",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.54731,
+        "draw": 0.3943,
+        "away_win": 0.058391,
+        "home_or_draw": 0.941609,
+        "away_or_draw": 0.45269,
+        "over_1_5": 0.289958,
+        "under_2_5": 0.906836,
+        "over_2_5": 0.093164,
+        "under_3_5": 0.976578,
+        "btts_yes": 0.084245,
+        "btts_no": 0.915755
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-20",
+      "home": "rc deportivo la coruna",
+      "away": "real betis balompie",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.521494,
+        "draw": 0.216111,
+        "away_win": 0.262395,
+        "home_or_draw": 0.737605,
+        "away_or_draw": 0.478506,
+        "over_1_5": 0.862871,
+        "under_2_5": 0.325793,
+        "over_2_5": 0.674207,
+        "under_3_5": 0.542381,
+        "btts_yes": 0.662303,
+        "btts_no": 0.337697
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-20",
+      "home": "valencia",
+      "away": "real sociedad de futbol",
+      "fullTime": [
+        2,
+        3
+      ],
+      "pred": {
+        "home_win": 0.403583,
+        "draw": 0.251323,
+        "away_win": 0.345094,
+        "home_or_draw": 0.654906,
+        "away_or_draw": 0.596417,
+        "over_1_5": 0.7872,
+        "under_2_5": 0.446324,
+        "over_2_5": 0.553676,
+        "under_3_5": 0.669972,
+        "btts_yes": 0.586634,
+        "btts_no": 0.413366
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "esp.1",
+      "date": "2026-09-20",
+      "home": "villarreal",
+      "away": "levante ud",
+      "fullTime": [
+        3,
+        1
+      ],
+      "pred": {
+        "home_win": 0.699877,
+        "draw": 0.170423,
+        "away_win": 0.129699,
+        "home_or_draw": 0.870301,
+        "away_or_draw": 0.300123,
+        "over_1_5": 0.866432,
+        "under_2_5": 0.319108,
+        "over_2_5": 0.680892,
+        "under_3_5": 0.5346,
+        "btts_yes": 0.582661,
+        "btts_no": 0.417339
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-12",
+      "home": "atalanta bc",
+      "away": "cagliari calcio",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.542411,
+        "draw": 0.25699,
+        "away_win": 0.200599,
+        "home_or_draw": 0.799401,
+        "away_or_draw": 0.457589,
+        "over_1_5": 0.650245,
+        "under_2_5": 0.612482,
+        "over_2_5": 0.387518,
+        "under_3_5": 0.811784,
+        "btts_yes": 0.408735,
+        "btts_no": 0.591265
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-12",
+      "home": "ss lazio",
+      "away": "ac milan",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.291637,
+        "draw": 0.306305,
+        "away_win": 0.402058,
+        "home_or_draw": 0.597942,
+        "away_or_draw": 0.708363,
+        "over_1_5": 0.560673,
+        "under_2_5": 0.704386,
+        "over_2_5": 0.295614,
+        "under_3_5": 0.875123,
+        "btts_yes": 0.366482,
+        "btts_no": 0.633518
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-13",
+      "home": "ssc napoli",
+      "away": "bologna fc 1909",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.532034,
+        "draw": 0.238743,
+        "away_win": 0.229223,
+        "home_or_draw": 0.770777,
+        "away_or_draw": 0.467966,
+        "over_1_5": 0.72794,
+        "under_2_5": 0.51892,
+        "over_2_5": 0.48108,
+        "under_3_5": 0.736427,
+        "btts_yes": 0.494727,
+        "btts_no": 0.505273
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-13",
+      "home": "us sassuolo calcio",
+      "away": "juventus",
+      "fullTime": [
+        3,
+        2
+      ],
+      "pred": {
+        "home_win": 0.210912,
+        "draw": 0.233814,
+        "away_win": 0.555274,
+        "home_or_draw": 0.444726,
+        "away_or_draw": 0.789088,
+        "over_1_5": 0.728442,
+        "under_2_5": 0.518388,
+        "over_2_5": 0.481612,
+        "under_3_5": 0.735966,
+        "btts_yes": 0.485968,
+        "btts_no": 0.514032
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-14",
+      "home": "como 1907",
+      "away": "parma calcio 1913",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.705628,
+        "draw": 0.206617,
+        "away_win": 0.087755,
+        "home_or_draw": 0.912245,
+        "away_or_draw": 0.294372,
+        "over_1_5": 0.64438,
+        "under_2_5": 0.620444,
+        "over_2_5": 0.379556,
+        "under_3_5": 0.817685,
+        "btts_yes": 0.290631,
+        "btts_no": 0.709369
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-14",
+      "home": "fc internazionale milano",
+      "away": "udinese calcio",
+      "fullTime": [
+        5,
+        3
+      ],
+      "pred": {
+        "home_win": 0.711623,
+        "draw": 0.161702,
+        "away_win": 0.126675,
+        "home_or_draw": 0.873325,
+        "away_or_draw": 0.288377,
+        "over_1_5": 0.852552,
+        "under_2_5": 0.336006,
+        "over_2_5": 0.663994,
+        "under_3_5": 0.554113,
+        "btts_yes": 0.55658,
+        "btts_no": 0.44342
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-14",
+      "home": "torino",
+      "away": "as roma",
+      "fullTime": [
+        0,
+        2
+      ],
+      "pred": {
+        "home_win": 0.128745,
+        "draw": 0.175542,
+        "away_win": 0.695713,
+        "home_or_draw": 0.304287,
+        "away_or_draw": 0.871255,
+        "over_1_5": 0.811101,
+        "under_2_5": 0.402791,
+        "over_2_5": 0.597209,
+        "under_3_5": 0.62652,
+        "btts_yes": 0.506083,
+        "btts_no": 0.493917
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-19",
+      "home": "as roma",
+      "away": "fc internazionale milano",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.364337,
+        "draw": 0.238519,
+        "away_win": 0.397144,
+        "home_or_draw": 0.602856,
+        "away_or_draw": 0.635663,
+        "over_1_5": 0.783251,
+        "under_2_5": 0.442981,
+        "over_2_5": 0.557019,
+        "under_3_5": 0.666734,
+        "btts_yes": 0.58367,
+        "btts_no": 0.41633
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-19",
+      "home": "bologna fc 1909",
+      "away": "torino",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.509319,
+        "draw": 0.228187,
+        "away_win": 0.262494,
+        "home_or_draw": 0.737506,
+        "away_or_draw": 0.490681,
+        "over_1_5": 0.784356,
+        "under_2_5": 0.441603,
+        "over_2_5": 0.558397,
+        "under_3_5": 0.665395,
+        "btts_yes": 0.566791,
+        "btts_no": 0.433209
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-19",
+      "home": "udinese calcio",
+      "away": "cagliari calcio",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.446759,
+        "draw": 0.263991,
+        "away_win": 0.28925,
+        "home_or_draw": 0.71075,
+        "away_or_draw": 0.553241,
+        "over_1_5": 0.682432,
+        "under_2_5": 0.574995,
+        "over_2_5": 0.425005,
+        "under_3_5": 0.782934,
+        "btts_yes": 0.471308,
+        "btts_no": 0.528692
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-19",
+      "home": "venezia",
+      "away": "ss lazio",
+      "fullTime": [
+        0,
+        2
+      ],
+      "pred": {
+        "home_win": 0.113511,
+        "draw": 0.153778,
+        "away_win": 0.732711,
+        "home_or_draw": 0.267289,
+        "away_or_draw": 0.886489,
+        "over_1_5": 0.854879,
+        "under_2_5": 0.332224,
+        "over_2_5": 0.667776,
+        "under_3_5": 0.54979,
+        "btts_yes": 0.542762,
+        "btts_no": 0.457238
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-20",
+      "home": "ac milan",
+      "away": "us lecce",
+      "fullTime": [
+        3,
+        0
+      ],
+      "pred": {
+        "home_win": 0.612961,
+        "draw": 0.254198,
+        "away_win": 0.132842,
+        "home_or_draw": 0.867158,
+        "away_or_draw": 0.387039,
+        "over_1_5": 0.589018,
+        "under_2_5": 0.677842,
+        "over_2_5": 0.322158,
+        "under_3_5": 0.8579,
+        "btts_yes": 0.308573,
+        "btts_no": 0.691427
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-20",
+      "home": "acf fiorentina",
+      "away": "ssc napoli",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.194393,
+        "draw": 0.224261,
+        "away_win": 0.581346,
+        "home_or_draw": 0.418654,
+        "away_or_draw": 0.805607,
+        "over_1_5": 0.742763,
+        "under_2_5": 0.499722,
+        "over_2_5": 0.500278,
+        "under_3_5": 0.719555,
+        "btts_yes": 0.490324,
+        "btts_no": 0.509676
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-20",
+      "home": "juventus",
+      "away": "atalanta bc",
+      "fullTime": [
+        2,
+        0
+      ],
+      "pred": {
+        "home_win": 0.449395,
+        "draw": 0.277599,
+        "away_win": 0.273006,
+        "home_or_draw": 0.726994,
+        "away_or_draw": 0.550605,
+        "over_1_5": 0.63506,
+        "under_2_5": 0.628825,
+        "over_2_5": 0.371175,
+        "under_3_5": 0.823811,
+        "btts_yes": 0.424816,
+        "btts_no": 0.575184
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ita.1",
+      "date": "2026-09-20",
+      "home": "parma calcio 1913",
+      "away": "genoa cfc",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.29885,
+        "draw": 0.319042,
+        "away_win": 0.382108,
+        "home_or_draw": 0.617892,
+        "away_or_draw": 0.70115,
+        "over_1_5": 0.528877,
+        "under_2_5": 0.7337,
+        "over_2_5": 0.2663,
+        "under_3_5": 0.893133,
+        "btts_yes": 0.34216,
+        "btts_no": 0.65784
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-12",
+      "home": "aj auxerre",
+      "away": "ogc nice",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.48088,
+        "draw": 0.274847,
+        "away_win": 0.244273,
+        "home_or_draw": 0.755727,
+        "away_or_draw": 0.51912,
+        "over_1_5": 0.683862,
+        "under_2_5": 0.582093,
+        "over_2_5": 0.417907,
+        "under_3_5": 0.788533,
+        "btts_yes": 0.462535,
+        "btts_no": 0.537465
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-12",
+      "home": "fc lorient",
+      "away": "toulouse",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.429253,
+        "draw": 0.263926,
+        "away_win": 0.306821,
+        "home_or_draw": 0.693179,
+        "away_or_draw": 0.570747,
+        "over_1_5": 0.743873,
+        "under_2_5": 0.507158,
+        "over_2_5": 0.492842,
+        "under_3_5": 0.726148,
+        "btts_yes": 0.536106,
+        "btts_no": 0.463894
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-12",
+      "home": "le havre ac",
+      "away": "angers sco",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.414002,
+        "draw": 0.335808,
+        "away_win": 0.25019,
+        "home_or_draw": 0.74981,
+        "away_or_draw": 0.585998,
+        "over_1_5": 0.521857,
+        "under_2_5": 0.746636,
+        "over_2_5": 0.253364,
+        "under_3_5": 0.900741,
+        "btts_yes": 0.331142,
+        "btts_no": 0.668858
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-12",
+      "home": "paris",
+      "away": "olympique lyonnais",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.353531,
+        "draw": 0.263982,
+        "away_win": 0.382486,
+        "home_or_draw": 0.617514,
+        "away_or_draw": 0.646469,
+        "over_1_5": 0.75192,
+        "under_2_5": 0.496423,
+        "over_2_5": 0.503577,
+        "under_3_5": 0.716606,
+        "btts_yes": 0.548931,
+        "btts_no": 0.451069
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-12",
+      "home": "rc strasbourg alsace",
+      "away": "as monaco",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.463353,
+        "draw": 0.215017,
+        "away_win": 0.321629,
+        "home_or_draw": 0.678371,
+        "away_or_draw": 0.536647,
+        "over_1_5": 0.889729,
+        "under_2_5": 0.277703,
+        "over_2_5": 0.722297,
+        "under_3_5": 0.48456,
+        "btts_yes": 0.713151,
+        "btts_no": 0.286849
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-13",
+      "home": "stade brestois 29",
+      "away": "paris saint germain",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.162537,
+        "draw": 0.199764,
+        "away_win": 0.637699,
+        "home_or_draw": 0.362301,
+        "away_or_draw": 0.837463,
+        "over_1_5": 0.829581,
+        "under_2_5": 0.38179,
+        "over_2_5": 0.61821,
+        "under_3_5": 0.604529,
+        "btts_yes": 0.56626,
+        "btts_no": 0.43374
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-18",
+      "home": "as monaco",
+      "away": "racing club de lens",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.345299,
+        "draw": 0.230766,
+        "away_win": 0.423935,
+        "home_or_draw": 0.576065,
+        "away_or_draw": 0.654701,
+        "over_1_5": 0.851833,
+        "under_2_5": 0.345547,
+        "over_2_5": 0.654453,
+        "under_3_5": 0.56491,
+        "btts_yes": 0.663968,
+        "btts_no": 0.336032
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-19",
+      "home": "olympique lyonnais",
+      "away": "stade rennais fc 1901",
+      "fullTime": [
+        4,
+        0
+      ],
+      "pred": {
+        "home_win": 0.486599,
+        "draw": 0.234266,
+        "away_win": 0.279135,
+        "home_or_draw": 0.720865,
+        "away_or_draw": 0.513401,
+        "over_1_5": 0.822485,
+        "under_2_5": 0.39348,
+        "over_2_5": 0.60652,
+        "under_3_5": 0.616855,
+        "btts_yes": 0.6164,
+        "btts_no": 0.3836
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-19",
+      "home": "paris",
+      "away": "rc strasbourg alsace",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.401379,
+        "draw": 0.238083,
+        "away_win": 0.360538,
+        "home_or_draw": 0.639462,
+        "away_or_draw": 0.598621,
+        "over_1_5": 0.832334,
+        "under_2_5": 0.377842,
+        "over_2_5": 0.622158,
+        "under_3_5": 0.600317,
+        "btts_yes": 0.640349,
+        "btts_no": 0.359651
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-19",
+      "home": "toulouse",
+      "away": "le havre ac",
+      "fullTime": [
+        3,
+        2
+      ],
+      "pred": {
+        "home_win": 0.48667,
+        "draw": 0.287557,
+        "away_win": 0.225773,
+        "home_or_draw": 0.774227,
+        "away_or_draw": 0.51333,
+        "over_1_5": 0.636113,
+        "under_2_5": 0.635832,
+        "over_2_5": 0.364168,
+        "under_3_5": 0.828866,
+        "btts_yes": 0.413708,
+        "btts_no": 0.586292
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-20",
+      "home": "aj auxerre",
+      "away": "stade brestois 29",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.393597,
+        "draw": 0.267113,
+        "away_win": 0.33929,
+        "home_or_draw": 0.66071,
+        "away_or_draw": 0.606403,
+        "over_1_5": 0.740729,
+        "under_2_5": 0.511345,
+        "over_2_5": 0.488655,
+        "under_3_5": 0.729829,
+        "btts_yes": 0.53658,
+        "btts_no": 0.46342
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-20",
+      "home": "ogc nice",
+      "away": "lille osc",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.179323,
+        "draw": 0.25192,
+        "away_win": 0.568757,
+        "home_or_draw": 0.431243,
+        "away_or_draw": 0.820677,
+        "over_1_5": 0.697327,
+        "under_2_5": 0.56576,
+        "over_2_5": 0.43424,
+        "under_3_5": 0.775554,
+        "btts_yes": 0.441788,
+        "btts_no": 0.558212
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "fra.1",
+      "date": "2026-09-20",
+      "home": "olympique de marseille",
+      "away": "paris saint germain",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.283241,
+        "draw": 0.234627,
+        "away_win": 0.482132,
+        "home_or_draw": 0.517868,
+        "away_or_draw": 0.716759,
+        "over_1_5": 0.823226,
+        "under_2_5": 0.392316,
+        "over_2_5": 0.607684,
+        "under_3_5": 0.615638,
+        "btts_yes": 0.618332,
+        "btts_no": 0.381668
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-12",
+      "home": "fc twente 65",
+      "away": "ado den haag",
+      "fullTime": [
+        2,
+        0
+      ],
+      "pred": {
+        "home_win": 0.793118,
+        "draw": 0.134737,
+        "away_win": 0.072145,
+        "home_or_draw": 0.927855,
+        "away_or_draw": 0.206882,
+        "over_1_5": 0.897175,
+        "under_2_5": 0.269625,
+        "over_2_5": 0.730375,
+        "under_3_5": 0.474408,
+        "btts_yes": 0.545815,
+        "btts_no": 0.454185
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-12",
+      "home": "fortuna sittard",
+      "away": "afc ajax",
+      "fullTime": [
+        1,
+        5
+      ],
+      "pred": {
+        "home_win": 0.230303,
+        "draw": 0.241731,
+        "away_win": 0.527966,
+        "home_or_draw": 0.472034,
+        "away_or_draw": 0.769697,
+        "over_1_5": 0.823872,
+        "under_2_5": 0.401914,
+        "over_2_5": 0.598086,
+        "under_3_5": 0.625616,
+        "btts_yes": 0.602768,
+        "btts_no": 0.397232
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-12",
+      "home": "go ahead eagles",
+      "away": "fc groningen",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.420069,
+        "draw": 0.252122,
+        "away_win": 0.327809,
+        "home_or_draw": 0.672191,
+        "away_or_draw": 0.579931,
+        "over_1_5": 0.835394,
+        "under_2_5": 0.384087,
+        "over_2_5": 0.615913,
+        "under_3_5": 0.606967,
+        "btts_yes": 0.640583,
+        "btts_no": 0.359417
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-12",
+      "home": "sc cambuur leeuwarden",
+      "away": "nec",
+      "fullTime": [
+        3,
+        0
+      ],
+      "pred": {
+        "home_win": 0.054496,
+        "draw": 0.073694,
+        "away_win": 0.87181,
+        "home_or_draw": 0.12819,
+        "away_or_draw": 0.945504,
+        "over_1_5": 0.985306,
+        "under_2_5": 0.057941,
+        "over_2_5": 0.942059,
+        "under_3_5": 0.143089,
+        "btts_yes": 0.754143,
+        "btts_no": 0.245857
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-13",
+      "home": "pec zwolle",
+      "away": "feyenoord rotterdam",
+      "fullTime": [
+        0,
+        7
+      ],
+      "pred": {
+        "home_win": 0.175488,
+        "draw": 0.206244,
+        "away_win": 0.618269,
+        "home_or_draw": 0.381731,
+        "away_or_draw": 0.824512,
+        "over_1_5": 0.868429,
+        "under_2_5": 0.326187,
+        "over_2_5": 0.673813,
+        "under_3_5": 0.542837,
+        "btts_yes": 0.628715,
+        "btts_no": 0.371285
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-13",
+      "home": "psv",
+      "away": "sparta rotterdam",
+      "fullTime": [
+        4,
+        1
+      ],
+      "pred": {
+        "home_win": 0.856575,
+        "draw": 0.091721,
+        "away_win": 0.051704,
+        "home_or_draw": 0.948296,
+        "away_or_draw": 0.143425,
+        "over_1_5": 0.953461,
+        "under_2_5": 0.146417,
+        "over_2_5": 0.853583,
+        "under_3_5": 0.300408,
+        "btts_yes": 0.616643,
+        "btts_no": 0.383357
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-13",
+      "home": "sbv excelsior",
+      "away": "fc utrecht",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.377735,
+        "draw": 0.269386,
+        "away_win": 0.352879,
+        "home_or_draw": 0.647121,
+        "away_or_draw": 0.622265,
+        "over_1_5": 0.791729,
+        "under_2_5": 0.451658,
+        "over_2_5": 0.548342,
+        "under_3_5": 0.675105,
+        "btts_yes": 0.591542,
+        "btts_no": 0.408458
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-13",
+      "home": "sc heerenveen",
+      "away": "telstar 1963",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.521345,
+        "draw": 0.243488,
+        "away_win": 0.235167,
+        "home_or_draw": 0.764833,
+        "away_or_draw": 0.478655,
+        "over_1_5": 0.822407,
+        "under_2_5": 0.404288,
+        "over_2_5": 0.595712,
+        "under_3_5": 0.628062,
+        "btts_yes": 0.603029,
+        "btts_no": 0.396971
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-15",
+      "home": "afc ajax",
+      "away": "willem ii tilburg",
+      "fullTime": [
+        5,
+        1
+      ],
+      "pred": {
+        "home_win": 0.850778,
+        "draw": 0.105081,
+        "away_win": 0.044141,
+        "home_or_draw": 0.955859,
+        "away_or_draw": 0.149222,
+        "over_1_5": 0.904207,
+        "under_2_5": 0.254234,
+        "over_2_5": 0.745766,
+        "under_3_5": 0.454687,
+        "btts_yes": 0.48138,
+        "btts_no": 0.51862
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-18",
+      "home": "fc groningen",
+      "away": "pec zwolle",
+      "fullTime": [
+        3,
+        0
+      ],
+      "pred": {
+        "home_win": 0.595883,
+        "draw": 0.221979,
+        "away_win": 0.182138,
+        "home_or_draw": 0.817862,
+        "away_or_draw": 0.404117,
+        "over_1_5": 0.836376,
+        "under_2_5": 0.381058,
+        "over_2_5": 0.618942,
+        "under_3_5": 0.60375,
+        "btts_yes": 0.59221,
+        "btts_no": 0.40779
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-19",
+      "home": "ado den haag",
+      "away": "sc cambuur leeuwarden",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.633101,
+        "draw": 0.162481,
+        "away_win": 0.204418,
+        "home_or_draw": 0.795582,
+        "away_or_draw": 0.366899,
+        "over_1_5": 0.966362,
+        "under_2_5": 0.115694,
+        "over_2_5": 0.884306,
+        "under_3_5": 0.249934,
+        "btts_yes": 0.819718,
+        "btts_no": 0.180282
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-19",
+      "home": "afc ajax",
+      "away": "sbv excelsior",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.577969,
+        "draw": 0.242842,
+        "away_win": 0.179188,
+        "home_or_draw": 0.820812,
+        "away_or_draw": 0.422031,
+        "over_1_5": 0.77922,
+        "under_2_5": 0.468167,
+        "over_2_5": 0.531833,
+        "under_3_5": 0.690735,
+        "btts_yes": 0.526202,
+        "btts_no": 0.473798
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-19",
+      "home": "sparta rotterdam",
+      "away": "sc heerenveen",
+      "fullTime": [
+        0,
+        4
+      ],
+      "pred": {
+        "home_win": 0.292943,
+        "draw": 0.254346,
+        "away_win": 0.45271,
+        "home_or_draw": 0.54729,
+        "away_or_draw": 0.707057,
+        "over_1_5": 0.821034,
+        "under_2_5": 0.406949,
+        "over_2_5": 0.593051,
+        "under_3_5": 0.630793,
+        "btts_yes": 0.61822,
+        "btts_no": 0.38178
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-19",
+      "home": "willem ii tilburg",
+      "away": "fortuna sittard",
+      "fullTime": [
+        0,
+        1
+      ],
+      "pred": {
+        "home_win": 0.197103,
+        "draw": 0.216011,
+        "away_win": 0.586886,
+        "home_or_draw": 0.413114,
+        "away_or_draw": 0.802897,
+        "over_1_5": 0.86354,
+        "under_2_5": 0.335222,
+        "over_2_5": 0.664778,
+        "under_3_5": 0.553219,
+        "btts_yes": 0.635672,
+        "btts_no": 0.364328
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-20",
+      "home": "az",
+      "away": "telstar 1963",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.585833,
+        "draw": 0.226588,
+        "away_win": 0.187579,
+        "home_or_draw": 0.812421,
+        "away_or_draw": 0.414167,
+        "over_1_5": 0.82975,
+        "under_2_5": 0.3919,
+        "over_2_5": 0.6081,
+        "under_3_5": 0.615202,
+        "btts_yes": 0.587746,
+        "btts_no": 0.412254
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-20",
+      "home": "fc twente 65",
+      "away": "psv",
+      "fullTime": [
+        3,
+        2
+      ],
+      "pred": {
+        "home_win": 0.286342,
+        "draw": 0.22853,
+        "away_win": 0.485128,
+        "home_or_draw": 0.514872,
+        "away_or_draw": 0.713658,
+        "over_1_5": 0.881642,
+        "under_2_5": 0.303342,
+        "over_2_5": 0.696658,
+        "under_3_5": 0.515929,
+        "btts_yes": 0.693736,
+        "btts_no": 0.306264
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-20",
+      "home": "feyenoord rotterdam",
+      "away": "fc utrecht",
+      "fullTime": [
+        5,
+        0
+      ],
+      "pred": {
+        "home_win": 0.561484,
+        "draw": 0.224734,
+        "away_win": 0.213782,
+        "home_or_draw": 0.786218,
+        "away_or_draw": 0.438516,
+        "over_1_5": 0.854981,
+        "under_2_5": 0.350362,
+        "over_2_5": 0.649638,
+        "under_3_5": 0.570298,
+        "btts_yes": 0.633287,
+        "btts_no": 0.366713
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "ned.1",
+      "date": "2026-09-20",
+      "home": "nec",
+      "away": "go ahead eagles",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.559201,
+        "draw": 0.200538,
+        "away_win": 0.240261,
+        "home_or_draw": 0.759739,
+        "away_or_draw": 0.440799,
+        "over_1_5": 0.921507,
+        "under_2_5": 0.22347,
+        "over_2_5": 0.77653,
+        "under_3_5": 0.413711,
+        "btts_yes": 0.741328,
+        "btts_no": 0.258672
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-12",
+      "home": "academico de viseu",
+      "away": "vitoria guimaraes",
+      "fullTime": [
+        2,
+        1
+      ],
+      "pred": {
+        "home_win": 0.512142,
+        "draw": 0.246568,
+        "away_win": 0.241291,
+        "home_or_draw": 0.758709,
+        "away_or_draw": 0.487858,
+        "over_1_5": 0.712275,
+        "under_2_5": 0.538836,
+        "over_2_5": 0.461164,
+        "under_3_5": 0.753413,
+        "btts_yes": 0.48474,
+        "btts_no": 0.51526
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-12",
+      "home": "casa pia ac",
+      "away": "fc porto",
+      "fullTime": [
+        1,
+        4
+      ],
+      "pred": {
+        "home_win": 0.050948,
+        "draw": 0.153617,
+        "away_win": 0.795435,
+        "home_or_draw": 0.204565,
+        "away_or_draw": 0.949052,
+        "over_1_5": 0.707354,
+        "under_2_5": 0.547664,
+        "over_2_5": 0.452336,
+        "under_3_5": 0.760776,
+        "btts_yes": 0.257857,
+        "btts_no": 0.742143
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-12",
+      "home": "cd nacional",
+      "away": "fc alverca",
+      "fullTime": [
+        1,
+        3
+      ],
+      "pred": {
+        "home_win": 0.471412,
+        "draw": 0.264614,
+        "away_win": 0.263974,
+        "home_or_draw": 0.736026,
+        "away_or_draw": 0.528588,
+        "over_1_5": 0.669902,
+        "under_2_5": 0.589803,
+        "over_2_5": 0.410197,
+        "under_3_5": 0.794542,
+        "btts_yes": 0.45323,
+        "btts_no": 0.54677
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-13",
+      "home": "fc arouca",
+      "away": "cd santa clara",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.400486,
+        "draw": 0.258219,
+        "away_win": 0.341294,
+        "home_or_draw": 0.658706,
+        "away_or_draw": 0.599514,
+        "over_1_5": 0.714435,
+        "under_2_5": 0.535828,
+        "over_2_5": 0.464172,
+        "under_3_5": 0.75088,
+        "btts_yes": 0.509712,
+        "btts_no": 0.490288
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-13",
+      "home": "fc famalicao",
+      "away": "sporting clube de portugal",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.191062,
+        "draw": 0.244963,
+        "away_win": 0.563976,
+        "home_or_draw": 0.436024,
+        "away_or_draw": 0.808938,
+        "over_1_5": 0.676807,
+        "under_2_5": 0.582187,
+        "over_2_5": 0.417813,
+        "under_3_5": 0.788606,
+        "btts_yes": 0.426059,
+        "btts_no": 0.573941
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-13",
+      "home": "sport lisboa e benfica",
+      "away": "gil vicente",
+      "fullTime": [
+        3,
+        1
+      ],
+      "pred": {
+        "home_win": 0.703325,
+        "draw": 0.185532,
+        "away_win": 0.111143,
+        "home_or_draw": 0.888857,
+        "away_or_draw": 0.296675,
+        "over_1_5": 0.748377,
+        "under_2_5": 0.493216,
+        "over_2_5": 0.506784,
+        "under_3_5": 0.713724,
+        "btts_yes": 0.415211,
+        "btts_no": 0.584789
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-14",
+      "home": "moreirense",
+      "away": "cs maritimo",
+      "fullTime": [
+        3,
+        1
+      ],
+      "pred": {
+        "home_win": 0.388179,
+        "draw": 0.252239,
+        "away_win": 0.359582,
+        "home_or_draw": 0.640418,
+        "away_or_draw": 0.611821,
+        "over_1_5": 0.736299,
+        "under_2_5": 0.507691,
+        "over_2_5": 0.492309,
+        "under_3_5": 0.726618,
+        "btts_yes": 0.532915,
+        "btts_no": 0.467085
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-14",
+      "home": "rio ave",
+      "away": "cf estrela da amadora",
+      "fullTime": [
+        3,
+        3
+      ],
+      "pred": {
+        "home_win": 0.331265,
+        "draw": 0.239066,
+        "away_win": 0.429668,
+        "home_or_draw": 0.570332,
+        "away_or_draw": 0.668735,
+        "over_1_5": 0.776602,
+        "under_2_5": 0.452593,
+        "over_2_5": 0.547407,
+        "under_3_5": 0.676001,
+        "btts_yes": 0.573645,
+        "btts_no": 0.426355
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-14",
+      "home": "sporting clube de braga",
+      "away": "gd estoril praia",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.670261,
+        "draw": 0.173477,
+        "away_win": 0.156262,
+        "home_or_draw": 0.843738,
+        "away_or_draw": 0.329739,
+        "over_1_5": 0.859715,
+        "under_2_5": 0.323485,
+        "over_2_5": 0.676515,
+        "under_3_5": 0.539704,
+        "btts_yes": 0.597386,
+        "btts_no": 0.402614
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-19",
+      "home": "cd nacional",
+      "away": "fc famalicao",
+      "fullTime": [
+        0,
+        4
+      ],
+      "pred": {
+        "home_win": 0.291251,
+        "draw": 0.31058,
+        "away_win": 0.398169,
+        "home_or_draw": 0.601831,
+        "away_or_draw": 0.708749,
+        "over_1_5": 0.549502,
+        "under_2_5": 0.714917,
+        "over_2_5": 0.285083,
+        "under_3_5": 0.881716,
+        "btts_yes": 0.357474,
+        "btts_no": 0.642526
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-19",
+      "home": "fc alverca",
+      "away": "rio ave",
+      "fullTime": [
+        1,
+        0
+      ],
+      "pred": {
+        "home_win": 0.492363,
+        "draw": 0.251374,
+        "away_win": 0.256263,
+        "home_or_draw": 0.743737,
+        "away_or_draw": 0.507637,
+        "over_1_5": 0.706531,
+        "under_2_5": 0.545928,
+        "over_2_5": 0.454072,
+        "under_3_5": 0.759335,
+        "btts_yes": 0.484834,
+        "btts_no": 0.515166
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-19",
+      "home": "gil vicente",
+      "away": "cs maritimo",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.548272,
+        "draw": 0.240325,
+        "away_win": 0.211403,
+        "home_or_draw": 0.788597,
+        "away_or_draw": 0.451728,
+        "over_1_5": 0.708976,
+        "under_2_5": 0.543139,
+        "over_2_5": 0.456861,
+        "under_3_5": 0.757014,
+        "btts_yes": 0.467511,
+        "btts_no": 0.532489
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-19",
+      "home": "sporting clube de portugal",
+      "away": "fc arouca",
+      "fullTime": [
+        2,
+        2
+      ],
+      "pred": {
+        "home_win": 0.861938,
+        "draw": 0.087451,
+        "away_win": 0.050611,
+        "home_or_draw": 0.949389,
+        "away_or_draw": 0.138062,
+        "over_1_5": 0.923696,
+        "under_2_5": 0.203694,
+        "over_2_5": 0.796306,
+        "under_3_5": 0.386188,
+        "btts_yes": 0.530269,
+        "btts_no": 0.469731
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-20",
+      "home": "cd santa clara",
+      "away": "sporting clube de braga",
+      "fullTime": [
+        0,
+        0
+      ],
+      "pred": {
+        "home_win": 0.277857,
+        "draw": 0.262464,
+        "away_win": 0.45968,
+        "home_or_draw": 0.54032,
+        "away_or_draw": 0.722143,
+        "over_1_5": 0.682864,
+        "under_2_5": 0.574557,
+        "over_2_5": 0.425443,
+        "under_3_5": 0.782587,
+        "btts_yes": 0.469008,
+        "btts_no": 0.530992
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "draw"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-20",
+      "home": "cf estrela da amadora",
+      "away": "academico de viseu",
+      "fullTime": [
+        0,
+        2
+      ],
+      "pred": {
+        "home_win": 0.375669,
+        "draw": 0.234431,
+        "away_win": 0.3899,
+        "home_or_draw": 0.6101,
+        "away_or_draw": 0.624331,
+        "over_1_5": 0.798176,
+        "under_2_5": 0.421119,
+        "over_2_5": 0.578881,
+        "under_3_5": 0.645158,
+        "btts_yes": 0.601016,
+        "btts_no": 0.398984
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "predictedResult": "away_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-20",
+      "home": "fc porto",
+      "away": "sport lisboa e benfica",
+      "fullTime": [
+        3,
+        1
+      ],
+      "pred": {
+        "home_win": 0.444725,
+        "draw": 0.292694,
+        "away_win": 0.262581,
+        "home_or_draw": 0.737419,
+        "away_or_draw": 0.555275,
+        "over_1_5": 0.58848,
+        "under_2_5": 0.677427,
+        "over_2_5": 0.322573,
+        "under_3_5": 0.857624,
+        "btts_yes": 0.38288,
+        "btts_no": 0.61712
+      },
+      "actual": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "home_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-20",
+      "home": "gd estoril praia",
+      "away": "casa pia ac",
+      "fullTime": [
+        1,
+        2
+      ],
+      "pred": {
+        "home_win": 0.633622,
+        "draw": 0.202436,
+        "away_win": 0.163942,
+        "home_or_draw": 0.836058,
+        "away_or_draw": 0.366378,
+        "over_1_5": 0.777052,
+        "under_2_5": 0.452801,
+        "over_2_5": 0.547199,
+        "under_3_5": 0.6762,
+        "btts_yes": 0.50331,
+        "btts_no": 0.49669
+      },
+      "actual": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "away_win"
+    },
+    {
+      "league": "por.1",
+      "date": "2026-09-20",
+      "home": "vitoria guimaraes",
+      "away": "moreirense",
+      "fullTime": [
+        1,
+        1
+      ],
+      "pred": {
+        "home_win": 0.458782,
+        "draw": 0.264833,
+        "away_win": 0.276385,
+        "home_or_draw": 0.723615,
+        "away_or_draw": 0.541218,
+        "over_1_5": 0.67494,
+        "under_2_5": 0.583895,
+        "over_2_5": 0.416105,
+        "under_3_5": 0.789944,
+        "btts_yes": 0.461308,
+        "btts_no": 0.538692
+      },
+      "actual": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "predictedResult": "home_win",
+      "actualResult": "draw"
+    }
+  ],
+  "results": {
+    "n": 118,
+    "straight1x2HitRate": 0.5,
+    "multiclassBrier": 0.590688,
+    "multiclassLogLoss": 0.99219,
+    "markets": {
+      "home_win": {
+        "n": 118,
+        "brier": 0.213185,
+        "logLoss": 0.618939
+      },
+      "draw": {
+        "n": 118,
+        "brier": 0.199094,
+        "logLoss": 0.585743
+      },
+      "away_win": {
+        "n": 118,
+        "brier": 0.178408,
+        "logLoss": 0.533029
+      },
+      "home_or_draw": {
+        "n": 118,
+        "brier": 0.178408,
+        "logLoss": 0.533029
+      },
+      "away_or_draw": {
+        "n": 118,
+        "brier": 0.213185,
+        "logLoss": 0.618939
+      },
+      "over_1_5": {
+        "n": 118,
+        "brier": 0.158284,
+        "logLoss": 0.491348
+      },
+      "under_2_5": {
+        "n": 118,
+        "brier": 0.247621,
+        "logLoss": 0.688275
+      },
+      "over_2_5": {
+        "n": 118,
+        "brier": 0.247621,
+        "logLoss": 0.688275
+      },
+      "under_3_5": {
+        "n": 118,
+        "brier": 0.242543,
+        "logLoss": 0.685125
+      },
+      "btts_yes": {
+        "n": 118,
+        "brier": 0.258553,
+        "logLoss": 0.713407
+      },
+      "btts_no": {
+        "n": 118,
+        "brier": 0.258553,
+        "logLoss": 0.713407
+      }
+    },
+    "supportedPreviousFootyEdgePicks": 0,
+    "note": "October 5/6 official saved picks were UEFA/CONCACAF national teams, outside this club-only model. Do not fabricate side-by-side historical DC picks."
+  }
+}
