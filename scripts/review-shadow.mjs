@@ -132,10 +132,10 @@ const dateBefore=(d,n=1)=>new Date(startDay(d).getTime()-n*86400000).toISOString
 async function readJSON(file) {try{return JSON.parse(await fs.readFile(file,"utf8"))}catch(e){if(e.code==="ENOENT")return null;throw e}}
 async function main(){
   const args=process.argv.slice(2),flag=args.indexOf("--date");
-  const torontoDate=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",
-    year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
-  const todayISO=torontoDate.split("/").reverse().join("-");
-  const today=new Date().toLocaleDateString("en-CA",{timeZone:"America/Toronto"});
+  const parts=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",
+    year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date())
+    .map(x=>[x.type,x.value]));
+  const today=parts.year+"-"+parts.month+"-"+parts.day;
   const date=flag<0?dateBefore(today):args[flag+1];
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error("Bad review date");
   if(date>=today)throw Error("Review only past Toronto days after final scores");
@@ -151,7 +151,27 @@ async function main(){
   if(!board||!scoreboard||!Object.keys(snapshots).length){
     console.log("Awaiting original board, model archive or full-time score source",date);return;
   }
-  const result=buildReview({date,snapshots,board,scoreboard});
+  // A cached dated scoreboard may have been captured before full-time.
+  // Recheck the SAME event IDs using the existing scoreboard service, if available.
+  let finalScores=scoreboard;
+  const targetIds=new Set(Object.values(snapshots).flatMap(x=>
+    (x.fixtures||[]).filter(f=>f.status==="shadow_prediction").map(f=>String(f.fixtureId))));
+  const completed=new Set((scoreboard.events||[]).filter(x=>x.status?.type?.completed)
+    .map(x=>String(x.id)));
+  if([...targetIds].some(id=>!completed.has(id))){
+    try {
+      const host=(process.env.FOOTYEDGE_URL||"https://footyedge-board.vercel.app").replace(/\/$/,"");
+      const response=await fetch(host+"/api/espn-scoreboard?dates="+date.replaceAll("-","")+"&limit=1000",{signal:AbortSignal.timeout(20000)});
+      if(response.ok){
+        const fresh=await response.json();
+        const map=new Map((scoreboard.events||[]).map(e=>[String(e.id),e]));
+        for(const e of fresh.events||[])map.set(String(e.id),e);
+        finalScores={events:[...map.values()]};
+        console.log("Rechecked previously missing full-time scores via FootyEdge scoreboard");
+      }
+    }catch(e){console.warn("Live scoreboard verification unavailable",String(e).slice(0,140))}
+  }
+  const result=buildReview({date,snapshots,board,scoreboard:finalScores});
   console.log("Model review",date,"settled=",result.fullySettled,"metrics=",JSON.stringify(result.metrics));
   if(!result.fullySettled){
     console.log("Review remains pending; preserve future retrials without writing partial results");return;
