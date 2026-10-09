@@ -1,0 +1,90 @@
+name: Owner-authorized October 9 league expansion
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/owner-extend-oct09.yml"
+      - "scripts/owner-extend-oct09.mjs"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-owner-correction-2026-10-09
+  cancel-in-progress: false
+
+jobs:
+  audited-expansion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify correction is still before first new kickoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          DAY="$(TZ=America/Toronto date +%F)"
+          HOUR="$(TZ=America/Toronto date +%H)"
+          if [[ "$DAY" != "2026-10-09" || "$HOUR" -ge 13 ]]; then
+            echo "No retroactive pre-match prediction after Galatasaray 13:00 Toronto kickoff."
+            exit 1
+          fi
+      - name: Independently rebuild today's expanded research (leave frozen original untouched)
+        env:
+          FORCE_RESEARCH: "1"
+          RESEARCH_DATE: "2026-10-09"
+          OWNER_SCOPE_EXPANSION: "2026-10-09"
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        run: node scripts/build-research-base.mjs
+      - name: Verify eight men's fixtures and both additions
+        shell: bash
+        run: |
+          node --input-type=module -e '
+          import fs from "node:fs";
+          const p=JSON.parse(fs.readFileSync("data/research-base-expanded-2026-10-09.json","utf8"));
+          const ids=new Set((p.fixtures||[]).map(x=>String(x.id)));
+          if(p.fixtures.length<8||!ids.has("401880233")||!ids.has("401888280"))process.exit(1);
+          console.log("Verified expanded research:",p.fixtures.length,"men-only games");
+          '
+      - name: Fit additional league scope before kickoff
+        shell: bash
+        run: |
+          pip install -r requirements-shadow.txt
+          python -m unittest discover -s tests -p 'test_shadow_model.py' -v
+          python scripts/shadow_dixon_coles.py --capture-expansion
+      - name: Apply audited owner correction without altering prior Top 5
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$(git rev-parse HEAD)"
+          node scripts/owner-extend-oct09.mjs
+          node scripts/validate-published-boards.mjs --base "$BASE"
+      - name: Commit and publish the owner's corrected board
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- \
+            data/research-base-expanded-2026-10-09.json \
+            data/boards/2026-10-09.json \
+            data/board-revisions/2026-10-09
+          if [[ -f data/model-candidates-expanded/2026-10-09.json ]]; then
+            git add -A -- data/model-candidates-expanded/2026-10-09.json
+          fi
+          if git diff --cached --quiet; then
+            echo "Owner expansion already committed"; exit 0
+          fi
+          git config user.name "FootyEdge Owner Correction"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "fix(board): owner-authorized expansion to Championship and Super Lig [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main

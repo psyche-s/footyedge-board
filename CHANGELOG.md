@@ -1,3 +1,11 @@
+## 2026-10-09 — Audited addition of today's missing Championship and Turkish games
+**Status:** 🟡 One-time scope correction workflow verified by board integrity checks
+
+- Explicit owner correction adds West Ham–QPR and Galatasaray–Kasımpaşa to today's locked board with sourced matchup notes, current-model evidence when available, and exactly sourced DraftKings ML research quotes.
+- Original six-game record backed up with before/after SHA256 in immutable revision history; previous Top 5 and Top 3 selections, prices and confidence remain unchanged.
+- One-time pre-kickoff GitHub Actions rebuilds separate expanded research, calculates a new pre-match model candidate if eligible, then validates/publishes correction.
+- Unsupported or insufficiently calibrated market predictions remain PASS, never invented as 85%+ official picks.
+
 ## 2026-10-09 — Add English Championship and Turkish Süper Lig
 **Status:** 🟡 Broaden today's fixture eligibility, with safe model-source failure
 
