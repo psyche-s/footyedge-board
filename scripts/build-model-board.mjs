@@ -42,7 +42,7 @@ export function buildOverlay({candidate,odds,date,scoreboard=null}){
         marketImpliedProbability:implied==null?null:Number(implied.toFixed(6)),
         rawModelEV:implied==null?null:Number((prob*decimalOdds(p)-1).toFixed(6)),
         status:valid?"verified_american_snapshot":"exact_price_unavailable",
-        qualifiesForResearchLook:valid&&prob>=.65&&p>=-400&&prob*decimalOdds(p)>1};
+        qualifiesForResearchLook:valid&&prob>=.65&&p>=-500&&prob*decimalOdds(p)>1};
     });
     // ESPN's stored scoreboard carries original DraftKings American total quotes.
     // Use the exact posted line, not an inferred adjacent price.
@@ -66,7 +66,7 @@ export function buildOverlay({candidate,odds,date,scoreboard=null}){
           modelProbability:prob,odds:american,sportsbook:"DraftKings",
           marketImpliedProbability:Number(implied.toFixed(6)),rawModelEV:ev,
           status:prob==null?"verified_odds_model_probability_unavailable":"verified_american_snapshot",
-          qualifiesForResearchLook:prob!=null&&prob>=.65&&american>=-400&&ev>0});
+          qualifiesForResearchLook:prob!=null&&prob>=.65&&american>=-500&&ev>0});
       }
     }
     const supported=[...markets,...totalMarkets].filter(x=>x.qualifiesForResearchLook);
