@@ -48,7 +48,7 @@ function build(event,now) {
  const id=String(event.id),c=event.competitions?.[0],
    h=c?.competitors?.find(t=>t.homeAway==="home"),a=c?.competitors?.find(t=>t.homeAway==="away");
  if(!h||!a||!String(event.uid).includes("~l:21231~")||!form[id])throw Error("Wrong Saudi fixture ID/team");
- const q=c.odds?.find(o=>o.provider?.name==="DraftKings"||o.provider?.displayName==="DraftKings");
+ const q=c.odds?.find(o=>o?.provider?.name==="DraftKings"||o?.provider?.displayName==="DraftKings");
  const ml=["home","draw","away"].map(k=>nativePrice(q?.moneyline?.[k]?.close?.odds));
  const totalLine=Number(q?.overUnder);
  const totals=["over","under"].map(k=>nativePrice(q?.total?.[k]?.close?.odds));
