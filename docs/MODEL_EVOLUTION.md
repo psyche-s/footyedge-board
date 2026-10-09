@@ -1,0 +1,87 @@
+# FootyEdge model evolution — research track
+
+## Status (2026-10-09)
+Version: dc-shadow-v0.1. **Experimental/shadow only.** Do not cite its output as a
+validated percentage or use it to modify the live board, Top 3, Top 5 or archives.
+
+## Why
+The existing deterministic last-10 research signals trends; they are not a calibrated
+match-goals distribution. Dixon-Coles estimates a score probability grid with a
+low-score dependence adjustment (rho), enabling coherent 1X2, double chance, totals
+and BTTS probabilities. Its superiority must be proven out of sample, not assumed.
+
+## Architecture
+- Existing Node research/scoreboard → dated fixture list (current Toronto date).
+- Independent Python step → download OpenFootball public-domain men's top-flight
+  league results (previous/current seasons), fit penaltyblog DixonColesGoalModel
+  per league using exponential daily decay xi=0.001.
+- Output → data/model-shadow/YYYY-MM-DD.json. It contains fixture IDs, statuses,
+  supported market probabilities, expected-goal estimates, input coverage,
+  source URLs, result freshness, version and exact as-of timestamp.
+- No secret keys; zero calls to blocked API-Sports; no scraping of restricted
+  bookmaker/FBref pages; no sportsbook odds inferred.
+- GitHub Actions executes daily around 05:35 Toronto, in parallel with the
+  normal research and before the 06:00 official board lock. Runs on model-code
+  changes and can be triggered manually in the GitHub Actions interface.
+- One daily shadow file is immutable when archived; reruns do not silently
+  rewrite predictions. Git history also records the original source version.
+
+## Current limited scope and fail-closed rules
+- Eligible male top flights only: EPL, Bundesliga, La Liga, Serie A, Ligue 1,
+  Eredivisie and Primeira Liga. Cup/international and women's fixtures are
+  excluded from modeling; they are never relabeled as zero-probability games.
+- Strict team-key normalization plus explicit aliases (no unreviewed fuzzy
+  entity matching). Unknown/promoted teams without four observations skip.
+- At least 90 finished league matches and recent source results (<=30 days
+  old) required. OpenFootball's upstream updates are not guaranteed; report
+  stale or unavailable status instead of generating synthetic predictions.
+- Only final scores with match date strictly before the as-of/fixture date
+  are included. In-play or already-started fixtures are skipped.
+- A single fixed xi is an initial baseline, NOT a tuned optimal value.
+- No xG, PPDA, field tilt, injuries, rest or player-prop variables are yet
+  incorporated; those require reliable, legal source access and validation.
+- Public confidence >=85% is not derived from raw probabilities in this trial.
+- Vercel, user-facing layout and all official daily-publishing logic are untouched.
+
+## Reproduction
+Run:
+    python -m pip install -r requirements-shadow.txt
+    python -m unittest discover -s tests -p test_shadow_model.py -v
+    python scripts/shadow_dixon_coles.py
+For deterministic local investigation, specify --date YYYY-MM-DD and --as-of
+UTC_ISO_TIMESTAMP (same day or future only). Do not backfill forecasts after
+matches have been played and misrepresent them as contemporaneous predictions.
+
+## Acceptance gates before ANY public influence
+1. Check coverage/source freshness and expand legally available league history.
+2. Walk-forward historical replay with time-appropriate training data, genuine
+   historical odds where permitted, and strict train/test date separation.
+3. Compare Dixon-Coles vs independent Poisson and existing FootyEdge predictions:
+   multiclass log loss, Brier score, calibration plots, breakdown by league,
+   totals, BTTS and DC; quantify variance and missing-data selection bias.
+4. Tune xi and other covariates ONLY inside training folds and evaluate on
+   untouched holdouts. Prevent team aliases, substitutions and source updates
+   leaking results. Validate uncertainty, sample counts and reliability bins
+   (including whether stated 85% picks hit approximately 85%).
+5. Compare selections at exact verified sportsbook odds, apply the established
+   -400 floor and safer-line tests, track no-vig prices, closing-line value,
+   push rules, model EV and risk-adjusted ROI with realistic availability.
+6. Require documented, repeatable out-of-sample improvement before adjusting
+   published confidence/selection weights; version each change, never modify
+   original locked history or write hindsight explanations.
+7. Live in-play modeling is a separate, later, licensed-data experiment.
+   Never run a one-minute scraper on GitHub Actions or disclose API credentials
+   in clients; no live probability updates to frozen morning picks.
+
+## Proposed next milestones (NOT IMPLEMENTED)
+- Historical canonical team ID mapping and stable league source checks.
+- Rolling-origin holdout evaluation and monthly calibration dashboard.
+- Licensed xG/shot quality, field tilt and PPDA when permitted, with
+  opponent-adjusted matchups and verified team-news modifiers.
+- Calibrated model/blend only after statistically meaningful validation.
+- Separate live game-state model after identifying affordable licensed events.
+
+References:
+- https://penaltyblog.readthedocs.io/en/latest/models/example.html
+- https://github.com/openfootball/football.json
+- https://github.com/openfootball/football.json/blob/master/LICENSE.md

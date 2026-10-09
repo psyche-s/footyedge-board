@@ -1,0 +1,76 @@
+name: FootyEdge Dixon-Coles shadow model
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/shadow_dixon_coles.py"
+      - "tests/test_shadow_model.py"
+      - ".github/workflows/shadow-dixon-coles.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "scripts/shadow_dixon_coles.py"
+      - "tests/test_shadow_model.py"
+      - ".github/workflows/shadow-dixon-coles.yml"
+      - "requirements-shadow.txt"
+  schedule:
+    # One daily Toronto 05:35 run (DST/EST alternatives); local-hour gate below.
+    - cron: "35 9 * * *"
+    - cron: "35 10 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-dc-shadow
+  cancel-in-progress: false
+
+jobs:
+  train-and-forecast:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: "requirements-shadow.txt"
+      - name: Install modeling dependencies
+        run: pip install -r requirements-shadow.txt
+      - name: Unit tests
+        run: python -m unittest discover -s tests -p 'test_shadow_model.py' -v
+      - name: Build shadow forecast (today only, Toronto)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "05" ]]; then
+            echo "Skip duplicate UTC schedule."
+            exit 0
+          fi
+          # Production picks are NEVER read or modified by this job.
+          python scripts/shadow_dixon_coles.py
+      - name: Archive immutable shadow output (main only)
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          FILE="data/model-shadow/$TODAY.json"
+          if [[ ! -f "$FILE" ]]; then
+            echo "No shadow output generated."; exit 0
+          fi
+          if git ls-files --error-unmatch "$FILE" >/dev/null 2>&1; then
+            echo "Daily shadow record exists, preserving original."
+            exit 0
+          fi
+          git config user.name "FootyEdge Model Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -- "$FILE"
+          git commit -m "chore(model): archive Dixon-Coles shadow $TODAY [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
