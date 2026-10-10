@@ -262,6 +262,7 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
     const f=p.category==="Goals"?(/over/i.test(p.label)?mean([hs.over25,as.over25]):mean([hs.under25,as.under25])):null;
     return f===null||f>=0.35;
   });
+  const home=fx.teams.home.name,away=fx.teams.away.name;
   const research=[
     ["Over 1.5 Goals","Goals",(hs.over15+as.over15)/2,`${home} over 1.5: ${Math.round(hs.over15*hs.n)}/${hs.n}; ${away}: ${Math.round(as.over15*as.n)}/${as.n}.`],
     ["Under 3.5 Goals","Goals",(hs.under35+as.under35)/2,`${home} under 3.5: ${Math.round(hs.under35*hs.n)}/${hs.n}; ${away}: ${Math.round(as.under35*as.n)}/${as.n}.`],
