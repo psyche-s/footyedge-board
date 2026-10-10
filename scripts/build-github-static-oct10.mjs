@@ -249,12 +249,12 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   const summaryH=summaryH2H(summary);
   const h2h=summaryH.length?summaryH:(directH2H.length?directH2H:h2hFrom([...homePayloads.flatMap(p=>p.events||[]),...awayPayloads.flatMap(p=>p.events||[])],homeId,awayId,before));
   const allCandidates=candidateSet(old,fx,oddsById.get(String(old.id))||summaryOdds(summary),hs,as,h2h);
-  const pickSide=p=>/^over\\s/i.test(p.label||"")?"over":/^under\\s/i.test(p.label||"")?"under":null;
+  const pickSide=p=>/^over\s/i.test(p.label||"")?"over":/^under\s/i.test(p.label||"")?"under":null;
   const coherent=(p,chosen)=>!chosen.some(q=>{
     const a=pickSide(p),b=pickSide(q);
     if(a&&b&&a!==b)return true;
     if(a&&b&&a===b)return true;
-    const result=x=>/\\sML$/i.test(x.label||"")||/^Draw$/i.test(x.label||"");
+    const result=x=>/\sML$/i.test(x.label||"")||/^Draw$/i.test(x.label||"");
     return result(p)&&result(q);
   });
   const candidates=allCandidates.filter(p=>{
