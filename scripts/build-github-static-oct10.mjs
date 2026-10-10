@@ -270,16 +270,19 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
     ["BTTS No","BTTS",1-(hs.btts+as.btts)/2,`No BTTS: ${home} ${Math.round((1-hs.btts)*hs.n)}/${hs.n}; ${away} ${Math.round((1-as.btts)*as.n)}/${as.n}.`],
     ["Over 2.5 Goals","Goals",(hs.over25+as.over25)/2,`${home} over 2.5: ${Math.round(hs.over25*hs.n)}/${hs.n}; ${away}: ${Math.round(as.over25*as.n)}/${as.n}.`],
     ["Under 2.5 Goals","Goals",(hs.under25+as.under25)/2,`${home} under 2.5: ${Math.round(hs.under25*hs.n)}/${hs.n}; ${away}: ${Math.round(as.under25*as.n)}/${as.n}.`]
-  ].filter(x=>hs.n>=5&&as.n>=5).sort((a,b)=>b[2]-a[2]).map(([label,category,prob,reason])=>({
+  ].filter(x=>hs.n>=5&&as.n>=5&&x[2]>=0.55).sort((a,b)=>b[2]-a[2]).map(([label,category,prob,reason])=>({
     label,category,score:Math.round(prob*100),stars:pickStars(Math.round(prob*100)),
     odds:null,displayOdds:"Not verified",verifiedPrice:false,bookExact:false,priceStatus:"unavailable",
     modelProb:prob,marketProb:null,ev:null,reason,archivedCommentary:reason,archivedSupportFacts:[reason],
     researchOnly:true
   }));
   const preserved=old.top?JSON.parse(JSON.stringify(old.top)):null;
+  // A historical saved rating is not a fresh model probability. Re-evaluate priced picks.
+  const repriced=preserved&&allCandidates.find(p=>norm(p.label)===norm(preserved.label));
+  if(repriced){Object.assign(preserved,repriced,{reason:repriced.reason,archivedCommentary:repriced.archivedCommentary,archivedSupportFacts:repriced.archivedSupportFacts});}
   const selected=[];
   if(preserved)selected.push(preserved);
-  for(const p of [...candidates,...research]){
+  for(const p of [...candidates,...research].filter(p=>p.score>=55)){
     if(selected.length===3)break;
     if(selected.some(q=>norm(q.label)===norm(p.label)))continue;
     if(!coherent(p,selected))continue;
