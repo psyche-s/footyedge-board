@@ -254,6 +254,7 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
     const a=pickSide(p),b=pickSide(q);
     if(a&&b&&a!==b)return true;
     if(a&&b&&a===b)return true;
+    if(/^BTTS /i.test(p.label||'')&&/^BTTS /i.test(q.label||''))return true;
     const result=x=>/\sML$/i.test(x.label||"")||/^Draw$/i.test(x.label||"");
     return result(p)&&result(q);
   });
@@ -261,10 +262,23 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
     const f=p.category==="Goals"?(/over/i.test(p.label)?mean([hs.over25,as.over25]):mean([hs.under25,as.under25])):null;
     return f===null||f>=0.35;
   });
+  const research=[
+    ["Over 1.5 Goals","Goals",(hs.over15+as.over15)/2,`${home} over 1.5: ${Math.round(hs.over15*hs.n)}/${hs.n}; ${away}: ${Math.round(as.over15*as.n)}/${as.n}.`],
+    ["Under 3.5 Goals","Goals",(hs.under35+as.under35)/2,`${home} under 3.5: ${Math.round(hs.under35*hs.n)}/${hs.n}; ${away}: ${Math.round(as.under35*as.n)}/${as.n}.`],
+    ["BTTS Yes","BTTS",(hs.btts+as.btts)/2,`BTTS: ${home} ${Math.round(hs.btts*hs.n)}/${hs.n}; ${away} ${Math.round(as.btts*as.n)}/${as.n}.`],
+    ["BTTS No","BTTS",1-(hs.btts+as.btts)/2,`No BTTS: ${home} ${Math.round((1-hs.btts)*hs.n)}/${hs.n}; ${away} ${Math.round((1-as.btts)*as.n)}/${as.n}.`],
+    ["Over 2.5 Goals","Goals",(hs.over25+as.over25)/2,`${home} over 2.5: ${Math.round(hs.over25*hs.n)}/${hs.n}; ${away}: ${Math.round(as.over25*as.n)}/${as.n}.`],
+    ["Under 2.5 Goals","Goals",(hs.under25+as.under25)/2,`${home} under 2.5: ${Math.round(hs.under25*hs.n)}/${hs.n}; ${away}: ${Math.round(as.under25*as.n)}/${as.n}.`]
+  ].filter(x=>hs.n>=5&&as.n>=5).sort((a,b)=>b[2]-a[2]).map(([label,category,prob,reason])=>({
+    label,category,score:Math.round(prob*100),stars:pickStars(Math.round(prob*100)),
+    odds:null,displayOdds:"Not verified",verifiedPrice:false,bookExact:false,priceStatus:"unavailable",
+    modelProb:prob,marketProb:null,ev:null,reason,archivedCommentary:reason,archivedSupportFacts:[reason],
+    researchOnly:true
+  }));
   const preserved=old.top?JSON.parse(JSON.stringify(old.top)):null;
   const selected=[];
   if(preserved)selected.push(preserved);
-  for(const p of candidates){
+  for(const p of [...candidates,...research]){
     if(selected.length===3)break;
     if(selected.some(q=>norm(q.label)===norm(p.label)))continue;
     if(!coherent(p,selected))continue;
