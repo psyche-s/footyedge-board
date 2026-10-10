@@ -973,8 +973,72 @@ async function load(date=S.date){
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
 
+function verifiedPositionBadge(g,side){
+  const rank=g.verifiedRanks?.[side];
+  return Number.isInteger(rank)&&rank>=1&&rank<=40?`<span class="modalStanding" aria-label="League position ${rank}">#${rank}</span>`:"";
+}
+
+function matchH2HHtml(g){
+  const rows=Array.isArray(g.matchH2H)?g.matchH2H.slice(0,5):[];
+  const items=rows.length?rows.map(m=>`<div class="h2hResult"><time datetime="${esc(m.date)}">${esc(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"short",day:"numeric"}).format(new Date(m.date)))}</time><span class="h2hFixture">${esc(m.home)} <b>${m.homeScore}–${m.awayScore}</b> ${esc(m.away)}</span></div>`).join(""):`<p class="h2hEmpty">${g.matchDetailsPending?"Loading verified meetings…":"No verified prior meetings available."}</p>`;
+  const expanded=Boolean(g.h2hExpanded);
+  return `<section class="h2hSection"><button type="button" class="h2hToggle" data-h2h-toggle aria-expanded="${expanded}" aria-controls="h2hResults"><span>Head-to-Head · Last 5 meetings</span><span class="h2hChevron" aria-hidden="true">${expanded?"⌃":"⌄"}</span></button><div class="h2hResults" id="h2hResults" ${expanded?"":"hidden"}>${items}</div></section>`;
+}
+
+function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
+  const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form)}</div></div>`};
+  const first=g.done?"FT":g.live?(g.detail||"LIVE"):`${timeET(g.date)} ET`;
+  return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`;
+}
+
+function extractVerifiedH2H(g,payloads){
+  const out=[],seen=new Set();
+  for(const payload of payloads){
+    for(const event of payload?.events||[]){
+      const id=String(event?.id||"");
+      if(!id||seen.has(id)||id===String(g.id)||!event?.status?.type?.completed)continue;
+      const when=Date.parse(event.date||"");
+      if(!Number.isFinite(when)||when>=Date.parse(g.date))continue;
+      const players=event?.competitions?.[0]?.competitors||[];
+      const one=players.find(c=>String(c?.id??c?.team?.id)===String(g.home.id));
+      const two=players.find(c=>String(c?.id??c?.team?.id)===String(g.away.id));
+      const home=players.find(c=>c.homeAway==="home"),away=players.find(c=>c.homeAway==="away");
+      if(!one||!two||!home||!away)continue;
+      const homeScore=scoreVal(home.score),awayScore=scoreVal(away.score);
+      if(!Number.isInteger(homeScore)||!Number.isInteger(awayScore)||homeScore<0||awayScore<0)continue;
+      const hn=home.team?.displayName||home.team?.name,an=away.team?.displayName||away.team?.name;
+      if(!hn||!an)continue;
+      seen.add(id);out.push({id,date:event.date,home:hn,away:an,homeScore,awayScore});
+    }
+  }
+  return out.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
+}
+
+async function loadVerifiedMatchDetails(g){
+  if(g.matchDetailsRequested)return;
+  g.matchDetailsRequested=true;g.matchDetailsPending=true;
+  const years=[Number(g.year),Number(g.year)-1,Number(g.year)-2,Number(g.year)-3].filter(y=>Number.isInteger(y)&&y>=2020);
+  try{
+    const results=await Promise.allSettled([
+      ...years.map(year=>schedule(g.league,g.home.id,year)),
+      json("/api/espn-standings?league="+encodeURIComponent(g.league)+"&season="+encodeURIComponent(g.year))
+    ]);
+    const data=results.slice(0,years.length).filter(x=>x.status==="fulfilled").map(x=>x.value);
+    g.matchH2H=extractVerifiedH2H(g,data);
+    const standings=results[years.length];
+    if(standings?.status==="fulfilled"&&Number(standings.value?.season)===Number(g.year)){
+      const ranks=standings.value.ranks||{};
+      const home=Number(ranks[String(g.home.id)]),away=Number(ranks[String(g.away.id)]);
+      g.verifiedRanks={home:Number.isInteger(home)&&home>0?home:null,away:Number.isInteger(away)&&away>0?away:null};
+    }
+  }catch(e){g.matchH2H=[]}
+  finally {
+    g.matchDetailsPending=false;
+    if(S.openGameId===String(g.id)&&document.getElementById("drawer")?.classList.contains("on"))renderModal(g);
+  }
+}
+
 function renderModal(g){
-  document.getElementById("modalTitle").textContent=teamDisplayName(g,g.home)+" vs "+teamDisplayName(g,g.away);
   const top3=viewCandidates(g);
   const focus=viewPick(g);
   const whyHtml=p=>{const facts=researchFactsForPick(g,p,3);return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div>'+(facts.length?'<div class="researchFacts">'+facts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div>':'<p class="candidateCommentary">'+esc(cardCommentary(g,p))+'</p>')+'</section>'};
@@ -1007,12 +1071,21 @@ function renderModal(g){
       '</span></div>').join('')+'</div>'+
     '<p class="modelFootnote">Independent, uncalibrated pre-match estimate; does not change official picks or confidence. Only verified morning moneyline and exact posted goal-total prices are shown. Unpriced markets remain unavailable.</p></section>':'';
   const modelApproach=g.ownerEditorial?'<p class="modelFootnote">We weigh recent form, head-to-head results and matchup trends for each pick.</p>':'';
-  document.getElementById("modalBody").innerHTML=`<div class="modalTeams"><div class="modalTeam">${teamImgTag(g.home)}<b>${esc(teamDisplayName(g,g.home))}</b></div><div class="vs">VS</div><div class="modalTeam">${teamImgTag(g.away)}<b>${esc(teamDisplayName(g,g.away))}</b></div></div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span>${esc(displayLeagueName(g.league,g.leagueName))} · ${esc(status(g))}</span></div>${ranked}<div class="metrics"><div class="metric"><small>HOME FORM</small><div class="form">${formHTML(g.model?.home?.form)}</div></div><div class="metric"><small>AWAY FORM</small><div class="form">${formHTML(g.model?.away?.form)}</div></div><div class="metric"><small>HOME GF / GA</small><b>${(g.model?.home?.gf!=null?g.model.home.gf.toFixed(2):"—")} / ${(g.model?.home?.ga!=null?g.model.home.ga.toFixed(2):"—")}</b></div><div class="metric"><small>AWAY GF / GA</small><b>${(g.model?.away?.gf!=null?g.model.away.gf.toFixed(2):"—")} / ${(g.model?.away?.ga!=null?g.model.away.ga.toFixed(2):"—")}</b></div></div><div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`
+  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach);
 }
+document.getElementById("modalBody").addEventListener("click",event=>{
+  const btn=event.target.closest("[data-h2h-toggle]");if(!btn)return;
+  const g=S.games.find(x=>x.id===String(S.openGameId));if(!g)return;
+  g.h2hExpanded=!g.h2hExpanded;
+  renderModal(g);
+  document.querySelector("[data-h2h-toggle]")?.focus();
+});
+
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
   S.openGameId=String(id);
   renderModal(g);document.getElementById("drawer").classList.add("on");
+  loadVerifiedMatchDetails(g);
   if(!g.availabilityLoaded){
     g.availabilityLoaded=true;
     matchAvailability(g).then(data=>{
