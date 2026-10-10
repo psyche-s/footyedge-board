@@ -47,7 +47,13 @@ jobs:
           for OFFSET in 0 1 2 3 4; do
             DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             echo "Research-only generation for $DATE"
-            FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs
+            if ! FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs; then
+              if [[ "$OFFSET" == "0" ]]; then
+                echo "::error::Current-day research failed; cannot publish unsupported picks."
+                exit 1
+              fi
+              echo "::warning::Future research unavailable for $DATE; continuing current-day refresh without inventing fixtures."
+            fi
           done
       - name: Prepare browser for exact current-day board capture
         shell: bash
