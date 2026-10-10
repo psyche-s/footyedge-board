@@ -1,0 +1,45 @@
+name: FootyEdge Evidence-First Model Preview
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-evidence-first-board.mjs"
+      - ".github/workflows/evidence-first-preview.yml"
+permissions:
+  contents: write
+concurrency:
+  group: evidence-first-preview
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build complete men's slate preview
+        run: node scripts/build-evidence-first-board.mjs
+      - name: Validate market integrity and prose
+        run: |
+          node --input-type=module -e '
+          import fs from "node:fs";
+          const b=JSON.parse(fs.readFileSync("data/model-previews/2026-10-10-evidence-first.json"));
+          if(b.games.length!==66)throw Error("Full slate missing");
+          if(b.top5.length>5||b.top5.some(x=>x.pick.score<85||!x.pick.verifiedPrice))throw Error("Unqualified Top 5");
+          for(const g of b.games){if(!g.top3?.length)throw Error("No picks: "+g.id);for(const p of g.top3){if(!p.reason||/Forebet|PredictZ|Whispers|Sports Mole|eScored|Action Network/i.test(p.reason))throw Error("Invalid public reasoning: "+g.id);if(p.verifiedPrice&&(!Number.isFinite(Number(p.odds))||!p.provider))throw Error("Bad odds");}}
+          console.log("Validated",b.games.length,"games",b.top5.length,"qualified picks");
+          '
+      - name: Commit research preview without overwriting frozen board
+        run: |
+          git config user.name "FootyEdge Research Engine"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/model-previews/2026-10-10-evidence-first.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "research: generate evidence-first full-slate candidate board"
+          git pull --rebase origin main
+          git push origin HEAD:main
