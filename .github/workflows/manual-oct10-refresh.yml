@@ -1,0 +1,107 @@
+name: Manual October 10 FootyEdge Refresh and Hit Rate
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/manual-oct10-refresh.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-manual-oct10
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify Toronto date and immutable-board state
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          if [[ "$TODAY" != "2026-10-10" ]]; then
+            echo "One-time manual refresh is restricted to 2026-10-10; current Toronto date: $TODAY"
+            exit 1
+          fi
+          if [[ -f "data/boards/$TODAY.json" ]]; then
+            echo "Existing locked board found. It must remain unchanged."
+          else
+            echo "Missing official 00:30 board; manual catch-up capture will record true capture time."
+          fi
+      - name: Review prior results and build research for today and next 4 fixture days
+        shell: bash
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        run: |
+          set -euo pipefail
+          node scripts/review-shadow.mjs || echo "Optional shadow review unavailable (no invented results)."
+          TODAY="$(TZ=America/Toronto date +%F)"
+          for OFFSET in 0 1 2 3 4; do
+            DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
+            echo "Research-only generation for $DATE"
+            FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs
+          done
+      - name: Prepare browser for exact current-day board capture
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Capture current-day candidates without modifying site UI or archived picks
+        shell: bash
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          PREVIEW_DAYS: '0'
+          FORCE_TODAY_CAPTURE: '1'
+        run: |
+          set -euo pipefail
+          node scripts/publish-board-previews.mjs
+      - name: Lock today's board only if no original lock exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/archive-board.mjs
+      - name: Update hit rate and grade every available prior published pick
+        shell: bash
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_TRACK: '1'
+        run: |
+          set -euo pipefail
+          node scripts/track-performance.mjs
+          node scripts/postmatch-learning.mjs
+      - name: Validate UI preservation, official picks and analytics integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate-published-boards.mjs --base origin/main
+          node --test tests/*.test.mjs
+      - name: Commit refreshed research, official board and hit-rate history
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          git config user.name "FootyEdge Manual Refresh"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A -- data/research-base-*.json "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" data/performance data/postmortems
+          if git diff --cached --quiet; then
+            echo "No changed data: current official archive and hit rates remain intact."
+          else
+            git commit -m "chore(board): October 10 manual refresh plus hit-rate settlement [skip ci]"
+            git pull --rebase origin main
+            node scripts/validate-published-boards.mjs --base origin/main
+            git push origin HEAD:main
+          fi
+      - name: Confirm official October 10 lock exists in committed source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s data/boards/2026-10-10.json
+          node --input-type=module -e 'import fs from "node:fs"; const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json")); if(b.date!=="2026-10-10"||b.immutable!==true||b.state!=="locked") process.exit(1); console.log("LOCK VERIFIED",b.date,b.games?.length,"matches",b.top5?.length,"Top 5");'
