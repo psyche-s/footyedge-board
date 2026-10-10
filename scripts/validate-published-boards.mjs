@@ -46,8 +46,8 @@ export function validateIntegrity(base){
   const previous=execFileSync('git',['ls-tree','-r','--name-only',base,'data/boards','data/daily-odds-*','data/daily-insights-*','data/research-base-*'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
   for(const file of previous){
     const date=file.match(/\d{4}-\d{2}-\d{2}/)?.[0];
-    let oldBoard;try{oldBoard=execFileSync('git',['show',base+':data/boards/'+date+'.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore']})}catch{continue}
-    const before=execFileSync('git',['show',base+':'+file],{encoding:'utf8'});
+    let oldBoard;try{oldBoard=execFileSync('git',['show',base+':data/boards/'+date+'.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore'],maxBuffer:32*1024*1024})}catch{continue}
+    const before=execFileSync('git',['show',base+':'+file],{encoding:'utf8',maxBuffer:32*1024*1024});
     if(!fs.existsSync(file))throw new Error('Cannot delete published data: '+file);
     const after=fs.readFileSync(file,'utf8');if(before===after)continue;
     const auditFile='data/board-revisions/'+date+'/audit.json';
@@ -59,7 +59,7 @@ export function validateIntegrity(base){
   // Correction history itself is append-only and backups cannot change or disappear.
   const revisions=execFileSync('git',['ls-tree','-r','--name-only',base,'data/board-revisions'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
   for(const file of revisions){
-    const before=execFileSync('git',['show',base+':'+file],{encoding:'utf8'});
+    const before=execFileSync('git',['show',base+':'+file],{encoding:'utf8',maxBuffer:32*1024*1024});
     if(!fs.existsSync(file))throw new Error('Correction history deleted: '+file);
     const after=fs.readFileSync(file,'utf8');
     if(file.endsWith('/audit.json')){
