@@ -1,0 +1,136 @@
+GitHub-only Oct 10 regression diagnostics
+Test exit code: 1
+
+# Subtest: accepts coherent all-covered shadow data without using it for official picks
+# Subtest: missing data is advisory and does not block picks
+# Subtest: partial fixture forecasts are reported, not silently called ready
+# Subtest: rejects incorrect day or attempts to promote experimental probabilities
+# Subtest: rejects any in-play prediction and inflated declared coverage
+# Subtest: zero eligible league fixtures are not a model failure
+# Subtest: A verified empty day names the first future game on both pages
+# Subtest: Scheduled matches without odds are games awaiting publication
+# Subtest: Failed and restricted schedule responses cannot claim no games
+# Subtest: A missing earlier future schedule cannot make a later game the next game
+# Subtest: After-midnight UTC fixtures belong to the Toronto calendar date
+# Subtest: Home and Picks load the same availability helper
+# Subtest: Football provider errors use the existing ESPN fallback
+# Subtest: Parse Czech games including inherited kickoff slots and no fabricated results
+# Subtest: Completed score is not inferred from upcoming fixtures
+# Subtest: Current source route derives season from Prague calendar date
+# Subtest: Explicit women's competition excluded
+# Subtest: Hit Rate retains the whole current month in newest-first date order
+# Subtest: Month rollover clears October rows without changing saved history
+# Subtest: History scores contain only the numeric score, with clear hit/miss marks
+# Subtest: Month and YTD cards use real records and roll over independently
+# Subtest: All navigation places Hit Rate before About; Picks no longer contains tracking cards
+# Subtest: Tracker exports every current-month day instead of only seven recent days
+# Subtest: Picks header matches the single-row site navigation
+# Subtest: independent model board preserves only exact sportsbook quotes
+# Subtest: missing exact ML is unavailable; does not backfill model fair odds
+# Subtest: rejects wrong date or unsupported odds provenance
+# Subtest: rejects any already-started forecast in dated research overlay
+# Subtest: accepts exact ESPN DraftKings Under 3.5 while withholding unsupported Over 3.5 probabilities
+# Subtest: rejects mismatched total lines and fabricated sportsbook provider
+# Subtest: compact search is visible and accessible
+# Subtest: club crests contain while country flags retain circular treatment
+# Subtest: league map includes Serie A Bundesliga and Ligue 1
+# Subtest: Why this pick is embedded under Pick 1
+# Subtest: player props and team news use explicit evidence gates
+# Subtest: research history backfills prior season and excludes incomplete matches
+# Subtest: publication validator enforces history price and player-news gates
+# Subtest: mobile date bar keeps all five controls on one row
+# Subtest: league fallback is a transparent SVG, never the emoji football
+# Subtest: morning data horizon covers today plus next four days
+# Subtest: exact sportsbook endpoint permits today plus next four dates
+# Subtest: future exact odds are filtered to the requested Toronto calendar date
+# Subtest: rolling previews ignore missing price but respect posted-price floor
+# Subtest: public board prefers official lock then rolling preview
+# Subtest: GitHub scheduled jobs and explicit minute cutoff use the new Toronto midnight pipeline
+# Subtest: official board locks from preview at 00:30 Toronto
+# Subtest: league filters use recognizable hosted marks for MLS, Bundesliga and Ligue 1
+# Subtest: current international slate has direct flag mappings
+# Subtest: rolling previews never freeze converted or otherwise unverified prices
+# Subtest: expanded analysis uses uppercase WHY THIS PICK and preserves existing Team News rendering
+# Subtest: verified native display prices can show EV while unavailable exact markets are explicit
+# Subtest: expanded Team News keeps the original team-card layout
+# Subtest: form chips support archived verified W D L strings
+# Subtest: collapsed match cards do not render Team News; expanded drawer keeps team cards
+# Subtest: verified prices render in American format from exact decimal price
+# Subtest: reader-facing commentary avoids model-report jargon
+# Subtest: women fixtures add W suffix only at display layer
+# Subtest: Top 3 pick labels stay single-line while cards and stat boxes stay compact
+# Subtest: expanded modal centers VS between flags and normalizes four metric tiles
+# Subtest: expanded four metric boxes are identical size
+# Subtest: Home Top 5 applies womens W suffix at display layer
+# Subtest: Home and About support buttons use native matching CTA typography and height
+# Subtest: mobile Home hero uses a tall image stage through the tagline
+# Subtest: Support CTA keeps the original Buy Me a Coffee cup mark
+# Subtest: Home merges intro into hero with image stage and no separate About card
+# Subtest: mobile hero extends image through tagline with a readability fade
+# Subtest: logo cache is loaded before Today’s Picks UI and local assets are preferred
+not ok 67 - logo cache is loaded before Today’s Picks UI and local assets are preferred
+# Subtest: football-logos.cc is canonical upstream for cached logos
+# Subtest: competition marks use dark-UI variants and remain contained
+# Subtest: locked board competition metadata remains authoritative after live fixture merge
+# Subtest: public schedule and research apply the configured tagged-event scope
+# Subtest: October 7 corrected official board is locked and cleared
+# Subtest: empty locked boards resolve and show the next eligible game date
+# Subtest: five owner-supplied league logos remain shared across competition surfaces
+# Subtest: competition names and icon columns align in filters and match headers
+# Subtest: Premier League and MLS logos fit fully inside the existing competition icon box
+# Subtest: October 10 owner-approved modal removes GF/GA cards and renders verified H2H accordion
+# Subtest: Published board locks all picks on 2026-10-06
+# Subtest: Published board locks all picks on 2026-10-07
+# Subtest: Published loader bypasses recalculation and works with feed unavailable
+# Subtest: Absent snapshot cannot publish newly computed picks
+# Subtest: Schema accepts preserved legacy partial history, requires complete new publication
+# Subtest: October 6 restore matches screenshot including ranks, odds and confidence
+# Subtest: Complete capture freezes alternatives and player filters independent of view
+# Subtest: Integrity rejects an unaudited overwrite
+# Subtest: Oct 10 static board provides validated historical form and match H2H rather than empty UI placeholders
+# Subtest: scores 1X2 and goals markets from saved pre-match probability
+# Subtest: compares original FootyEdge markets without altering their contents
+# Subtest: a pending match never receives a fabricated settlement
+# Subtest: ignore any post-kickoff/hindsight model results
+# Subtest: original national-team picks are marked outside club model scope
+# Subtest: push and unknown player markets are not faked
+# Subtest: Saudi Pro League gets the ESPN tracked men's competition identity
+# Subtest: Saudi international women's friendly is NOT mistaken for the Saudi men's league
+# tests 94
+# pass 93
+# fail 1
+# duration_ms 478.224383
+
+Failure details:
+not ok 67 - logo cache is loaded before Today’s Picks UI and local assets are preferred
+  ---
+  duration_ms: 5.058162
+  type: 'test'
+  location: '/home/runner/work/footyedge-board/footyedge-board/tests/morning-gates.test.mjs:220:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /eng\.1":"\/assets\/logos\/competitions\/eng\.1\.png/. Input:
+    
+    'ate),ms);document.getElementById("source").textContent=S.dataSource?.startsWith("Daily posted odds")?`${S.dataSource} · scores/news refresh ${ms===60000?"60s":ms===120000?"2m":"5m"}`:`Live data · refresh ${ms===60000?"60s":ms===120000?"2m":"5m"} · history cached 6h`}\n' +
+      '\n' +
+      '\n' +
+      'S.search="";S.sort="time";\n' +
+      'const FLAG_CODES={\n' +
+      '"albania":"al","andorra":"ad","armenia":"am","austria":"at","azerbaijan":"az","belarus":"by","belgium":"be",\n' +
+      '"bosnia and herzegovina":"ba","bosnia-herzegovina":"ba","bulgaria":"bg","croatia":"hr","cyprus":"cy","czechia":"cz","czech republic":"cz",\n' +
+      '"denmark":"dk","england":"gb-eng","estonia":"ee","faroe islands":"fo","finland":"fi","france":"fr","georgia":"ge","germany":"de","gibraltar":"gi",\n' +
+      '"greece":"gr","hungary":"hu","iceland":"is","ireland":"ie","republic of ireland":"ie","israel":"il","italy":"it","kazakhstan":"kz","kosovo":"xk",\n' +
+      '"latvia":"lv","liechtenstein":"li","lithuania":"lt","luxembourg":"lu","malta":"mt","moldova":"md","montenegro":"me","netherlands":"nl",\n' +
+      '"north macedonia":"mk","northern ireland":"gb-nir","norway":"no","poland":"pl","portugal":"pt","romania":"ro","san marino":"sm","scotland":"gb-sct",\n' +
+      '"serbia":"rs","slovakia":"sk","slovenia":"si","spain":"es","sweden":"se","switzerland":"ch","turkey":"tr","türkiye":"tr","turkiye":"tr",\n' +
+      '"ukraine":"ua","wales":"gb-wls","united states":"us","usa":"us","canada":"ca","mexico":"mx","argentina":"ar","brazil":"br","uruguay":"uy",\n' +
+      '"colombia":"co","chile":"cl","peru":"pe","paraguay":"py","ecuador":"ec","venezuela":"ve","japan":"jp","south korea":"kr","australia":"au","morocco":"ma",\n' +
+      '"bolivia":"bo","el salvador":"sv","haiti":"ht","india":"in","indonesia":"id","jamaica":"jm","jordan":"jo","malaysia":"my","new zealand":"nz",\n' +
+      '"panama":"pa","philippines":"ph","russia":"ru","saudi arabia":"sa","costa rica":"cr","guatemala":"gt","honduras":"hn","trinidad and tobago":"tt",\n' +
+      '"qatar":"qa","iran":"ir","iraq":"iq","china":"cn","south africa":"za","egypt":"eg","senegal":"sn","nigeria":"ng","ghana":"gh","algeria":"dz","tunisia":"tn","cameroon":"cm"\n' +
+      '};\n' +
+      'function isWomenFixture(g){\n' +
+      '  const s=String((g?.leagueName||"")+" "+(g?.competition||"")+" "+(g?.gender||"")).toLowerCase();\n' +
+      '  return /women|female/.test(s)\n' +
+      '}\n' +
+      'function teamDisplayName(g,team){\n' +
