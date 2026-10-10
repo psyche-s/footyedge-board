@@ -220,7 +220,7 @@ test("mobile hero extends image through tagline with a readability fade",()=>{
 test("logo cache is loaded before Today’s Picks UI and local assets are preferred",()=>{
   assert.match(fs.readFileSync("picks.html","utf8"),/assets\/logos\/registry\.js/);
   assert.match(p2,/const REMOTE_LEAGUE_LOGOS=/);
-  assert.match(p2,/eng\.1":"\/assets\/logos\/competitions\/eng\.1\.png/);
+  assert.match(p2,/eng\.1":"\/?assets\/logos\/competitions\/eng\.1\.png/);
   assert.match(p2,/window\.FOOTYEDGE_LOGOS\?\.teams/);
 });
 test("football-logos.cc is canonical upstream for cached logos",()=>{
