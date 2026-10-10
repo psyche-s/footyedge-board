@@ -1,0 +1,24 @@
+name: Publish Source Research Board
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/owner-source-research.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/owner-publish-source-replacement-oct10.mjs
+      - run: |
+          git config user.name "FootyEdge"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          git commit -m "publish source-research board" || exit 0
+          git push
