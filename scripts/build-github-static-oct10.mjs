@@ -342,17 +342,13 @@ for(const g of corrected.games){
   g.top=g.top3?.[0]||g.top;
   if(g.model){g.model.top=g.top;g.model.top3=g.top3;}
 }
-// Global official Top 5 must have a real sportsbook price, not research-only selections.
-const confidenceRanked=corrected.games.filter(g=>g.top&&g.top.verifiedPrice===true&&g.top.bookExact===true&&Number.isFinite(Number(g.top.odds))&&Number(g.top.odds)>=-500).sort((a,b)=>b.top.score-a.top.score);
-corrected.top5=confidenceRanked.slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
+// Official Top 5: only independently priced, high-conviction selections. Never pad with research leans.
+const confidenceRanked=corrected.games.map(g=>({g,p:(g.top3||[]).filter(p=>p.score>=85&&p.verifiedPrice===true&&p.bookExact===true&&Number.isFinite(Number(p.odds))&&Number(p.odds)>=-500).sort((a,b)=>b.score-a.score)[0]})).filter(x=>x.p).sort((a,b)=>b.p.score-a.p.score);
+corrected.top5=confidenceRanked.slice(0,5).map(({g,p},i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:p}));
 corrected.confidenceFramework="Evidence-based pick conviction, not win probability";
-
 const gameById=new Map(corrected.games.map(g=>[String(g.id),g]));
-const existingTop=confidenceRanked.slice(0,5);
-const seen=new Set(existingTop.map(g=>String(g.id)));
-const pool=corrected.games.filter(g=>g.top&&!seen.has(String(g.id))).sort((a,b)=>(b.top?.score||0)-(a.top?.score||0));
-const topGames=[...existingTop,...pool].slice(0,5);
-corrected.top5=topGames.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
+const existingTop=confidenceRanked.slice(0,5).map(x=>x.g);
+const topGames=existingTop;
 const leagues=[...new Set(corrected.games.map(g=>g.league).filter(Boolean))];
 corrected.leagueTop5=Object.fromEntries(leagues.map(l=>[l,corrected.games.filter(g=>g.league===l&&g.top).sort((a,b)=>b.top.score-a.top.score).slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}))]));
 corrected.correctedAt=new Date().toISOString();
