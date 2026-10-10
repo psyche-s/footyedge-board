@@ -1,0 +1,31 @@
+Published board integrity verified against HEAD
+TEST FAILURE DETAILS
+not ok 87 - Oct 10 published recommendations never oppose each other or cite nonexistent form
+  ---
+  duration_ms: 7.39785
+  type: 'test'
+  location: '/home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:81:1'
+  failureType: 'testCodeFailure'
+  error: 'no evidence for BTTS Yes'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (file:///home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:92:11)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: scores 1X2 and goals markets from saved pre-match probability
+ok 88 - scores 1X2 and goals markets from saved pre-match probability
+  ---
+  duration_ms: 0.643866
+  type: 'test'
+  ...
+# Subtest: compares original FootyEdge markets without altering their contents
+ok 89 - compares original FootyEdge markets without altering their contents
