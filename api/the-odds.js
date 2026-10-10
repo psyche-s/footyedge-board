@@ -121,6 +121,15 @@ function totalsFromBook(book){
   }
   return by
 }
+function spreadFromBook(book,home,away){
+  const m=(book?.markets||[]).find(x=>x.key==="spreads");if(!m)return null;
+  const h=(m.outcomes||[]).find(x=>norm(x.name)===norm(home));
+  const a=(m.outcomes||[]).find(x=>norm(x.name)===norm(away));
+  const homeLine=Number(h?.point),awayLine=Number(a?.point),homePrice=Number(h?.price),awayPrice=Number(a?.price);
+  if(!Number.isFinite(homeLine)||!Number.isFinite(awayLine)||!Number.isFinite(homePrice)||!Number.isFinite(awayPrice))return null;
+  const nv=noVig([impliedAmerican(homePrice),impliedAmerican(awayPrice)]);
+  return{homeLine,awayLine,home:homePrice,away:awayPrice,probs:{home:nv[0],away:nv[1]}};
+}
 function summarizeEvent(event,league){
   const home=event.home_team,away=event.away_team,books=event.bookmakers||[];
   let ml=null,mlBook=null;
@@ -144,6 +153,11 @@ function summarizeEvent(event,league){
       }
     }
   }
+  const spreads=[];
+  for(const key of BOOK_PRIORITY){
+    const book=selectBook(books,key),s=spreadFromBook(book,home,away);
+    if(s){spreads.push({...s,book:{key,name:BOOK_LABELS[key]}});break}
+  }
   const homeML=ml?.homeML??null,drawML=ml?.drawML??null,awayML=ml?.awayML??null;
   const mlp=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
   const t25=totals["2.5"]||{};
@@ -151,7 +165,7 @@ function summarizeEvent(event,league){
     id:event.id,league,sportKey:event.sport_key,sportTitle:event.sport_title,
     commenceTime:event.commence_time,home,away,
     provider:mlBook?.name||null,bookPriority:BOOK_PRIORITY,mlBook,
-    homeML,drawML,awayML,over25:t25.over??null,under25:t25.under??null,totals,
+    homeML,drawML,awayML,over25:t25.over??null,under25:t25.under??null,totals,spreads,
     probs:{home:mlp[0],draw:mlp[1],away:mlp[2],over25:t25.probs?.over??null,under25:t25.probs?.under??null}
   };
 }
@@ -203,7 +217,7 @@ export default async function handler(req,res){
         }
       }
 
-      const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&bookmakers=draftkings,fanduel,espnbet&markets=h2h,totals&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
+      const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&bookmakers=draftkings,fanduel,espnbet&markets=h2h,totals,spreads&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
       try{
         const result=await getJson(oddsUrl),data=Array.isArray(result.data)?result.data:[];
         remaining=result.headers.get("x-requests-remaining")??remaining;
@@ -218,7 +232,7 @@ export default async function handler(req,res){
 
     res.setHeader("Cache-Control",publish?"no-store":`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`);
     return res.status(200).json({
-      enabled:true,publish,bookmakerPriority:["draftkings","fanduel","espnbet"],markets:["h2h","totals"],events,
+      enabled:true,publish,bookmakerPriority:["draftkings","fanduel","espnbet"],markets:["h2h","totals","spreads"],events,
       sports:resolved.map(x=>({league:x.league,key:x.sport.key,title:x.sport.title})),
       attempts,quota:{remaining,used,last},fetchedAt:new Date().toISOString()
     });
