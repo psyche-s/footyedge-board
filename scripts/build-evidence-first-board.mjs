@@ -1,0 +1,96 @@
+/**
+ * FootyEdge evidence-first candidate engine, v1.
+ * Deterministic; never copies a third-party prediction or invents a sportsbook quote.
+ * Until independently calibrated, score is an evidence-conviction index, not a win probability.
+ */
+import fs from "node:fs";
+const date=process.env.FOOTYEDGE_DATE||"2026-10-10";
+const file="data/boards/"+date+".json";
+const board=JSON.parse(fs.readFileSync(file,"utf8"));
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const poisson=(lambda,k)=>Math.exp(-lambda)*Math.pow(lambda,k)/[1,1,2,6,24,120,720,5040,40320,362880][k];
+const n=s=>Number.isFinite(Number(s))?Number(s):null;
+const pickStars=s=>s>=92?"★★★★★":s>=88?"★★★★½":s>=85?"★★★★":s>=78?"★★★½":"★★★";
+const markets=(home,away)=>{
+  let out={home:0,away:0,draw:0,bttsYes:0,over15:0,over25:0,over35:0,over45:0,homeOver05:0,awayOver05:0};
+  for(let h=0;h<=9;h++)for(let a=0;a<=9;a++){
+    const p=poisson(home,h)*poisson(away,a);
+    out[h>a?"home":h<a?"away":"draw"]+=p;
+    if(h>0&&a>0)out.bttsYes+=p;
+    for(const k of [15,25,35,45])if(h+a>k/10)out["over"+k]+=p;
+    if(h>0)out.homeOver05+=p;if(a>0)out.awayOver05+=p;
+  }
+  return out;
+};
+function h2hFacts(g,label){
+  const m=(g.h2h||[]).filter(x=>x.homeScore!=null&&x.awayScore!=null&&Number.isFinite(+x.homeScore)&&Number.isFinite(+x.awayScore));
+  if(!m.length)return "";
+  const btts=m.filter(x=>+x.homeScore>0&&+x.awayScore>0).length;
+  const over25=m.filter(x=>+x.homeScore+(+x.awayScore)>2.5).length;
+  if(/btts/i.test(label))return "Both teams scored in "+btts+" of the last "+m.length+" meetings.";
+  if(/over|under/i.test(label))return "Their last "+m.length+" meetings produced over 2.5 goals "+over25+" times.";
+  const team=/fiorentina/i.test(label)?"Fiorentina":/ ml|double chance/i.test(label)?label.replace(/ ML| Double Chance.*$/i,""):"";
+  if(!team)return "";
+  let w=0,d=0,known=0;
+  for(const x of m){
+    const h=String(x.home||"").toLowerCase()===team.toLowerCase(),a=String(x.away||"").toLowerCase()===team.toLowerCase();
+    if(!h&&!a)continue;
+    known++;
+    const gf=h?+x.homeScore:+x.awayScore,ga=h?+x.awayScore:+x.homeScore;
+    if(gf>ga)w++;else if(gf===ga)d++;
+  }
+  return known?"In their last "+known+" meetings, "+team+" won "+w+" and drew "+d+".":"";
+}
+function explanation(g,label,prob){
+  const h=g.model?.home,a=g.model?.away,parts=[];
+  if(h?.n&&a?.n){
+    parts.push(g.home+" have won "+h.wins+" of their last "+h.n+" and conceded "+Number(h.ga).toFixed(1)+" goals per match; "+g.away+" have won "+a.wins+" of their last "+a.n+" and conceded "+Number(a.ga).toFixed(1)+".");
+  }
+  const head=h2hFacts(g,label);if(head)parts.push(head);
+  if(/double chance/i.test(label))parts.push("This selection also covers a draw, unlike the straight win.");
+  if(/btts/i.test(label)&&h&&a)parts.push("Both teams scored in "+Math.round(h.btts*h.n)+" of "+g.home+"'s last "+h.n+" and "+Math.round(a.btts*a.n)+" of "+g.away+"'s last "+a.n+".");
+  if(prob<.6)parts.push("The available results do not provide a strong edge for this line.");
+  return parts.join(" ");
+}
+function buildGame(g){
+  const h=g.model?.home,a=g.model?.away;
+  if(!h||!a||!h.n||!a.n)return g;
+  const xh=clamp((Number(h.gf)+Number(a.ga))/2*1.08,.25,4);
+  const xa=clamp((Number(a.gf)+Number(h.ga))/2*.94,.25,4);
+  const p=markets(xh,xa);
+  const odds=new Map((g.top3||[]).filter(x=>x.verifiedPrice===true&&x.bookExact===true&&Number.isFinite(Number(x.odds))&&x.provider).map(x=>[String(x.label).toLowerCase(),x]));
+  const candidates=[
+    [g.home+" ML","Match Result",p.home],[g.away+" ML","Match Result",p.away],["Draw","Match Result",p.draw],
+    [g.home+" Double Chance (1X)","Double Chance",p.home+p.draw],
+    [g.away+" Double Chance (X2)","Double Chance",p.away+p.draw],
+    ["Double Chance (12)","Double Chance",p.home+p.away],
+    ["BTTS Yes","BTTS",p.bttsYes],["BTTS No","BTTS",1-p.bttsYes],
+    ...[15,25,35,45].flatMap(k=>[["Over "+(k/10).toFixed(1)+" Goals","Goals",p["over"+k]],["Under "+(k/10).toFixed(1)+" Goals","Goals",1-p["over"+k]]])
+  ];
+  const sample=Math.min(h.n,a.n);
+  const rows=candidates.map(([label,category,prob])=>{
+    const quoted=odds.get(label.toLowerCase());
+    const sampleDiscount=sample>=10?1:sample>=7?.94:.88;
+    const score=Math.round(clamp(prob*sampleDiscount*100,20,94));
+    const verified=Boolean(quoted&&Number(quoted.odds)>=-500);
+    return {label,category,score,stars:pickStars(score),odds:verified?quoted.odds:null,displayOdds:verified?quoted.displayOdds:"Not verified",verifiedPrice:verified,bookExact:verified,provider:verified?quoted.provider:null,priceStatus:verified?"verified":"unavailable",researchOnly:!verified,modelScore:score,modelProbability:+prob.toFixed(4),confidenceType:"uncalibrated_evidence_conviction",reason:explanation(g,label,prob),modelVersion:"evidence-first-v1"};
+  }).sort((x,y)=>y.score-x.score);
+  // No verified player-level event, minutes or market prices: player props are withheld rather than invented.
+  const qualified=rows.filter(x=>x.verifiedPrice);
+  const top3=[...qualified.slice(0,3),...rows.filter(x=>!x.verifiedPrice).slice(0,Math.max(0,3-qualified.length))].slice(0,3);
+  g.top3=top3;g.top=top3[0]||null;
+  g.model={...g.model,top:g.top,top3,rankedCandidates:rows,candidates:rows,expectedGoals:{home:xh,away:xa,total:xh+xa}};
+  g.modelReview={version:"evidence-first-v1",playerMarkets:"withheld: unverified player and odds coverage",thirdPartyCrossChecks:"not yet incorporated",sampleSize:sample};
+  return g;
+}
+board.games=board.games.map(buildGame);
+const best=board.games.flatMap(g=>(g.model?.rankedCandidates||[]).filter(p=>p.score>=85&&p.verifiedPrice&&p.bookExact&&Number(p.odds)>=-500).slice(0,1).map(p=>({g,p}))).sort((a,b)=>b.p.score-a.p.score);
+board.top5=best.slice(0,5).map(({g,p},i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:p}));
+board.leagueTop5=Object.fromEntries([...new Set(board.games.map(g=>g.league).filter(Boolean))].map(league=>[league,board.games.filter(g=>g.league===league&&g.top).sort((a,b)=>(b.top?.score||0)-(a.top?.score||0)).slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}))]));
+board.modelEngine="evidence-first-v1";
+board.modelLimitations="Uncalibrated; last-five form summaries; independent expert/Whispers verification and player market coverage incomplete. No invented quotes.";
+board.generatedAt=new Date().toISOString();
+const out="data/model-previews/"+date+"-evidence-first.json";
+fs.mkdirSync("data/model-previews",{recursive:true});
+fs.writeFileSync(out,JSON.stringify(board,null,2)+"\n");
+console.log(JSON.stringify({preview:out,games:board.games.length,top5:board.top5.map(x=>({match:x.home+" vs "+x.away,pick:x.pick.label,score:x.pick.score})),playerProps:"withheld",published:false},null,2));
