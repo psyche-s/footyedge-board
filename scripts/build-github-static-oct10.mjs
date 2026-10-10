@@ -61,7 +61,7 @@ function extractTeamGames(payload,teamId,before){
     const op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));
     if(!me||!op)continue;
     const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;
-    out.push({id:String(e.id),date:e.date,gf,ga,result:gf>ga?"W":gf<ga?"L":"D",oppId:String(op?.id??op?.team?.id||""),opp:op?.team?.displayName||op?.team?.name||"Opponent"});
+    out.push({id:String(e.id),date:e.date,gf,ga,result:gf>ga?"W":gf<ga?"L":"D",oppId:String(op?.id??op?.team?.id??""),opp:op?.team?.displayName||op?.team?.name||"Opponent"});
   }
   return out
 }
