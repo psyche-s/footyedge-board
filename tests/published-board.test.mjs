@@ -64,3 +64,16 @@ test('Integrity rejects an unaudited overwrite',async()=>{
     assert.throws(()=>validateIntegrity('HEAD'),/without preserved explicit owner correction/);
   }finally{fs.writeFileSync(file,saved)}
 });
+
+test("Oct 10 static board provides validated historical form and match H2H rather than empty UI placeholders",()=>{
+  const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json","utf8"));
+  assert.equal(b.games.length,66);
+  assert.equal(b.top5.length,5);
+  assert.ok(b.games.every(g=>g.model?.home?.n>=5&&g.model?.away?.n>=5),"both sides need five verified prior results");
+  assert.ok(b.games.every(g=>/^[WDL]( [WDL]){4}$/.test(g.model.home.form)&&/^[WDL]( [WDL]){4}$/.test(g.model.away.form)),"five real form results on both teams");
+  const withH2H=b.games.filter(g=>Array.isArray(g.h2h)&&g.h2h.length);
+  assert.ok(withH2H.length>=50,"do not claim unavailable H2H is populated");
+  assert.ok(withH2H.every(g=>g.h2h.every(x=>x.date&&Number.isInteger(x.homeScore)&&Number.isInteger(x.awayScore))),"H2H must have verified scored meetings");
+  assert.match(html,/g\.matchH2H=g\.h2h\.filter\(/,"archive H2H must initialize before modal opens");
+  assert.match(html,/formHTML\(g\.model\?\.\[side\]\?\.form/,"form chips must use saved model form");
+});

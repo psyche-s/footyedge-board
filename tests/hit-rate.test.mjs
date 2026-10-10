@@ -38,7 +38,7 @@ test('Month and YTD cards use real records and roll over independently',()=>{
 });
 test('All navigation places Hit Rate before About; Picks no longer contains tracking cards',()=>{
   for(const file of ['index.html','about.html','ui/part1.html','hit-rate.html']){
-    const s=fs.readFileSync(file,'utf8');assert.ok(s.indexOf('href="/hit-rate.html"')<s.indexOf('href="/about.html"'),file);
+    const s=fs.readFileSync(file,'utf8');assert.ok(s.indexOf('href="hit-rate.html"')<s.indexOf('href="about.html"'),file);
   }
   assert.doesNotMatch(fs.readFileSync('ui/part1.html','utf8'),/<section class="performanceBar"/);
   assert.match(fs.readFileSync('index.html','utf8'),/id="yearHitRate"/);
@@ -54,7 +54,7 @@ test('Tracker exports every current-month day instead of only seven recent days'
 
 test('Picks header matches the single-row site navigation',()=>{
   const html=fs.readFileSync('ui/part1.html','utf8');
-  assert.match(html,/<a class="siteLogo" href="\/">Footy<span>Edge<\/span><\/a>/);
+  assert.match(html,/<a class="siteLogo" href="\.\/">Footy<span>Edge<\/span><\/a>/);
   assert.match(html,/<div class="siteLinks">/);
   assert.doesNotMatch(html,/<header class="boardHeader"/);
 });

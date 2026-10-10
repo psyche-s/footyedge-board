@@ -867,7 +867,7 @@ function renderLeagues(){
 }
 function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
 
-const GITHUB_STATIC=location.hostname.endsWith(".github.io");
+const GITHUB_STATIC=typeof location!=="undefined"&&location.hostname.endsWith(".github.io");
 async function repoData(path){
   const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
   try{return await json(raw)}catch{return await json(path+"?v="+Date.now())}
