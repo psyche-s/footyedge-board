@@ -1583,6 +1583,37 @@ body{background:#031008}
   .gameTop .leagueBrand{column-gap:6px!important}
 }
 
+
+/* One-time owner-approved match details layout (October 10). */
+.modalHead{justify-content:flex-end!important;padding:9px 12px 0!important;border:0!important}
+.modalBody{padding:8px 17px 17px!important}
+.modalTeams{gap:22px!important;align-items:flex-start!important}
+.modalTeam{min-width:0!important;width:128px!important;max-width:44%!important;display:flex!important;flex-direction:column!important;align-items:center!important}
+.modalTeam img{width:64px!important;height:64px!important;max-width:64px!important;max-height:64px!important;object-fit:contain!important;transform:none!important}
+.modalTeam img.countryFlag{width:64px!important;height:64px!important;min-width:64px!important;max-width:64px!important;border-radius:50%!important;object-fit:cover!important}
+.modalTeam b{font-size:12px!important;line-height:1.28!important;margin-top:7px!important;text-align:center}
+.modalStanding{display:inline-flex;align-items:center;justify-content:center;min-width:25px;height:18px;margin:5px 0 0;padding:1px 7px;color:#e2e9e5;background:rgba(214,223,218,.12);border:1px solid rgba(214,223,218,.23);border-radius:5px;font-size:10px;font-weight:800;opacity:.6}
+.modalForm{display:flex;gap:4px;justify-content:center;align-items:center;min-height:19px;margin:7px 0 0}
+.modalForm .formChip{width:17px!important;height:17px!important;font-size:8px!important}
+.modalTeams .vs{align-self:center;padding-bottom:18px}
+.modalLeague{margin:12px 0 15px!important;gap:9px!important}
+.modalLeagueDetails{display:flex;flex-direction:column;align-items:flex-start;gap:3px;font-size:10px;line-height:1.2}
+.modalLeagueDetails strong{color:#e1f7e9;font-size:11px;font-weight:900}
+.modalLeagueDetails span{color:#97ada1;font-size:10px}
+.h2hSection{margin-top:9px;border-top:1px solid #173020;padding-top:10px}
+.h2hToggle{width:100%;display:flex;justify-content:space-between;align-items:center;text-align:left;gap:12px;background:transparent;border:0;padding:8px 0;color:#d9efe0;font-size:11px;font-weight:800;cursor:pointer}
+.h2hToggle:focus-visible{outline:2px solid #54e593;outline-offset:3px;border-radius:3px}
+.h2hChevron{font-size:17px;color:#85a391}
+.h2hResults{margin:7px 0 5px;padding:4px 11px;border:1px solid #244430;border-radius:10px;background:rgba(11,29,18,.65)}
+.h2hResults[hidden]{display:none!important}
+.h2hResult{padding:10px 0;display:flex;gap:14px;align-items:center;justify-content:space-between;border-bottom:1px solid #1c3425;color:#a9bdaf;font-size:10px}
+.h2hResult:last-child{border-bottom:0}
+.h2hResult time{flex:0 0 84px;color:#8eaa99}
+.h2hFixture{flex:1;text-align:right;line-height:1.5}
+.h2hFixture b{color:#f1f9f2;white-space:nowrap;font-size:11px}
+.h2hEmpty{color:#91a89a;font-size:10px;line-height:1.5;margin:10px 0}
+@media(max-width:500px){.modalBody{padding:7px 12px 16px!important}.modalTeams{gap:12px!important}.modalTeam{width:112px!important}.modalTeam img,.modalTeam img.countryFlag{width:60px!important;height:60px!important;min-width:60px!important;max-width:60px!important}.modalTeam b{font-size:11px!important}.h2hResult{gap:7px;font-size:9px}.h2hResult time{flex-basis:75px}.modalLeague{margin:11px 0 13px!important}}
+
 </style>
 </head>
 <body>
@@ -1611,7 +1642,7 @@ body{background:#031008}
   <section class="games" id="games"><div class="loading"><div class="spin"></div>Loading live games…</div></section>
   <footer class="foot"><span>FootyEdge · live soccer intelligence</span><span>Model confidence is a ranking signal, not a guarantee</span></footer>
 </div>
-<div class="drawer" id="drawer"><div class="modal"><div class="modalHead"><b id="modalTitle">Match Breakdown</b><button class="close" id="close" aria-label="Close">×</button></div><div class="modalBody" id="modalBody"></div></div></div>
+<div class="drawer" id="drawer"><div class="modal" role="dialog" aria-modal="true" aria-label="Match details"><div class="modalHead"><button class="close" id="close" aria-label="Close match details">×</button></div><div class="modalBody" id="modalBody"></div></div></div>
 <nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
 <script src="/assets/board-availability.js?v=69"></script>
 <script>
