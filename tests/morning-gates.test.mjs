@@ -248,7 +248,10 @@ test("competition marks use dark-UI variants and remain contained",()=>{
 test("locked board competition metadata remains authoritative after live fixture merge",()=>{
   assert.match(p1,/if\(a\.leagueName\)g\.leagueName=a\.leagueName/);
   assert.match(p1,/if\(a\.league!=null\)g\.league=a\.league/);
-  assert.match(p2,/modalTitle"\)\.textContent=teamDisplayName\(g,g\.home\)\+" vs "\+teamDisplayName\(g,g\.away\)/);
+  assert.doesNotMatch(p2,/modalTitle"\)\.textContent=teamDisplayName\(g,g\.home\)/);
+  assert.match(p2,/renderMatchDetailsHTML\(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach\)/);
+  assert.match(p2,/leagueIconHtml\(g\.league,g\.leagueLogo\)/);
+  assert.match(p2,/displayLeagueName\(g\.league,g\.leagueName\)/);
 });
 
 test("public schedule and research apply the configured tagged-event scope",()=>{
@@ -306,4 +309,16 @@ test("Premier League and MLS logos fit fully inside the existing competition ico
   assert.match(p1,/\.league-eng-1 \.leagueLogoImg\{transform:scale\(\.78\)!important\}/);
   assert.match(p1,/\.league-usa-1 \.leagueLogoImg\{transform:scale\(\.78\)!important\}/);
   assert.match(p1,/\.leagueIcon\{[\s\S]*?width:24px!important[\s\S]*?height:24px!important/);
+});
+
+
+test("October 10 owner-approved modal removes GF/GA cards and renders verified H2H accordion",()=>{
+  assert.doesNotMatch(p1,/<b id="modalTitle">Match Breakdown<\/b>/);
+  assert.match(p2,/Head-to-Head · Last 5 meetings/);
+  assert.match(p2,/data-h2h-toggle aria-expanded/);
+  assert.match(p2,/function extractVerifiedH2H/);
+  assert.match(p2,/event\?\.status\?\.type\?\.completed/);
+  assert.match(p2,/function verifiedPositionBadge/);
+  assert.doesNotMatch(p2,/<small>HOME GF \/ GA<\/small>/);
+  assert.doesNotMatch(p2,/<small>AWAY GF \/ GA<\/small>/);
 });
