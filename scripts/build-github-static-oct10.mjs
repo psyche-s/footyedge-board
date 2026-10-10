@@ -317,17 +317,28 @@ for(const g of corrected.games){
       const hh=g.h2h?.length?g.h2h.reduce((sum,m)=>{const home=m.home===team,go=home?m.homeScore:m.awayScore,against=home?m.awayScore:m.homeScore;return sum+(go>against?1:go===against?.5:0)},0)/g.h2h.length:null;
       evidence=hh==null?form:.82*form+.18*hh;
     }else if(l==="draw")evidence=(h.draws/h.n+a.draws/a.n)/2;
-    else if(l.startsWith("btts")){evidence=(h.btts+a.btts)/2;if(l.includes("no"))evidence=1-evidence;}
+    else if(l.startsWith("btts")){
+      const yes=l.includes("yes"),recent=(h.btts+a.btts)/2;
+      const meetings=(g.h2h||[]).filter(m=>Number.isFinite(Number(m.homeScore))&&Number.isFinite(Number(m.awayScore)));
+      const h2hYes=meetings.length?meetings.filter(m=>Number(m.homeScore)>0&&Number(m.awayScore)>0).length/meetings.length:null;
+      // Contradictory H2H is a veto against a strong BTTS conviction, not evidence to ignore.
+      evidence=h2hYes==null?recent:.65*recent+.35*h2hYes;
+      if(!yes)evidence=1-evidence;
+      if(h2hYes!=null&&meetings.length>=3){
+        const against=yes?1-h2hYes:h2hYes;
+        if(against>=.75)p.h2hContradiction=true;
+      }
+    }
     else{const m=l.match(/(over|under)\\s*(1\\.5|2\\.5|3\\.5|4\\.5)/);if(m){const k=m[1]+m[2].replace(".","");if(Number.isFinite(h[k])&&Number.isFinite(a[k]))evidence=(h[k]+a[k])/2;}}
     if(evidence==null)continue;
     const damp=.55+.45*Math.min(1,Math.min(h.n,a.n)/10);
     const base=Math.round(Math.max(20,Math.min(94,50+92*(evidence-.5)*damp)));
     const score=Math.round(Math.max(20,Math.min(94,50+(base-50)*1.9)));
-    p.score=score;p.modelScore=score;p.stars=pickStars(score);
+    p.score=p.h2hContradiction?Math.min(score,49):score;p.modelScore=p.score;p.stars=pickStars(p.score);
     p.confidenceType="evidence_based_pick_conviction";
     p.confidenceBasis="Model evidence conviction from form, opponent trends and verified H2H where available; not win probability.";
   }
-  g.top=g.top3?.[0]||g.top;
+  g.top3.sort((a,b)=>b.score-a.score);\n  g.top=g.top3?.[0]||g.top;
   if(g.model){g.model.top=g.top;g.model.top3=g.top3;}
 }
 // Global official Top 5 must have a real sportsbook price, not research-only selections.
