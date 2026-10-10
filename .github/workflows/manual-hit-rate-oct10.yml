@@ -1,0 +1,50 @@
+name: Reconcile October 10 FootyEdge Hit Rate
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/manual-hit-rate-oct10.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-manual-hit-rate
+  cancel-in-progress: false
+jobs:
+  settle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Grade immutable published bets and update hit rate
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_TRACK: '1'
+        run: |
+          set -euo pipefail
+          node scripts/track-performance.mjs
+          node scripts/postmatch-learning.mjs
+      - name: Validate publication history remains unchanged
+        run: |
+          set -euo pipefail
+          node scripts/validate-published-boards.mjs --base origin/main
+          node --test tests/*.test.mjs
+      - name: Commit dated hit rate and process-learning evidence
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge Performance Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A -- data/performance data/postmortems
+          if git diff --cached --quiet; then
+            echo "Existing hit-rate settlement already current"
+            exit 0
+          fi
+          git commit -m "chore(performance): reconcile verified October 9 results and hit rate [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
