@@ -993,10 +993,12 @@ async function load(date=S.date){
       }
     }));
     const angleScore=g=>g.model?.top3?.[0]?.score||g.model?.candidates?.[0]?.score||0;
-    const crossPool=games.filter(g=>angleScore(g)>=70).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,18);
-    await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
-    const newsPool=games.filter(g=>angleScore(g)>=74).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,10);
-    await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
+    if(!CAPTURE_FAST){
+      const crossPool=games.filter(g=>angleScore(g)>=70).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,18);
+      await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
+      const newsPool=games.filter(g=>angleScore(g)>=74).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,10);
+      await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
+    }
     for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
     S.boardReady=true;
     S.games=games;S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()

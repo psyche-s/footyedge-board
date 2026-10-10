@@ -1839,6 +1839,7 @@ function applyUserPick(g){return g}
 const CAPTURE_PARAMS=new URLSearchParams(window.location.search);
 const CAPTURE_MODE=CAPTURE_PARAMS.has("draftCapture")?"draft":CAPTURE_PARAMS.has("archiveCapture")?"archive":null;
 const ARCHIVE_CAPTURE=Boolean(CAPTURE_MODE);
+const CAPTURE_FAST=CAPTURE_PARAMS.has("repairFast");
 function clonePickForArchive(p,g){
   if(!p)return null;
   return {...JSON.parse(JSON.stringify(p)),archivedCommentary:cardCommentary(g,p),archivedSupportFacts:researchFactsForPick(g,p,3)}

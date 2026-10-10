@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: footyedge-oct10-owner-repair-v2
+  group: footyedge-oct10-owner-repair-v3
   cancel-in-progress: true
 jobs:
   repair:
@@ -55,6 +55,7 @@ jobs:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           PREVIEW_DAYS: "0"
           FORCE_TODAY_CAPTURE: "1"
+          FAST_CAPTURE: "1"
         run: node scripts/publish-board-previews.mjs
       - name: Restore published daily-odds snapshot
         shell: bash

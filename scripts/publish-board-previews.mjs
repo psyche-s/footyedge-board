@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const SITE=(process.env.FOOTYEDGE_URL||'https://footyedge-board.vercel.app').replace(/\/$/,'');
-const TZ='America/Toronto',LOCK_HOUR=0,LOCK_MINUTE=30,PREVIEW_DAYS=Math.max(0,Math.min(4,Number(process.env.PREVIEW_DAYS??4))),FORCE_TODAY_CAPTURE=process.env.FORCE_TODAY_CAPTURE==='1';
+const TZ='America/Toronto',LOCK_HOUR=0,LOCK_MINUTE=30,PREVIEW_DAYS=Math.max(0,Math.min(4,Number(process.env.PREVIEW_DAYS??4))),FORCE_TODAY_CAPTURE=process.env.FORCE_TODAY_CAPTURE==='1',FAST_CAPTURE=process.env.FAST_CAPTURE==='1';
 const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
 const TODAY=`${parts.year}-${parts.month}-${parts.day}`,HOUR=Number(parts.hour),MINUTE=Number(parts.minute);
 const addDate=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
@@ -36,7 +36,7 @@ async function main(){
       const page=await browser.newPage({viewport:{width:1440,height:1200}});
       try{
         await page.route('https://raw.githubusercontent.com/**',route=>route.abort());
-        await page.goto(`http://127.0.0.1:${server.address().port}/picks.html?draftCapture=1&boardDate=${date}`,{waitUntil:'domcontentloaded',timeout:120000});
+        await page.goto(`http://127.0.0.1:${server.address().port}/picks.html?draftCapture=1&boardDate=${date}${FAST_CAPTURE?'&repairFast=1':''}`,{waitUntil:'domcontentloaded',timeout:120000});
         await page.waitForFunction(()=>typeof window.FootyEdgeDraft==='function'&&window.FootyEdgeDraft(),{timeout:150000});
         const payload=await page.evaluate(()=>window.FootyEdgeDraft());
         if(!payload?.games?.length){await fs.rm(draftFile,{force:true});console.log('No tracked fixtures; removed stale preview:',date);continue}
