@@ -68,7 +68,7 @@ test('Integrity rejects an unaudited overwrite',async()=>{
 test("Oct 10 static board provides validated historical form and match H2H rather than empty UI placeholders",()=>{
   const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json","utf8"));
   assert.equal(b.games.length,66);
-  assert.equal(b.top5.length,5);
+  assert.ok(b.top5.length>=1&&b.top5.length<=5,"never force five unqualified global selections");
   assert.ok(b.games.every(g=>g.model?.home?.n>=5&&g.model?.away?.n>=5),"both sides need five verified prior results");
   assert.ok(b.games.every(g=>/^[WDL]( [WDL]){4}$/.test(g.model.home.form)&&/^[WDL]( [WDL]){4}$/.test(g.model.away.form)),"five real form results on both teams");
   const withH2H=b.games.filter(g=>Array.isArray(g.h2h)&&g.h2h.length);
@@ -76,4 +76,21 @@ test("Oct 10 static board provides validated historical form and match H2H rathe
   assert.ok(withH2H.every(g=>g.h2h.every(x=>x.date&&Number.isInteger(x.homeScore)&&Number.isInteger(x.awayScore))),"H2H must have verified scored meetings");
   assert.match(html,/g\.matchH2H=g\.h2h\.filter\(/,"archive H2H must initialize before modal opens");
   assert.match(html,/formHTML\(g\.model\?\.\[side\]\?\.form/,"form chips must use saved model form");
+});
+
+test("Oct 10 published recommendations never oppose each other or cite nonexistent form",()=>{
+ const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json","utf8"));
+ for(const g of b.games){
+  const p=g.top3||[];
+  const totals=p.filter(x=>/^(over|under)\s+\d+(?:\.\d+)?\s+goals$/i.test(x.label));
+  assert.ok(totals.length<=1,g.home+" vs "+g.away+": opposing totals published");
+  const ml=p.filter(x=>x.category==="Match Result");
+  assert.ok(ml.length<=1,g.home+" vs "+g.away+": opposing match winners published");
+  if(p.length)assert.deepEqual(g.top,p[0]);
+  for(const pick of p){
+   assert.doesNotMatch(pick.archivedCommentary||" ",/0 of its last 0|\b0\/0\b/,g.home+" vs "+g.away);
+   assert.ok(pick.archivedSupportFacts?.length>=2,"no evidence for "+pick.label);
+   assert.equal(pick.score,Math.round((pick.modelProb||0)*100),"score-model mismatch "+pick.label);
+  }
+ }
 });
