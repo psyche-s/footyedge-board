@@ -60,9 +60,10 @@ function h2hFacts(g,label){
   const m=(g.h2h||[]).filter(x=>x.homeScore!=null&&x.awayScore!=null&&Number.isFinite(+x.homeScore)&&Number.isFinite(+x.awayScore));
   if(!m.length)return "";
   const btts=m.filter(x=>+x.homeScore>0&&+x.awayScore>0).length;
-  const over25=m.filter(x=>+x.homeScore+(+x.awayScore)>2.5).length;
+  const line=Number(label.match(/(?:Over|Under) ([1-4]\\.5)/i)?.[1]||2.5);
+  const above=m.filter(x=>+x.homeScore+(+x.awayScore)>line).length;
   if(/btts/i.test(label))return "Both teams scored in "+btts+" of the last "+m.length+" meetings.";
-  if(/over|under/i.test(label))return "Their last "+m.length+" meetings produced over 2.5 goals "+over25+" times.";
+  if(/over|under/i.test(label))return "Across their last "+m.length+" meetings, "+( /under/i.test(label)?m.length-above:above)+" finished "+(/under/i.test(label)?"under ":"over ")+line+" goals.";
   const team=/fiorentina/i.test(label)?"Fiorentina":/ ml|double chance/i.test(label)?label.replace(/ ML| Double Chance.*$/i,""):"";
   if(!team)return "";
   let w=0,d=0,known=0;
@@ -82,6 +83,7 @@ function explanation(g,label,prob){
   }
   const head=h2hFacts(g,label);if(head)parts.push(head);
   if(/double chance/i.test(label))parts.push("This selection also covers a draw, unlike the straight win.");
+  if(/over|under/i.test(label)&&h&&a){const key=label.match(/([1-4]\\.5)/)?.[1]?.replace(".","");const stat=(/under/i.test(label)?"under":"over")+(key||"25");if(Number.isFinite(h[stat])&&Number.isFinite(a[stat]))parts.push(g.home+" met this line in "+Math.round(h[stat]*h.n)+" of "+h.n+" recent matches; "+g.away+" in "+Math.round(a[stat]*a.n)+" of "+a.n+".");}
   if(/btts/i.test(label)&&h&&a)parts.push("Both teams scored in "+Math.round(h.btts*h.n)+" of "+g.home+"'s last "+h.n+" and "+Math.round(a.btts*a.n)+" of "+g.away+"'s last "+a.n+".");
   if(prob<.6)parts.push("The available results do not provide a strong edge for this line.");
   return parts.join(" ");
