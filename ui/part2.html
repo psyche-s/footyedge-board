@@ -43,15 +43,15 @@ const EXACT_LEAGUE_LOGOS=Object.freeze({
   "por.1": "https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
   "eng.2": "https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png"
 });
-const REMOTE_LEAGUE_LOGOS={"uefa.nations":"https://cdn.prod.website-files.com/68f550992570ca0322737dc2/69fe89ba12923df17d6c7a4b_uefa-nations-league-footylogos.png","concacaf.nations.league":"https://commons.wikimedia.org/wiki/Special:Redirect/file/CONCACAF_Nations_League_(2026).svg","uefa.champions":"https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg","uefa.europa":"https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png","fifa.friendly":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.world":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.uefa":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.conmebol":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.concacaf":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","eng.1":"https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg","esp.1":"https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg","ita.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/730.png","ger.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/720.png","fra.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/710.png","ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png","por.1":"/assets/logos/competitions/por.1.png","usa.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Major_League_Soccer_logo.svg","cze.1":EXACT_LEAGUE_LOGOS["cze.1"],"tur.1":EXACT_LEAGUE_LOGOS["tur.1"],"ksa.1":EXACT_LEAGUE_LOGOS["ksa.1"],"eng.2":EXACT_LEAGUE_LOGOS["eng.2"]};
+const REMOTE_LEAGUE_LOGOS={"uefa.nations":"https://cdn.prod.website-files.com/68f550992570ca0322737dc2/69fe89ba12923df17d6c7a4b_uefa-nations-league-footylogos.png","concacaf.nations.league":"https://commons.wikimedia.org/wiki/Special:Redirect/file/CONCACAF_Nations_League_(2026).svg","uefa.champions":"https://upload.wikimedia.org/wikipedia/en/f/f5/UEFA_Champions_League.svg","uefa.europa":"https://a.espncdn.com/i/leaguelogos/soccer/500/2310.png","fifa.friendly":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.world":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.uefa":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.conmebol":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","fifa.worldq.concacaf":"https://commons.wikimedia.org/wiki/Special:Redirect/file/FIFA_logo_without_slogan.svg","eng.1":"https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg","esp.1":"https://upload.wikimedia.org/wikipedia/commons/0/0f/LaLiga_logo_2023.svg","ita.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/730.png","ger.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/720.png","fra.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/710.png","ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png","por.1":"assets/logos/competitions/por.1.png","usa.1":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Major_League_Soccer_logo.svg","cze.1":EXACT_LEAGUE_LOGOS["cze.1"],"tur.1":EXACT_LEAGUE_LOGOS["tur.1"],"ksa.1":EXACT_LEAGUE_LOGOS["ksa.1"],"eng.2":EXACT_LEAGUE_LOGOS["eng.2"]};
 const LEAGUE_LOGOS={
-"uefa.nations":"/assets/logos/competitions/uefa.nations.png",
-"concacaf.nations.league":"/assets/logos/competitions/concacaf.nations.league.png",
-"uefa.champions":"/assets/logos/competitions/uefa.champions.png",
-"uefa.europa":"/assets/logos/competitions/uefa.europa.png",
-"fifa.world":"/assets/logos/competitions/fifa.world.png",
-"eng.1":"/assets/logos/competitions/eng.1.png",
-"esp.1":"/assets/logos/competitions/esp.1.png",
+"uefa.nations":"assets/logos/competitions/uefa.nations.png",
+"concacaf.nations.league":"assets/logos/competitions/concacaf.nations.league.png",
+"uefa.champions":"assets/logos/competitions/uefa.champions.png",
+"uefa.europa":"assets/logos/competitions/uefa.europa.png",
+"fifa.world":"assets/logos/competitions/fifa.world.png",
+"eng.1":"assets/logos/competitions/eng.1.png",
+"esp.1":"assets/logos/competitions/esp.1.png",
 "ita.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/730.png",
 "ger.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/720.png",
 "fra.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/710.png",
@@ -838,18 +838,18 @@ function renderGames(){
   }).join("")
 }
 const FILTER_LEAGUE_LOGOS={
-  "eng.1":"/assets/logos/competitions/eng.1.png",
+  "eng.1":"assets/logos/competitions/eng.1.png",
   "eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png",
   "tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png",
   "ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png",
   "cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png",
-  "esp.1":"/assets/logos/competitions/esp.1.png",
+  "esp.1":"assets/logos/competitions/esp.1.png",
   "ita.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/730.png",
   "ger.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/720.png",
   "fra.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/710.png",
   "ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png",
   "por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
-  "usa.1":"/assets/logos/competitions/usa.1.png"
+  "usa.1":"assets/logos/competitions/usa.1.png"
 };
 function filterLeagueIconHtml(id){
   const src=FILTER_LEAGUE_LOGOS[id]||"";
@@ -867,9 +867,10 @@ function renderLeagues(){
 }
 function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
 
+const GITHUB_STATIC=location.hostname.endsWith(".github.io");
 async function repoData(path){
   const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
-  try{return await json(raw)}catch{return await json("/"+path+"?v="+Date.now())}
+  try{return await json(raw)}catch{return await json(path+"?v="+Date.now())}
 }
 function renderMeta(){
   const today=etDate();
@@ -909,11 +910,11 @@ async function load(date=S.date){
   try{
     const utcNext=addDate(S.date,1);
     const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload]=await Promise.all([
-      CAPTURE_FAST?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
-      CAPTURE_FAST?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-fixtures.json").catch(()=>null):null),
-      CAPTURE_FAST?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("/data/latest-odds.json").catch(()=>null):null),
-      CAPTURE_FAST?Promise.resolve(null):json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
+      (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
+      (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("data/latest-fixtures.json").catch(()=>null):null),
+      (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
+      (GITHUB_STATIC?repoData("data/"+S.date+"/odds.json").catch(()=>null):json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?json("data/latest-odds.json").catch(()=>null):null)),
+      (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
       repoData("data/performance/summary.json").catch(()=>null),
       repoData('data/daily-insights-'+S.date+'.json').catch(()=>null),
       repoData('data/research-base-'+S.date+'.json').catch(()=>null),
@@ -1021,7 +1022,7 @@ function matchH2HHtml(g){
 }
 
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
-  const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form)}</div></div>`};
+  const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form||g.model?.[side==="home"?"displayHome":"displayAway"]?.form)}</div></div>`};
   const first=`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
   return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`;
 }
@@ -1053,6 +1054,7 @@ function extractVerifiedH2H(g,payloads){
 
 async function loadVerifiedMatchDetails(g){
   if(g.matchDetailsRequested)return;
+  if(GITHUB_STATIC||g.staticDetails){g.matchDetailsRequested=true;g.matchDetailsPending=false;g.matchH2H=g.matchH2H||g.h2h||[];return;}
   g.matchDetailsRequested=true;
   const staticH2H=Array.isArray(g.h2h)?g.h2h.filter(x=>x&&x.date&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5):[];
   if(staticH2H.length){
@@ -1131,7 +1133,7 @@ function openGame(id){
   S.openGameId=String(id);
   renderModal(g);document.getElementById("drawer").classList.add("on");
   loadVerifiedMatchDetails(g);
-  if(!g.availabilityLoaded){
+  if(!g.availabilityLoaded&&!GITHUB_STATIC){
     g.availabilityLoaded=true;
     matchAvailability(g).then(data=>{
       g.availability=data;
