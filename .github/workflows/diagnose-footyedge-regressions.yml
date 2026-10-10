@@ -1,0 +1,46 @@
+name: Diagnose FootyEdge regressions
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/diagnose-footyedge-regressions.yml"
+permissions:
+  contents: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Capture exact regression failures for owner repair
+        shell: bash
+        run: |
+          set +e
+          node --test tests/*.test.mjs > /tmp/footyedge-regression.log 2>&1
+          code=$?
+          mkdir -p docs
+          {
+            echo "GitHub-only Oct 10 regression diagnostics"
+            echo "Test exit code: $code"
+            echo
+            grep -E '^(not ok |# (tests|pass|fail|duration_ms|error|Subtest))' /tmp/footyedge-regression.log | tail -100
+            echo
+            echo "Failure details:"
+            awk '/^not ok /{p=1;n=0} p {print;n++;if(n>=32)p=0}' /tmp/footyedge-regression.log | tail -320
+          } > docs/oct10-github-regression-diagnostics.txt
+          cat docs/oct10-github-regression-diagnostics.txt
+          exit 0
+      - name: Commit one-time diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge CI Diagnostics"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/oct10-github-regression-diagnostics.txt
+          git commit -m "test: record exact GitHub regression failures"
+          git pull --rebase origin main
+          git push origin HEAD:main
