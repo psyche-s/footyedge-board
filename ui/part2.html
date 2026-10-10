@@ -987,7 +987,7 @@ function matchH2HHtml(g){
 
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
   const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form)}</div></div>`};
-  const first=g.done?"FT":g.live?(g.detail||"LIVE"):`${timeET(g.date)} ET`;
+  const first=`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
   return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`;
 }
 
@@ -1004,6 +1004,8 @@ function extractVerifiedH2H(g,payloads){
       const two=players.find(c=>String(c?.id??c?.team?.id)===String(g.away.id));
       const home=players.find(c=>c.homeAway==="home"),away=players.find(c=>c.homeAway==="away");
       if(!one||!two||!home||!away)continue;
+      const hasRealScore=c=>{const raw=c.score&&typeof c.score==="object"?(c.score.value??c.score.displayValue):c.score;return raw!==null&&raw!==undefined&&raw!=="";};
+      if(!hasRealScore(home)||!hasRealScore(away))continue;
       const homeScore=scoreVal(home.score),awayScore=scoreVal(away.score);
       if(!Number.isInteger(homeScore)||!Number.isInteger(awayScore)||homeScore<0||awayScore<0)continue;
       const hn=home.team?.displayName||home.team?.name,an=away.team?.displayName||away.team?.name;
