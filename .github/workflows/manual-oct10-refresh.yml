@@ -105,3 +105,5 @@ jobs:
           set -euo pipefail
           test -s data/boards/2026-10-10.json
           node --input-type=module -e 'import fs from "node:fs"; const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json")); if(b.date!=="2026-10-10"||b.immutable!==true||b.state!=="locked") process.exit(1); console.log("LOCK VERIFIED",b.date,b.games?.length,"matches",b.top5?.length,"Top 5");'
+
+# One-time refresh trigger: 2026-10-10
