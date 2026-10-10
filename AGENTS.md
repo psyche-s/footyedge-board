@@ -1,3 +1,11 @@
+## Latest owner-approved schedule override — effective October 10, 2026
+- FootyEdge's men's-only official CURRENT-TORONTO-DATE board refresh, publication, and immutable freeze are now **12:30 AM America/Toronto DAILY**, superseding every older reference to a 6:00 AM cutoff below. There is NO duplicate 6 AM official refresh.
+- Deterministic research and prior-pick review start at local **12:00 AM**; independent, research-only Dixon–Coles modeling begins approximately **12:10 AM** or upon research completion, with no guarantee it will finish before the official lock. An unavailable shadow forecast is advisory and cannot be backfilled after lock or used to fabricate official confidence.
+- The user-approved ONE-TIME match-details modal/league-logo UI upgrade is scheduled on October 10 at 12:10 AM separately. The recurring 12:30 AM data/model/picks refresh is strictly **NO UI CHANGES**, preserving layout, labels, graphics, filters, tabs, logos, and the approved expanded match modal.
+- Official picks are for TODAY's fixtures only. Future schedule/research/price snapshots can be prepared, but future date picks are not published. Treat already locked boards, original Top 3/Top 5, price, rank, confidence and explanations as permanent; later scores, settlement and model grading remain separate. No retroactive modification except explicitly audited owner correction.
+- Keep original October 9 evidence-first, natural 'we/our' writing with WHY THIS PICK below Pick #1 and concise distinct reasoning for #2/#3; use verified last-10/last-5, H2H, home/away and team news data plus repeat-evidence postmatch improvement. Maximum favourite price **-500 inclusive** from exact native sportsbooks only; label early-night unavailable news, odds and lineups N/A/PASS rather than inventing.
+- The GitHub Actions schedules use EDT/EST UTC alternatives; verify the actual execution, immutable board state, and Vercel production separately. A scheduled trigger is not a guarantee of on-time GitHub Actions execution or a successful live deployment.
+
 # FootyEdge project rules
 
 ## Owner-approved publication and writing rules (2026-10-09)

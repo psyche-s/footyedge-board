@@ -6,9 +6,9 @@ on:
     paths:
       - ".github/workflows/archive-board.yml"
   schedule:
-    # One of these is 06:00 Toronto depending on DST; the gate below allows only local 06.
-    - cron: "0 10 * * *"
-    - cron: "0 11 * * *"
+    # EDT/EST alternatives for 00:30 Toronto; local-time gate rejects the other.
+    - cron: "30 4 * * *"
+    - cron: "30 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -27,20 +27,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Toronto 06:00 gate
+      - name: Toronto 00:30 gate
         id: gate
         shell: bash
         run: |
           DATE="$(TZ=America/Toronto date +%F)"
           HOUR="$(TZ=America/Toronto date +%H)"
+          MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             RUN=true
-          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && "$HOUR" == "06" && "$DATE" != "2026-10-07" ]]; then
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && "$HOUR" == "00" && "$MINUTE" -ge 30 && "$DATE" != "2026-10-07" ]]; then
             RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
-          echo "Toronto date/hour: $DATE $HOUR; run=$RUN"
+          echo "Toronto date/time: $DATE $HOUR:$MINUTE; run=$RUN"
 
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.run == 'true'
@@ -87,7 +88,7 @@ jobs:
             echo "No board changes."
             exit 0
           fi
-          git commit -m "chore(board): publish and lock $TODAY at 6am Toronto [skip ci]"
+          git commit -m "chore(board): publish and lock $TODAY at 12:30am Toronto [skip ci]"
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main

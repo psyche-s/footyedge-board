@@ -9,9 +9,9 @@ on:
       - 'scripts/build-research-base.mjs'
       - '.github/workflows/build-research-base.yml'
   schedule:
-    # Dual UTC schedules for Toronto DST/standard time. Only the run landing in local hour 05 proceeds.
-    - cron: "5 9 * * *"
-    - cron: "5 10 * * *"
+    # Local midnight research before official 00:30 publication; EDT/EST alternatives.
+    - cron: "0 4 * * *"
+    - cron: "0 5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -38,7 +38,7 @@ jobs:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "05" ]]; then
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "00" ]]; then
             echo "Skip duplicate local-hour research/review run."
             exit 0
           fi
@@ -50,8 +50,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "05" ]]; then
-            echo "Skipping duplicate UTC schedule outside Toronto 05:00 hour."
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$(TZ=America/Toronto date +%H)" != "00" ]]; then
+            echo "Skipping duplicate UTC schedule outside Toronto 00:00 hour."
             exit 0
           fi
           TODAY="$(TZ=America/Toronto date +%F)"
