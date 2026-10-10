@@ -834,11 +834,32 @@ function renderGames(){
     html+='<button class="details" onclick="event.stopPropagation();openGame(\''+g.id+'\')">VIEW FULL ANALYSIS →</button></article>';return html;
   }).join("")
 }
+const FILTER_LEAGUE_LOGOS={
+  "eng.1":"/assets/logos/competitions/eng.1.png",
+  "eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png",
+  "tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png",
+  "ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png",
+  "cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png",
+  "esp.1":"/assets/logos/competitions/esp.1.png",
+  "ita.1":"/assets/logos/competitions/ita.1.png",
+  "ger.1":"/assets/logos/competitions/ger.1.png",
+  "fra.1":"/assets/logos/competitions/fra.1.png",
+  "ned.1":"/assets/logos/competitions/ned.1.png",
+  "por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
+  "usa.1":"/assets/logos/competitions/usa.1.png"
+};
+function filterLeagueIconHtml(id){
+  const src=FILTER_LEAGUE_LOGOS[id]||"";
+  if(!src)return leagueIconHtml(id);
+  const safeId=String(id||"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+  const extra=id==="ita.1"?" leagueLogoSerieA":id==="ger.1"?" leagueLogoBundesliga":"";
+  return '<span class="leagueIcon league-'+safeId+'" aria-hidden="true"><img class="leagueLogoImg'+extra+'" src="'+esc(src)+'" alt="" loading="eager" decoding="async" onerror="this.parentElement.outerHTML=leagueFallbackHtml()"></span>'
+}
 function renderLeagues(){
   const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","cze.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
-  row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":leagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
+  row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":filterLeagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
   row.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{S.league=b.dataset.league;renderLeagues();renderBest();renderGames()})
 }
 function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
