@@ -162,8 +162,10 @@ function candidateSet(game,fx,od,hs,as,h2h){
       const [hp,dp,ap]=noVig(ds);
       const h2hHome=h2h.length?mean(h2h.map(m=>m.home===home?(m.homeScore>m.awayScore?1:m.homeScore===m.awayScore?.5:0):(m.away===home?(m.awayScore>m.homeScore?1:m.awayScore===m.homeScore?.5:0):.5))):null;
       const h2hAway=h2hHome==null?null:1-h2hHome;
-      const homeTrend=mean([hs.win,1-as.win-as.draw*.35]);
-      const awayTrend=mean([as.win,1-hs.win-hs.draw*.35]);
+      // Directional matchup model: attacking form, opponent resistance and draw exposure.
+      // The two sides are evaluated symmetrically; H2H contributes separately in makePick.
+      const homeTrend=clamp(.58*hs.win+.42*as.loss-.20*mean([hs.draw,as.draw]));
+      const awayTrend=clamp(.58*as.win+.42*hs.loss-.20*mean([hs.draw,as.draw]));
       const drawTrend=mean([hs.draw,as.draw]);
       out.push(makePick({label:home+" ML",category:"Match Result",decimal:ds[0],marketProb:hp,trendProb:clamp(homeTrend),h2hProb:h2hHome,evidence:[
         `${home} won ${hs.wins} of its last ${hs.n||0}; ${away} lost ${as.losses} of its last ${as.n||0}.`,
