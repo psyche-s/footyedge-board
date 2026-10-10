@@ -23,9 +23,31 @@ jobs:
       - name: Restore original verified odds and build consistent picks
         run: node scripts/correct-footyedge-coherence-v2.mjs
       - name: Validate entire board and regression suite
+        shell: bash
         run: |
-          node scripts/validate-published-boards.mjs --base HEAD
-          node --test tests/*.test.mjs
+          set +e
+          node scripts/validate-published-boards.mjs --base HEAD > /tmp/footyedge-integrity.log 2>&1
+          code1=$?
+          node --test tests/*.test.mjs > /tmp/footyedge-tests.log 2>&1
+          code2=$?
+          tail -120 /tmp/footyedge-tests.log
+          if [[ "$code1" != "0" || "$code2" != "0" ]]; then exit 1; fi
+      - name: Record specific failures if validation fails
+        if: failure()
+        shell: bash
+        run: |
+          mkdir -p docs
+          {
+            cat /tmp/footyedge-integrity.log
+            echo "TEST FAILURE DETAILS"
+            grep -A 28 '^not ok ' /tmp/footyedge-tests.log || true
+          } > docs/oct10-coherence-v2-failures.txt
+          git config user.name "FootyEdge CI Diagnostics"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/oct10-coherence-v2-failures.txt
+          git commit -m "test: record coherence repair regression failure"
+          git pull --rebase origin main
+          git push origin HEAD:main
       - name: Commit versioned owner correction
         shell: bash
         run: |
