@@ -1053,7 +1053,15 @@ function extractVerifiedH2H(g,payloads){
 
 async function loadVerifiedMatchDetails(g){
   if(g.matchDetailsRequested)return;
-  g.matchDetailsRequested=true;g.matchDetailsPending=true;
+  g.matchDetailsRequested=true;
+  const staticH2H=Array.isArray(g.h2h)?g.h2h.filter(x=>x&&x.date&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5):[];
+  if(staticH2H.length){
+    g.matchH2H=staticH2H;
+    g.matchDetailsPending=false;
+    if(S.openGameId===String(g.id)&&document.getElementById("drawer")?.classList.contains("on"))renderModal(g);
+    return;
+  }
+  g.matchDetailsPending=true;
   const years=[Number(g.year),Number(g.year)-1,Number(g.year)-2,Number(g.year)-3].filter(y=>Number.isInteger(y)&&y>=2020);
   try{
     const results=await Promise.allSettled([

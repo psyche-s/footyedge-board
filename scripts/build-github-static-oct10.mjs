@@ -42,10 +42,16 @@ async function fetchJson(url){
   }
 }
 const scheduleCache=new Map();
-async function schedule(teamId,season){
-  const key=`${teamId}:${season}`;if(scheduleCache.has(key))return scheduleCache.get(key);
-  const url=`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(teamId)}/schedule?season=${season}`;
-  const p=fetchJson(url).catch(()=>({events:[]}));scheduleCache.set(key,p);return p
+async function schedule(league,teamId,season){
+  const key=`${league}:${teamId}:${season}`;if(scheduleCache.has(key))return scheduleCache.get(key);
+  const leagueUrl=`https://site.api.espn.com/apis/site/v2/sports/soccer/${encodeURIComponent(league)}/teams/${encodeURIComponent(teamId)}/schedule?season=${season}`;
+  const allUrl=`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(teamId)}/schedule?season=${season}`;
+  const p=(async()=>{
+    const leaguePayload=await fetchJson(leagueUrl).catch(()=>null);
+    if(Array.isArray(leaguePayload?.events)&&leaguePayload.events.length)return leaguePayload;
+    return await fetchJson(allUrl).catch(()=>({events:[]}));
+  })();
+  scheduleCache.set(key,p);return p
 }
 function scoreVal(s){
   if(s==null)return null;
@@ -172,8 +178,8 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   const fx=fixtureById.get(String(old.id));if(!fx)return old;
   const homeId=fx.teams.home.id,awayId=fx.teams.away.id,before=fx.fixture.date;
   const [homePayloads,awayPayloads]=await Promise.all([
-    Promise.all(years.map(y=>schedule(homeId,y))),
-    Promise.all(years.map(y=>schedule(awayId,y)))
+    Promise.all(years.map(y=>schedule(old.league,homeId,y))),
+    Promise.all(years.map(y=>schedule(old.league,awayId,y)))
   ]);
   const homeGames=homePayloads.flatMap(p=>extractTeamGames(p,homeId,before)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
   const awayGames=awayPayloads.flatMap(p=>extractTeamGames(p,awayId,before)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
