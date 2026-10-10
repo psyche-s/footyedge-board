@@ -111,7 +111,9 @@ function oddsFromFootball(entry,homeName,awayName){
   const books=entry.bookmakers||[];
   const book=books.find(x=>/bet365/i.test(x.name||""))||books.find(x=>/draftkings/i.test(x.name||""))||books[0];
   if(!book)return null;
-  const out={provider:book.name||null,homeML:null,drawML:null,awayML:null,over25:null,under25:null,markets:{},probs:{home:null,draw:null,away:null,over25:null,under25:null}};
+  const nativeBookKey=inferBookKey(book.name);
+  const out={provider:book.name||null,homeML:null,drawML:null,awayML:null,over25:null,under25:null,markets:{},marketBooks:{},totalProbs:{},spreads:[],probs:{home:null,draw:null,away:null,over25:null,under25:null}};
+  const setMarket=(label,odd)=>{const k=normName(label);out.markets[k]=odd;if(nativeBookKey)out.marketBooks[k]=nativeBookKey};
   const totals={};
   let homeP=null,drawP=null,awayP=null,bttsYesP=null,bttsNoP=null;
   for(const bet of book.bets||[]){
@@ -122,36 +124,37 @@ function oddsFromFootball(entry,homeName,awayName){
       if(odd==null)continue;
       if(bn.includes("match winner")){
         const vn=normName(label);
-        if(vn==="home"){out.homeML=odd;homeP=prob;out.markets[normName(homeName+" ML")]=odd}
-        else if(vn==="draw"){out.drawML=odd;drawP=prob}
-        else if(vn==="away"){out.awayML=odd;awayP=prob;out.markets[normName(awayName+" ML")]=odd}
+        if(vn==="home"){out.homeML=odd;homeP=prob;setMarket(homeName+" ML",odd)}
+        else if(vn==="draw"){out.drawML=odd;drawP=prob;setMarket("Draw",odd)}
+        else if(vn==="away"){out.awayML=odd;awayP=prob;setMarket(awayName+" ML",odd)}
       }else if(bn.includes("goals over under")||bn.includes("over under")){
         const m=label.match(/(Over|Under)\s*([0-9]+(?:\.[0-9]+)?)/i);
         if(m){
           const side=m[1][0].toUpperCase()+m[1].slice(1).toLowerCase(),line=m[2],key=side+" "+line+" Goals";
-          out.markets[normName(key)]=odd;
+          setMarket(key,odd);
           totals[line]=totals[line]||{};totals[line][side.toLowerCase()]={odd,prob};
           if(line==="2.5"&&side==="Over")out.over25=odd;
           if(line==="2.5"&&side==="Under")out.under25=odd;
         }
       }else if(bn.includes("both teams")||bn==="btts"){
         const vn=normName(label);
-        if(vn==="yes"){out.markets[normName("BTTS — Yes")]=odd;bttsYesP=prob}
-        if(vn==="no"){out.markets[normName("BTTS — No")]=odd;bttsNoP=prob}
+        if(vn==="yes"){setMarket("BTTS — Yes",odd);bttsYesP=prob}
+        if(vn==="no"){setMarket("BTTS — No",odd);bttsNoP=prob}
       }else if(bn.includes("double chance")){
         const vn=normName(label);
-        if(vn.includes("home")&&vn.includes("draw"))out.markets[normName(homeName+" or Draw")]=odd;
-        if(vn.includes("away")&&vn.includes("draw"))out.markets[normName(awayName+" or Draw")]=odd;
+        if(vn.includes("home")&&vn.includes("draw"))setMarket(homeName+" or Draw",odd);
+        if(vn.includes("away")&&vn.includes("draw"))setMarket(awayName+" or Draw",odd);
       }else if(bn.includes("team total")){
         const m=label.match(/(Over|Under)\s*([0-9]+(?:\.[0-9]+)?)/i);
         if(m&&m[1].toLowerCase()==="over"&&m[2]==="0.5"){
-          if(bn.includes("home"))out.markets[normName(homeName+" 1+ Goal")]=odd;
-          if(bn.includes("away"))out.markets[normName(awayName+" 1+ Goal")]=odd;
+          if(bn.includes("home"))setMarket(homeName+" 1+ Goal",odd);
+          if(bn.includes("away"))setMarket(awayName+" 1+ Goal",odd);
         }
       }
     }
   }
   const ml=noVig([homeP,drawP,awayP]);out.probs.home=ml[0]||null;out.probs.draw=ml[1]||null;out.probs.away=ml[2]||null;
+  for(const [line,pair] of Object.entries(totals)){const tg=noVig([pair.over?.prob||null,pair.under?.prob||null]);out.totalProbs[line]={over:tg[0]||null,under:tg[1]||null}}
   const t25=totals["2.5"]||{},tg=noVig([t25.over?.prob||null,t25.under?.prob||null]);out.probs.over25=tg[0]||null;out.probs.under25=tg[1]||null;
   if(bttsYesP!=null&&bttsNoP!=null){const bg=noVig([bttsYesP,bttsNoP]);out.probs.bttsYes=bg[0]||null;out.probs.bttsNo=bg[1]||null}
   return out;

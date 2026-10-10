@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: footyedge-oct10-owner-repair
+  group: footyedge-oct10-owner-repair-v2
   cancel-in-progress: true
 jobs:
   repair:
@@ -45,30 +45,20 @@ jobs:
           FORCE_RESEARCH: "1"
           RESEARCH_DATE: "2026-10-10"
         run: node scripts/build-research-base.mjs
-      - name: Capture fresh exact sportsbook snapshot with spreads
+      - name: Temporarily bypass incomplete old daily-odds snapshot
         shell: bash
         run: |
           set -euo pipefail
-          URL='https://footyedge-board.vercel.app/api/the-odds?live=1&publish=1&date=2026-10-10&leagues=eng.1,eng.2,tur.1,ksa.1,cze.1,esp.1,ita.1,ger.1,fra.1,ned.1,por.1,usa.1'
-          READY=false
-          for ATTEMPT in $(seq 1 36); do
-            curl --fail --silent --show-error "$URL" -o /tmp/footyedge-fresh-odds.json || true
-            if jq -e '.enabled == true and (.markets | index("spreads")) != null and (.events | length) > 0 and ([.events[] | select(((.spreads // []) | length) > 0)] | length) > 0' /tmp/footyedge-fresh-odds.json >/dev/null 2>&1; then
-              READY=true
-              break
-            fi
-            echo "Waiting for spread-enabled production odds API ($ATTEMPT/36)"
-            sleep 10
-          done
-          test "$READY" = "true"
-          cp /tmp/footyedge-fresh-odds.json data/daily-odds-2026-10-10.json
-          jq '{events:(.events|length),withSpreads:([.events[]|select(((.spreads//[])|length)>0)]|length),markets}' data/daily-odds-2026-10-10.json
+          mv data/daily-odds-2026-10-10.json /tmp/footyedge-current-daily-odds.json
       - name: Capture fresh complete current-day candidates
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           PREVIEW_DAYS: "0"
           FORCE_TODAY_CAPTURE: "1"
         run: node scripts/publish-board-previews.mjs
+      - name: Restore published daily-odds snapshot
+        shell: bash
+        run: mv /tmp/footyedge-current-daily-odds.json data/daily-odds-2026-10-10.json
       - name: Merge as audited owner correction while preserving frozen picks
         env:
           ORIGINAL_BOARD: /tmp/footyedge-original-board.json
