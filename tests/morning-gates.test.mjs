@@ -75,16 +75,28 @@ test("rolling previews ignore missing price but respect posted-price floor",()=>
 });
 test("public board prefers official lock then rolling preview",()=>{
   assert.match(p2,/data\/board-drafts/);
-  assert.match(p2,/Morning preview · updates until 6:00 AM ET/);
-  assert.match(p2,/Locked at 6:00 AM ET/)
+  assert.match(p2,/Overnight preview · updates until 12:30 AM ET/);
+  assert.match(p2,/Locked at 12:30 AM ET/)
 });
-test("official board locks from preview at 06:00 Toronto",()=>{
+test("GitHub scheduled jobs and explicit minute cutoff use the new Toronto midnight pipeline",()=>{
+  const publish=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
+  const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
+  const shadow=fs.readFileSync(".github/workflows/shadow-dixon-coles.yml","utf8");
+  for(const [yaml,starts] of [[publish,["30 4","30 5"]],[research,["0 4","0 5"]],[shadow,["10 4","10 5"]]]){
+    for(const start of starts)assert.ok(yaml.includes('cron: "'+start+' * * *"'));
+  }
+  assert.match(publish,/Toronto 00:30 gate/);
+  const freezer=fs.readFileSync("scripts/archive-board.mjs","utf8");
+  assert.match(freezer,/Number\(p\.minute\)<LOCK_MINUTE/);
+  assert.match(freezer,/00:30 America\/Toronto/);
+});
+test("official board locks from preview at 00:30 Toronto",()=>{
   const freezer=fs.readFileSync("scripts/archive-board.mjs","utf8");
   const publisher=fs.readFileSync("scripts/publish-board-previews.mjs","utf8");
-  assert.match(freezer,/LOCK_HOUR=6/);
+  assert.match(freezer,/LOCK_HOUR=0,LOCK_MINUTE=30/);
   assert.match(freezer,/board-drafts/);
   assert.match(freezer,/payload\.immutable=true/);
-  assert.match(publisher,/Past 06:00 Toronto lock; refusing mutable refresh/)
+  assert.match(publisher,/Past 00:30 Toronto lock; refusing mutable refresh/)
 });
 
 test("league filters use recognizable Wikimedia marks for MLS, Bundesliga and Ligue 1",()=>{

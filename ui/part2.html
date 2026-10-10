@@ -916,7 +916,7 @@ async function load(date=S.date){
       S.games=applyBoardArchive(games,archivePayload);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
       for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
-      S.boardReady=true;S.dataSource="Locked at 6:00 AM ET";
+      S.boardReady=true;S.dataSource="Locked at 12:30 AM ET";
       if(!S.games.length){
         S.availability=archivePayload.nextGameDate
           ?{kind:"empty",date,count:0,nextGameDate:archivePayload.nextGameDate,searchComplete:true}
@@ -926,7 +926,7 @@ async function load(date=S.date){
       render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE&&draftPayload?.date===S.date){
-      S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Morning preview · updates until 6:00 AM ET";render();planRefresh();return;
+      S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Overnight preview · updates until 12:30 AM ET";render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE){
       for(const g of games)g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
