@@ -248,13 +248,29 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   });
   const summaryH=summaryH2H(summary);
   const h2h=summaryH.length?summaryH:(directH2H.length?directH2H:h2hFrom([...homePayloads.flatMap(p=>p.events||[]),...awayPayloads.flatMap(p=>p.events||[])],homeId,awayId,before));
-  const candidates=candidateSet(old,fx,oddsById.get(String(old.id))||summaryOdds(summary),hs,as,h2h).slice(0,3);
+  const allCandidates=candidateSet(old,fx,oddsById.get(String(old.id))||summaryOdds(summary),hs,as,h2h);
+  const pickSide=p=>/^over\\s/i.test(p.label||"")?"over":/^under\\s/i.test(p.label||"")?"under":null;
+  const coherent=(p,chosen)=>!chosen.some(q=>{
+    const a=pickSide(p),b=pickSide(q);
+    if(a&&b&&a!==b)return true;
+    if(a&&b&&a===b)return true;
+    const result=x=>/\\sML$/i.test(x.label||"")||/^Draw$/i.test(x.label||"");
+    return result(p)&&result(q);
+  });
+  const candidates=allCandidates.filter(p=>{
+    const f=p.category==="Goals"?(/over/i.test(p.label)?mean([hs.over25,as.over25]):mean([hs.under25,as.under25])):null;
+    return f===null||f>=0.35;
+  });
   const preserved=old.top?JSON.parse(JSON.stringify(old.top)):null;
-  let top3=candidates;
-  if(preserved){
-    const same=p=>norm(p.label)===norm(preserved.label);
-    top3=[preserved,...candidates.filter(p=>!same(p))].slice(0,3);
+  const selected=[];
+  if(preserved)selected.push(preserved);
+  for(const p of candidates){
+    if(selected.length===3)break;
+    if(selected.some(q=>norm(q.label)===norm(p.label)))continue;
+    if(!coherent(p,selected))continue;
+    selected.push(p);
   }
+  const top3=selected;
   const top=top3[0]||null;
   return{
     ...old,date:fx.fixture.date,year:fx.league.season,
