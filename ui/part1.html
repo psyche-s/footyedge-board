@@ -1841,7 +1841,8 @@ function clonePickForArchive(p,g){
 }
 function restoreArchivedPick(p){
   if(!p)return null;
-  return {...p,archived:true,bookExact:p.bookExact??(p.odds!=null||Boolean(p.verifiedPrice))}
+  const verifiedArchivedPrice=Boolean(p.verifiedPrice||(p.bookExact&&p.odds!=null&&p.bookKey));
+  return {...p,archived:true,verifiedPrice:verifiedArchivedPrice,bookExact:p.bookExact??(p.odds!=null||verifiedArchivedPrice)}
 }
 function hasPostedPrice(p){return Boolean(p&&(p.verifiedPrice||(p.odds!=null&&p.bookKey)))}
 function previewPriceAllowed(p){return Boolean(p&&(!hasPostedPrice(p)||priceAllowed(p)))}

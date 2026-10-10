@@ -1,0 +1,8 @@
+name = "footyedge-board"
+main = "cloudflare-worker.js"
+compatibility_date = "2026-10-10"
+
+[assets]
+directory = "."
+binding = "ASSETS"
+run_worker_first = [ "/api/*" ]
