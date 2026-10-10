@@ -1073,13 +1073,13 @@ function renderModal(g){
   const modelApproach=g.ownerEditorial?'<p class="modelFootnote">We weigh recent form, head-to-head results and matchup trends for each pick.</p>':'';
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach);
 }
-document.getElementById("modalBody").addEventListener("click",event=>{
-  const btn=event.target.closest("[data-h2h-toggle]");if(!btn)return;
+document.getElementById("modalBody").onclick=event=>{
+  const btn=event?.target?.closest?.("[data-h2h-toggle]");if(!btn)return;
   const g=S.games.find(x=>x.id===String(S.openGameId));if(!g)return;
   g.h2hExpanded=!g.h2hExpanded;
   renderModal(g);
   document.querySelector("[data-h2h-toggle]")?.focus();
-});
+};
 
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
