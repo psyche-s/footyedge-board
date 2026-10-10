@@ -460,7 +460,8 @@ function researchAngleCandidates(g){
 function rankingFamily(g,p){
   const label=normName(p?.label||""),cat=p?.category||"";
   if(cat==="Goals")return"goals:total";
-  if(cat==="Match Result"||cat==="Double Chance"||cat==="Handicap"||cat==="Win to Nil"){
+  if(cat==="Match Result")return"result:three-way";
+  if(cat==="Double Chance"||cat==="Handicap"||cat==="Win to Nil"){
     const side=selectedSide(g,p)||"other";
     return"result:"+side;
   }

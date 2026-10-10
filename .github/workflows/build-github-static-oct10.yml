@@ -1,10 +1,6 @@
 name: Build FootyEdge Static Board
 on:
-  push:
-    branches: [main]
-    paths:
-      - "scripts/build-github-static-oct10.mjs"
-      - ".github/workflows/build-github-static-oct10.yml"
+  workflow_dispatch:
 permissions:
   contents: write
 concurrency:
