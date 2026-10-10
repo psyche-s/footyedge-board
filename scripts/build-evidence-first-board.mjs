@@ -7,6 +7,40 @@ import fs from "node:fs";
 const date=process.env.FOOTYEDGE_DATE||"2026-10-10";
 const file="data/boards/"+date+".json";
 const board=JSON.parse(fs.readFileSync(file,"utf8"));
+const rawOdds=JSON.parse(fs.readFileSync("data/"+date+"/odds.json","utf8"));
+const oddsByFixture=new Map((rawOdds.response||[]).map(x=>[String(x.fixture?.id),x]));
+function american(decimal){
+  const d=Number(decimal);
+  if(!Number.isFinite(d)||d<=1)return null;
+  return d>=2?Math.round((d-1)*100):Math.round(-100/(d-1));
+}
+function fixtureQuotes(g){
+  const x=oddsByFixture.get(String(g.id));
+  const map=new Map();
+  if(!x||!x.update||!Number.isFinite(Date.parse(x.update)))return map;
+  const kickoff=Date.parse(x.fixture?.date);
+  if(!Number.isFinite(kickoff)||Date.parse(x.update)>=kickoff)return map;
+  for(const book of x.bookmakers||[]){
+    if(!book.name)continue;
+    for(const bet of book.bets||[]){
+      for(const v of bet.values||[]){
+        let label=null;
+        if(bet.name==="Match Winner"){
+          if(v.value==="Home")label=g.home+" ML";
+          if(v.value==="Away")label=g.away+" ML";
+          if(v.value==="Draw")label="Draw";
+        }
+        if(bet.name==="Goals Over/Under"&&/^(Over|Under) [1-4]\\.5$/.test(v.value))label=v.value+" Goals";
+        const price=american(v.odd);
+        if(label&&price!==null&&!map.has(label.toLowerCase())){
+          map.set(label.toLowerCase(),{label,odds:price,displayOdds:(price>0?"+":"")+price,provider:book.name,bookExact:true,verifiedPrice:true,oddsTimestamp:x.update,priceDecimal:Number(v.odd)});
+        }
+      }
+    }
+  }
+  return map;
+}
+
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const poisson=(lambda,k)=>Math.exp(-lambda)*Math.pow(lambda,k)/[1,1,2,6,24,120,720,5040,40320,362880][k];
 const n=s=>Number.isFinite(Number(s))?Number(s):null;
@@ -58,7 +92,7 @@ function buildGame(g){
   const xh=clamp((Number(h.gf)+Number(a.ga))/2*1.08,.25,4);
   const xa=clamp((Number(a.gf)+Number(h.ga))/2*.94,.25,4);
   const p=markets(xh,xa);
-  const odds=new Map((g.top3||[]).filter(x=>x.verifiedPrice===true&&x.bookExact===true&&Number.isFinite(Number(x.odds))&&x.provider).map(x=>[String(x.label).toLowerCase(),x]));
+  const odds=fixtureQuotes(g);
   const candidates=[
     [g.home+" ML","Match Result",p.home],[g.away+" ML","Match Result",p.away],["Draw","Match Result",p.draw],
     [g.home+" Double Chance (1X)","Double Chance",p.home+p.draw],
@@ -73,7 +107,7 @@ function buildGame(g){
     // No blanket small-sample multiplier. Sample size remains explicit metadata.
     const score=Math.round(clamp(prob*100,20,94));
     const verified=Boolean(quoted&&Number(quoted.odds)>=-500);
-    return {label,category,score,stars:pickStars(score),odds:verified?quoted.odds:null,displayOdds:verified?quoted.displayOdds:"Not verified",verifiedPrice:verified,bookExact:verified,provider:verified?quoted.provider:null,priceStatus:verified?"verified":"unavailable",researchOnly:!verified,modelScore:score,modelProbability:+prob.toFixed(4),confidenceType:"uncalibrated_model_probability_estimate",sampleSize:sample,reason:explanation(g,label,prob),modelVersion:"evidence-first-v1"};
+    return {label,category,score,stars:pickStars(score),odds:verified?quoted.odds:null,displayOdds:verified?quoted.displayOdds:"Not verified",verifiedPrice:verified,bookExact:verified,provider:verified?quoted.provider:null,oddsTimestamp:verified?quoted.oddsTimestamp:null,priceDecimal:verified?quoted.priceDecimal:null,priceStatus:verified?"verified":"unavailable",researchOnly:!verified,modelScore:score,modelProbability:+prob.toFixed(4),confidenceType:"uncalibrated_model_probability_estimate",sampleSize:sample,reason:explanation(g,label,prob),modelVersion:"evidence-first-v1"};
   }).sort((x,y)=>y.score-x.score);
   // No verified player-level event, minutes or market prices: player props are withheld rather than invented.
   const qualified=rows.filter(x=>x.verifiedPrice);
