@@ -1,0 +1,932 @@
+{
+  "date": "2026-10-09",
+  "mode": "research_only_not_published_picks",
+  "modelPolicy": "Retrospective comparison of archived original pre-match forecasts; no hindsight fitting or automatic coefficient changes",
+  "reviewedModels": [
+    {
+      "name": "original",
+      "modelVersion": "dc-shadow-v0.1",
+      "asOf": "2026-10-09T05:29:21.749565+00:00",
+      "researchInputSha256": null,
+      "coverage": {
+        "inputFixtures": 17,
+        "eligibleLeagueFixtures": 6,
+        "predicted": 1
+      }
+    },
+    {
+      "name": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "asOf": "2026-10-09T13:00:03.317722+00:00",
+      "researchInputSha256": "5ca4d7bb9e8a3948baa69f6f5c1761c04bfe5eba9087a38456b528f3c1696794",
+      "coverage": {
+        "inputFixtures": 6,
+        "eligibleLeagueFixtures": 6,
+        "predicted": 6
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "model": "original",
+      "modelVersion": "dc-shadow-v0.1",
+      "fixtureId": "401885423",
+      "league": "por.1",
+      "home": "Moreirense",
+      "away": "Gil Vicente",
+      "modelPicked1x2": "away_win",
+      "actual1x2": "away_win",
+      "mostLikelyResultCorrect": true,
+      "actualScore": [
+        0,
+        1
+      ],
+      "actualOutcome": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "multiclassBrier": 0.465671,
+      "multiclassLogLoss": 0.814578,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.280424,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.078638
+        },
+        "draw": {
+          "predictedProbability": 0.27675,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.076591
+        },
+        "away_win": {
+          "predictedProbability": 0.442826,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.310443
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.557174,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.310443
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.719576,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.078638
+        },
+        "over_1_5": {
+          "predictedProbability": 0.66554,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.442943
+        },
+        "under_2_5": {
+          "predictedProbability": 0.598632,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.161096
+        },
+        "over_2_5": {
+          "predictedProbability": 0.401368,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.161096
+        },
+        "under_3_5": {
+          "predictedProbability": 0.801331,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.039469
+        },
+        "btts_yes": {
+          "predictedProbability": 0.454851,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.206889
+        },
+        "btts_no": {
+          "predictedProbability": 0.545149,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.206889
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "Gil Vicente or Draw",
+          "originalConfidence": 72,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.719576
+        },
+        {
+          "originalLabel": "Under 3.5 Goals",
+          "originalConfidence": 80,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.801331
+        },
+        {
+          "originalLabel": "Gil Vicente ML",
+          "originalConfidence": 44,
+          "originalOdds": 135,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.442826
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    },
+    {
+      "model": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "fixtureId": "401882851",
+      "league": "esp.1",
+      "home": "Málaga",
+      "away": "Espanyol",
+      "modelPicked1x2": "away_win",
+      "actual1x2": "draw",
+      "mostLikelyResultCorrect": false,
+      "actualScore": [
+        1,
+        1
+      ],
+      "actualOutcome": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "multiclassBrier": 0.707389,
+      "multiclassLogLoss": 1.096486,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.187821,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.035277
+        },
+        "draw": {
+          "predictedProbability": 0.334043,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.443499
+        },
+        "away_win": {
+          "predictedProbability": 0.478135,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.228613
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.521865,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.228613
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.812179,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.035277
+        },
+        "over_1_5": {
+          "predictedProbability": 0.506125,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.243913
+        },
+        "under_2_5": {
+          "predictedProbability": 0.761606,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.056832
+        },
+        "over_2_5": {
+          "predictedProbability": 0.238394,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.056832
+        },
+        "under_3_5": {
+          "predictedProbability": 0.909282,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.00823
+        },
+        "btts_yes": {
+          "predictedProbability": 0.298473,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.49214
+        },
+        "btts_no": {
+          "predictedProbability": 0.701527,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.49214
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "Espanyol or Draw",
+          "originalConfidence": 81,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.812179
+        },
+        {
+          "originalLabel": "Espanyol ML",
+          "originalConfidence": 48,
+          "originalOdds": 160,
+          "originalOutcome": "miss",
+          "originalMarketModelProbability": 0.478135
+        },
+        {
+          "originalLabel": "Under 2.5 Goals",
+          "originalConfidence": 76,
+          "originalOdds": -130,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.761606
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    },
+    {
+      "model": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "fixtureId": "401876447",
+      "league": "fra.1",
+      "home": "Lens",
+      "away": "Lyon",
+      "modelPicked1x2": "home_win",
+      "actual1x2": "home_win",
+      "mostLikelyResultCorrect": true,
+      "actualScore": [
+        2,
+        1
+      ],
+      "actualOutcome": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": true,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "multiclassBrier": 0.402131,
+      "multiclassLogLoss": 0.729054,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.482365,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.267946
+        },
+        "draw": {
+          "predictedProbability": 0.248507,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.061756
+        },
+        "away_win": {
+          "predictedProbability": 0.269127,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.072429
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.730873,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.072429
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.517635,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.267946
+        },
+        "over_1_5": {
+          "predictedProbability": 0.775631,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.050341
+        },
+        "under_2_5": {
+          "predictedProbability": 0.4635,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.214832
+        },
+        "over_2_5": {
+          "predictedProbability": 0.5365,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.214832
+        },
+        "under_3_5": {
+          "predictedProbability": 0.686356,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.098373
+        },
+        "btts_yes": {
+          "predictedProbability": 0.560848,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.192854
+        },
+        "btts_no": {
+          "predictedProbability": 0.439152,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.192854
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "Under 3.5 Goals",
+          "originalConfidence": 69,
+          "originalOdds": -160,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.686356
+        },
+        {
+          "originalLabel": "BTTS — Yes",
+          "originalConfidence": 56,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.560848
+        },
+        {
+          "originalLabel": "Lens ML",
+          "originalConfidence": 48,
+          "originalOdds": 155,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.482365
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    },
+    {
+      "model": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "fixtureId": "401884781",
+      "league": "ger.1",
+      "home": "Borussia Dortmund",
+      "away": "Werder Bremen",
+      "modelPicked1x2": "home_win",
+      "actual1x2": "draw",
+      "mostLikelyResultCorrect": false,
+      "actualScore": [
+        2,
+        2
+      ],
+      "actualOutcome": {
+        "home_win": false,
+        "draw": true,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "multiclassBrier": 1.329897,
+      "multiclassLogLoss": 1.884401,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.778326,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.605791
+        },
+        "draw": {
+          "predictedProbability": 0.15192,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.71924
+        },
+        "away_win": {
+          "predictedProbability": 0.069754,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.004866
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.930246,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.004866
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.221674,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.605791
+        },
+        "over_1_5": {
+          "predictedProbability": 0.812539,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.035142
+        },
+        "under_2_5": {
+          "predictedProbability": 0.409116,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.167376
+        },
+        "over_2_5": {
+          "predictedProbability": 0.590884,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.167376
+        },
+        "under_3_5": {
+          "predictedProbability": 0.633009,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.4007
+        },
+        "btts_yes": {
+          "predictedProbability": 0.41847,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.338177
+        },
+        "btts_no": {
+          "predictedProbability": 0.58153,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.338177
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "Borussia Dortmund ML",
+          "originalConfidence": 96,
+          "originalOdds": -290,
+          "originalOutcome": "miss",
+          "originalMarketModelProbability": 0.8952857142857144
+        },
+        {
+          "originalLabel": "Over 1.5 Goals",
+          "originalConfidence": 81,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.812539
+        },
+        {
+          "originalLabel": "Under 3.5 Goals",
+          "originalConfidence": 63,
+          "originalOdds": -120,
+          "originalOutcome": "miss",
+          "originalMarketModelProbability": 0.633009
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    },
+    {
+      "model": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "fixtureId": "401875592",
+      "league": "ned.1",
+      "home": "PSV Eindhoven",
+      "away": "Heerenveen",
+      "modelPicked1x2": "home_win",
+      "actual1x2": "home_win",
+      "mostLikelyResultCorrect": true,
+      "actualScore": [
+        2,
+        0
+      ],
+      "actualOutcome": {
+        "home_win": true,
+        "draw": false,
+        "away_win": false,
+        "home_or_draw": true,
+        "away_or_draw": false,
+        "over_1_5": true,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "multiclassBrier": 0.116988,
+      "multiclassLogLoss": 0.326959,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.721113,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.077778
+        },
+        "draw": {
+          "predictedProbability": 0.152111,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.023138
+        },
+        "away_win": {
+          "predictedProbability": 0.126775,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.016072
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.873225,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.016072
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.278887,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.077778
+        },
+        "over_1_5": {
+          "predictedProbability": 0.940486,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.003542
+        },
+        "under_2_5": {
+          "predictedProbability": 0.181394,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.670116
+        },
+        "over_2_5": {
+          "predictedProbability": 0.818606,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.670116
+        },
+        "under_3_5": {
+          "predictedProbability": 0.35393,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.417406
+        },
+        "btts_yes": {
+          "predictedProbability": 0.707733,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.500886
+        },
+        "btts_no": {
+          "predictedProbability": 0.292267,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.500886
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "PSV Eindhoven ML",
+          "originalConfidence": 84,
+          "originalOdds": -310,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.7282718940936863
+        },
+        {
+          "originalLabel": "Over 2.5 Goals",
+          "originalConfidence": 82,
+          "originalOdds": null,
+          "originalOutcome": "miss",
+          "originalMarketModelProbability": 0.818606
+        },
+        {
+          "originalLabel": "BTTS — Yes",
+          "originalConfidence": 71,
+          "originalOdds": null,
+          "originalOutcome": "miss",
+          "originalMarketModelProbability": 0.707733
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    },
+    {
+      "model": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "fixtureId": "401885423",
+      "league": "por.1",
+      "home": "Moreirense",
+      "away": "Gil Vicente",
+      "modelPicked1x2": "away_win",
+      "actual1x2": "away_win",
+      "mostLikelyResultCorrect": true,
+      "actualScore": [
+        0,
+        1
+      ],
+      "actualOutcome": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": false,
+        "under_2_5": true,
+        "over_2_5": false,
+        "under_3_5": true,
+        "btts_yes": false,
+        "btts_no": true
+      },
+      "multiclassBrier": 0.465671,
+      "multiclassLogLoss": 0.814578,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.280424,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.078638
+        },
+        "draw": {
+          "predictedProbability": 0.27675,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.076591
+        },
+        "away_win": {
+          "predictedProbability": 0.442826,
+          "actual": true,
+          "hitPrediction": false,
+          "brier": 0.310443
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.557174,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.310443
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.719576,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.078638
+        },
+        "over_1_5": {
+          "predictedProbability": 0.66554,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.442943
+        },
+        "under_2_5": {
+          "predictedProbability": 0.598632,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.161096
+        },
+        "over_2_5": {
+          "predictedProbability": 0.401368,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.161096
+        },
+        "under_3_5": {
+          "predictedProbability": 0.801331,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.039469
+        },
+        "btts_yes": {
+          "predictedProbability": 0.454851,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.206889
+        },
+        "btts_no": {
+          "predictedProbability": 0.545149,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.206889
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "Gil Vicente or Draw",
+          "originalConfidence": 72,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.719576
+        },
+        {
+          "originalLabel": "Under 3.5 Goals",
+          "originalConfidence": 80,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.801331
+        },
+        {
+          "originalLabel": "Gil Vicente ML",
+          "originalConfidence": 44,
+          "originalOdds": 135,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.442826
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    },
+    {
+      "model": "candidate",
+      "modelVersion": "dc-shadow-v0.3",
+      "fixtureId": "401885427",
+      "league": "por.1",
+      "home": "Braga",
+      "away": "Sporting CP",
+      "modelPicked1x2": "away_win",
+      "actual1x2": "away_win",
+      "mostLikelyResultCorrect": true,
+      "actualScore": [
+        1,
+        3
+      ],
+      "actualOutcome": {
+        "home_win": false,
+        "draw": false,
+        "away_win": true,
+        "home_or_draw": false,
+        "away_or_draw": true,
+        "over_1_5": true,
+        "under_2_5": false,
+        "over_2_5": true,
+        "under_3_5": false,
+        "btts_yes": true,
+        "btts_no": false
+      },
+      "multiclassBrier": 0.35946,
+      "multiclassLogLoss": 0.671879,
+      "markets": {
+        "home_win": {
+          "predictedProbability": 0.258916,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.067037
+        },
+        "draw": {
+          "predictedProbability": 0.230337,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.053055
+        },
+        "away_win": {
+          "predictedProbability": 0.510748,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.239368
+        },
+        "home_or_draw": {
+          "predictedProbability": 0.489252,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.239368
+        },
+        "away_or_draw": {
+          "predictedProbability": 0.741084,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.067037
+        },
+        "over_1_5": {
+          "predictedProbability": 0.798254,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.040701
+        },
+        "under_2_5": {
+          "predictedProbability": 0.425402,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.180967
+        },
+        "over_2_5": {
+          "predictedProbability": 0.574598,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.180967
+        },
+        "under_3_5": {
+          "predictedProbability": 0.64944,
+          "actual": false,
+          "hitPrediction": false,
+          "brier": 0.421772
+        },
+        "btts_yes": {
+          "predictedProbability": 0.581753,
+          "actual": true,
+          "hitPrediction": true,
+          "brier": 0.174931
+        },
+        "btts_no": {
+          "predictedProbability": 0.418247,
+          "actual": false,
+          "hitPrediction": true,
+          "brier": 0.174931
+        }
+      },
+      "originalFootyEdgeSelections": [
+        {
+          "originalLabel": "Sporting CP or Draw",
+          "originalConfidence": 74,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.741084
+        },
+        {
+          "originalLabel": "BTTS — Yes",
+          "originalConfidence": 58,
+          "originalOdds": null,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.581753
+        },
+        {
+          "originalLabel": "Over 2.5 Goals",
+          "originalConfidence": 57,
+          "originalOdds": 100,
+          "originalOutcome": "hit",
+          "originalMarketModelProbability": 0.574598
+        }
+      ],
+      "processQuality": "unreviewed",
+      "processNote": "Correct/incorrect result alone is not evidence of a good/bad read; lineup/VAR/red-card context requires separate verified sources"
+    }
+  ],
+  "originalsWithoutSupportedModel": [
+    {
+      "fixtureId": "401888280",
+      "home": "Galatasaray",
+      "away": "Kasimpasa",
+      "reason": "No comparable originally archived Dixon-Coles pre-match prediction; no result can be attributed to it"
+    },
+    {
+      "fixtureId": "401900907",
+      "home": "Al Nassr",
+      "away": "Al Diriyah",
+      "reason": "No comparable originally archived Dixon-Coles pre-match prediction; no result can be attributed to it"
+    },
+    {
+      "fixtureId": "401880233",
+      "home": "West Ham United",
+      "away": "Queens Park Rangers",
+      "reason": "No comparable originally archived Dixon-Coles pre-match prediction; no result can be attributed to it"
+    }
+  ],
+  "metrics": {
+    "original": {
+      "graded": 1,
+      "pending": 0,
+      "pendingFixtureIds": [],
+      "mostLikely1x2HitRate": 1,
+      "multiclassBrier": 0.465671,
+      "multiclassLogLoss": 0.814578
+    },
+    "candidate": {
+      "graded": 6,
+      "pending": 0,
+      "pendingFixtureIds": [],
+      "mostLikely1x2HitRate": 0.6667,
+      "multiclassBrier": 0.563589,
+      "multiclassLogLoss": 0.920559
+    }
+  },
+  "fullySettled": true,
+  "reviewedAt": "2026-10-10T04:33:50.826Z"
+}

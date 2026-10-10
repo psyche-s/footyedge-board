@@ -6,7 +6,7 @@
     "decision": "No automatic recalibration. Keep current weights and require repeated evidence plus verified process review before a documented versioned model change.",
     "modelChange": null
   },
-  "generatedAt": "2026-10-09T17:16:03.976Z",
+  "generatedAt": "2026-10-10T04:45:27.275Z",
   "source": "FootyEdge deterministic all-competition history",
   "fixtures": [
     {
@@ -221,13 +221,41 @@
         "name": "Villarreal"
       },
       "history": {
-        "home": 0,
-        "away": 0
+        "home": 10,
+        "away": 10
       },
-      "facts": [],
-      "marketSignals": [],
-      "error": "Error: HTTP 403 for https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/86/schedule?season=2026",
-      "generatedAt": "2026-10-09T17:16:03.353Z"
+      "facts": [
+        {
+          "text": "Real Madrid won 8 of its last 10 with a 2.4-0.9 average scoring profile.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "schedule-aggregate",
+            "sample": 10
+          },
+          "priority": 5
+        },
+        {
+          "text": "Villarreal conceded in all 10 matches and won only 4.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "schedule-aggregate",
+            "sample": 10
+          },
+          "priority": 4
+        }
+      ],
+      "marketSignals": [
+        "Real Madrid ML"
+      ],
+      "error": null,
+      "generatedAt": "2026-10-10T04:45:27.275Z",
+      "researchProvenance": "FootyEdge completed-schedule aggregate captured before the official lock"
     },
     {
       "id": "761845",
@@ -397,13 +425,41 @@
         "name": "Real Salt Lake"
       },
       "history": {
-        "home": 0,
-        "away": 0
+        "home": 10,
+        "away": 10
       },
-      "facts": [],
-      "marketSignals": [],
-      "error": "Error: HTTP 403 for https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/10739/schedule?season=2025",
-      "generatedAt": "2026-10-09T17:16:03.435Z"
+      "facts": [
+        {
+          "text": "Philadelphia Union won 7 of its last 10 and averaged 2.9 goals.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "schedule-aggregate",
+            "sample": 10
+          },
+          "priority": 5
+        },
+        {
+          "text": "Real Salt Lake failed to win 9 of its last 10 and conceded 2.1 per game.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "schedule-aggregate",
+            "sample": 10
+          },
+          "priority": 4
+        }
+      ],
+      "marketSignals": [
+        "Philadelphia Union ML"
+      ],
+      "error": null,
+      "generatedAt": "2026-10-10T04:45:27.275Z",
+      "researchProvenance": "FootyEdge completed-schedule aggregate captured before the official lock"
     },
     {
       "id": "761853",
@@ -925,13 +981,41 @@
         "name": "NEC Nijmegen"
       },
       "history": {
-        "home": 0,
-        "away": 0
+        "home": 10,
+        "away": 10
       },
-      "facts": [],
-      "marketSignals": [],
-      "error": "Error: HTTP 403 for https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/139/schedule?season=2025",
-      "generatedAt": "2026-10-09T17:16:03.776Z"
+      "facts": [
+        {
+          "text": "Ajax Amsterdam scored in 10 of 10, averaged 3.2 goals and avoided defeat in 9.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "schedule-aggregate",
+            "sample": 10
+          },
+          "priority": 5
+        },
+        {
+          "text": "NEC Nijmegen conceded in 10 of 10 and are winless in five.",
+          "tags": [
+            "form",
+            "result"
+          ],
+          "evidence": {
+            "type": "schedule-aggregate",
+            "sample": 10
+          },
+          "priority": 4
+        }
+      ],
+      "marketSignals": [
+        "Ajax Amsterdam ML"
+      ],
+      "error": null,
+      "generatedAt": "2026-10-10T04:45:27.275Z",
+      "researchProvenance": "FootyEdge completed-schedule aggregate captured before the official lock"
     },
     {
       "id": "401880242",
@@ -2995,5 +3079,7 @@
       "marketSignals": [],
       "generatedAt": "2026-10-09T17:16:03.974Z"
     }
-  ]
+  ],
+  "status": "ready-with-explicit-passes",
+  "sourceRevision": "fa2870691b3623f8354ca0cbf5bf83e72a54c97d"
 }

@@ -1,99 +1,67 @@
 {
-  "checkedAt": "2026-10-07T18:11:55.440Z",
+  "checkedAt": "2026-10-10T04:45:27.365Z",
   "timeZone": "America/Toronto",
   "horizonDays": 5,
+  "providerStatus": {
+    "liveSchedule": "failed-http-500",
+    "endpoint": "/api/espn-scoreboard",
+    "fallback": "dated verified repository snapshots",
+    "interpretation": "provider-failure-not-empty-slate"
+  },
   "days": [
     {
-      "date": "2026-10-07",
-      "scheduledGames": 0,
-      "researchFixtures": 0,
-      "published": true,
-      "status": "locked-empty-mens-only",
-      "pending": [],
-      "researchFile": null,
-      "officialBoard": "data/boards/2026-10-07.json",
-      "liveSnapshot": {
-        "scoreboard": 64,
-        "fixtures": 64,
-        "odds": 13
-      },
-      "nextGameDate": "2026-10-09",
-      "excludedRawFixtures": 1
-    },
-    {
-      "date": "2026-10-08",
-      "scheduledGames": 0,
-      "researchFixtures": 0,
-      "published": false,
-      "status": "verified-empty-mens-only",
-      "pending": [],
-      "researchFile": null,
-      "liveSnapshot": {
-        "scoreboard": 101,
-        "fixtures": 101,
-        "odds": 11
-      },
-      "nextGameDate": "2026-10-09",
-      "excludedRawFixtures": 1
-    },
-    {
-      "date": "2026-10-09",
-      "scheduledGames": 17,
-      "researchFixtures": 17,
-      "published": false,
-      "status": "future-data-only",
-      "pending": [
-        "Day-of 06:00 Toronto publication/lock"
-      ],
-      "researchFile": "data/research-base-2026-10-09.json",
-      "liveSnapshot": {
-        "scoreboard": 119,
-        "fixtures": 119,
-        "odds": 55
-      },
-      "exactNativeOdds": 7
-    },
-    {
       "date": "2026-10-10",
-      "scheduledGames": 52,
-      "researchFixtures": 52,
-      "published": false,
-      "status": "future-data-only",
-      "pending": [
-        "Day-of 06:00 Toronto publication/lock"
-      ],
+      "scheduledGames": 66,
+      "researchFixtures": 66,
+      "published": true,
+      "status": "locked-with-explicit-passes",
+      "officialBoard": "data/boards/2026-10-10.json",
       "researchFile": "data/research-base-2026-10-10.json",
-      "liveSnapshot": {
-        "scoreboard": 347,
-        "fixtures": 347,
-        "odds": 181
-      },
-      "exactNativeOdds": 48
+      "exactNativeOddsEvents": 62,
+      "publishedSelections": 3,
+      "passes": 63
     },
     {
       "date": "2026-10-11",
-      "scheduledGames": 27,
-      "researchFixtures": 27,
+      "scheduledGames": 35,
+      "researchFixtures": 35,
       "published": false,
-      "status": "future-data-only",
-      "pending": [
-        "Day-of 06:00 Toronto publication/lock"
-      ],
-      "researchFile": "data/research-base-2026-10-11.json",
-      "liveSnapshot": {
-        "scoreboard": 273,
-        "fixtures": 273,
-        "odds": 102
-      },
-      "exactNativeOdds": 25
+      "status": "schedule-snapshot-only-provider-refresh-failed",
+      "snapshotEvents": 274,
+      "researchFile": "data/research-base-2026-10-11.json"
+    },
+    {
+      "date": "2026-10-12",
+      "scheduledGames": 6,
+      "researchFixtures": 6,
+      "published": false,
+      "status": "schedule-snapshot-only-provider-refresh-failed",
+      "snapshotEvents": 49,
+      "researchFile": "data/research-base-2026-10-12.json"
+    },
+    {
+      "date": "2026-10-13",
+      "scheduledGames": 17,
+      "researchFixtures": 17,
+      "published": false,
+      "status": "schedule-snapshot-only-provider-refresh-failed",
+      "snapshotEvents": 119,
+      "researchFile": "data/research-base-2026-10-13.json"
+    },
+    {
+      "date": "2026-10-14",
+      "scheduledGames": null,
+      "researchFixtures": null,
+      "published": false,
+      "status": "schedule-not-confirmed-provider-refresh-failed",
+      "researchFile": null
     }
   ],
   "notes": [
-    "Women's soccer is excluded from the FootyEdge tracked slate and publication pipeline.",
-    "October 7 is a verified empty men's slate; the next eligible tracked games are on October 9, 2026.",
-    "October 8's only raw tracked fixture is a women's international friendly and is excluded.",
-    "Starting October 8, picks are not published early for future dates. Only the current Toronto date is published and locked during the morning run.",
-    "Future schedule/research/odds snapshots may still be prepared in advance, but they are data only and do not create public picks.",
-    "Postmatch diagnostics remain part of the next morning research/model context; automatic coefficient changes require repeated verified evidence."
+    "Men's soccer only; women's fixtures are excluded before publication and tracking.",
+    "Only the current Toronto date has betting content. October 11-14 remain schedule/readiness metadata only.",
+    "The October 10 lock used a verified dated fixture snapshot after the live schedule provider returned HTTP 500.",
+    "Only exact current native DraftKings moneylines from the freeze-window odds snapshot were eligible; unavailable markets were PASS, not stale-filled.",
+    "October 14 is not labelled as no games because the live provider check failed and no dated snapshot exists."
   ]
 }

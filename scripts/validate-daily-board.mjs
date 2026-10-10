@@ -45,15 +45,20 @@ async function main(){
   if(base.date!==date)fail("Research base date mismatch");
   if(insights.date!==date)fail("Daily insights date mismatch");
   if(odds.date!==date)fail("Daily odds date mismatch");
-  if(insights.status&&insights.status!=="ready")fail("Research/team-news review is not ready for publication");
+  if(insights.status&&!['ready','ready-with-passes'].includes(insights.status))fail("Research/team-news review is not ready for publication");
   if(odds.status==="blocked")fail("Verified native sportsbook odds are not ready for publication");
 
+  const insightRows=insights.fixtures||[];
+  const insightByKey=new Map(insightRows.map(x=>[norm(x.home)+"|"+norm(x.away),x]));
   const fixtures=new Map((base.fixtures||[]).map(x=>[norm(x.home?.name||x.home)+"|"+norm(x.away?.name||x.away),x]));
   if(!fixtures.size)fail("Research base has no fixtures");
-  for(const f of fixtures.values())if(Number(f.history?.home)<10||Number(f.history?.away)<10)fail("Incomplete all-competition last-10 history: "+(f.home?.name||f.home)+" vs "+(f.away?.name||f.away));
+  for(const [k,f] of fixtures)if(Number(f.history?.home)<10||Number(f.history?.away)<10){
+    const review=insightByKey.get(k);
+    if(review?.reviewStatus!=="pass-insufficient-data")fail("Incomplete all-competition last-10 history without an explicit PASS: "+(f.home?.name||f.home)+" vs "+(f.away?.name||f.away));
+  }
 
   const insightKeys=new Set();
-  for(const item of insights.fixtures||[]){
+  for(const item of insightRows){
     const k=norm(item.home)+"|"+norm(item.away);
     if(insightKeys.has(k))fail("Duplicate insight fixture: "+item.home+" vs "+item.away);
     insightKeys.add(k);
@@ -67,8 +72,10 @@ async function main(){
       if(words(text)>30)fail("Fact too long (>30 words): "+item.home+" vs "+item.away+" :: "+text);
       const nk=norm(text);if(seen.has(nk))fail("Duplicate fact: "+text);seen.add(nk);
     }
-    if(item.reviewStatus&&item.reviewStatus!=="ready")fail("Fixture review is not ready: "+item.home+" vs "+item.away);
-    if(item.teamNewsReview?.status!=="reviewed")fail("Team-news review is incomplete: "+item.home+" vs "+item.away);
+    if(item.reviewStatus&&!['ready','pass-insufficient-data'].includes(item.reviewStatus))fail("Fixture review is not ready: "+item.home+" vs "+item.away);
+    if(item.reviewStatus==='pass-insufficient-data'&&((item.supportedMarkets||[]).length||(item.markets||[]).length))fail("PASS fixture cannot publish a supported market: "+item.home+" vs "+item.away);
+    if(!['reviewed','blocked-provider-failure'].includes(item.teamNewsReview?.status))fail("Team-news review is incomplete: "+item.home+" vs "+item.away);
+    if(item.reviewStatus==='ready'&&item.teamNewsReview?.status!=="reviewed")fail("Published fixture lacks a completed team-news review: "+item.home+" vs "+item.away);
     const sources=item.sources||[];
     for(const s of sources){
       if(!/^https:\/\//i.test(String(s.url||"")))fail("Invalid source URL for "+item.home+" vs "+item.away);
@@ -96,7 +103,7 @@ async function main(){
     for(const market of item.markets||[]){
       const d=Number(market?.decimal);
       if(!market?.label||!market?.price||!Number.isFinite(d)||d<=1)fail("Research market lacks verified native price metadata: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
-      if(d<1.25)fail("Research market is worse than the -400 floor: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
+      if(d<1.20)fail("Research market is worse than the -500 floor: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
       if(!market?.source||!market?.reason)fail("Research market lacks source/reason: "+item.home+" vs "+item.away+" :: "+String(market?.label||""));
       if(market.category==="Player"){const n=market.playerNews;if(!n||n.expectedStart!==true||Number(n.expectedMinutes)<60||n.status!=="expected"||n.rotationRisk||n.injuryRisk||!(n.sources||[]).length)fail("Player prop lacks credible expected-start/minutes evidence: "+String(market.label||""));}
     }

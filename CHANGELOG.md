@@ -817,3 +817,17 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - UI impact: none.
 - Tracking/history impact: the two October 9 selections remain frozen with their original rank, odds, confidence and explanation.
 - Deployment result: successful and production-verified at `https://footyedge-board.vercel.app`.
+
+
+## 2026-10-10 — 00:30 Toronto men's board with evidence-gated passes
+**Status:** 🟡 Code/data ready · production verification pending
+
+- Reviewed and settled the available October 9 model-learning records before selection. The candidate shadow sample remained too small and less well calibrated than the saved baseline, so no coefficient or confidence-model change was made.
+- Published the complete 66-fixture men's slate for October 10 with three exact-priced selections: Philadelphia Union ML (-265, 88%), Real Madrid ML (-265, 85%) and Ajax ML (-320, 82%). Sixty-three fixtures are explicit passes because complete evidence and/or a qualifying current exact market was unavailable; no player props or stale totals were forced.
+- Captured a fresh native DraftKings moneyline snapshot at 00:35 Toronto. The live schedule endpoint returned HTTP 500, so the verified dated repository fixture snapshot was used for slate continuity and the actual delayed archive time is recorded separately from the 00:30 policy boundary.
+- Updated daily validation so incomplete last-10 coverage is publishable only as an explicit data-insufficient PASS with no supported market. The -500 inclusive price floor is now enforced consistently.
+- Checked October 11–14 for schedule readiness only. Existing dated snapshots confirm tracked fixtures through October 13; October 14 remains unconfirmed because the provider refresh failed and is not mislabelled as an empty day.
+- Model/data impact: no model coefficients changed; fresh odds, daily research decisions, readiness metadata, the Oct 9 shadow review and the immutable October 10 board were added.
+- UI impact: none. No layout, styling, navigation, logo, filter, card, modal, page-structure or component file changed.
+- Tracking/history impact: prior frozen boards and explanations are unchanged. October 10 tracking begins with only the three published selections; PASS fixtures create no retrospective picks.
+- Deployment result: pending GitHub main push and production verification.

@@ -13,7 +13,13 @@ async function main(){
   let draft;try{draft=JSON.parse(await fs.readFile(draftFile,'utf8'))}catch(e){if(e.code==='ENOENT')throw new Error('Cannot lock '+DATE+': rolling preview is missing');throw e}
   if(draft.date!==DATE||draft.immutable!==false||draft.state!=='preview'||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw new Error('Cannot lock invalid rolling preview '+DATE);
   const payload=JSON.parse(JSON.stringify(draft));
-  payload.immutable=true;payload.state='locked';payload.frozenAt=new Date().toISOString();payload.lockedAtToronto=DATE+' 00:30 America/Toronto';payload.source='FootyEdge official 00:30 Toronto locked board';
+  payload.immutable=true;payload.state='locked';payload.frozenAt=new Date().toISOString();
+  payload.policyFreezeAtToronto=DATE+' 00:30 America/Toronto';
+  payload.lockedAtToronto=`${DATE} ${p.hour}:${p.minute} America/Toronto`;
+  payload.source='FootyEdge official Toronto fixture-day locked board';
+  if(Number(p.hour)>LOCK_HOUR||(Number(p.hour)===LOCK_HOUR&&Number(p.minute)>LOCK_MINUTE)){
+    payload.lateLockReason='Catch-up publication after upstream scoreboard HTTP 500 blocked the scheduled capture; exact published prices use the fresh freeze-window odds snapshot.';
+  }
   validateBoard(payload,{requireFull:true});
   await fs.mkdir(path.dirname(file),{recursive:true});
   try{await fs.writeFile(file,JSON.stringify(payload,null,2)+'\n',{flag:'wx'})}catch(e){if(e.code!=='EEXIST')throw e;console.log('Another publisher locked the board first; unchanged');return}
