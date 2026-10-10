@@ -1,0 +1,38 @@
+name: Restore FootyEdge Verified Picks
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/restore-verified-footyedge-picks.yml"
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-oct10-coherence-v2
+  cancel-in-progress: false
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Restore original verified odds and build consistent picks
+        run: node scripts/correct-footyedge-coherence-v2.mjs
+      - name: Validate entire board and regression suite
+        run: |
+          node scripts/validate-published-boards.mjs --base HEAD
+          node --test tests/*.test.mjs
+      - name: Commit versioned owner correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge Owner Correction"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/boards/2026-10-10.json data/performance/2026-10-10.json data/board-revisions/2026-10-10
+          git commit -m "fix(board): restore verified original selections with coherent form evidence"
+          git pull --rebase origin main
+          git push origin HEAD:main
