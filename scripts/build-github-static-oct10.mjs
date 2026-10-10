@@ -330,7 +330,8 @@ for(const g of corrected.games){
   g.top=g.top3?.[0]||g.top;
   if(g.model){g.model.top=g.top;g.model.top3=g.top3;}
 }
-const confidenceRanked=corrected.games.filter(g=>g.top).sort((a,b)=>b.top.score-a.top.score);
+// Global official Top 5 must have a real sportsbook price, not research-only selections.
+const confidenceRanked=corrected.games.filter(g=>g.top&&g.top.verifiedPrice===true&&g.top.bookExact===true&&Number.isFinite(Number(g.top.odds))&&Number(g.top.odds)>=-500).sort((a,b)=>b.top.score-a.top.score);
 corrected.top5=confidenceRanked.slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
 corrected.confidenceFramework="Evidence-based pick conviction, not win probability";
 
