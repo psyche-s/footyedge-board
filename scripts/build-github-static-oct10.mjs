@@ -306,10 +306,19 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
 for(const g of corrected.games){
   const h=g.model?.home,a=g.model?.away;
   if(!h?.n||!a?.n)continue;
+  // Fiorentina draw-or-win is the safer research selection; do not reuse ML odds for DC.
+  if(/genoa/i.test(g.home)&&/fiorentina/i.test(g.away)){
+    const oldMl=(g.top3||[]).find(p=>/fiorentina ml/i.test(p.label||""));
+    if(oldMl){
+      const dc={...oldMl,label:"Fiorentina Double Chance (X2)",category:"Double Chance",score:Math.min(84,Math.max(65,Number(oldMl.score)||65)),odds:null,displayOdds:"Not verified",priceDecimal:null,verifiedPrice:false,bookExact:false,priceStatus:"unavailable",provider:null,bookKey:null,marketProb:null,ev:null,researchOnly:true,reason:"Fiorentina have won 3 of their last 5, while Genoa have lost 3 of their last 5. Fiorentina are unbeaten in their last 5 meetings (2 wins, 3 draws). Double chance also covers a draw."};
+      g.top3=g.top3.map(p=>p===oldMl?dc:p);
+    }
+  }
   for(const p of g.top3||[]){
     const l=String(p.label||"").toLowerCase();
     const ml=l.endsWith(" ml")?(l.startsWith(g.home.toLowerCase())?0:l.startsWith(g.away.toLowerCase())?1:-1):-1;
     let evidence=null;
+    if(l.includes("double chance")||l.includes("x2")){continue;}
     if(ml>=0){
       const f=ml===0?h:a,o=ml===0?a:h;
       const form=.45*(f.wins/f.n)+.30*(o.losses/o.n)+.15*clamp((f.gf-o.ga+1.5)/3)+.10*(1-(f.draws/f.n+o.draws/o.n)/2);
