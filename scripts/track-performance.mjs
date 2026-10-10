@@ -191,11 +191,21 @@ async function main(){
   for(const name of fs.readdirSync(boardsDir).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x))){
     const date=name.slice(0,10);if(date>today)continue;
     const dailyFile=path.join(PERF_DIR,name);
-    if(fs.existsSync(dailyFile))continue;
+    const existing=fs.existsSync(dailyFile)?readJson(dailyFile):null;
+    // Existing historical snapshots are permanent. Today's first 7 AM snapshot locks selections.
+    if(existing&&(date<today||existing.lockedAt7am))continue;
+    if(date===today&&Number(nowParts.hour)<7)continue;
     const top5=publishedTop5(date);
     const board=readJson(path.join(boardsDir,name));
-    writeJson(dailyFile,{date,publishedAt:board.publishedAt||null,recordedAt:new Date().toISOString(),source:"Immutable FootyEdge published board",frozen:true,top5});
-    console.log("Recorded",top5.length,"original published picks for",date);
+    const previous=new Map((existing?.top5||[]).map(p=>[p.gameId+"|"+p.selection,p]));
+    const aligned=top5.map(p=>{
+      const old=previous.get(p.gameId+"|"+p.selection);
+      return old?{...p,result:old.result,finalScore:old.finalScore,settledAt:old.settledAt}:p;
+    });
+    writeJson(dailyFile,{date,publishedAt:board.publishedAt||null,recordedAt:new Date().toISOString(),
+      lockedAt7am:date===today?new Date().toISOString():null,
+      source:"Official FootyEdge Top 5 at 7 AM America/Toronto",frozen:true,top5:aligned});
+    console.log("Locked",aligned.length,"official Top 5 picks for",date);
     await settleDailyFile(dailyFile);
   }
 
