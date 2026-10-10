@@ -10,6 +10,7 @@ concurrency:
   group: footyedge-oct10-owner-repair-v3
   cancel-in-progress: true
 jobs:
+  # v4 bounded capture: never re-fetch missing histories during owner repair
   repair:
     runs-on: ubuntu-latest
     timeout-minutes: 45

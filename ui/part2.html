@@ -983,6 +983,9 @@ async function load(date=S.date){
         const baseAway=Array.isArray(g.baseResearch?.last10?.away)?g.baseResearch.last10.away.map(x=>({...x,opp:x.opp??x.oppId})):null;
         if(baseHome&&baseAway&&(baseHome.length||baseAway.length)){
           g.model=model(g,baseHome,baseAway);
+        }else if(CAPTURE_FAST){
+          g.model={top:null,top3:[],rankedCandidates:[],candidates:[],researchCandidates:[],home:stats([]),away:stats([]),displayHome:stats([]),displayAway:stats([]),expectedGoals:{home:0,away:0,total:0},sample:{home:0,away:0,h2:0},trendFacts:[]};
+          g.researchError="No verified rebuilt history available; fast repair leaves this fixture as a pass.";
         }else{
           const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);
           g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date));
