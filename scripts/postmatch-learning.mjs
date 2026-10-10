@@ -36,8 +36,12 @@ async function main(){
     try{await fs.access(outFile);continue}catch(e){if(e.code!=="ENOENT")throw e}
     const board=JSON.parse(await fs.readFile(path.join("data/boards",name),"utf8"));
     let payload;
-    try{const r=await fetch(SITE+"/api/espn-scoreboard?dates="+board.date.replaceAll("-","")+"&limit=1000");if(!r.ok)throw new Error("HTTP "+r.status);payload=await r.json()}
-    catch(e){console.log("Postmatch scoreboard unavailable",board.date,e.message);continue}
+    try{const r=await fetch(SITE+"/api/espn-scoreboard?dates="+board.date.replaceAll("-","")+"&limit=1000");if(!r.ok)throw new Error("HTTP "+r.status);payload=await r.json();if(payload?.footyedgeSources?.scoreboard?.live===false)throw new Error("Saved fixture snapshot has no final scores")}
+    catch(e){
+      const saved=path.join("data",board.date,"scoreboard.json");
+      try{payload=JSON.parse(await fs.readFile(saved,"utf8"));if(!Array.isArray(payload.events))throw Error("Invalid ESPN snapshot");console.log("Using preserved verified final scores for postmatch",board.date)}
+      catch{console.log("Postmatch scoreboard unavailable",board.date,e.message);continue}
+    }
     const map=new Map((payload.events||[]).map(e=>{const x=eventInfo(e);return[fixtureKey(x.home,x.away),x]})),games=[];
     for(const g of board.games||[]){
       const picks=g.top3||[],event=map.get(fixtureKey(g.home,g.away));if(!picks.length||!event)continue;
