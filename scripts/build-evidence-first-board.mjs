@@ -77,7 +77,7 @@ function buildGame(g){
   }).sort((x,y)=>y.score-x.score);
   // No verified player-level event, minutes or market prices: player props are withheld rather than invented.
   const qualified=rows.filter(x=>x.verifiedPrice);
-  const top3=[...qualified.slice(0,3),...rows.filter(x=>!x.verifiedPrice).slice(0,Math.max(0,3-qualified.length))].slice(0,3);
+  const top3=rows.slice(0,3);
   g.top3=top3;g.top=top3[0]||null;
   g.model={...g.model,top:g.top,top3,rankedCandidates:rows,candidates:rows,expectedGoals:{home:xh,away:xa,total:xh+xa}};
   g.modelReview={version:"evidence-first-v1",playerMarkets:"withheld: unverified player and odds coverage",thirdPartyCrossChecks:"not yet incorporated",sampleSize:sample};
