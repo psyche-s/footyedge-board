@@ -15,7 +15,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node scripts/owner-publish-source-replacement-oct10.mjs
+      - run: node scripts/reconcile-board-picks-oct10.mjs
+      - run: |
+          node --input-type=module -e '
+          import fs from "node:fs";
+          const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json","utf8"));
+          for(const g of b.games){if(g.top?.label!==(g.top3?.[0]?.label||undefined) && !(g.top===null&&!g.top3?.length))throw Error("Card mismatch: "+g.id);if(g.model?.top?.label!==g.top?.label)throw Error("Model mismatch: "+g.id);}
+          console.log("Validated",b.games.length,"fixtures");
+          '
       - run: |
           git config user.name "FootyEdge"
           git config user.email "actions@users.noreply.github.com"
