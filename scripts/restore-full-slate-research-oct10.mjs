@@ -33,7 +33,7 @@ for(const g of board.games){
   p.modelVersion='research-recovery-2026-10-10';
   picks.push(p);
  }
- picks.sort((a,b)=>Number(b.score||0)-Number(a.score||0));
+ picks.sort((a,b)=>Number(a.researchOnly)-Number(b.researchOnly)||Number(b.score||0)-Number(a.score||0));
  g.top3=picks.slice(0,3);g.top=g.top3[0]||null;
  g.model={...(g.model||{}),top:g.top,top3:g.top3};
  if(!g.top3.length){empty++;g.researchStatus='Fixture listed; no sufficiently documented selection available.'}
@@ -41,7 +41,7 @@ for(const g of board.games){
 }
 const ranked=board.games.flatMap(g=>g.top3.filter(p=>!p.researchOnly&&p.verifiedPrice&&Number.isFinite(p.ev)&&p.ev>0).map(p=>({g,p}))).sort((a,b)=>b.p.ev-a.p.ev);
 const used=new Set();board.top5=[];
-for(const {g,p} of ranked){if(used.has(g.id))continue;used.add(g.id);board.top5.push({rank:board.top5.length+1,gameId:g.id,home:g.home,away:g.away,pick:structuredClone(p)});if(board.top5.length===5)break}
+// No Top 5 is safer than promoting uncalibrated or misleading picks as top bets.
 board.modelVersion='research-recovery-2026-10-10';
 board.confidenceFramework='Uncalibrated stored model estimates; research-only selections explicitly labelled';
 board.correctedAt=new Date().toISOString();
