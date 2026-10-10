@@ -1088,24 +1088,47 @@ async function loadVerifiedMatchDetails(g){
 
 function plainFootballReason(g,p){
   const h=g.model?.home,a=g.model?.away;
-  if(!h?.n||!a?.n)return cardCommentary(g,p);
-  const hn=typeof g.home==="string"?g.home:g.home?.name||"The home side",an=typeof g.away==="string"?g.away:g.away?.name||"The away side";
+  const hn=typeof g.home==="string"?g.home:g.home?.name||"Home team";
+  const an=typeof g.away==="string"?g.away:g.away?.name||"Away team";
   const label=String(p.label||"").toLowerCase(),parts=[];
+  if(!h?.n||!a?.n)return String(p.reason||p.archivedCommentary||"Recent results do not provide enough evidence for a stronger conclusion.");
+  const meetings=(g.h2h||[]).filter(m=>m.homeScore!=null&&m.awayScore!=null&&Number.isFinite(Number(m.homeScore))&&Number.isFinite(Number(m.awayScore)));
+  const both=meetings.filter(m=>Number(m.homeScore)>0&&Number(m.awayScore)>0).length;
   const ml=label.endsWith(" ml")?(label.startsWith(hn.toLowerCase())?0:label.startsWith(an.toLowerCase())?1:-1):-1;
   if(ml>=0){
     const team=ml===0?hn:an,opp=ml===0?an:hn,f=ml===0?h:a,o=ml===0?a:h;
     parts.push(team+" have won "+f.wins+" of their last "+f.n+" matches, while "+opp+" have lost "+o.losses+" of their last "+o.n+".");
-    if(Number.isFinite(f.gf)&&Number.isFinite(o.ga))parts.push(team+" have scored "+Number(f.gf).toFixed(1)+" goals per game recently, while "+opp+" have conceded "+Number(o.ga).toFixed(1)+" per game.");
-    const meetings=(g.h2h||[]).filter(m=>m.homeScore!=null&&m.awayScore!=null);
-    if(meetings.length){let wins=0,draws=0;for(const m of meetings){const isHome=m.home===team,forGoals=isHome?m.homeScore:m.awayScore,against=isHome?m.awayScore:m.homeScore;if(forGoals>against)wins++;else if(forGoals===against)draws++;}
-      parts.push("In their last "+meetings.length+" meetings, "+team+" have won "+wins+" and drawn "+draws+".");}
+    if(meetings.length){
+      const identifiable=meetings.filter(m=>m.home&&m.away);
+      if(identifiable.length===meetings.length){
+        let wins=0,draws=0;
+        for(const m of meetings){
+          const isHome=String(m.home).toLowerCase()===team.toLowerCase(),isAway=String(m.away).toLowerCase()===team.toLowerCase();
+          if(!isHome&&!isAway)continue;
+          const gf=isHome?Number(m.homeScore):Number(m.awayScore),ga=isHome?Number(m.awayScore):Number(m.homeScore);
+          if(gf>ga)wins++;else if(gf===ga)draws++;
+        }
+        parts.push("Across their last "+meetings.length+" meetings, "+team+" have "+wins+" wins and "+draws+" draws.");
+      }
+    }
   }else if(label.includes("btts")){
-    parts.push(hn+" have seen both teams score in "+Math.round(h.btts*h.n)+" of their last "+h.n+" matches; "+an+" have done so in "+Math.round(a.btts*a.n)+" of their last "+a.n+".");
+    const yes=label.includes("yes");
+    const homeHits=Math.round(h.btts*h.n),awayHits=Math.round(a.btts*a.n);
+    parts.push("Both teams scored in "+homeHits+" of "+hn+"'s last "+h.n+" matches and "+awayHits+" of "+an+"'s last "+a.n+".");
+    if(meetings.length)parts.push("Both teams scored in "+both+" of their last "+meetings.length+" meetings.");
+    if(meetings.length>=3&&((yes?1-both/meetings.length:both/meetings.length)>=.75))parts.push("Their head-to-head results point against this selection, so it carries extra risk.");
   }else{
     const m=label.match(/(over|under)\\s*(1\\.5|2\\.5|3\\.5|4\\.5)/);
-    if(m){const k=m[1]+m[2].replace(".","");if(Number.isFinite(h[k])&&Number.isFinite(a[k]))parts.push(hn+" have finished "+m[1]+" "+m[2]+" goals in "+Math.round(h[k]*h.n)+" of their last "+h.n+" matches, while "+an+" have done so in "+Math.round(a[k]*a.n)+" of their last "+a.n+".");}
+    if(m){
+      const k=m[1]+m[2].replace(".","");
+      if(Number.isFinite(h[k])&&Number.isFinite(a[k]))parts.push(hn+" finished "+m[1]+" "+m[2]+" goals in "+Math.round(h[k]*h.n)+" of their last "+h.n+" matches, while "+an+" did so in "+Math.round(a[k]*a.n)+" of their last "+a.n+".");
+      if(meetings.length){
+        const hits=meetings.filter(x=>m[1]==="over"?Number(x.homeScore)+Number(x.awayScore)>Number(m[2]):Number(x.homeScore)+Number(x.awayScore)<Number(m[2])).length;
+        parts.push("That line landed in "+hits+" of their last "+meetings.length+" meetings.");
+      }
+    }
   }
-  return parts.length?parts.join(" "):cardCommentary(g,p);
+  return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
 function renderModal(g){
   const top3=viewCandidates(g);
