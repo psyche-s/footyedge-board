@@ -301,6 +301,39 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   }
 });
 
+// Confidence measures agreement of evidence with a pick, NOT its probability of winning.
+// Recompute on every scheduled static build so old archived scores cannot return.
+for(const g of corrected.games){
+  const h=g.model?.home,a=g.model?.away;
+  if(!h?.n||!a?.n)continue;
+  for(const p of g.top3||[]){
+    const l=String(p.label||"").toLowerCase();
+    const ml=l.endsWith(" ml")?(l.startsWith(g.home.toLowerCase())?0:l.startsWith(g.away.toLowerCase())?1:-1):-1;
+    let evidence=null;
+    if(ml>=0){
+      const f=ml===0?h:a,o=ml===0?a:h;
+      const form=.45*(f.wins/f.n)+.30*(o.losses/o.n)+.15*clamp((f.gf-o.ga+1.5)/3)+.10*(1-(f.draws/f.n+o.draws/o.n)/2);
+      const team=ml===0?g.home:g.away;
+      const hh=g.h2h?.length?g.h2h.reduce((sum,m)=>{const home=m.home===team,go=home?m.homeScore:m.awayScore,against=home?m.awayScore:m.homeScore;return sum+(go>against?1:go===against?.5:0)},0)/g.h2h.length:null;
+      evidence=hh==null?form:.82*form+.18*hh;
+    }else if(l==="draw")evidence=(h.draws/h.n+a.draws/a.n)/2;
+    else if(l.startsWith("btts")){evidence=(h.btts+a.btts)/2;if(l.includes("no"))evidence=1-evidence;}
+    else{const m=l.match(/(over|under)\\s*(1\\.5|2\\.5|3\\.5|4\\.5)/);if(m){const k=m[1]+m[2].replace(".","");if(Number.isFinite(h[k])&&Number.isFinite(a[k]))evidence=(h[k]+a[k])/2;}}
+    if(evidence==null)continue;
+    const damp=.55+.45*Math.min(1,Math.min(h.n,a.n)/10);
+    const base=Math.round(Math.max(20,Math.min(94,50+92*(evidence-.5)*damp)));
+    const score=Math.round(Math.max(20,Math.min(94,50+(base-50)*1.9)));
+    p.score=score;p.modelScore=score;p.stars=pickStars(score);
+    p.confidenceType="evidence_based_pick_conviction";
+    p.confidenceBasis="Model evidence conviction from form, opponent trends and verified H2H where available; not win probability.";
+  }
+  g.top=g.top3?.[0]||g.top;
+  if(g.model){g.model.top=g.top;g.model.top3=g.top3;}
+}
+const confidenceRanked=corrected.games.filter(g=>g.top).sort((a,b)=>b.top.score-a.top.score);
+corrected.top5=confidenceRanked.slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
+corrected.confidenceFramework="Evidence-based pick conviction, not win probability";
+
 const gameById=new Map(corrected.games.map(g=>[String(g.id),g]));
 const existingTop=(oldBoard.top5||[]).map(x=>gameById.get(String(x.gameId))).filter(Boolean);
 const seen=new Set(existingTop.map(g=>String(g.id)));
