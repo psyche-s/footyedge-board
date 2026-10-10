@@ -1,0 +1,40 @@
+name: Build FootyEdge Static Board
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-github-static-oct10.mjs"
+      - ".github/workflows/build-github-static-oct10.yml"
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-static-oct10
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build full static Oct 10 board directly in GitHub
+        run: node scripts/build-github-static-oct10.mjs
+      - name: Validate board shape
+        shell: bash
+        run: |
+          set -euo pipefail
+          node -e 'const b=require("./data/boards/2026-10-10.json"); if(b.games.length!==66) throw Error("expected 66 games"); if((b.top5||[]).length!==5) throw Error("expected Top 5"); console.log({games:b.games.length,top5:b.top5.length,top3:b.games.filter(g=>(g.top3||[]).length===3).length,h2h:b.games.filter(g=>(g.h2h||[]).length).length})'
+      - name: Commit static board
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge GitHub Static Builder"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/boards/2026-10-10.json data/board-revisions/2026-10-10
+          git commit -m "fix(board): publish full Oct 10 static GitHub board"
+          git pull --rebase origin main
+          git push origin HEAD:main
