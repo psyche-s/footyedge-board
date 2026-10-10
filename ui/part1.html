@@ -1908,8 +1908,19 @@ function applyBoardArchive(games,archive){
     if(a.leagueLogo!=null)g.leagueLogo=a.leagueLogo;
     if(a.gender!=null)g.gender=a.gender;
     const saved=a.model||{};
-    g.model={...saved,top:restoreArchivedPick(a.top),top3:(a.top3||[]).map(restoreArchivedPick).filter(Boolean),
-      ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(saved[k]||a.top3||[]).map(restoreArchivedPick).filter(Boolean)]))};
+    // Archived published picks are the sole source of truth. Never reintroduce
+    // removed picks from stale model candidate pools.
+    const safePicks=(a.top3||[]).map(restoreArchivedPick).filter(Boolean).filter(p=>{
+      if(!/^BTTS No$/i.test(String(p.label||"")))return true;
+      const h=(a.h2h||[]).filter(x=>Number.isFinite(Number(x.homeScore))&&Number.isFinite(Number(x.awayScore)));
+      return h.length>=3&&h.filter(x=>Number(x.homeScore)>0&&Number(x.awayScore)>0).length/h.length<0.6;
+    }).map(p=>{
+      p.reason=String(p.reason||"").replace(/(Research only — [^.]+\.)(?:\s*\1)+/gi,"$1");
+      if(p.confidenceType==="unrated_research_only"||p.confidenceType==="unrated_uncalibrated"){p.score=null;p.modelScore=null;p.stars=""}
+      return p;
+    });
+    g.model={...saved,top:safePicks[0]||null,top3:safePicks,
+      ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,safePicks]))};
     g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.h2h=Array.isArray(a.h2h)?a.h2h:[];g.matchH2H=g.h2h.filter(x=>x&&x.date&&x.homeScore!=null&&x.awayScore!=null&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5);g.verifiedRanks=a.verifiedRanks||null;g.staticDetails=Boolean(a.staticDetails);g.matchDetailsPending=false;g.matchDetailsRequested=Boolean(a.staticDetails);g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
     return g;
   });
