@@ -213,6 +213,7 @@ async function mapLimit(items,limit,fn){
 }
 
 const years=[2026,2025,2024,2023,2022];
+const formSourceDiagnostics=[];
 const corrected=JSON.parse(JSON.stringify(oldBoard));
 corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   const fx=fixtureById.get(String(old.id));if(!fx)return old;
@@ -227,6 +228,13 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   let hs=stats([...new Map(homeGames.map(x=>[x.id,x])).values()].slice(0,10));
   let as=stats([...new Map(awayGames.map(x=>[x.id,x])).values()].slice(0,10));
   const sh=stats(summaryGames(summary,homeId)),sa=stats(summaryGames(summary,awayId));
+  if(formSourceDiagnostics.length<5){
+    formSourceDiagnostics.push({fixture:fx.teams.home.name+" vs "+fx.teams.away.name,id:String(old.id),league:old.league,
+      homeId:String(homeId),awayId:String(awayId),scheduleHome:hs.n,scheduleAway:as.n,summaryHome:sh.n,summaryAway:sa.n,
+      lastFiveShape:(summary?.lastFiveGames||[]).slice(0,3).map(x=>({keys:Object.keys(x||{}),teamId:x?.team?.id,team:x?.team?.displayName,eventCount:x?.events?.length,firstEvent:x?.events?.[0]||null})),
+      seasonSeries:(summary?.seasonseries||[]).slice(0,2).map(x=>({type:x?.type,events:x?.events?.length})),
+      summaryAvailable:Boolean(summary)});
+  }
   if(hs.n<5&&sh.n>hs.n)hs=sh;if(as.n<5&&sa.n>as.n)as=sa;
   const directH2H=homeGames.filter(x=>String(x.oppId)===String(awayId)||norm(x.opp)===norm(fx.teams.away.name)).slice(0,5).map(x=>{
     const homeSide=x.homeAway==="home";
@@ -280,5 +288,7 @@ const report={
   withAnyPicks:corrected.games.filter(g=>(g.top3||[]).length).length,withH2H:corrected.games.filter(g=>(g.h2h||[]).length).length,withRanks:corrected.games.filter(g=>g.verifiedRanks&&(g.verifiedRanks.home||g.verifiedRanks.away)).length,
   top5:corrected.top5.map(x=>({fixture:x.home+" vs "+x.away,pick:x.pick?.label,odds:x.pick?.odds,score:x.pick?.score}))
 };
+report.formSourceDiagnostics=formSourceDiagnostics;
+report.formCoverage=corrected.games.reduce((a,g)=>{const h=g.model?.home?.n||0,w=g.model?.away?.n||0;if(h>=5&&w>=5)a.bothFive++;if(h>0)a.homeAny++;if(w>0)a.awayAny++;return a},{bothFive:0,homeAny:0,awayAny:0});
 fs.writeFileSync(path.join(REV_DIR,"github-static-repair-report.json"),JSON.stringify(report,null,2)+"\n");
 console.log(JSON.stringify(report,null,2));
