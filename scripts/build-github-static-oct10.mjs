@@ -53,6 +53,46 @@ async function schedule(league,teamId,season){
   })();
   scheduleCache.set(key,p);return p
 }
+
+const summaryCache=new Map();
+async function matchSummary(league,eventId){
+  const key=league+":"+eventId;if(summaryCache.has(key))return summaryCache.get(key);
+  const p=fetchJson(`https://site.api.espn.com/apis/site/v2/sports/soccer/${encodeURIComponent(league)}/summary?event=${encodeURIComponent(eventId)}`).catch(()=>null);
+  summaryCache.set(key,p);return p
+}
+function summaryH2H(s){
+  const series=(s?.seasonseries||[]).find(x=>x?.type==="head-to-head");
+  return(series?.events||[]).filter(e=>e?.statusType?.completed).slice(0,5).map(e=>{
+    const h=(e.competitors||[]).find(x=>x.homeAway==="home"),a=(e.competitors||[]).find(x=>x.homeAway==="away");
+    const hs=Number(h?.score),as=Number(a?.score);
+    return h&&a&&Number.isFinite(hs)&&Number.isFinite(as)?{id:String(e.id),date:e.date,home:h.team?.displayName||"Home",away:a.team?.displayName||"Away",homeScore:hs,awayScore:as}:null
+  }).filter(Boolean)
+}
+function summaryGames(s,teamId){
+  const item=(s?.lastFiveGames||[]).find(x=>String(x?.team?.id)===String(teamId)),out=[];
+  for(const e of item?.events||[]){
+    const home=String(e.homeTeamId)===String(teamId),gf=Number(home?e.homeTeamScore:e.awayTeamScore),ga=Number(home?e.awayTeamScore:e.homeTeamScore);
+    if(Number.isFinite(gf)&&Number.isFinite(ga))out.push({id:String(e.id),date:e.gameDate,gf,ga,result:gf>ga?"W":gf<ga?"L":"D"})
+  }
+  return out
+}
+function summaryRanks(s,homeId,awayId){
+  const found={};const walk=x=>{if(!x||typeof x!=="object")return;if(Array.isArray(x)){x.forEach(walk);return}
+    if(x.id!=null&&Array.isArray(x.stats)){const r=x.stats.find(q=>q?.name==="rank"||q?.type==="rank");if(r)found[String(x.id)]=Number(r.value??r.displayValue)}
+    Object.values(x).forEach(walk)
+  };walk(s?.standings);
+  return{home:Number.isInteger(found[String(homeId)])?found[String(homeId)]:null,away:Number.isInteger(found[String(awayId)])?found[String(awayId)]:null}
+}
+function americanToDecimal(a){a=Number(a);return !Number.isFinite(a)||a===0?null:a>0?1+a/100:1+100/Math.abs(a)}
+function summaryOdds(s){
+  const p=(s?.pickcenter||[]).find(x=>/draftkings/i.test(x?.provider?.name||""))||(s?.pickcenter||[])[0];if(!p)return null;
+  const bets=[],hm=Number(p.homeTeamOdds?.moneyLine),dm=Number(p.drawOdds?.moneyLine),am=Number(p.awayTeamOdds?.moneyLine);
+  if([hm,dm,am].every(Number.isFinite))bets.push({name:"Match Winner",values:[{value:"Home",odd:americanToDecimal(hm)},{value:"Draw",odd:americanToDecimal(dm)},{value:"Away",odd:americanToDecimal(am)}]});
+  const line=Number(p.overUnder),oo=Number(p.overOdds),uo=Number(p.underOdds);
+  if(Number.isFinite(line)&&Number.isFinite(oo)&&Number.isFinite(uo))bets.push({name:"Goals Over/Under",values:[{value:`Over ${line}`,odd:americanToDecimal(oo)},{value:`Under ${line}`,odd:americanToDecimal(uo)}]});
+  return bets.length?{bookmakers:[{name:"DraftKings",bets}]}:null
+}
+
 function scoreVal(s){
   if(s==null)return null;
   const v=typeof s==="object"?(s.value??s.displayValue):s;
@@ -177,14 +217,17 @@ const corrected=JSON.parse(JSON.stringify(oldBoard));
 corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   const fx=fixtureById.get(String(old.id));if(!fx)return old;
   const homeId=fx.teams.home.id,awayId=fx.teams.away.id,before=fx.fixture.date;
-  const [homePayloads,awayPayloads]=await Promise.all([
+  const [homePayloads,awayPayloads,summary]=await Promise.all([
     Promise.all(years.map(y=>schedule(old.league,homeId,y))),
-    Promise.all(years.map(y=>schedule(old.league,awayId,y)))
+    Promise.all(years.map(y=>schedule(old.league,awayId,y))),
+    matchSummary(old.league,old.id)
   ]);
   const homeGames=homePayloads.flatMap(p=>extractTeamGames(p,homeId,before)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
   const awayGames=awayPayloads.flatMap(p=>extractTeamGames(p,awayId,before)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
-  const hs=stats([...new Map(homeGames.map(x=>[x.id,x])).values()].slice(0,10));
-  const as=stats([...new Map(awayGames.map(x=>[x.id,x])).values()].slice(0,10));
+  let hs=stats([...new Map(homeGames.map(x=>[x.id,x])).values()].slice(0,10));
+  let as=stats([...new Map(awayGames.map(x=>[x.id,x])).values()].slice(0,10));
+  const sh=stats(summaryGames(summary,homeId)),sa=stats(summaryGames(summary,awayId));
+  if(hs.n<5&&sh.n>hs.n)hs=sh;if(as.n<5&&sa.n>as.n)as=sa;
   const directH2H=homeGames.filter(x=>String(x.oppId)===String(awayId)||norm(x.opp)===norm(fx.teams.away.name)).slice(0,5).map(x=>{
     const homeSide=x.homeAway==="home";
     return{
@@ -195,8 +238,9 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
       awayScore:homeSide?x.ga:x.gf
     };
   });
-  const h2h=directH2H.length?directH2H:h2hFrom([...homePayloads.flatMap(p=>p.events||[]),...awayPayloads.flatMap(p=>p.events||[])],homeId,awayId,before);
-  const candidates=candidateSet(old,fx,oddsById.get(String(old.id)),hs,as,h2h).slice(0,3);
+  const summaryH=summaryH2H(summary);
+  const h2h=summaryH.length?summaryH:(directH2H.length?directH2H:h2hFrom([...homePayloads.flatMap(p=>p.events||[]),...awayPayloads.flatMap(p=>p.events||[])],homeId,awayId,before));
+  const candidates=candidateSet(old,fx,oddsById.get(String(old.id))||summaryOdds(summary),hs,as,h2h).slice(0,3);
   const preserved=old.top?JSON.parse(JSON.stringify(old.top)):null;
   let top3=candidates;
   if(preserved){
@@ -207,7 +251,7 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   return{
     ...old,date:fx.fixture.date,year:fx.league.season,
     teams:{home:{id:String(homeId),name:fx.teams.home.name,logo:fx.teams.home.logo},away:{id:String(awayId),name:fx.teams.away.name,logo:fx.teams.away.logo}},
-    h2h,staticDetails:true,
+    h2h,verifiedRanks:summaryRanks(summary,homeId,awayId),staticDetails:true,
     top,top3,
     model:{...(old.model||{}),top,top3,candidates:top3,rankedCandidates:top3,researchCandidates:top3,home:hs,away:as,displayHome:hs,displayAway:as}
   }
@@ -233,7 +277,7 @@ fs.writeFileSync(BOARD_PATH,JSON.stringify(corrected,null,2)+"\n");
 
 const report={
   date:DATE,games:corrected.games.length,withTop3:corrected.games.filter(g=>(g.top3||[]).length===3).length,
-  withAnyPicks:corrected.games.filter(g=>(g.top3||[]).length).length,withH2H:corrected.games.filter(g=>(g.h2h||[]).length).length,
+  withAnyPicks:corrected.games.filter(g=>(g.top3||[]).length).length,withH2H:corrected.games.filter(g=>(g.h2h||[]).length).length,withRanks:corrected.games.filter(g=>g.verifiedRanks&&(g.verifiedRanks.home||g.verifiedRanks.away)).length,
   top5:corrected.top5.map(x=>({fixture:x.home+" vs "+x.away,pick:x.pick?.label,odds:x.pick?.odds,score:x.pick?.score}))
 };
 fs.writeFileSync(path.join(REV_DIR,"github-static-repair-report.json"),JSON.stringify(report,null,2)+"\n");

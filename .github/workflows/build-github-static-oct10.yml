@@ -27,7 +27,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node -e 'const b=require("./data/boards/2026-10-10.json"); if(b.games.length!==66) throw Error("expected 66 games"); if((b.top5||[]).length!==5) throw Error("expected Top 5"); console.log({games:b.games.length,top5:b.top5.length,top3:b.games.filter(g=>(g.top3||[]).length===3).length,h2h:b.games.filter(g=>(g.h2h||[]).length).length})'
+          node -e 'const b=require("./data/boards/2026-10-10.json"); const full=b.games.filter(g=>(g.top3||[]).length===3).length,h=b.games.filter(g=>(g.h2h||[]).length).length; if(b.games.length!==66) throw Error("expected 66 games"); if((b.top5||[]).length!==5) throw Error("expected Top 5"); if(full<60) throw Error("expected at least 60 full Top 3 games"); if(h<20) throw Error("expected static H2H on at least 20 games"); console.log({games:b.games.length,top5:b.top5.length,top3:full,h2h:h})'
       - name: Commit static board
         shell: bash
         run: |
