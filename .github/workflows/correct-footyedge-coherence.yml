@@ -1,0 +1,38 @@
+name: Correct FootyEdge Picks Coherence
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/correct-footyedge-coherence.yml"
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-oct10-coherence-correction
+  cancel-in-progress: false
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Rebuild evidence-aligned picks and audit correction
+        run: node scripts/correct-footyedge-coherence.mjs
+      - name: Test corrected board and all existing regressions
+        run: |
+          node scripts/validate-published-boards.mjs --base HEAD
+          node --test tests/*.test.mjs
+      - name: Commit corrected Oct 10 board and preserve audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge Owner Correction"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/boards/2026-10-10.json data/performance/2026-10-10.json data/board-revisions/2026-10-10
+          git commit -m "fix(board): audited evidence-aligned picks and coherent Top 3"
+          git pull --rebase origin main
+          git push origin HEAD:main
