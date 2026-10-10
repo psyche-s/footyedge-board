@@ -335,7 +335,7 @@ corrected.top5=confidenceRanked.slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,hom
 corrected.confidenceFramework="Evidence-based pick conviction, not win probability";
 
 const gameById=new Map(corrected.games.map(g=>[String(g.id),g]));
-const existingTop=(oldBoard.top5||[]).map(x=>gameById.get(String(x.gameId))).filter(Boolean);
+const existingTop=confidenceRanked.slice(0,5);
 const seen=new Set(existingTop.map(g=>String(g.id)));
 const pool=corrected.games.filter(g=>g.top&&!seen.has(String(g.id))).sort((a,b)=>(b.top?.score||0)-(a.top?.score||0));
 const topGames=[...existingTop,...pool].slice(0,5);
