@@ -72,7 +72,7 @@ for(const g of board.games||[]){
   p.researchAgreement={available:known.length,agree:agrees,disagree:disagrees};
   p.modelVersion='source-consensus-replacement-2026-10-10';
  }
- g.top3=(g.top3||[]).sort((a,b)=>b.score-a.score);
+ g.top3=(g.top3||[]).filter(p=>p.verifiedPrice===true&&Number.isFinite(p.odds)&&p.odds>=-500&&p.score>=65&&!p.h2hContradiction&&!(Number.isFinite(p.ev)&&p.ev<0)).sort((a,b)=>b.score-a.score);\n if(!g.top3.length)g.researchStatus='No qualifying picks: available evidence does not support a verified, high-conviction market.';
 }
 const eligible=board.games.flatMap(g=>(g.top3||[]).filter(p=>p.verifiedPrice&&Number.isFinite(p.odds)&&p.odds>=-500&&p.score>=65&&p.reason).map(p=>({g,p})));
 eligible.sort((a,b)=>b.p.score-a.p.score||a.g.id.localeCompare(b.g.id));
