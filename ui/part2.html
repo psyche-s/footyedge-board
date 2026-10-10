@@ -1086,11 +1086,32 @@ async function loadVerifiedMatchDetails(g){
   }
 }
 
+function plainFootballReason(g,p){
+  const h=g.model?.home,a=g.model?.away;
+  if(!h?.n||!a?.n)return cardCommentary(g,p);
+  const hn=typeof g.home==="string"?g.home:g.home?.name||"The home side",an=typeof g.away==="string"?g.away:g.away?.name||"The away side";
+  const label=String(p.label||"").toLowerCase(),parts=[];
+  const ml=label.endsWith(" ml")?(label.startsWith(hn.toLowerCase())?0:label.startsWith(an.toLowerCase())?1:-1):-1;
+  if(ml>=0){
+    const team=ml===0?hn:an,opp=ml===0?an:hn,f=ml===0?h:a,o=ml===0?a:h;
+    parts.push(team+" have won "+f.wins+" of their last "+f.n+" matches, while "+opp+" have lost "+o.losses+" of their last "+o.n+".");
+    if(Number.isFinite(f.gf)&&Number.isFinite(o.ga))parts.push(team+" have scored "+Number(f.gf).toFixed(1)+" goals per game recently, while "+opp+" have conceded "+Number(o.ga).toFixed(1)+" per game.");
+    const meetings=(g.h2h||[]).filter(m=>m.homeScore!=null&&m.awayScore!=null);
+    if(meetings.length){let wins=0,draws=0;for(const m of meetings){const isHome=m.home===team,forGoals=isHome?m.homeScore:m.awayScore,against=isHome?m.awayScore:m.homeScore;if(forGoals>against)wins++;else if(forGoals===against)draws++;}
+      parts.push("In their last "+meetings.length+" meetings, "+team+" have won "+wins+" and drawn "+draws+".");}
+  }else if(label.includes("btts")){
+    parts.push(hn+" have seen both teams score in "+Math.round(h.btts*h.n)+" of their last "+h.n+" matches; "+an+" have done so in "+Math.round(a.btts*a.n)+" of their last "+a.n+".");
+  }else{
+    const m=label.match(/(over|under)\\s*(1\\.5|2\\.5|3\\.5|4\\.5)/);
+    if(m){const k=m[1]+m[2].replace(".","");if(Number.isFinite(h[k])&&Number.isFinite(a[k]))parts.push(hn+" have finished "+m[1]+" "+m[2]+" goals in "+Math.round(h[k]*h.n)+" of their last "+h.n+" matches, while "+an+" have done so in "+Math.round(a[k]*a.n)+" of their last "+a.n+".");}
+  }
+  return parts.length?parts.join(" "):cardCommentary(g,p);
+}
 function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
-  const whyHtml=p=>{const facts=researchFactsForPick(g,p,3);return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div>'+(facts.length?'<div class="researchFacts">'+facts.map(x=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(x)+'</span></div>').join("")+'</div>':'<p class="candidateCommentary">'+esc(cardCommentary(g,p))+'</p>')+'</section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span>${g.ownerEditorial?"":`<span class="priceTag ${xp.cls}">${xp.evLabel} <b>${xp.ev}</b></span>`}${g.ownerEditorial && x.modelProb == null ? "" : `<span class="priceTag">${g.ownerEditorial ? "Model estimate" : "Model"} <b>${pctInt(x.modelProb)}</b></span>`}${g.ownerEditorial?"":`<span class="priceTag">Market <b>${x.marketProb==null?(x.priceStatus?"N/A":"—"):pctInt(x.marketProb)}</b></span>`}</div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(cardCommentary(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p></section>'};
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${x.score}% · ${x.stars}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
