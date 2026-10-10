@@ -185,7 +185,7 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   const awayGames=awayPayloads.flatMap(p=>extractTeamGames(p,awayId,before)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
   const hs=stats([...new Map(homeGames.map(x=>[x.id,x])).values()].slice(0,10));
   const as=stats([...new Map(awayGames.map(x=>[x.id,x])).values()].slice(0,10));
-  const directH2H=homeGames.filter(x=>String(x.oppId)===String(awayId)).slice(0,5).map(x=>{
+  const directH2H=homeGames.filter(x=>String(x.oppId)===String(awayId)||norm(x.opp)===norm(fx.teams.away.name)).slice(0,5).map(x=>{
     const homeSide=x.homeAway==="home";
     return{
       id:x.id,date:x.date,
