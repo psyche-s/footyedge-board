@@ -26,8 +26,8 @@ jobs:
         shell: bash
         run: |
           set +e
-          node scripts/validate-published-boards.mjs --base HEAD > /tmp/footyedge-integrity.log 2>&1
-          code1=$?
+          node scripts/validate-published-boards.mjs --base HEAD 2>&1 | tee /tmp/footyedge-integrity.log
+          code1=${PIPESTATUS[0]}
           node --test tests/*.test.mjs > /tmp/footyedge-tests.log 2>&1
           code2=$?
           tail -120 /tmp/footyedge-tests.log
