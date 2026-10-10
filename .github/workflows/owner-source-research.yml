@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node scripts/reconcile-board-picks-oct10.mjs
+      - run: node scripts/restore-full-slate-research-oct10.mjs
       - run: |
           node --input-type=module -e '
           import fs from "node:fs";
