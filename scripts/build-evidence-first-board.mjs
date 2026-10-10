@@ -70,10 +70,10 @@ function buildGame(g){
   const sample=Math.min(h.n,a.n);
   const rows=candidates.map(([label,category,prob])=>{
     const quoted=odds.get(label.toLowerCase());
-    const sampleDiscount=sample>=10?1:sample>=7?.94:.88;
-    const score=Math.round(clamp(prob*sampleDiscount*100,20,94));
+    // No blanket small-sample multiplier. Sample size remains explicit metadata.
+    const score=Math.round(clamp(prob*100,20,94));
     const verified=Boolean(quoted&&Number(quoted.odds)>=-500);
-    return {label,category,score,stars:pickStars(score),odds:verified?quoted.odds:null,displayOdds:verified?quoted.displayOdds:"Not verified",verifiedPrice:verified,bookExact:verified,provider:verified?quoted.provider:null,priceStatus:verified?"verified":"unavailable",researchOnly:!verified,modelScore:score,modelProbability:+prob.toFixed(4),confidenceType:"uncalibrated_evidence_conviction",reason:explanation(g,label,prob),modelVersion:"evidence-first-v1"};
+    return {label,category,score,stars:pickStars(score),odds:verified?quoted.odds:null,displayOdds:verified?quoted.displayOdds:"Not verified",verifiedPrice:verified,bookExact:verified,provider:verified?quoted.provider:null,priceStatus:verified?"verified":"unavailable",researchOnly:!verified,modelScore:score,modelProbability:+prob.toFixed(4),confidenceType:"uncalibrated_model_probability_estimate",sampleSize:sample,reason:explanation(g,label,prob),modelVersion:"evidence-first-v1"};
   }).sort((x,y)=>y.score-x.score);
   // No verified player-level event, minutes or market prices: player props are withheld rather than invented.
   const qualified=rows.filter(x=>x.verifiedPrice);
@@ -88,7 +88,7 @@ const best=board.games.flatMap(g=>(g.model?.rankedCandidates||[]).filter(p=>p.sc
 board.top5=best.slice(0,5).map(({g,p},i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:p}));
 board.leagueTop5=Object.fromEntries([...new Set(board.games.map(g=>g.league).filter(Boolean))].map(league=>[league,board.games.filter(g=>g.league===league&&g.top).sort((a,b)=>(b.top?.score||0)-(a.top?.score||0)).slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}))]));
 board.modelEngine="evidence-first-v1";
-board.modelLimitations="Uncalibrated; last-five form summaries; independent expert/Whispers verification and player market coverage incomplete. No invented quotes.";
+board.modelLimitations="Uncalibrated probability estimates without blanket sample penalty; last-five form summaries; independent expert/Whispers verification and player market coverage incomplete. No invented quotes.";
 board.generatedAt=new Date().toISOString();
 const out="data/model-previews/"+date+"-evidence-first.json";
 fs.mkdirSync("data/model-previews",{recursive:true});
