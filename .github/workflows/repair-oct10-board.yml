@@ -1,0 +1,85 @@
+name: Repair October 10 FootyEdge Board
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repair-oct10-board.yml"
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-oct10-owner-repair
+  cancel-in-progress: false
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Confirm one-time repair scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          test "$TODAY" = "2026-10-10"
+          test -s data/boards/2026-10-10.json
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Preserve original published files and temporarily unlock local working copy
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp data/boards/2026-10-10.json /tmp/footyedge-original-board.json
+          cp data/research-base-2026-10-10.json /tmp/footyedge-original-research.json
+          mv data/boards/2026-10-10.json /tmp/footyedge-working-lock.json
+          if [[ -f data/daily-odds-2026-10-10.json ]]; then
+            mv data/daily-odds-2026-10-10.json /tmp/footyedge-daily-odds.json
+          fi
+      - name: Rebuild deterministic research through FootyEdge proxy
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_RESEARCH: "1"
+          RESEARCH_DATE: "2026-10-10"
+        run: node scripts/build-research-base.mjs
+      - name: Capture fresh complete current-day candidates
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          PREVIEW_DAYS: "0"
+          FORCE_TODAY_CAPTURE: "1"
+        run: node scripts/publish-board-previews.mjs
+      - name: Restore original odds snapshot
+        shell: bash
+        run: |
+          if [[ -f /tmp/footyedge-daily-odds.json ]]; then mv /tmp/footyedge-daily-odds.json data/daily-odds-2026-10-10.json; fi
+      - name: Merge as audited owner correction while preserving frozen picks
+        env:
+          ORIGINAL_BOARD: /tmp/footyedge-original-board.json
+          ORIGINAL_RESEARCH: /tmp/footyedge-original-research.json
+        run: node scripts/repair-oct10-board.mjs
+      - name: Reconcile tracking to corrected five-pick board
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_TRACK: "1"
+        run: |
+          node scripts/track-performance.mjs
+      - name: Validate corrected publication
+        run: |
+          node scripts/validate-published-boards.mjs --base origin/main
+          node --test tests/*.test.mjs
+      - name: Commit audited owner repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge Owner Repair"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A -- data/research-base-2026-10-10.json data/board-drafts/2026-10-10.json data/boards/2026-10-10.json data/board-revisions/2026-10-10 data/performance
+          git commit -m "fix(board): audited October 10 completeness repair"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main

@@ -130,7 +130,7 @@ function marketSignals(facts,g){
 }
 async function schedule(league,team,season){
   const years=[Number(season),Number(season)-1].filter((x,i,a)=>Number.isFinite(x)&&a.indexOf(x)===i);
-  const payloads=await Promise.all(years.map(y=>json(`https://site.api.espn.com/apis/site/v2/sports/soccer/all/teams/${encodeURIComponent(team)}/schedule?season=${encodeURIComponent(y)}`)));
+  const payloads=await Promise.all(years.map(y=>json(`${SITE}/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(team)}&season=${encodeURIComponent(y)}&scope=all`)));
   return{events:payloads.flatMap(x=>x?.events||[])}
 }
 let czechFixtures=[];
@@ -177,8 +177,13 @@ async function main(){
   let board;
   try{board=await json(`${SITE}/api/espn-scoreboard?dates=${DATE.replaceAll("-","")}&limit=1000`)}
   catch(error){
-    if(!correction)throw error;
-    board=JSON.parse(await fs.readFile(path.join("data",DATE,"scoreboard.json"),"utf8"));
+    try{
+      board=JSON.parse(await fs.readFile(path.join("data",DATE,"scoreboard.json"),"utf8"));
+      console.warn("Scoreboard API unavailable; using committed same-day scoreboard snapshot:",String(error));
+    }catch(snapshotError){
+      if(!correction)throw error;
+      throw snapshotError;
+    }
   }
   // The public Czech top-flight source is independent from ESPN.
   // The site may already have these events after a deploy: dedupe by stable ID.
