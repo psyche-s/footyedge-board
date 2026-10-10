@@ -138,13 +138,13 @@ function h2hFrom(events,homeId,awayId,before){
   return out.sort((a,b)=>Date.parse(b.date)-Date.parse(a.date)).slice(0,5)
 }
 function makePick({label,category,decimal,marketProb,trendProb,h2hProb=null,evidence=[]}){
-  const hWeight=h2hProb==null?0:.10,baseWeight=1-hWeight;
-  const modelProb=clamp((.52*marketProb+.48*trendProb)*baseWeight+(h2hProb??0)*hWeight);
+  const hWeight=h2hProb==null?0:.12,baseWeight=1-hWeight;
+  const modelProb=clamp((.30*marketProb+.70*trendProb)*baseWeight+(h2hProb??0)*hWeight);
   const score=pct(modelProb),odds=decimalToAmerican(decimal),ev=(modelProb*decimal-1)*100;
   return{
     label,category,score,stars:pickStars(score),odds,displayOdds:odds>0?"+"+odds:String(odds),
     priceDecimal:decimal,verifiedPrice:true,bookExact:true,provider:"DraftKings",bookKey:"draftkings",priceStatus:"verified",
-    marketProb,modelProb,ev:Number(ev.toFixed(1)),reason:evidence[0]||"Verified market and recent form align.",
+    marketProb,modelProb,ev:Number(ev.toFixed(1)),probabilityBasis:"30% no-vig market / 70% recent form; 12% H2H weight where available; uncalibrated",reason:evidence[0]||"Verified market and recent form align.",
     archivedCommentary:evidence.slice(0,3).join(" "),archivedSupportFacts:evidence.slice(0,3)
   }
 }
