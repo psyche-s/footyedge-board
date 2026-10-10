@@ -1910,7 +1910,7 @@ function applyBoardArchive(games,archive){
     const saved=a.model||{};
     g.model={...saved,top:restoreArchivedPick(a.top),top3:(a.top3||[]).map(restoreArchivedPick).filter(Boolean),
       ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,(saved[k]||a.top3||[]).map(restoreArchivedPick).filter(Boolean)]))};
-    g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
+    g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.h2h=Array.isArray(a.h2h)?a.h2h:[];g.verifiedRanks=a.verifiedRanks||null;g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
     return g;
   });
   // Legacy partial archives must not fill gaps with today's model or add fresh props.

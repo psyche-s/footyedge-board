@@ -67,7 +67,7 @@ function extractTeamGames(payload,teamId,before){
     const op=cs.find(c=>String(c?.id??c?.team?.id)!==String(teamId));
     if(!me||!op)continue;
     const gf=scoreVal(me.score),ga=scoreVal(op.score);if(gf==null||ga==null)continue;
-    out.push({id:String(e.id),date:e.date,gf,ga,result:gf>ga?"W":gf<ga?"L":"D",oppId:String(op?.id??op?.team?.id??""),opp:op?.team?.displayName||op?.team?.name||"Opponent"});
+    out.push({id:String(e.id),date:e.date,gf,ga,result:gf>ga?"W":gf<ga?"L":"D",homeAway:me.homeAway||null,team:me?.team?.displayName||me?.team?.name||"Team",oppId:String(op?.id??op?.team?.id??""),opp:op?.team?.displayName||op?.team?.name||"Opponent"});
   }
   return out
 }
@@ -185,7 +185,17 @@ corrected.games=await mapLimit(oldBoard.games||[],10,async old=>{
   const awayGames=awayPayloads.flatMap(p=>extractTeamGames(p,awayId,before)).sort((a,b)=>Date.parse(b.date)-Date.parse(a.date));
   const hs=stats([...new Map(homeGames.map(x=>[x.id,x])).values()].slice(0,10));
   const as=stats([...new Map(awayGames.map(x=>[x.id,x])).values()].slice(0,10));
-  const h2h=h2hFrom([...homePayloads.flatMap(p=>p.events||[]),...awayPayloads.flatMap(p=>p.events||[])],homeId,awayId,before);
+  const directH2H=homeGames.filter(x=>String(x.oppId)===String(awayId)).slice(0,5).map(x=>{
+    const homeSide=x.homeAway==="home";
+    return{
+      id:x.id,date:x.date,
+      home:homeSide?fx.teams.home.name:fx.teams.away.name,
+      away:homeSide?fx.teams.away.name:fx.teams.home.name,
+      homeScore:homeSide?x.gf:x.ga,
+      awayScore:homeSide?x.ga:x.gf
+    };
+  });
+  const h2h=directH2H.length?directH2H:h2hFrom([...homePayloads.flatMap(p=>p.events||[]),...awayPayloads.flatMap(p=>p.events||[])],homeId,awayId,before);
   const candidates=candidateSet(old,fx,oddsById.get(String(old.id)),hs,as,h2h).slice(0,3);
   const preserved=old.top?JSON.parse(JSON.stringify(old.top)):null;
   let top3=candidates;
