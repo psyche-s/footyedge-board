@@ -338,7 +338,8 @@ for(const g of corrected.games){
     p.confidenceType="evidence_based_pick_conviction";
     p.confidenceBasis="Model evidence conviction from form, opponent trends and verified H2H where available; not win probability.";
   }
-  g.top3.sort((a,b)=>b.score-a.score);\n  g.top=g.top3?.[0]||g.top;
+  g.top3.sort((a,b)=>b.score-a.score);
+  g.top=g.top3?.[0]||g.top;
   if(g.model){g.model.top=g.top;g.model.top3=g.top3;}
 }
 // Global official Top 5 must have a real sportsbook price, not research-only selections.
