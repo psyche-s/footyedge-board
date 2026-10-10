@@ -30,6 +30,23 @@ async function fetchJson(url){
   if(!r.ok)throw new Error("HTTP "+r.status+" for "+url);
   return r.json();
 }
+async function verifiedScoreboardFor(date){
+  const url=SITE+"/api/espn-scoreboard?dates="+date.replaceAll("-","")+"&limit=1000";
+  try{
+    const live=await fetchJson(url);
+    if(Array.isArray(live.events)&&live.footyedgeSources?.scoreboard?.live!==false)return live;
+  }catch(e){console.log("Live settlement scoreboard unavailable:",date,e.message)}
+  // Only use date-scoped, actual captured ESPN results; never infer a score.
+  const file=path.join(ROOT,"data",date,"scoreboard.json");
+  if(fs.existsSync(file)){
+    const saved=readJson(file);
+    if(Array.isArray(saved.events)){
+      console.log("Settling from preserved, date-scoped ESPN snapshot:",date);
+      return saved;
+    }
+  }
+  throw new Error("No verified live or saved ESPN scoreboard for "+date);
+}
 function eventInfo(e){
   const c=e?.competitions?.[0]||{},cs=c?.competitors||[];
   const h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1];
@@ -87,7 +104,7 @@ async function settleDailyFile(file){
   const data=readJson(file);
   if(!Array.isArray(data.top5)||!data.top5.some(x=>(x.result||"pending")==="pending"))return false;
   let board;
-  try{board=await fetchJson(SITE+"/api/espn-scoreboard?dates="+data.date.replaceAll("-","")+"&limit=1000")}catch(e){console.log("Settlement scoreboard failed:",data.date,e.message);return false}
+  try{board=await verifiedScoreboardFor(data.date)}catch(e){console.log("Settlement scoreboard failed:",data.date,e.message);return false}
   const map=new Map((board.events||[]).map(e=>{const x=eventInfo(e);return[fixtureKey(x.home,x.away),x]}));
   let changed=false;
   for(const pick of data.top5){
