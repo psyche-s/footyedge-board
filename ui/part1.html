@@ -1856,9 +1856,8 @@ function clonePreviewPickForArchive(p,g){
   return x
 }
 function previewCandidates(g){
-  const core=(g?.model?.candidates||[]).filter(x=>x.score>=78&&previewPriceAllowed(x))
-    .map(x=>hasPostedPrice(x)?x:{...x,displayOnly:true});
-  const research=(g?.model?.researchCandidates||[]).filter(x=>x.score>=78&&previewPriceAllowed(x));
+  const core=(g?.model?.candidates||[]).filter(x=>x.score>=70&&hasPostedPrice(x)&&priceAllowed(x));
+  const research=(g?.model?.researchCandidates||[]).filter(x=>x.score>=70&&hasPostedPrice(x)&&priceAllowed(x));
   return diversifyCandidates(g,[...core,...research].sort((a,b)=>b.score-a.score||(b.crossSources||0)-(a.crossSources||0)||(b.modelScore||0)-(a.modelScore||0)||(b.ev??-99)-(a.ev??-99))).slice(0,3)
 }
 function boardArchivePayload(mode=CAPTURE_MODE||"archive"){

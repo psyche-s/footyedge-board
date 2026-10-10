@@ -8,7 +8,7 @@ permissions:
   contents: write
 concurrency:
   group: footyedge-oct10-owner-repair
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   repair:
     runs-on: ubuntu-latest
@@ -37,30 +37,43 @@ jobs:
           set -euo pipefail
           cp data/boards/2026-10-10.json /tmp/footyedge-original-board.json
           cp data/research-base-2026-10-10.json /tmp/footyedge-original-research.json
+          cp data/daily-odds-2026-10-10.json /tmp/footyedge-original-daily-odds.json
           mv data/boards/2026-10-10.json /tmp/footyedge-working-lock.json
-          if [[ -f data/daily-odds-2026-10-10.json ]]; then
-            mv data/daily-odds-2026-10-10.json /tmp/footyedge-daily-odds.json
-          fi
       - name: Rebuild deterministic research through FootyEdge proxy
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           FORCE_RESEARCH: "1"
           RESEARCH_DATE: "2026-10-10"
         run: node scripts/build-research-base.mjs
+      - name: Capture fresh exact sportsbook snapshot with spreads
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://footyedge-board.vercel.app/api/the-odds?live=1&publish=1&date=2026-10-10&leagues=eng.1,eng.2,tur.1,ksa.1,cze.1,esp.1,ita.1,ger.1,fra.1,ned.1,por.1,usa.1'
+          READY=false
+          for ATTEMPT in $(seq 1 36); do
+            curl --fail --silent --show-error "$URL" -o /tmp/footyedge-fresh-odds.json || true
+            if jq -e '.enabled == true and (.markets | index("spreads")) != null and (.events | length) > 0 and ([.events[] | select(((.spreads // []) | length) > 0)] | length) > 0' /tmp/footyedge-fresh-odds.json >/dev/null 2>&1; then
+              READY=true
+              break
+            fi
+            echo "Waiting for spread-enabled production odds API ($ATTEMPT/36)"
+            sleep 10
+          done
+          test "$READY" = "true"
+          cp /tmp/footyedge-fresh-odds.json data/daily-odds-2026-10-10.json
+          jq '{events:(.events|length),withSpreads:([.events[]|select(((.spreads//[])|length)>0)]|length),markets}' data/daily-odds-2026-10-10.json
       - name: Capture fresh complete current-day candidates
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           PREVIEW_DAYS: "0"
           FORCE_TODAY_CAPTURE: "1"
         run: node scripts/publish-board-previews.mjs
-      - name: Restore original odds snapshot
-        shell: bash
-        run: |
-          if [[ -f /tmp/footyedge-daily-odds.json ]]; then mv /tmp/footyedge-daily-odds.json data/daily-odds-2026-10-10.json; fi
       - name: Merge as audited owner correction while preserving frozen picks
         env:
           ORIGINAL_BOARD: /tmp/footyedge-original-board.json
           ORIGINAL_RESEARCH: /tmp/footyedge-original-research.json
+          ORIGINAL_ODDS: /tmp/footyedge-original-daily-odds.json
         run: node scripts/repair-oct10-board.mjs
       - name: Reconcile tracking to corrected five-pick board
         env:
@@ -78,7 +91,7 @@ jobs:
           set -euo pipefail
           git config user.name "FootyEdge Owner Repair"
           git config user.email "actions@users.noreply.github.com"
-          git add -A -- data/research-base-2026-10-10.json data/board-drafts/2026-10-10.json data/boards/2026-10-10.json data/board-revisions/2026-10-10 data/performance
+          git add -A -- data/research-base-2026-10-10.json data/daily-odds-2026-10-10.json data/board-drafts/2026-10-10.json data/boards/2026-10-10.json data/board-revisions/2026-10-10 data/performance
           git commit -m "fix(board): audited October 10 completeness repair"
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main

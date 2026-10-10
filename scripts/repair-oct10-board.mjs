@@ -6,13 +6,17 @@ import {validateBoard,validateIntegrity,sha256} from "./validate-published-board
 const DATE="2026-10-10";
 const originalPath=process.env.ORIGINAL_BOARD||"/tmp/footyedge-original-board.json";
 const originalResearchPath=process.env.ORIGINAL_RESEARCH||"/tmp/footyedge-original-research.json";
+const originalOddsPath=process.env.ORIGINAL_ODDS||"/tmp/footyedge-original-daily-odds.json";
 const draftPath=path.join("data","board-drafts",DATE+".json");
 const boardPath=path.join("data","boards",DATE+".json");
 const researchPath=path.join("data","research-base-"+DATE+".json");
+const oddsPath=path.join("data","daily-odds-"+DATE+".json");
 const original=JSON.parse(fs.readFileSync(originalPath,"utf8"));
 const draft=JSON.parse(fs.readFileSync(draftPath,"utf8"));
 const originalResearch=fs.readFileSync(originalResearchPath,"utf8");
 const repairedResearch=fs.readFileSync(researchPath,"utf8");
+const originalOdds=fs.readFileSync(originalOddsPath,"utf8");
+const repairedOdds=fs.readFileSync(oddsPath,"utf8");
 const now=new Date().toISOString();
 
 const fixtureKey=g=>String((g?.home||"")+"|"+(g?.away||"")).toLowerCase();
@@ -26,11 +30,29 @@ function validPrice(p){
   if(Number.isFinite(n))return n>=-500;
   return Boolean(p.verifiedPrice&&Number(p.priceDecimal)>=1.2);
 }
-function mergeGame(fresh){
+function exactRanked(fresh){
+  const items=[...(fresh.top3||[]),...(fresh.model?.rankedCandidates||[]),...(fresh.model?.candidates||[])]
+    .filter(validPrice)
+    .sort((a,b)=>Number(b.score||0)-Number(a.score||0)||(Number(b.ev)||-99)-(Number(a.ev)||-99));
+  const seen=new Set(),out=[];
+  for(const p of items){
+    const k=pickKey(p);if(!k||seen.has(k))continue;
+    seen.add(k);out.push(p);if(out.length===3)break;
+  }
+  return out;
+}
+function normalizeFresh(fresh){
+  const priced=exactRanked(fresh);
+  const normalized={...fresh,top:priced[0]||null,top3:priced};
+  if(normalized.model)normalized.model={...normalized.model,top:normalized.top,top3:priced};
+  return normalized;
+}
+function mergeGame(rawFresh){
+  const fresh=normalizeFresh(rawFresh);
   const old=oldGames.get(String(fresh.id))||oldFixture.get(fixtureKey(fresh));
   if(!old)return fresh;
   if(!old.top)return fresh;
-  const extras=(fresh.top3||[]).filter(p=>pickKey(p)!==pickKey(old.top)&&validPrice(p));
+  const extras=exactRanked(fresh).filter(p=>pickKey(p)!==pickKey(old.top));
   const merged={...fresh,...Object.fromEntries(["ownerResearchNote","ownerEditorial"].filter(k=>old[k]!=null).map(k=>[k,old[k]]))};
   merged.top=old.top;
   merged.top3=[old.top,...extras].slice(0,3);
@@ -101,8 +123,10 @@ const revisionDir=path.join("data","board-revisions",DATE);
 fs.mkdirSync(revisionDir,{recursive:true});
 const boardBackup=path.join(revisionDir,"owner-repair-before-board.json");
 const researchBackup=path.join(revisionDir,"owner-repair-before-research-base.json");
+const oddsBackup=path.join(revisionDir,"owner-repair-before-daily-odds.json");
 if(!fs.existsSync(boardBackup))fs.writeFileSync(boardBackup,beforeBoard);
 if(!fs.existsSync(researchBackup))fs.writeFileSync(researchBackup,originalResearch);
+if(!fs.existsSync(oddsBackup))fs.writeFileSync(oddsBackup,originalOdds);
 
 const auditPath=path.join(revisionDir,"audit.json");
 let audits=[];if(fs.existsSync(auditPath))audits=JSON.parse(fs.readFileSync(auditPath,"utf8"));
@@ -113,6 +137,7 @@ function appendAudit(file,before,after,backupPath){
 }
 appendAudit(boardPath,beforeBoard,afterBoard,boardBackup);
 appendAudit(researchPath,originalResearch,repairedResearch,researchBackup);
+appendAudit(oddsPath,originalOdds,repairedOdds,oddsBackup);
 fs.writeFileSync(auditPath,JSON.stringify(audits,null,2)+"\n");
 
 console.log("Repaired board:",repaired.top5.length,"global picks;",
