@@ -22,3 +22,15 @@ The published 12:30 AM Toronto board is immutable. New research and live scores 
 
 ## Release status
 Live score polling and club-name aliases are deployed. Football-Data/SQLite scouting is a separate shadow data job. Current broader advanced adapters require data-access checks and holdout testing before promotion to production rankings.
+
+## Indicative bookmaker-price overlay
+\`/api/live-odds?date=YYYY-MM-DD\` directly reads ESPN's current public
+soccer scoreboard (not our older ESPN-derived dated odds files). It accepts
+only explicitly named DraftKings, FanDuel or ESPN BET entries, fully formed
+90-minute three-way moneylines, and exact paired goals-total lines. The
+\`observedAt\` time is when ESPN was read, *not* the time the sportsbook
+confirmed its price. Quote display must say "SEEN · ESPN", not "verified
+live sportsbook". A client quote older than four minutes is discarded.
+There is no odds or EV update to frozen board JSON; all prices are
+third-party indicative until the user checks the actual sportsbook.
+The Odds API key was over quota on October 11; do not repeatedly poll it.
