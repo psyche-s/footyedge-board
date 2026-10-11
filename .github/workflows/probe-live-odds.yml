@@ -17,7 +17,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          TODAY="$(TZ=America/Toronto date +%F)"
+          export TODAY="$(TZ=America/Toronto date +%F)"
           URL="https://footyedge-board.vercel.app/api/live-odds?date=$TODAY"
           HTTP="$(curl --location --silent --show-error --max-time 30 --retry 2 --retry-delay 5 -w '%{http_code}' -o /tmp/live-odds.json "$URL")"
           echo "HTTP status: $HTTP"
