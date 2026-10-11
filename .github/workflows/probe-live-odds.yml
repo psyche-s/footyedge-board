@@ -1,0 +1,38 @@
+name: Verify live odds coverage
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/probe-live-odds.yml"
+      - "api/live-odds.js"
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: Check published endpoint and quote coverage without touching the frozen board
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          URL="https://footyedge-board.vercel.app/api/live-odds?date=$TODAY"
+          HTTP="$(curl --location --silent --show-error --max-time 30 --retry 2 --retry-delay 5 -w '%{http_code}' -o /tmp/live-odds.json "$URL")"
+          echo "HTTP status: $HTTP"
+          if [[ "$HTTP" != "200" ]]; then
+            echo "::warning::No usable live odds provider response."
+            head -c 300 /tmp/live-odds.json || true
+            exit 0
+          fi
+          jq -e '.date == env.TODAY and (.events|type) == "array"' /tmp/live-odds.json > /dev/null
+          jq '{
+            date, source, observedAt,
+            fixtureCount:(.events|length),
+            quotedSelections:([.events[].prices[]]|length),
+            attributedBooks:([.events[].prices[].book]|unique),
+            sampleFixtures:[.events[:5][]|{home,away,prices:([.prices[]|{label,odds,book,source}]|.[:3])}]
+          }' /tmp/live-odds.json
+          echo "Probe completed. Only ESPN-attributed quotes may be shown."
+
