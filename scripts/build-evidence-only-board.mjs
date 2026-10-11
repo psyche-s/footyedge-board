@@ -72,7 +72,7 @@ function topRefs(rows){
 async function main(){
   if(await exists(LOCK)){console.log('Official board already immutable; skip recovery.');return;}
   const odds=await read(ODDS).catch(()=>null);
-  if(odds?.events?.length && odds.status!=='blocked'){
+  if(odds?.events?.length && odds.status!=='blocked' && process.env.FORCE_FALLBACK!=='1'){
     console.log('Native prices exist: defer to full original browser publication.');return;
   }
   const research=await read(R);

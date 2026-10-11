@@ -95,7 +95,12 @@ jobs:
           if [[ -s "data/board-drafts/$TODAY.json" ]]; then
             echo "Validated research-only draft exists; skip fragile browser capture."
           else
-            timeout 145s node scripts/publish-board-previews.mjs
+            if timeout 145s node scripts/publish-board-previews.mjs; then
+              echo "Primary browser board capture completed."
+            else
+              echo "::warning::Browser capture failed. Publishing research-only fallback with no invented sportsbook lines."
+              FORCE_FALLBACK=1 node scripts/build-evidence-only-board.mjs
+            fi
           fi
 
       - name: Lock today's official board
