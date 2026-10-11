@@ -14,7 +14,12 @@ function validateDraft(board,date){
   if(board?.date!==date||board?.immutable!==false||board?.state!=='preview'||board?.coverage!=='full-board'||!Array.isArray(board.games)||!Array.isArray(board.top5)||board.top5.length>5)throw new Error('Invalid preview board '+date);
   const byId=new Map(board.games.map(g=>[String(g.id),g]));
   for(const g of board.games)if(!g.id||!g.home||!g.away||!Array.isArray(g.top3))throw new Error('Incomplete preview fixture '+date);
-  for(const x of board.top5)if(!(x.pick?.score>=85&&x.pick?.bookExact&&x.pick?.bookKey&&x.pick?.odds!=null))throw new Error('Unsafe or unverified top-five selection '+date);
+  for(const x of board.top5){
+    const p=x.pick;
+    const verified=Boolean(p?.bookExact&&p?.bookKey&&p?.odds!=null);
+    const unpriced=p?.odds==null&&p?.bookKey==null&&p?.ev==null&&p?.bookExact===false;
+    if(!(p?.score>=85&&(verified||unpriced)))throw new Error('Unsafe or unverified top-five selection '+date);
+  }
   for(const [i,p] of board.top5.entries()){const g=byId.get(String(p.gameId));if(p.rank!==i+1||!g||JSON.stringify(p.pick)!==JSON.stringify(g.top))throw new Error('Preview Top 5 mismatch '+date)}
 }
 async function main(){

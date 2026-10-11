@@ -75,6 +75,8 @@ jobs:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
         run: node scripts/capture-native-odds.mjs
 
+      # If native bookmaker quota is exhausted, publish evidence-only leans with
+      # null odds and null EV rather than backfilling stale sportsbook prices.
       - name: Build today's complete board only
         if: steps.gate.outputs.run == 'true'
         env:
