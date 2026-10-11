@@ -1867,7 +1867,11 @@ function boardArchivePayload(mode=CAPTURE_MODE||"archive"){
   const preview=mode==="draft";
   const picksFor=g=>preview?previewCandidates(g):(g.model?.top3||[]).filter(priceAllowed).slice(0,3);
   const topFor=g=>preview?(picksFor(g)[0]||null):(priceAllowed(g.model?.top)?g.model.top:null);
-  const eligible=games=>games.filter(g=>{const p=topFor(g);return p&&p.score>=80})
+  const eligible=games=>games.filter(g=>{
+    const p=topFor(g),history=g.baseResearch?.last10||{},upcoming=Date.parse(g.date)>Date.now();
+    return p&&p.score>=85&&p.bookExact&&p.bookKey&&p.odds!=null&&priceAllowed(p)&&upcoming&&
+      Array.isArray(history.home)&&history.home.length>=5&&Array.isArray(history.away)&&history.away.length>=5;
+  })
     .sort((a,b)=>{const ap=topFor(a),bp=topFor(b);return bp.score-ap.score||(bp.ev??-99)-(ap.ev??-99)}).slice(0,5);
   const cloneFor=(p,g)=>preview?clonePreviewPickForArchive(p,g):clonePickForArchive(p,g);
   const refs=games=>games.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home.name,away:g.away.name,pick:cloneFor(topFor(g),g)}));

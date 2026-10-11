@@ -18,7 +18,7 @@ async function main(){
   payload.lockedAtToronto=`${DATE} ${p.hour}:${p.minute} America/Toronto`;
   payload.source='FootyEdge official Toronto fixture-day locked board';
   if(Number(p.hour)>LOCK_HOUR||(Number(p.hour)===LOCK_HOUR&&Number(p.minute)>LOCK_MINUTE)){
-    payload.lateLockReason='Catch-up publication after upstream scoreboard HTTP 500 blocked the scheduled capture; exact published prices use the fresh freeze-window odds snapshot.';
+    payload.lateLockReason='Audited catch-up publication after the scheduled capture failed. Any native sportsbook price comes from the recorded late capture, not the original 00:30 freeze.';
   }
   validateBoard(payload,{requireFull:true});
   await fs.mkdir(path.dirname(file),{recursive:true});

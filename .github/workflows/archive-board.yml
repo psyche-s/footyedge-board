@@ -10,13 +10,16 @@ on:
     - cron: "30 4 * * *"
     - cron: "30 5 * * *"
   workflow_dispatch:
+  workflow_run:
+    workflows: ["Build FootyEdge Research Base"]
+    types: [completed]
 
 permissions:
   contents: write
 
 concurrency:
   group: footyedge-board-publish
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -35,9 +38,13 @@ jobs:
           HOUR="$(TZ=America/Toronto date +%H)"
           MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+          if [[ -f "data/boards/$DATE.json" ]]; then
+            echo "Existing immutable board for $DATE; no republishing."
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$GITHUB_EVENT_NAME" == "push" ]]; then
             RUN=true
-          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && "$HOUR" == "00" && "$MINUTE" -ge 30 && "$DATE" != "2026-10-07" ]]; then
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+            RUN=true
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && ( "$HOUR" == "00" || "$HOUR" == "01" || "$HOUR" == "02" ) && "$DATE" != "2026-10-07" ]]; then
             RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
@@ -62,12 +69,19 @@ jobs:
           git fetch --quiet origin main || echo "Shadow source ref refresh unavailable; publishing remains independent."
           node scripts/audit-shadow-refresh.mjs --ref origin/main
 
+      - name: Capture verified native sportsbook odds once
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        run: node scripts/capture-native-odds.mjs
+
       - name: Build today's complete board only
         if: steps.gate.outputs.run == 'true'
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           PREVIEW_DAYS: "0"
           FORCE_TODAY_CAPTURE: "1"
+          FAST_CAPTURE: "1"
         run: node scripts/publish-board-previews.mjs
 
       - name: Lock today's official board
@@ -93,7 +107,7 @@ jobs:
           node scripts/validate-published-boards.mjs --base origin/main
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A -- "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" data/performance data/postmortems
+          git add -A -- "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json" data/performance data/postmortems
           if git diff --cached --quiet; then
             echo "No board changes."
             exit 0
