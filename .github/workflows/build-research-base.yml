@@ -55,7 +55,10 @@ jobs:
             exit 0
           fi
           TODAY="$(TZ=America/Toronto date +%F)"
-          for OFFSET in 0 1 2 3 4; do
+          # A repair push rebuilds today only; scheduled midnight research still scouts five days.
+          HORIZON=4
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then HORIZON=0; fi
+          for OFFSET in $(seq 0 "$HORIZON"); do
             DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             echo "Building research base for $DATE"
             FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs
