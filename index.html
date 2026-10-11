@@ -122,6 +122,8 @@ function homeSelectionLabel(label,x,women){
 }
 function renderTop5(top,emptyMessage="Checking the game schedule…",board=null){
   const el=document.getElementById("topList");
+  const headNote=document.querySelector(".topHead small");
+  if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="historical_trend_hit_rate"))headNote.textContent="Research trends · no verified odds";
   if(!top?.length){el.innerHTML='<div class="loading">'+esc(emptyMessage)+'</div>';return}
   el.innerHTML=top.slice(0,5).map((x,i)=>{
     const p=x.pick||x,women=homeWomenFixture(board,x);
@@ -129,7 +131,8 @@ function renderTop5(top,emptyMessage="Checking the game schedule…",board=null)
     const fixture=home+(away?" vs "+away:"");
     const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
     const conf=p.score??x.confidence;
-    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%":"")+'</div></div>';
+    const isHistorical=p.confidenceType==="historical_trend_hit_rate";
+    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%"+(isHistorical?" TREND":""):"")+'</div></div>';
   }).join("");
 }
 repoJson("data/performance/summary.json").then(p=>{

@@ -805,7 +805,7 @@ function renderBest(){
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
       '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
-      '<div class="bestMetric bestConfidence"><b>'+p.score+'%</b><small>CONF</small></div><div class="rowChev">›</div></article>';
+      '<div class="bestMetric bestConfidence"><b>'+p.score+'%</b><small>'+(p.confidenceType==='historical_trend_hit_rate'?'TREND':'CONF')+'</small></div><div class="rowChev">›</div></article>';
   }).join("")
 }
 function renderGames(){
@@ -825,7 +825,7 @@ function renderGames(){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
       '<div class="pickMetrics"'+(g.ownerEditorial?' style="grid-template-columns:repeat(2,minmax(0,1fr))"':'')+'><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       (g.ownerEditorial?'':'<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>')+
-      '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>'+(g.ownerEditorial?(p.modelProb!=null?'MODEL':'MARKET'):'CONF')+'</small></div></div></div>';
+      '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>'+(p.confidenceType==='historical_trend_hit_rate'?'TREND':g.ownerEditorial?(p.modelProb!=null?'MODEL':'MARKET'):'CONF')+'</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">'+(g.archiveUnavailable?'Original published picks were not saved.':S.dataSource==="Awaiting published board"?'Awaiting published picks.':'PASS — no market cleared the model threshold.')+'</div></div>';
     html+='</div>';
     if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+x.score+'%</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>ODDS</small></div></div></div>'}).join("")+'</div>';
@@ -892,7 +892,7 @@ function renderLanding(){
   const el=document.getElementById("landingTopPicks");if(!el)return;
   const picks=topPicks();
   if(!picks.length){el.innerHTML='<div class="landingEmpty">No pick has cleared today’s strict Top Pick rules yet.</div>';return}
-  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top,px=priceInfo(p),od=px?.odds&&px.odds!=="—"?" · "+px.odds:"";return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+esc(od)+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>CONF</small></div></div>'}).join("")
+  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top,px=priceInfo(p),od=px?.odds&&px.odds!=="—"?" · "+px.odds:"";return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+esc(od)+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+(p?.confidenceType==='historical_trend_hit_rate'?'TREND':'CONF')+'</small></div></div>'}).join("")
 }
 
 function render(){
