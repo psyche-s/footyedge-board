@@ -75,6 +75,10 @@ jobs:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
         run: node scripts/capture-native-odds.mjs
 
+      - name: Evidence-only recovery when sportsbook quota is exhausted
+        if: steps.gate.outputs.run == 'true'
+        run: node scripts/build-evidence-only-board.mjs
+
       # Missing leagues are restored from independently verified dated research.
       # If native bookmaker quota is exhausted, publish evidence-only leans with
       # null odds and null EV rather than backfilling stale sportsbook prices.
@@ -85,7 +89,14 @@ jobs:
           PREVIEW_DAYS: "0"
           FORCE_TODAY_CAPTURE: "1"
           FAST_CAPTURE: "1"
-        run: node scripts/publish-board-previews.mjs
+        shell: bash
+        run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
+          if [[ -s "data/board-drafts/$TODAY.json" ]]; then
+            echo "Validated research-only draft exists; skip fragile browser capture."
+          else
+            timeout 145s node scripts/publish-board-previews.mjs
+          fi
 
       - name: Lock today's official board
         if: steps.gate.outputs.run == 'true'
@@ -98,8 +109,8 @@ jobs:
           FORCE_TRACK: '1'
         run: |
           # Never recalculate or overwrite archived selections themselves.
-          node scripts/track-performance.mjs
-          node scripts/postmatch-learning.mjs
+          node scripts/track-performance.mjs || echo "::warning::Tracking retry required; preserve board publication."
+          node scripts/postmatch-learning.mjs || echo "::warning::Learning retry required; preserve board publication."
 
       - name: Validate and commit official board
         if: steps.gate.outputs.run == 'true'
