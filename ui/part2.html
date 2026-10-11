@@ -76,9 +76,13 @@ function teamImgTag(t,cls){
   cls=cls||"";
   const code=flagCode(t&&t.name),src=teamImage(t);
   const kind=code?" countryFlag":" clubCrest";
+  const label=esc((t&&t.name)||"Team");
+  const initials=String(t?.name||"Club").replace(/\b(?:FC|SC|AC|FK|AS)\b/ig,"").trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase()||"FC";
+  const placeholder='<span class="'+cls+' crestPlaceholder" title="'+label+'" aria-label="'+label+' club crest unavailable">'+esc(initials)+'</span>';
+  if(!src)return placeholder;
   const fallback=(t&&t.logo)||"";
-  const err=fallback&&src!==fallback?' onerror="this.onerror=null;this.src=\''+esc(fallback)+'\';"':"";
-  return '<img class="'+cls+kind+'" src="'+esc(src)+'" alt="'+esc((t&&t.name)||"")+'" loading="lazy" decoding="async"'+err+'>';
+  const err=fallback&&src!==fallback?' onerror="this.onerror=null;this.src=\''+esc(fallback)+'\';"':' onerror="this.onerror=null;this.style.visibility=\'hidden\';"';
+  return '<img class="'+cls+kind+'" src="'+esc(src)+'" alt="'+label+'" loading="lazy" decoding="async"'+err+'>';
 }
 function decimalToAmerican(v){const d=Number(v);if(!Number.isFinite(d)||d<=1)return null;return d>=2?Math.round((d-1)*100):Math.round(-100/(d-1))}
 function decimalProb(v){const d=Number(v);return Number.isFinite(d)&&d>1?1/d:null}
@@ -749,7 +753,14 @@ function teamNewsSummary(g,p){
   return{text:displayNewsText(g,item),impact:newsImpact(g,p,item)}
 }
 
-function status(g){if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`}
+function status(g){
+  if(g.liveStatusVerified){
+    const score=Number.isFinite(g.home?.score)&&Number.isFinite(g.away?.score)?" · "+g.home.score+"–"+g.away.score:"";
+    if(g.done)return "FT"+score;
+    if(g.live)return "LIVE"+score+(g.liveClock?" · "+g.liveClock:"");
+  }
+  if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`
+}
 function statusOK(g){return S.status==="all"||(S.status==="upcoming"&&!g.done&&!g.live)||(S.status==="live"&&g.live)||(S.status==="completed"&&g.done)}
 function playerMarketType(p){
   if(p?.category!=="Player")return null;
@@ -1225,7 +1236,51 @@ const landingSeeAll=document.getElementById("landingSeeAll");
 if(landingTodayLink)landingTodayLink.onclick=e=>{e.preventDefault();goTodayAndScroll("topAnchor")};
 if(landingHeroPicks)landingHeroPicks.onclick=e=>{e.preventDefault();goTodayAndScroll("topAnchor")};
 if(landingSeeAll)landingSeeAll.onclick=e=>{e.preventDefault();goTodayAndScroll("matchesAnchor")};
-document.getElementById("prev").onclick=()=>load(addDate(S.date,-1));document.getElementById("next").onclick=()=>load(addDate(S.date,1));document.getElementById("todayShortcut").onclick=()=>load(etDate());const settingsBtn=document.getElementById("settingsBtn"),searchBtn=document.getElementById("searchBtn");if(settingsBtn)settingsBtn.onclick=()=>document.getElementById("filters")?.scrollIntoView({behavior:"smooth",block:"start"});if(searchBtn)searchBtn.onclick=()=>{const b=document.getElementById("searchBar");if(!b)return;b.classList.toggle("on");searchBtn.setAttribute("aria-expanded",String(b.classList.contains("on")));if(b.classList.contains("on"))document.getElementById("searchInput")?.focus()};document.getElementById("searchInput").oninput=e=>{S.search=e.target.value;renderGames()};document.getElementById("sortBtn").onclick=()=>{S.sort=S.sort==="time"?"confidence":"time";document.getElementById("sortBtn").textContent=S.sort==="confidence"?"★ Confidence":"☷ Sort";renderGames()};document.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-status]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.status=b.dataset.status;renderBest();renderGames()});document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.filter=b.dataset.filter;renderGames()});document.getElementById("close").onclick=()=>{S.openGameId=null;document.getElementById("drawer").classList.remove("on")};document.getElementById("drawer").onclick=e=>{if(e.target.id==="drawer"){S.openGameId=null;e.currentTarget.classList.remove("on")}};window.openGame=openGame;const captureDate=ARCHIVE_CAPTURE?new URLSearchParams(window.location.search).get("boardDate"):null;S.date=/^\d{4}-\d{2}-\d{2}$/.test(captureDate||"")?captureDate:etDate();load();
+document.getElementById("prev").onclick=()=>load(addDate(S.date,-1));document.getElementById("next").onclick=()=>load(addDate(S.date,1));document.getElementById("todayShortcut").onclick=()=>load(etDate());const settingsBtn=document.getElementById("settingsBtn"),searchBtn=document.getElementById("searchBtn");if(settingsBtn)settingsBtn.onclick=()=>document.getElementById("filters")?.scrollIntoView({behavior:"smooth",block:"start"});if(searchBtn)searchBtn.onclick=()=>{const b=document.getElementById("searchBar");if(!b)return;b.classList.toggle("on");searchBtn.setAttribute("aria-expanded",String(b.classList.contains("on")));if(b.classList.contains("on"))document.getElementById("searchInput")?.focus()};document.getElementById("searchInput").oninput=e=>{S.search=e.target.value;renderGames()};document.getElementById("sortBtn").onclick=()=>{S.sort=S.sort==="time"?"confidence":"time";document.getElementById("sortBtn").textContent=S.sort==="confidence"?"★ Confidence":"☷ Sort";renderGames()};document.querySelectorAll("[data-status]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-status]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.status=b.dataset.status;renderBest();renderGames()});document.querySelectorAll("[data-filter]").forEach(b=>b.onclick=()=>{document.querySelectorAll("[data-filter]").forEach(x=>x.classList.remove("active"));b.classList.add("active");S.filter=b.dataset.filter;renderGames()});document.getElementById("close").onclick=()=>{S.openGameId=null;document.getElementById("drawer").classList.remove("on")};document.getElementById("drawer").onclick=e=>{if(e.target.id==="drawer"){S.openGameId=null;e.currentTarget.classList.remove("on")}};// Status updates are independent from the locked prediction board. Refresh the
+// live score only, never reload/recalculate all matches or republish a selection.
+let scorePollBusy=false;
+async function pollMatchScores(){
+  if(scorePollBusy||S.date!==etDate()||ARCHIVE_CAPTURE||GITHUB_STATIC||document.hidden)return;
+  scorePollBusy=true;
+  const viewing=S.date;
+  try{
+    const result=await json('/api/live-scores?date='+encodeURIComponent(viewing));
+    if(viewing!==S.date||result.liveSource!==true||result.date!==viewing||!Array.isArray(result.events))return;
+    if(Math.abs(Date.now()-Date.parse(result.fetchedAt))>120000)return;
+    const lookup=new Map(result.events.map(x=>[String(x.id),x]));
+    const nameKey=(a,b)=>fixtureMatchKey(a,b);
+    const named=new Map(result.events.map(x=>[nameKey(x.home,x.away),x]));
+    let changed=false;
+    for(const g of S.games){
+      const s=lookup.get(String(g.id))||named.get(nameKey(g.home.name,g.away.name));
+      if(!s)continue; // No live source for this league: never pretend otherwise.
+      if(!s.live&&!s.done&&g.liveStatusVerified)continue;
+      const hs=Number.isFinite(s.homeScore)?s.homeScore:null;
+      const as=Number.isFinite(s.awayScore)?s.awayScore:null;
+      const isNew=!g.liveStatusVerified||g.live!==s.live||g.done!==s.done||g.home.score!==hs||g.away.score!==as||g.liveClock!==s.clock;
+      if(!isNew)continue;
+      g.liveStatusVerified=true;g.live=s.live===true;g.done=s.done===true;
+      g.liveClock=s.clock||null;g.home.score=hs;g.away.score=as;
+      changed=true;
+    }
+    if(changed){renderBest();renderGames();
+      if(S.openGameId&&document.getElementById('drawer')?.classList.contains('on')){
+        const g=S.games.find(x=>x.id===String(S.openGameId));if(g)renderModal(g);
+      }
+    }
+  }catch(error){console.debug('Live scores unavailable; frozen research unchanged',String(error))}
+  finally{scorePollBusy=false}
+}
+planRefresh=function(){
+  clearTimeout(refreshTimer);
+  if(S.date!==etDate()||ARCHIVE_CAPTURE||GITHUB_STATIC)return;
+  const now=Date.now();
+  const live=S.games.some(g=>g.live);
+  const nearby=S.games.some(g=>!g.done&&Date.parse(g.date)>now-5*60000&&Date.parse(g.date)<now+2*3600000);
+  const delay=live?45000:nearby?90000:240000;
+  refreshTimer=setTimeout(async()=>{await pollMatchScores();planRefresh()},delay);
+};
+window.openGame=openGame;const captureDate=ARCHIVE_CAPTURE?new URLSearchParams(window.location.search).get("boardDate"):null;S.date=/^\d{4}-\d{2}-\d{2}$/.test(captureDate||"")?captureDate:etDate();load();
 </script>
 </body>
 </html>
