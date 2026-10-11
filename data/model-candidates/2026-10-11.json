@@ -1,0 +1,551 @@
+{
+  "date": "2026-10-11",
+  "asOf": "2026-10-11T13:00:39.700250+00:00",
+  "modelVersion": "dc-shadow-v0.7",
+  "mode": "shadow_only",
+  "promotedToPicks": false,
+  "assumptions": {
+    "decayXiPerDay": 0.001,
+    "minTrainingMatches": 90,
+    "minTeamMatches": 4,
+    "maxDataAgeDays": 30
+  },
+  "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+  "fixtures": [
+    {
+      "fixtureId": "cz1-20261011-slovan-liberec-1-fc-slovacko",
+      "league": "cze.1",
+      "kickoff": "2026-10-11T11:00:00.000Z",
+      "home": "Slovan Liberec",
+      "away": "1.FC Slov\u00e1cko",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "cz1-20261011-fk-teplice-sigma-olomouc",
+      "league": "cze.1",
+      "kickoff": "2026-10-11T13:00:00.000Z",
+      "home": "FK Teplice",
+      "away": "Sigma Olomouc",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "cz1-20261011-sparta-praha-fk-pardubice",
+      "league": "cze.1",
+      "kickoff": "2026-10-11T16:00:00.000Z",
+      "home": "Sparta Praha",
+      "away": "FK Pardubice",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401879266",
+      "league": "eng.1",
+      "kickoff": "2026-10-11T13:00Z",
+      "home": "Crystal Palace",
+      "away": "Nottingham Forest",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401878774",
+      "league": "eng.1",
+      "kickoff": "2026-10-11T13:00Z",
+      "home": "Hull City",
+      "away": "Everton",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401879264",
+      "league": "eng.1",
+      "kickoff": "2026-10-11T15:30Z",
+      "home": "Liverpool",
+      "away": "Manchester City",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.25812,
+        "draw": 0.266352,
+        "away_win": 0.475529,
+        "home_or_draw": 0.524471,
+        "away_or_draw": 0.74188,
+        "over_1_5": 0.818394,
+        "under_2_5": 0.420804,
+        "over_2_5": 0.579196,
+        "under_3_5": 0.644841,
+        "btts_yes": 0.607387,
+        "btts_no": 0.392613
+      },
+      "expectedGoals": {
+        "home": 1.2554,
+        "away": 1.7553
+      },
+      "trainingMatches": 430
+    },
+    {
+      "fixtureId": "401880237",
+      "league": "eng.2",
+      "kickoff": "2026-10-11T11:00Z",
+      "home": "Southampton",
+      "away": "Portsmouth",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401882854",
+      "league": "esp.1",
+      "kickoff": "2026-10-11T12:00Z",
+      "home": "Elche",
+      "away": "Celta Vigo",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401882847",
+      "league": "esp.1",
+      "kickoff": "2026-10-11T14:15Z",
+      "home": "Real Sociedad",
+      "away": "Deportivo",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "real sociedad",
+        "deportivo"
+      ]
+    },
+    {
+      "fixtureId": "401882855",
+      "league": "esp.1",
+      "kickoff": "2026-10-11T16:30Z",
+      "home": "Real Betis",
+      "away": "Osasuna",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "real betis",
+        "osasuna"
+      ]
+    },
+    {
+      "fixtureId": "401882850",
+      "league": "esp.1",
+      "kickoff": "2026-10-11T19:00Z",
+      "home": "Racing Santander",
+      "away": "Valencia",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "racing santander",
+        "valencia"
+      ]
+    },
+    {
+      "fixtureId": "401876443",
+      "league": "fra.1",
+      "kickoff": "2026-10-11T13:00Z",
+      "home": "Nice",
+      "away": "Strasbourg",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401876441",
+      "league": "fra.1",
+      "kickoff": "2026-10-11T15:15Z",
+      "home": "Stade Rennais",
+      "away": "AJ Auxerre",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "stade rennais",
+        "aj auxerre"
+      ]
+    },
+    {
+      "fixtureId": "401876440",
+      "league": "fra.1",
+      "kickoff": "2026-10-11T18:45Z",
+      "home": "Troyes",
+      "away": "Marseille",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "troyes",
+        "marseille"
+      ]
+    },
+    {
+      "fixtureId": "401884774",
+      "league": "ger.1",
+      "kickoff": "2026-10-11T13:30Z",
+      "home": "FC Cologne",
+      "away": "Borussia M\u00f6nchengladbach",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "fc cologne",
+        "borussia monchengladbach"
+      ]
+    },
+    {
+      "fixtureId": "401884778",
+      "league": "ger.1",
+      "kickoff": "2026-10-11T15:30Z",
+      "home": "SC Freiburg",
+      "away": "Schalke 04",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "sc freiburg",
+        "schalke 04"
+      ]
+    },
+    {
+      "fixtureId": "401874940",
+      "league": "ita.1",
+      "kickoff": "2026-10-11T10:30Z",
+      "home": "Como",
+      "away": "AS Roma",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401874951",
+      "league": "ita.1",
+      "kickoff": "2026-10-11T13:00Z",
+      "home": "Lazio",
+      "away": "Monza",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401874776",
+      "league": "ita.1",
+      "kickoff": "2026-10-11T13:00Z",
+      "home": "Lecce",
+      "away": "Bologna",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401874789",
+      "league": "ita.1",
+      "kickoff": "2026-10-11T16:00Z",
+      "home": "Sassuolo",
+      "away": "AC Milan",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "sassuolo",
+        "ac milan"
+      ]
+    },
+    {
+      "fixtureId": "401874764",
+      "league": "ita.1",
+      "kickoff": "2026-10-11T18:45Z",
+      "home": "Cagliari",
+      "away": "Juventus",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "cagliari",
+        "juventus"
+      ]
+    },
+    {
+      "fixtureId": "401900911",
+      "league": "ksa.1",
+      "kickoff": "2026-10-11T13:40Z",
+      "home": "Al Fayha",
+      "away": "Al Riyadh",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900914",
+      "league": "ksa.1",
+      "kickoff": "2026-10-11T15:25Z",
+      "home": "Abha",
+      "away": "Al Faisaly",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900906",
+      "league": "ksa.1",
+      "kickoff": "2026-10-11T18:00Z",
+      "home": "Al Shabab",
+      "away": "Al Taawoun",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401875587",
+      "league": "ned.1",
+      "kickoff": "2026-10-11T10:15Z",
+      "home": "FC Utrecht",
+      "away": "Willem II",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401875586",
+      "league": "ned.1",
+      "kickoff": "2026-10-11T12:30Z",
+      "home": "PEC Zwolle",
+      "away": "SC Cambuur",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401875585",
+      "league": "ned.1",
+      "kickoff": "2026-10-11T12:30Z",
+      "home": "Telstar",
+      "away": "ADO Den Haag",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401875584",
+      "league": "ned.1",
+      "kickoff": "2026-10-11T14:45Z",
+      "home": "Excelsior",
+      "away": "FC Groningen",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "excelsior",
+        "fc groningen"
+      ]
+    },
+    {
+      "fixtureId": "401885422",
+      "league": "por.1",
+      "kickoff": "2026-10-11T14:30Z",
+      "home": "Rio Ave",
+      "away": "C.D. Nacional",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "rio ave",
+        "c d nacional"
+      ]
+    },
+    {
+      "fixtureId": "401885421",
+      "league": "por.1",
+      "kickoff": "2026-10-11T17:00Z",
+      "home": "Benfica",
+      "away": "Vit\u00f3ria de Guimaraes",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "benfica",
+        "vitoria de guimaraes"
+      ]
+    },
+    {
+      "fixtureId": "401885428",
+      "league": "por.1",
+      "kickoff": "2026-10-11T19:30Z",
+      "home": "Arouca",
+      "away": "Estrela",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "arouca",
+        "estrela"
+      ]
+    },
+    {
+      "fixtureId": "401888281",
+      "league": "tur.1",
+      "kickoff": "2026-10-11T10:30Z",
+      "home": "Konyaspor",
+      "away": "Istanbul Basaksehir",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401888380",
+      "league": "tur.1",
+      "kickoff": "2026-10-11T13:00Z",
+      "home": "Gaziantep FK",
+      "away": "\u00c7orum FK",
+      "status": "already_started"
+    },
+    {
+      "fixtureId": "401888279",
+      "league": "tur.1",
+      "kickoff": "2026-10-11T16:00Z",
+      "home": "Besiktas",
+      "away": "Kocaelispor",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.514353,
+        "draw": 0.304856,
+        "away_win": 0.180791,
+        "home_or_draw": 0.819209,
+        "away_or_draw": 0.485647,
+        "over_1_5": 0.807501,
+        "under_2_5": 0.466169,
+        "over_2_5": 0.533831,
+        "under_3_5": 0.688865,
+        "btts_yes": 0.571172,
+        "btts_no": 0.428828
+      },
+      "expectedGoals": {
+        "home": 1.784,
+        "away": 1.0298
+      },
+      "trainingMatches": 100
+    }
+  ],
+  "leagueDiagnostics": {
+    "cze.1": {
+      "trainingMatches": 71,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 21,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2024-25_cz1.txt",
+        "https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2026-27_cz1.txt"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    },
+    "eng.1": {
+      "trainingMatches": 430,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 21,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/en.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/en.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "eng.2": {
+      "trainingMatches": 653,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/en.2.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/en.2.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401880233"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "esp.1": {
+      "trainingMatches": 450,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/es.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/es.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401882851"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "fra.1": {
+      "trainingMatches": 351,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/fr.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/fr.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401876447"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "ger.1": {
+      "trainingMatches": 343,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/de.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/de.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401884781"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "ita.1": {
+      "trainingMatches": 430,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 21,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/it.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "ksa.1": {
+      "trainingMatches": 3,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [],
+      "sourceErrors": [
+        "2025-26: HTTPError",
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [
+        "401900908",
+        "401900912",
+        "401900907"
+      ],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    },
+    "ned.1": {
+      "trainingMatches": 369,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/nl.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/nl.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401875592"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "por.1": {
+      "trainingMatches": 370,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/pt.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/pt.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401885423",
+        "401885427"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "tur.1": {
+      "trainingMatches": 100,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 2,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/tr.1.json"
+      ],
+      "sourceErrors": [
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [
+        "401888280"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    }
+  },
+  "researchInputSha256": "0f99d35cabfb2459c0064018e7e8238a791a0517caa6dfcea55295cb9bd3056b",
+  "researchGeneratedAt": "2026-10-11T12:59:54.934Z",
+  "researchAgeHours": 0.012,
+  "status": "completed",
+  "unmodeledFixtureCount": 1,
+  "coverage": {
+    "inputFixtures": 35,
+    "eligibleLeagueFixtures": 34,
+    "predicted": 2
+  }
+}
