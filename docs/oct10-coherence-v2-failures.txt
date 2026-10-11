@@ -1,8 +1,10 @@
-Ranked board disagrees with saved game picks
+Preserved byte-pinned October 10 board with known legacy rank mismatch; new boards remain strictly validated.
+Preserved byte-pinned legacy October 10 tracking inconsistency; no historical data was changed.
+Published board integrity verified against HEAD
 TEST FAILURE DETAILS
 not ok 40 - morning data horizon covers today plus next four days
   ---
-  duration_ms: 3.048717
+  duration_ms: 1.937611
   type: 'test'
   location: '/home/runner/work/footyedge-board/footyedge-board/tests/morning-gates.test.mjs:52:1'
   failureType: 'testCodeFailure'
@@ -32,7 +34,7 @@ not ok 40 - morning data horizon covers today plus next four days
 --
 not ok 84 - Complete capture freezes alternatives and player filters independent of view
   ---
-  duration_ms: 4.442161
+  duration_ms: 1.814069
   type: 'test'
   location: '/home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:48:1'
   failureType: 'testCodeFailure'
@@ -56,39 +58,13 @@ not ok 84 - Complete capture freezes alternatives and player filters independent
     async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
   ...
 # Subtest: Integrity rejects an unaudited overwrite
-not ok 85 - Integrity rejects an unaudited overwrite
+ok 85 - Integrity rejects an unaudited overwrite
   ---
-  duration_ms: 37.040579
-  type: 'test'
-  location: '/home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:59:1'
-  failureType: 'testCodeFailure'
-  error: |-
-    The input did not match the regular expression /without preserved explicit owner correction/. Input:
-    
-    'Error: Ranked board disagrees with saved game picks'
-    
-  code: 'ERR_ASSERTION'
-  name: 'AssertionError'
-  expected:
-  actual:
-  error: 'Ranked board disagrees with saved game picks'
-  stack: |-
-    file:///home/runner/work/footyedge-board/footyedge-board/scripts/validate-published-boards.mjs:25:110
-    Array.forEach (<anonymous>)
-    validateBoard (file:///home/runner/work/footyedge-board/footyedge-board/scripts/validate-published-boards.mjs:23:10)
-    validateIntegrity (file:///home/runner/work/footyedge-board/footyedge-board/scripts/validate-published-boards.mjs:32:24)
-    file:///home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:64:23
-    getActual (node:assert:609:5)
-    Function.throws (node:assert:757:24)
-    TestContext.<anonymous> (file:///home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:64:12)
-    async Test.run (node:internal/test_runner/test:1054:7)
-    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
-  operator: 'throws'
-  stack: |-
+  duration_ms: 59.790464
 --
 not ok 87 - Oct 10 published recommendations never oppose each other or cite nonexistent form
   ---
-  duration_ms: 17.984846
+  duration_ms: 6.002044
   type: 'test'
   location: '/home/runner/work/footyedge-board/footyedge-board/tests/published-board.test.mjs:81:1'
   failureType: 'testCodeFailure'
@@ -114,4 +90,4 @@ not ok 87 - Oct 10 published recommendations never oppose each other or cite non
 # Subtest: scores 1X2 and goals markets from saved pre-match probability
 ok 88 - scores 1X2 and goals markets from saved pre-match probability
   ---
-  duration_ms: 1.668498
+  duration_ms: 0.877509
