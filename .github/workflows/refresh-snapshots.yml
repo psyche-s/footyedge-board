@@ -4,86 +4,86 @@ on:
   schedule:
     - cron: "17 * * * *"
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/refresh-snapshots.yml"
 
 permissions:
   contents: write
 
+concurrency:
+  group: footyedge-snapshot-refresh
+  cancel-in-progress: false
+
 jobs:
   snapshot:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Capture compact live board data — today + next 4 days
+      - name: Capture verified live snapshots or retain dated source on provider error
         shell: bash
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
-
           for OFFSET in 0 1 2 3 4; do
             SNAP_DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             KEY="${SNAP_DATE//-/}"
-            mkdir -p "data/$SNAP_DATE"
+            DIR="data/$SNAP_DATE"
+            mkdir -p "$DIR"
+            echo "Checking men's soccer snapshot $SNAP_DATE"
 
-            echo "Refreshing snapshot for $SNAP_DATE"
+            if curl --fail --max-time 15 --retry 1 --silent --show-error               "https://footyedge-board.vercel.app/api/espn-scoreboard?dates=$KEY&limit=1000"               -o "/tmp/scoreboard-$KEY.json" &&
+              jq -e '.events | type=="array"' "/tmp/scoreboard-$KEY.json" >/dev/null; then
+              jq '{events: [.events[] | {id,uid,date,name,shortName,season,
+                status:{displayClock:.status.displayClock,type:.status.type},
+                competitions:[.competitions[0] | {id,competitors:[.competitors[] |
+                  {id,homeAway,winner,score,team:{id:.team.id,displayName:.team.displayName,abbreviation:.team.abbreviation,logo:.team.logo}}],
+                  odds:(.odds // [])}]}]}'                 "/tmp/scoreboard-$KEY.json" > "$DIR/scoreboard.json"
+              echo "Live scoreboard captured: $SNAP_DATE"
+            elif [[ -s "$DIR/scoreboard.json" ]] && jq -e '.events | type=="array"' "$DIR/scoreboard.json" >/dev/null; then
+              echo "::warning::Scoreboard provider failed for $SNAP_DATE; retained dated repository snapshot; NOT live."
+            else
+              echo "::warning::Scoreboard unavailable for $SNAP_DATE; no empty slate inferred."
+            fi
 
-            curl --fail --retry 3 --silent --show-error               "https://footyedge-board.vercel.app/api/espn-scoreboard?dates=$KEY&limit=1000"               -o "/tmp/scoreboard-$KEY.json"
+            if curl --fail --max-time 15 --retry 1 --silent --show-error               "https://footyedge-board.vercel.app/api/football?endpoint=fixtures&date=$SNAP_DATE"               -o "/tmp/fixtures-$KEY.json" &&
+              jq -e '.response | type=="array"' "/tmp/fixtures-$KEY.json" >/dev/null; then
+              cp "/tmp/fixtures-$KEY.json" "$DIR/fixtures.json"
+            elif [[ -s "$DIR/fixtures.json" ]]; then
+              echo "::warning::Fixture provider unavailable for $SNAP_DATE; retained dated source."
+            fi
 
-            jq '{
-              events: [
-                .events[] | {
-                  id,
-                  uid,
-                  date,
-                  name,
-                  shortName,
-                  season,
-                  status: {
-                    displayClock: .status.displayClock,
-                    type: .status.type
-                  },
-                  competitions: [
-                    .competitions[0] | {
-                      id,
-                      competitors: [
-                        .competitors[] | {
-                          id,
-                          homeAway,
-                          winner,
-                          score,
-                          team: {
-                            id: .team.id,
-                            displayName: .team.displayName,
-                            abbreviation: .team.abbreviation,
-                            logo: .team.logo
-                          }
-                        }
-                      ],
-                      odds: (.odds // [])
-                    }
-                  ]
-                }
-              ]
-            }' "/tmp/scoreboard-$KEY.json" > "data/$SNAP_DATE/scoreboard.json"
-
-            curl --fail --retry 3 --silent --show-error               "https://footyedge-board.vercel.app/api/football?endpoint=fixtures&date=$SNAP_DATE"               -o "data/$SNAP_DATE/fixtures.json"
-
-            curl --fail --retry 3 --silent --show-error               "https://footyedge-board.vercel.app/api/football?endpoint=odds&date=$SNAP_DATE"               -o "data/$SNAP_DATE/odds.json"
+            # Future dates are schedule-only. Never refresh bookmaker prices
+            # outside the single official native-odds publication capture.
+            if [[ "$OFFSET" == "0" && ! -s "$DIR/odds.json" ]]; then
+              echo "Same-day display odds source absent; no speculative fill."
+            fi
           done
 
-          cp "data/$TODAY/scoreboard.json" data/latest-scoreboard.json
-          cp "data/$TODAY/fixtures.json" data/latest-fixtures.json
-          cp "data/$TODAY/odds.json" data/latest-odds.json
-          printf '%s\n' "$TODAY" > data/latest-date.txt
+          if [[ -s "data/$TODAY/scoreboard.json" && -s "data/$TODAY/fixtures.json" ]]; then
+            cp "data/$TODAY/scoreboard.json" data/latest-scoreboard.json
+            cp "data/$TODAY/fixtures.json" data/latest-fixtures.json
+            printf '%s\n' "$TODAY" > data/latest-date.txt
+          else
+            echo "::warning::Today's data incomplete. Preserve previous latest pointers."
+          fi
 
-      - name: Commit refreshed snapshot
+      - name: Commit refreshed snapshots without changing locked picks
         shell: bash
         run: |
+          set -euo pipefail
           git config user.name "FootyEdge Data Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data
+          git add -A data/
           if git diff --cached --quiet; then
+            echo "No source changes."
             exit 0
           fi
-          git commit -m "chore(data): refresh live soccer snapshot [skip ci]"
-          git push
+          git commit -m "chore(data): refresh dated fixtures with explicit provider-failure fallback [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
