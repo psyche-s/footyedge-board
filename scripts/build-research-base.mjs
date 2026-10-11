@@ -28,7 +28,7 @@ const pct=(n,d)=>d?Math.round(n/d*100):null;
 const scoreVal=v=>{const n=Number(typeof v==="object"&&v?v.value??v.displayValue:v);return Number.isFinite(n)?n:null};
 
 async function json(url){
-  const r=await fetch(url,{headers:{Accept:"application/json","User-Agent":"FootyEdge Research Bot/1.0"}});
+  const r=await fetch(url,{signal:AbortSignal.timeout(12000),headers:{Accept:"application/json","User-Agent":"FootyEdge Research Bot/1.0"}});
   if(!r.ok)throw new Error(`HTTP ${r.status} for ${url}`);
   return r.json();
 }
@@ -130,7 +130,16 @@ function marketSignals(facts,g){
 }
 async function schedule(league,team,season){
   const years=[Number(season),Number(season)-1].filter((x,i,a)=>Number.isFinite(x)&&a.indexOf(x)===i);
-  const payloads=await Promise.all(years.map(y=>json(`${SITE}/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(team)}&season=${encodeURIComponent(y)}&scope=all`)));
+  const payloads=await Promise.all(years.map(async y=>{
+    const base=`${SITE}/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(team)}&season=${encodeURIComponent(y)}`;
+    try {
+      const result=await json(base+"&scope=all");
+      if(Array.isArray(result?.events)&&result.events.length)return result;
+    } catch(error) {
+      console.warn("Cross-competition history unavailable; trying league schedule:",league,team,y,String(error).slice(0,80));
+    }
+    try {return await json(base+"&scope=competition")} catch{return {events:[]}}
+  }));
   return{events:payloads.flatMap(x=>x?.events||[])}
 }
 let czechFixtures=[];
