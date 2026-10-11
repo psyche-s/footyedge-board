@@ -812,19 +812,53 @@ function pickScoreValue(p){
   if(!Number.isFinite(n))return "—";
   return String(n)+(pickScoreLabel(p)==="RANK"?"/100":"%");
 }
+
+let attributedOdds=new Map(),oddsState="unavailable",oddsCheckedAt=null,oddsRequestBusy=false;
+function observedPrice(g,p){
+  if(!p||p.verifiedPrice)return priceInfo(p);
+  if(g?.done||g?.live||S.date!==etDate()||Date.parse(g.date)<=Date.now())return priceInfo(p);
+  const q=attributedOdds.get(String(g.id))||attributedOdds.get(fixtureMatchKey(g.home.name,g.away.name));
+  const entry=q?.prices?.find(x=>normName(x.label)===normName(p.label));
+  if(!entry||!Number.isInteger(entry.odds)||entry.odds< -500||
+     !Number.isFinite(Date.parse(entry.observedAt))||
+     Date.now()-Date.parse(entry.observedAt)>240000)return priceInfo(p);
+  return {odds:(entry.odds>0?"+":"")+entry.odds,bookKey:entry.bookKey,
+    oddsLabel:"Seen via ESPN",ev:"—",evLabel:"EV",cls:"fair",observed:true};
+}
+async function pollAttributedOdds(){
+  if(oddsRequestBusy||S.date!==etDate()||document.hidden||ARCHIVE_CAPTURE||GITHUB_STATIC)return;
+  oddsRequestBusy=true;const date=S.date;
+  try{
+    const r=await json("/api/live-odds?date="+encodeURIComponent(date));
+    if(date!==S.date||r.date!==date||r.source!=="ESPN-reported"||
+       !Array.isArray(r.events)||Date.now()-Date.parse(r.observedAt)>240000)return;
+    const map=new Map();
+    for(const e of r.events){if(!e.id||!Array.isArray(e.prices))continue;
+      map.set(String(e.id),e);map.set(fixtureMatchKey(e.home,e.away),e);
+    }
+    attributedOdds=map;oddsState=r.events.length?"observed":"unavailable";oddsCheckedAt=r.observedAt;
+    renderBest();renderGames();
+    if(S.openGameId&&document.getElementById("drawer")?.classList.contains("on")){
+      const g=S.games.find(x=>x.id===String(S.openGameId));if(g)renderModal(g);
+    }
+  }catch(error){
+    attributedOdds=new Map();oddsState="unavailable";
+    console.debug("Attributable odds unavailable",String(error));
+  }finally{oddsRequestBusy=false}
+}
 function renderBest(){
   const a=topPicks(),el=document.getElementById("best");
-  document.getElementById("topSub").textContent=S.archive?.date===S.date?"Frozen published board · one pick per match":"Highest confidence · one pick per match";
+  document.getElementById("topSub").textContent=S.archive?.date===S.date?(oddsState==="observed"?"Frozen picks · indicative prices seen via ESPN · verify at the book":"Frozen picks · no current bookmaker-attributed lines"):"Highest ranking · one pick per match";
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
-    const p=g.archiveTopPick||g.model.top,px=priceInfo(p);
+    const p=g.archiveTopPick||g.model.top,px=observedPrice(g,p);
     return '<article class="bestRow" data-game-id="'+esc(g.id)+'" onclick="openGame(\''+g.id+'\')">'+
       '<div class="rankBadge">'+(i+1)+'</div>'+
       '<div class="bestFlags">'+teamImgTag(g.home)+teamImgTag(g.away)+'</div>'+
       '<div class="bestCore"><div class="bestFixture">'+esc(teamDisplayName(g,g.home))+' <span>vs</span> '+esc(teamDisplayName(g,g.away))+'</div>'+
       '<div class="bestLeague">'+esc(displayLeagueName(g.league,g.leagueName))+' · '+timeET(g.date)+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
-      '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
+      '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="bestMetric bestConfidence"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div><div class="rowChev">›</div></article>';
   }).join("")
@@ -846,7 +880,7 @@ function renderGames(){
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
-    const top3=viewCandidates(g),p=viewPick(g),px=priceInfo(p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
+    const top3=viewCandidates(g),p=viewPick(g),px=observedPrice(g,p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
@@ -854,12 +888,12 @@ function renderGames(){
       '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
     if(p){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
-      '<div class="pickMetrics"'+(g.ownerEditorial?' style="grid-template-columns:repeat(2,minmax(0,1fr))"':'')+'><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
+      '<div class="pickMetrics"'+(g.ownerEditorial?' style="grid-template-columns:repeat(2,minmax(0,1fr))"':'')+'><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
       (g.ownerEditorial?'':'<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>')+
       '<div class="pickMetric confMetric"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">'+(g.archiveUnavailable?'Original published picks were not saved.':S.dataSource==="Awaiting published board"?'Awaiting published picks.':'PASS — no market cleared the model threshold.')+'</div></div>';
     html+='</div>';
-    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+pickScoreValue(x)+'</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>ODDS</small></div></div></div>'}).join("")+'</div>';
+    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=observedPrice(g,x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+pickScoreValue(x)+'</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>'+(tx.observed?'SEEN · ESPN':'ODDS')+'</small></div></div></div>'}).join("")+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
       '<div class="statStrip"><div class="statCell"><b>'+(h?.gf==null?"—":Number(h.gf).toFixed(1))+'</b><small>HOME GF AVG</small></div>'+
       '<div class="statCell"><b>'+(a?.gf==null?"—":Number(a.gf).toFixed(1))+'</b><small>AWAY GF AVG</small></div>'+
@@ -1197,7 +1231,7 @@ function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
   const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p></section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const ranked=top3.length?top3.map((x,i)=>{const xp=observedPrice(g,x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
@@ -1304,8 +1338,9 @@ planRefresh=function(){
   const live=S.games.some(g=>g.live);
   const nearby=S.games.some(g=>!g.done&&Date.parse(g.date)>now-5*60000&&Date.parse(g.date)<now+2*3600000);
   const delay=live?45000:nearby?90000:240000;
-  refreshTimer=setTimeout(async()=>{await pollMatchScores();planRefresh()},delay);
+  refreshTimer=setTimeout(async()=>{await Promise.allSettled([pollMatchScores(),pollAttributedOdds()]);planRefresh()},delay);
 };
+if(!ARCHIVE_CAPTURE&&!GITHUB_STATIC)setTimeout(()=>pollAttributedOdds(),1800);
 window.openGame=openGame;const captureDate=ARCHIVE_CAPTURE?new URLSearchParams(window.location.search).get("boardDate"):null;S.date=/^\d{4}-\d{2}-\d{2}$/.test(captureDate||"")?captureDate:etDate();load();
 </script>
 </body>
