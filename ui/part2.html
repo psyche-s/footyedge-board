@@ -938,6 +938,22 @@ async function load(date=S.date){
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null,baseResearch:researchBaseMap.get(fixtureMatchKey(homeName,awayName))||null}
     }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
 
+    // ESPN's saved scoreboard omits the Czech top flight. The independently
+    // retrieved Czech season feed is already preserved in our dated research base.
+    // Recover ONLY those verified fixtures; never invent games from odds listings.
+    for(const row of researchBasePayload?.fixtures||[]){
+      if(row.league!=="cze.1"||!row.id||!row.date||!row.home?.name||!row.away?.name)continue;
+      if(FootyEdgeAvailability.eventDay({date:row.date})!==S.date)continue;
+      if(games.some(g=>String(g.id)===String(row.id)||fixtureMatchKey(g.home.name,g.away.name)===fixtureMatchKey(row.home.name,row.away.name)))continue;
+      const home={id:String(row.home.id||""),name:row.home.name,logo:null,score:null};
+      const away={id:String(row.away.id||""),name:row.away.name,logo:null,score:null};
+      games.push({id:String(row.id),apiFixtureId:String(row.id),date:row.date,year:Number(row.season||S.date.slice(0,4)),
+        league:"cze.1",leagueName:displayLeagueName("cze.1","Czech First League"),leagueLogo:LEAGUE_LOGOS["cze.1"]||null,
+        home,away,odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
+        live:false,done:false,detail:"Dated verified Czech fixture",model:null,context:null,apiPrediction:null,availability:null,
+        availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(home.name,away.name))||null,baseResearch:row});
+    }
+
     if(archivePayload?.date===S.date){
       S.games=applyBoardArchive(games,archivePayload);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));

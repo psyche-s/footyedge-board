@@ -50,6 +50,13 @@ async function main(){
         const payload=await page.evaluate(()=>window.FootyEdgeDraft());
         if(!payload?.games?.length){await fs.rm(draftFile,{force:true});console.log('No tracked fixtures; removed stale preview:',date);continue}
         validateDraft(payload,date);
+        // Complete research-backed fixture coverage is mandatory before freezing.
+        const researchFile=path.join('data','research-base-'+date+'.json');
+        if(await exists(researchFile)){
+          const research=JSON.parse(await fs.readFile(researchFile,'utf8'));
+          const expected=(research.fixtures||[]).filter(x=>x.id&&x.date).length;
+          if(expected&&payload.games.length<expected)throw new Error('Incomplete slate: '+payload.games.length+' of '+expected+' verified fixtures');
+        }
         payload.capturedBy='GitHub Actions';payload.captureUrl=SITE;payload.sourceRevision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
         payload.generatedAt=new Date().toISOString();payload.mutableUntil=date+' 00:30 America/Toronto';
         await fs.writeFile(draftFile,JSON.stringify(payload,null,2)+'\n');
