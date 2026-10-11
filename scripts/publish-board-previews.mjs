@@ -36,9 +36,12 @@ async function main(){
       if(date===TODAY&&(HOUR>LOCK_HOUR||(HOUR===LOCK_HOUR&&MINUTE>=LOCK_MINUTE))&&!FORCE_TODAY_CAPTURE){console.log('Past 00:30 Toronto lock; refusing mutable refresh:',date);continue}
       const page=await browser.newPage({viewport:{width:1440,height:1200}});
       try{
+        page.on('pageerror',error=>console.error('Browser JavaScript:',String(error)));
+        page.on('console',message=>{if(message.type()==='error')console.error('Browser console:',message.text())});
+        page.on('requestfailed',request=>{if(request.url().startsWith('http://127.0.0.1:'))console.error('Local request failed:',request.url(),request.failure()?.errorText)});
         await page.route('https://raw.githubusercontent.com/**',route=>route.abort());
-        await page.goto(`http://127.0.0.1:${server.address().port}/picks.html?draftCapture=1&boardDate=${date}${FAST_CAPTURE?'&repairFast=1':''}`,{waitUntil:'domcontentloaded',timeout:120000});
-        await page.waitForFunction(()=>typeof window.FootyEdgeDraft==='function'&&window.FootyEdgeDraft(),{timeout:150000});
+        await page.goto(`http://127.0.0.1:${server.address().port}/picks.html?draftCapture=1&boardDate=${date}${FAST_CAPTURE?'&repairFast=1':''}`,{waitUntil:'domcontentloaded',timeout:40000});
+        await page.waitForFunction(()=>typeof window.FootyEdgeCaptureReady==='function'&&window.FootyEdgeCaptureReady(),{timeout:85000});
         const payload=await page.evaluate(()=>window.FootyEdgeDraft());
         if(!payload?.games?.length){await fs.rm(draftFile,{force:true});console.log('No tracked fixtures; removed stale preview:',date);continue}
         validateDraft(payload,date);
@@ -49,6 +52,6 @@ async function main(){
       }catch(error){console.error('Preview refresh failed for',date,error instanceof Error?error.message:error)}
       finally{await page.close()}
     }
-  }finally{await browser.close();await new Promise(r=>server.close(r))}
+  }finally{await browser.close();server.closeAllConnections();await new Promise(r=>server.close(r))}
 }
 main().catch(e=>{console.error(e);process.exitCode=1});

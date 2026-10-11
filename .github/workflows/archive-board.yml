@@ -19,12 +19,12 @@ permissions:
 
 concurrency:
   group: footyedge-board-publish
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
         with:

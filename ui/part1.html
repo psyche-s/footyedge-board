@@ -1898,6 +1898,8 @@ function boardArchivePayload(mode=CAPTURE_MODE||"archive"){
 }
 window.FootyEdgeArchive=()=>boardArchivePayload("archive");
 window.FootyEdgeDraft=()=>boardArchivePayload("draft");
+// Lightweight readiness probe: never serialize the entire board inside polling.
+window.FootyEdgeCaptureReady=()=>Boolean(S.boardReady);
 function applyBoardArchive(games,archive){
   if(!archive||archive.date!==S.date)return games;
   const byId=new Map(games.map(g=>[String(g.id),g]));
