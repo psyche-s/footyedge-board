@@ -52,7 +52,9 @@ test("league fallback is a transparent SVG, never the emoji football",()=>{
 test("morning data horizon covers today plus next four days",()=>{
   const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
   const snapshots=fs.readFileSync(".github/workflows/refresh-snapshots.yml","utf8");
-  assert.match(research,/for OFFSET in 0 1 2 3 4/);
+  assert.match(research,/HORIZON=4/);
+  assert.match(research,/for OFFSET in \$\(seq 0 "\$HORIZON"\)/);
+  assert.match(research,/GITHUB_EVENT_NAME.*push/);
   assert.match(snapshots,/for OFFSET in 0 1 2 3 4/)
 });
 

@@ -47,9 +47,9 @@ test('October 6 restore matches screenshot including ranks, odds and confidence'
 });
 test('Complete capture freezes alternatives and player filters independent of view',()=>{
   const c=context('?archiveCapture=1');
-  c.p={label:'Under 2.5 Goals',category:'Goals',score:90,odds:-150,bookExact:true,verifiedPrice:true,archived:true,archivedCommentary:'Original',archivedSupportFacts:['Original fact']};
+  c.p={label:'Under 2.5 Goals',category:'Goals',score:90,odds:-150,bookKey:'draftkings',bookExact:true,verifiedPrice:true,archived:true,archivedCommentary:'Original',archivedSupportFacts:['Original fact']};
   c.q={...c.p,label:'Forward Anytime Goalscorer',category:'Player',score:88};
-  vm.runInContext('S.date="2026-10-08";S.boardReady=true;S.games=[{id:"g1",date:"2026-10-08T18:00Z",home:{name:"A"},away:{name:"B"},league:"l1",model:{top:p,top3:[p,q],candidates:[p,q],researchCandidates:[q]}}];S.filter="atgs";S.league="other";S.status="live"',c);
+  vm.runInContext('S.date="2099-10-08";S.boardReady=true;S.games=[{id:"g1",date:"2099-10-08T18:00Z",home:{name:"A"},away:{name:"B"},league:"l1",baseResearch:{last10:{home:Array(10).fill({}),away:Array(10).fill({})}},model:{top:p,top3:[p,q],candidates:[p,q],researchCandidates:[q]}}];S.filter="atgs";S.league="other";S.status="live"',c);
   const frozen=JSON.parse(vm.runInContext('JSON.stringify(window.FootyEdgeArchive())',c));validateBoard(frozen,{requireFull:true});
   assert.equal(frozen.top5.length,1);assert.equal(frozen.games[0].model.candidates.length,2);
   c.frozen=frozen;vm.runInContext('S.archive=frozen;S.games=applyBoardArchive(S.games,frozen);S.games[0].dailyInsight={markets:[{label:"New Player Anytime Goalscorer",score:99}]};',c);
@@ -90,7 +90,13 @@ test("Oct 10 published recommendations never oppose each other or cite nonexiste
   for(const pick of p){
    assert.doesNotMatch(pick.archivedCommentary||" ",/0 of its last 0|\b0\/0\b/,g.home+" vs "+g.away);
    assert.ok(pick.archivedSupportFacts?.length>=2,"no evidence for "+pick.label);
-   assert.equal(pick.score,Math.round((pick.modelProb||0)*100),"score-model mismatch "+pick.label);
+   if(/^unrated_/i.test(String(pick.confidenceType||""))){
+     assert.equal(pick.score,null,"unrated historical pick must not imply calibrated confidence "+pick.label);
+   }else if(pick.score!=null&&pick.modelProb!=null){
+     assert.equal(pick.score,Math.round(pick.modelProb*100),"score-model mismatch "+pick.label);
+   }else if(pick.score==null){
+     assert.ok(pick.confidenceType,"missing confidence classification for an unrated pick "+pick.label);
+   }
   }
  }
 });
