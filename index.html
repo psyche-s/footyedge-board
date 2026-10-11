@@ -132,7 +132,7 @@ function renderTop5(top,emptyMessage="Checking the game schedule…",board=null)
     const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
     const conf=p.score??x.confidence;
     const isHistorical=p.confidenceType==="historical_trend_hit_rate";
-    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(conf?esc(conf)+"%"+(isHistorical?" TREND":""):"")+'</div></div>';
+    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(Number.isFinite(conf)?esc(conf)+(isHistorical?"% TREND":p.probabilityCalibrated===true?"% CONF":"/100 RANK"):"")+'</div></div>';
   }).join("");
 }
 repoJson("data/performance/summary.json").then(p=>{

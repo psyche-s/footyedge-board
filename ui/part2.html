@@ -802,6 +802,16 @@ function topPicks(){
 function emptyBoardMessage(){
   return FootyEdgeAvailability.message(S.games.length?{kind:"games",date:S.date,count:S.games.length}:S.availability,S.date===etDate(),!!S.archive);
 }
+function pickScoreLabel(p){
+  if(p?.confidenceType==="historical_trend_hit_rate")return "TREND";
+  if(p?.probabilityCalibrated===true)return "CONF";
+  return "RANK";
+}
+function pickScoreValue(p){
+  const n=p?.score;
+  if(!Number.isFinite(n))return "—";
+  return String(n)+(pickScoreLabel(p)==="RANK"?"/100":"%");
+}
 function renderBest(){
   const a=topPicks(),el=document.getElementById("best");
   document.getElementById("topSub").textContent=S.archive?.date===S.date?"Frozen published board · one pick per match":"Highest confidence · one pick per match";
@@ -816,7 +826,7 @@ function renderBest(){
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
       '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
-      '<div class="bestMetric bestConfidence"><b>'+p.score+'%</b><small>'+(p.confidenceType==='historical_trend_hit_rate'?'TREND':'CONF')+'</small></div><div class="rowChev">›</div></article>';
+      '<div class="bestMetric bestConfidence"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div><div class="rowChev">›</div></article>';
   }).join("")
 }
 function fifthFactValue(g){
@@ -846,10 +856,10 @@ function renderGames(){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
       '<div class="pickMetrics"'+(g.ownerEditorial?' style="grid-template-columns:repeat(2,minmax(0,1fr))"':'')+'><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>ODDS</small></div>'+
       (g.ownerEditorial?'':'<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>')+
-      '<div class="pickMetric confMetric"><b>'+p.score+'%</b><small>'+(p.confidenceType==='historical_trend_hit_rate'?'TREND':g.ownerEditorial?(p.modelProb!=null?'MODEL':'MARKET'):'CONF')+'</small></div></div></div>';
+      '<div class="pickMetric confMetric"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">'+(g.archiveUnavailable?'Original published picks were not saved.':S.dataSource==="Awaiting published board"?'Awaiting published picks.':'PASS — no market cleared the model threshold.')+'</div></div>';
     html+='</div>';
-    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+x.score+'%</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>ODDS</small></div></div></div>'}).join("")+'</div>';
+    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=priceInfo(x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+pickScoreValue(x)+'</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>ODDS</small></div></div></div>'}).join("")+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
       '<div class="statStrip"><div class="statCell"><b>'+(h?.gf==null?"—":Number(h.gf).toFixed(1))+'</b><small>HOME GF AVG</small></div>'+
       '<div class="statCell"><b>'+(a?.gf==null?"—":Number(a.gf).toFixed(1))+'</b><small>AWAY GF AVG</small></div>'+
@@ -913,7 +923,7 @@ function renderLanding(){
   const el=document.getElementById("landingTopPicks");if(!el)return;
   const picks=topPicks();
   if(!picks.length){el.innerHTML='<div class="landingEmpty">No pick has cleared today’s strict Top Pick rules yet.</div>';return}
-  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top,px=priceInfo(p),od=px?.odds&&px.odds!=="—"?" · "+px.odds:"";return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+esc(od)+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+(p?.confidenceType==='historical_trend_hit_rate'?'TREND':'CONF')+'</small></div></div>'}).join("")
+  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top,px=priceInfo(p),od=px?.odds&&px.odds!=="—"?" · "+px.odds:"";return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+esc(od)+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+pickScoreLabel(p)+'</small></div></div>'}).join("")
 }
 
 function render(){
@@ -1187,7 +1197,7 @@ function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
   const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p></section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${Number.isFinite(x.score)?(Number.isFinite(x.score)?x.score+'%':'Unrated'):'Unrated'}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const ranked=top3.length?top3.map((x,i)=>{const xp=priceInfo(x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
