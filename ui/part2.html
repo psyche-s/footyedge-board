@@ -1260,7 +1260,22 @@ function renderModal(g){
       '</span></div>').join('')+'</div>'+
     '<p class="modelFootnote">Independent, uncalibrated pre-match estimate; does not change official picks or confidence. Only verified morning moneyline and exact posted goal-total prices are shown. Unpriced markets remain unavailable.</p></section>':'';
   const modelApproach=g.ownerEditorial?'<p class="modelFootnote">We weigh recent form, head-to-head results and matchup trends for each pick.</p>':'';
-  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach);
+  // Extra full-time markets can be inspected without substituting the
+  // different published market or recalculating frozen confidence/EV.
+  const liveEntry=attributedOdds.get(String(g.id))||attributedOdds.get(fixtureMatchKey(g.home.name,g.away.name));
+  const current=Boolean(!g.done&&!g.live&&Date.parse(g.date)>Date.now());
+  const alternatives=current?(liveEntry?.prices||[]).filter(x=>Number.isInteger(x.odds)&&x.odds>=-500&&
+    Date.now()-Date.parse(x.observedAt)<240000):[];
+  const oddsExtra=alternatives.length?
+    '<section class="researchBox" aria-label="Other currently observed bookmaker markets">'+
+    '<div class="researchTitle">OTHER AVAILABLE LINES · ESPN OBSERVED</div>'+
+    '<div class="researchFacts">'+alternatives.slice(0,8).map(q=>
+      '<div class="researchFact"><span class="researchDot"></span><span>'+esc(q.label)+
+      ' <strong>'+(q.odds>0?'+':'')+esc(q.odds)+'</strong> · '+esc(q.book)+'</span></div>').join('')+
+    '</div><p class="modelFootnote">Third-party odds observed at '+
+      esc(new Date(liveEntry.prices[0].observedAt).toLocaleTimeString('en-US',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit'}))+
+      ' ET, not directly verified with the bookmaker. Different lines are not substitutes for the frozen picks. Check current odds before betting.</p></section>':'';
+  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
   const btn=event?.target?.closest?.("[data-h2h-toggle]");if(!btn)return;
