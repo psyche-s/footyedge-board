@@ -1618,6 +1618,17 @@ body{background:#031008}
 /* Restore existing full-analysis access on mobile; no layout redesign. */
 @media(max-width:500px){.details{display:block!important;width:calc(100% - 18px);margin:0 9px 9px}}
 
+
+/* Live match status remains separate from the immutable pick probability. */
+.teamCompact.hasLiveScore{grid-template-columns:38px minmax(0,1fr) auto}
+.teamScoreBadge{min-width:30px;text-align:center;font:800 19px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#dfffea;padding:6px 4px;border-radius:8px;background:#10251a;border:1px solid #2a4b37}
+.teamScoreBadge.inPlay{background:#0e3320;border-color:#27754b;color:#79f5a7}
+.matchStatusLive{display:inline-flex;align-items:center;gap:4px;color:#6ef0a0!important;font-weight:900}
+.matchStatusLive:before{content:"";width:6px;height:6px;border-radius:100%;background:#43ec89;animation:livePulse 1.4s infinite}
+.matchStatusFinal{color:#b9c8bf!important;font-weight:750}
+@keyframes livePulse{50%{opacity:.3}}
+@media(max-width:540px){.teamCompact.hasLiveScore{grid-template-columns:36px minmax(0,1fr) 32px}.teamScoreBadge{font-size:17px;padding:5px 3px}}
+
 </style>
 </head>
 <body>

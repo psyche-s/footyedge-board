@@ -1,0 +1,51 @@
+name: Check Live Soccer Scores
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/live-scores.js"
+      - "ui/part1.html"
+      - "ui/part2.html"
+      - ".github/workflows/check-live-scores.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Probe live endpoint and match ID coverage (read only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          export DAY="$(TZ=America/Toronto date +%F)"
+          URL="https://footyedge-board.vercel.app/api/live-scores?date=$DAY"
+          HTTP="$(curl --location --silent --show-error --max-time 35 --retry 2 --retry-delay 3 -w '%{http_code}' -o /tmp/scores.json "$URL")"
+          echo "HTTP=$HTTP"
+          if [[ "$HTTP" != "200" ]]; then
+            echo "::warning::Live-score endpoint unavailable"
+            head -c 300 /tmp/scores.json || true
+            exit 1
+          fi
+          jq -e '.date==env.DAY and .liveSource==true and (.events|type=="array")' /tmp/scores.json >/dev/null
+          jq '{date, fetchedAt, source: .liveSource, events: (.events|length),
+            live:([.events[]|select(.live==true)]|length),
+            final:([.events[]|select(.done==true)]|length),
+            sample:([.events[]|select(.live==true or .done==true)|{id,home,away,status,clock,homeScore,awayScore}]|.[:12])}' /tmp/scores.json
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          const scores=JSON.parse(fs.readFileSync('/tmp/scores.json','utf8'));
+          const day=process.env.DAY;
+          const file='data/boards/'+day+'.json';
+          if(!fs.existsSync(file)){console.log('No dated board');process.exit(0)}
+          const board=JSON.parse(fs.readFileSync(file,'utf8'));
+          const ids=new Set(scores.events.map(x=>String(x.id)));
+          const exact=board.games.filter(g=>ids.has(String(g.id)));
+          console.log('Frozen board fixtures:',board.games.length,'matched on exact ESPN IDs:',exact.length);
+          console.log('Missing ID examples:',board.games.filter(g=>!ids.has(String(g.id))).slice(0,9).map(g=>g.home+' vs '+g.away+' ('+g.league+')'));
+          JS

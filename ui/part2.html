@@ -755,11 +755,15 @@ function teamNewsSummary(g,p){
 
 function status(g){
   if(g.liveStatusVerified){
-    const score=Number.isFinite(g.home?.score)&&Number.isFinite(g.away?.score)?" · "+g.home.score+"–"+g.away.score:"";
-    if(g.done)return "FT"+score;
-    if(g.live)return "LIVE"+score+(g.liveClock?" · "+g.liveClock:"");
+    if(g.done)return"FT";
+    if(g.live)return"LIVE"+(g.liveClock?" · "+g.liveClock:"");
   }
   if(g.done)return"FT";if(g.live)return g.detail||"LIVE";return `${timeET(g.date)} ET`
+}
+function teamScoreTag(g,side){
+  const n=g?.[side]?.score;
+  if(!g?.liveStatusVerified||(!g.live&&!g.done)||!Number.isInteger(n)||n<0)return"";
+  return '<span class="teamScoreBadge'+(g.live?' inPlay':'')+'" aria-label="'+(side==="home"?"Home":"Away")+' score '+n+'">'+n+'</span>';
 }
 function statusOK(g){return S.status==="all"||(S.status==="upcoming"&&!g.done&&!g.live)||(S.status==="live"&&g.live)||(S.status==="completed"&&g.done)}
 function playerMarketType(p){
@@ -856,7 +860,7 @@ function renderBest(){
       '<div class="rankBadge">'+(i+1)+'</div>'+
       '<div class="bestFlags">'+teamImgTag(g.home)+teamImgTag(g.away)+'</div>'+
       '<div class="bestCore"><div class="bestFixture">'+esc(teamDisplayName(g,g.home))+' <span>vs</span> '+esc(teamDisplayName(g,g.away))+'</div>'+
-      '<div class="bestLeague">'+esc(displayLeagueName(g.league,g.leagueName))+' · '+timeET(g.date)+'</div>'+
+      '<div class="bestLeague">'+esc(displayLeagueName(g.league,g.leagueName))+' · '+esc(g.liveStatusVerified&&(g.live||g.done)?status(g)+' · '+(Number.isInteger(g.home.score)?g.home.score:'–')+'–'+(Number.isInteger(g.away.score)?g.away.score:'–'):timeET(g.date)+' ET')+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
       '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
@@ -882,10 +886,10 @@ function renderGames(){
   el.innerHTML=list.map(g=>{
     const top3=viewCandidates(g),p=viewPick(g),px=observedPrice(g,p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
-      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span><span class="'+(g.live?"liveText":"")+'">'+esc(status(g))+'</span></div>'+
+      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span><span class="'+(g.live?'matchStatusLive':g.done?'matchStatusFinal':'')+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
-      '<div class="teamCompact">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.home))+'</div><div class="form">'+formHTML(dh?.form)+'</div></div></div>'+
-      '<div class="teamCompact">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div></div></div>';
+      '<div class="teamCompact'+(g.liveStatusVerified&&(g.live||g.done)?' hasLiveScore':'')+'">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.home))+'</div><div class="form">'+formHTML(dh?.form)+'</div></div>'+teamScoreTag(g,"home")+'</div>'+
+      '<div class="teamCompact'+(g.liveStatusVerified&&(g.live||g.done)?' hasLiveScore':'')+'">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div>'+teamScoreTag(g,"away")+'</div></div>';
     if(p){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
       '<div class="pickMetrics"'+(g.ownerEditorial?' style="grid-template-columns:repeat(2,minmax(0,1fr))"':'')+'><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
@@ -1121,7 +1125,7 @@ function matchH2HHtml(g){
 
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
   const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form||g.model?.[side==="home"?"displayHome":"displayAway"]?.form)}</div></div>`};
-  const first=`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
+  const first=g.liveStatusVerified&&(g.live||g.done)?status(g)+" · "+(Number.isInteger(g.home.score)?g.home.score:"–")+"–"+(Number.isInteger(g.away.score)?g.away.score:"–"):`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
   return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`;
 }
 
@@ -1355,8 +1359,8 @@ planRefresh=function(){
   const delay=live?45000:nearby?90000:240000;
   refreshTimer=setTimeout(async()=>{await Promise.allSettled([pollMatchScores(),pollAttributedOdds()]);planRefresh()},delay);
 };
-if(!ARCHIVE_CAPTURE&&!GITHUB_STATIC)setTimeout(()=>pollAttributedOdds(),1800);
-window.openGame=openGame;const captureDate=ARCHIVE_CAPTURE?new URLSearchParams(window.location.search).get("boardDate"):null;S.date=/^\d{4}-\d{2}-\d{2}$/.test(captureDate||"")?captureDate:etDate();load();
+window.openGame=openGame;const captureDate=ARCHIVE_CAPTURE?new URLSearchParams(window.location.search).get("boardDate"):null;S.date=/^\d{4}-\d{2}-\d{2}$/.test(captureDate||"")?captureDate:etDate();
+load().then(()=>{if(!ARCHIVE_CAPTURE&&!GITHUB_STATIC&&S.date===etDate())return Promise.allSettled([pollMatchScores(),pollAttributedOdds()])}).catch(e=>console.debug('Initial data refresh unavailable',String(e)));
 </script>
 </body>
 </html>
