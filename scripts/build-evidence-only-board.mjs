@@ -34,13 +34,31 @@ function generate(g){
     const h=H.filter(fH).length,a=A.filter(fA).length,n=H.length+A.length,observed=Math.round(100*(h+a)/n);
     if(Math.min(h/H.length,a/A.length)<0.60||observed<70)return;
     const facts=[g.home.name+': '+h+'/'+H.length+' recent games matched this trend.',g.away.name+': '+a+'/'+A.length+' recent games matched the corresponding trend.'];
-    const reason=label+': '+h+' of '+H.length+' for '+g.home.name+' and '+a+' of '+A.length+' for '+g.away.name+' support this historical pattern. This is an unpriced research lean, not a calibrated win probability. No verified sportsbook line is available.';
+    // Write like a football preview, based on the exact relevant match sample.
+    let description='';
+    if(category==='Goals'){
+      const verb=label.startsWith('Over')?'finished with '+label.slice(5).toLowerCase():'stayed '+label.toLowerCase();
+      description=g.home.name+' have '+verb+' in '+h+' of their last '+H.length+' matches, while '+g.away.name+' have done so in '+a+' of '+A.length+'.';
+    }else if(category==='Team Goals'){
+      const first=label.startsWith(g.home.name);
+      const selected=first?g.home.name:g.away.name,opponent=first?g.away.name:g.home.name;
+      description=selected+' have scored in '+(first?h:a)+' of their last '+(first?H.length:A.length)+' matches, and '+opponent+' have conceded in '+(first?a:h)+' of '+(first?A.length:H.length)+'.';
+    }else if(category==='BTTS'){
+      description=label.includes('No')?'Both sides have failed to produce goals at both ends regularly: '+h+' of '+H.length+' for '+g.home.name+' and '+a+' of '+A.length+' for '+g.away.name+'.':
+        'Both teams scored in '+h+' of '+g.home.name+'\'s last '+H.length+' matches and '+a+' of '+g.away.name+'\'s last '+A.length+'.';
+    }else if(category==='Double Chance'){
+      description=g.home.name+' and '+g.away.name+' have matched this result protection in '+h+' of '+H.length+' and '+a+' of '+A.length+' recent matches respectively.';
+    }else{
+      description=label+' fits '+h+' of '+H.length+' recent games for '+g.home.name+' and '+a+' of '+A.length+' for '+g.away.name+'.';
+    }
+    const reason=description+' These figures describe recent results, not a guaranteed outcome. No verified sportsbook line is available.';
     candidates.push({label,category,family,score:observed,modelScore:null,baseScore:null,modelProb:null,marketProb:null,ev:null,
       odds:null,displayOdds:null,provider:null,bookKey:null,bookExact:false,verifiedPrice:false,priceEligible:false,
       confidenceType:'historical_trend_hit_rate',researchOnly:true,archivedCommentary:reason,
       archivedSupportFacts:facts,reason,stars:star(observed),historicalHits:h+a,historicalSample:n,homeHits:h,homeSample:H.length,awayHits:a,awaySample:A.length,crossSources:0});
   }
   angle('Over 1.5 Goals','Goals',x=>x.gf+x.ga>=2,x=>x.gf+x.ga>=2,'total-over');
+  angle('Over 2.5 Goals','Goals',x=>x.gf+x.ga>=3,x=>x.gf+x.ga>=3,'total-over');
   angle('Under 3.5 Goals','Goals',x=>x.gf+x.ga<=3,x=>x.gf+x.ga<=3,'total-under');
   angle('Under 4.5 Goals','Goals',x=>x.gf+x.ga<=4,x=>x.gf+x.ga<=4,'total-under');
   angle('BTTS — Yes','BTTS',x=>x.gf>0&&x.ga>0,x=>x.gf>0&&x.ga>0,'btts');

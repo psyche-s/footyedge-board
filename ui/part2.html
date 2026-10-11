@@ -819,6 +819,16 @@ function renderBest(){
       '<div class="bestMetric bestConfidence"><b>'+p.score+'%</b><small>'+(p.confidenceType==='historical_trend_hit_rate'?'TREND':'CONF')+'</small></div><div class="rowChev">›</div></article>';
   }).join("")
 }
+function fifthFactValue(g){
+  const h=g.advancedResearch?.homeStats?.shotsOnTargetAvg,a=g.advancedResearch?.awayStats?.shotsOnTargetAvg;
+  if(Number.isFinite(h)&&Number.isFinite(a))return h.toFixed(1)+" / "+a.toFixed(1);
+  if(g.model?.home?.n&&g.model?.away?.n)return String(g.model.home.n)+" / "+String(g.model.away.n);
+  return "—";
+}
+function fifthFactLabel(g){
+  const h=g.advancedResearch?.homeStats?.shotsOnTargetAvg,a=g.advancedResearch?.awayStats?.shotsOnTargetAvg;
+  return Number.isFinite(h)&&Number.isFinite(a)?"SOT AVG · H / A":"FORM SAMPLE · H / A";
+}
 function renderGames(){
   let list=S.games.filter(filterOK);
   list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.score||0)-(viewPick(a)?.score||0):(a,b)=>new Date(a.date)-new Date(b.date));
@@ -845,7 +855,7 @@ function renderGames(){
       '<div class="statCell"><b>'+(a?.gf==null?"—":Number(a.gf).toFixed(1))+'</b><small>AWAY GF AVG</small></div>'+
       '<div class="statCell"><b>'+pctInt(btts)+'</b><small>BTTS</small></div>'+
       '<div class="statCell"><b>'+pctInt(o25)+'</b><small>OVER 2.5</small></div>'+
-      '<div class="statCell"><b>'+projectedScore(g)+'</b><small>PROJ. SCORE</small></div></div></div></div>';
+      '<div class="statCell"><b>'+fifthFactValue(g)+'</b><small>'+fifthFactLabel(g)+'</small></div></div></div></div>';
     html+='<button class="details" onclick="event.stopPropagation();openGame(\''+g.id+'\')">VIEW FULL ANALYSIS →</button></article>';return html;
   }).join("")
 }
@@ -936,6 +946,9 @@ async function load(date=S.date){
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;S.archive=archivePayload;S.draft=draftPayload;
+    const analyticsOverlay=await repoData('data/analytics/'+S.date+'.json').catch(()=>null);
+    if(S.date!==date)return;
+    const advancedById=new Map(analyticsOverlay?.date===S.date?(analyticsOverlay.matches||[]).filter(x=>x.verifiedJoin===true).map(x=>[String(x.fixtureId),x]):[]);
     const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
@@ -965,6 +978,9 @@ async function load(date=S.date){
         availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(home.name,away.name))||null,baseResearch:row});
     }
 
+    // Independent pre-match match-level research is display-only until the
+    // new predictive model has passed chronological calibration tests.
+    for(const g of games)g.advancedResearch=advancedById.get(String(g.id))||null;
     if(archivePayload?.date===S.date){
       S.games=applyBoardArchive(games,archivePayload);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));

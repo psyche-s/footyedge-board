@@ -1691,6 +1691,7 @@ function normName(v){return String(v||"").toLowerCase().normalize("NFD").replace
 function contextFor(g){return ""}
 function pctInt(v){return typeof v==="number"?`${Math.round(v*100)}%`:"—"}
 function projectedScore(g){
+  if(g?.model?.mode==="observed-history-only"||g?.recoveryStatus)return"—";
   const x=g.model?.expectedGoals,h=g.model?.home,a=g.model?.away;if(!h||!a)return"—";
   const eh=Number.isFinite(x?.home)?x.home:Math.max(0,(h.gf+a.ga)/2),ea=Number.isFinite(x?.away)?x.away:Math.max(0,(a.gf+h.ga)/2);
   const hg=Math.max(0,Math.min(5,Math.round(eh))),ag=Math.max(0,Math.min(5,Math.round(ea)));
