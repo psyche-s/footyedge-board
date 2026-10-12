@@ -5,9 +5,9 @@ import {execFileSync} from 'node:child_process';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
 const SITE=(process.env.FOOTYEDGE_URL||'https://footyedge-board.vercel.app').replace(/\/$/,'');
-const TZ='America/Toronto',LOCK_HOUR=0,LOCK_MINUTE=30,PREVIEW_DAYS=Math.max(0,Math.min(4,Number(process.env.PREVIEW_DAYS??4))),FORCE_TODAY_CAPTURE=process.env.FORCE_TODAY_CAPTURE==='1',FAST_CAPTURE=process.env.FAST_CAPTURE==='1';
+const TZ='America/Toronto',PREVIEW_DAYS=Math.max(0,Math.min(4,Number(process.env.PREVIEW_DAYS??4))),FORCE_TODAY_CAPTURE=process.env.FORCE_TODAY_CAPTURE==='1',FAST_CAPTURE=process.env.FAST_CAPTURE==='1';
 const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
-const TODAY=`${parts.year}-${parts.month}-${parts.day}`,HOUR=Number(parts.hour),MINUTE=Number(parts.minute);
+const TODAY=`${parts.year}-${parts.month}-${parts.day}`;
 const addDate=(s,n)=>{const d=new Date(s+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
 async function exists(f){try{await fs.access(f);return true}catch{return false}}
 function validateDraft(board,date){
@@ -37,8 +37,14 @@ async function main(){
   try{
     for(let offset=0;offset<=PREVIEW_DAYS;offset++){
       const date=addDate(TODAY,offset),locked=path.join('data','boards',date+'.json'),draftFile=path.join('data','board-drafts',date+'.json');
-      if(await exists(locked)){console.log('Official board locked; preview unchanged:',date);continue}
-      if(date===TODAY&&(HOUR>LOCK_HOUR||(HOUR===LOCK_HOUR&&MINUTE>=LOCK_MINUTE))&&!FORCE_TODAY_CAPTURE){console.log('Past 00:30 Toronto lock; refusing mutable refresh:',date);continue}
+      // Same-day published boards are refreshable; earlier dated boards stay archived.
+      if(await exists(locked)){
+        const saved=JSON.parse(await fs.readFile(locked,'utf8'));
+        if(date!==TODAY||saved.immutable===true){
+          console.log('Historical or explicitly frozen board; preserve unchanged:',date);
+          continue;
+        }
+      }
       const page=await browser.newPage({viewport:{width:1440,height:1200}});
       try{
         page.on('pageerror',error=>console.error('Browser JavaScript:',String(error)));
@@ -58,7 +64,7 @@ async function main(){
           if(expected&&payload.games.length<expected)throw new Error('Incomplete slate: '+payload.games.length+' of '+expected+' verified fixtures');
         }
         payload.capturedBy='GitHub Actions';payload.captureUrl=SITE;payload.sourceRevision=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
-        payload.generatedAt=new Date().toISOString();payload.mutableUntil=date+' 00:30 America/Toronto';
+        payload.generatedAt=new Date().toISOString();payload.mutableUntil='End of '+date+' America/Toronto';
         await fs.writeFile(draftFile,JSON.stringify(payload,null,2)+'\n');
         console.log('Updated rolling preview:',date,payload.games.length,'games',payload.top5.length,'Top 5')
       }catch(error){console.error('Preview refresh failed for',date,error instanceof Error?error.message:error)}

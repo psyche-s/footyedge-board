@@ -1847,7 +1847,7 @@ function cardCommentary(g,p){
 function bookOddsFor(g,label){return g?.odds?.markets?.[normName(label)]??null}
 function preferredPickLabel(){return null}
 function applyUserPick(g){return g}
-// Rolling previews may update until the fixture date reaches 00:30 America/Toronto.
+// Same-day previews are refreshable until the Toronto fixture date ends.
 const CAPTURE_PARAMS=new URLSearchParams(window.location.search);
 const CAPTURE_MODE=CAPTURE_PARAMS.has("draftCapture")?"draft":CAPTURE_PARAMS.has("archiveCapture")?"archive":null;
 const ARCHIVE_CAPTURE=Boolean(CAPTURE_MODE);
@@ -1894,7 +1894,7 @@ function boardArchivePayload(mode=CAPTURE_MODE||"archive"){
   const generatedAt=new Date().toISOString();
   return{
     schema:3,date:S.date,generatedAt,frozenAt:preview?null:generatedAt,immutable:!preview,state:preview?"preview":"locked",
-    mutableUntil:preview?S.date+" 00:30 America/Toronto":null,coverage:"full-board",
+    mutableUntil:preview?'End of '+S.date+' America/Toronto':null,coverage:"full-board",
     source:preview?"FootyEdge rolling preview board":"FootyEdge locked published board",
     top5:refs(eligible(S.games)),
     leagueTop5:Object.fromEntries([...new Set(S.games.map(g=>g.league))].map(l=>[l,refs(eligible(S.games.filter(g=>g.league===l)))])),

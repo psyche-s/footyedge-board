@@ -75,30 +75,38 @@ test("rolling previews ignore missing price but respect posted-price floor",()=>
   assert.match(p1,/!hasPostedPrice\(p\)\|\|priceAllowed\(p\)/);
   assert.match(p1,/window\.FootyEdgeDraft/)
 });
-test("public board prefers official lock then rolling preview",()=>{
+test("public current-day published board renders picks before using any draft",()=>{
   assert.match(p2,/data\/board-drafts/);
-  assert.match(p2,/Overnight preview · updates until 12:30 AM ET/);
-  assert.match(p2,/Locked at 12:30 AM ET/)
+  assert.match(p2,/Published today · refreshable/);
+  assert.match(p2,/Same-day preview · refreshable/);
+  assert.doesNotMatch(p2,/Locked at 12:30 AM ET/);
 });
-test("GitHub scheduled jobs and explicit minute cutoff use the new Toronto midnight pipeline",()=>{
-  const publish=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
+test("publisher schedules initial and two same-day retries without re-locking",()=>{
+  const workflow=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
   const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
   const shadow=fs.readFileSync(".github/workflows/shadow-dixon-coles.yml","utf8");
-  for(const [yaml,starts] of [[publish,["30 4","30 5"]],[research,["0 4","0 5"]],[shadow,["10 4","10 5"]]]){
-    for(const start of starts)assert.ok(yaml.includes('cron: "'+start+' * * *"'));
+  assert.match(workflow,/cron: "30 4,5,13,14,15,16 \* \* \*"/);
+  assert.match(workflow,/Current-day rolling publication gate/);
+  for(const [yaml,starts] of [[research,["0 4","0 5"]],[shadow,["10 4","10 5"]]]){
+    for(const s of starts)assert.ok(yaml.includes('cron: "'+s+' * * *"'));
   }
-  assert.match(publish,/Toronto 00:30 gate/);
-  const freezer=fs.readFileSync("scripts/archive-board.mjs","utf8");
-  assert.match(freezer,/Number\(p\.minute\)<LOCK_MINUTE/);
-  assert.match(freezer,/00:30 America\/Toronto/);
-});
-test("official board locks from preview at 00:30 Toronto",()=>{
-  const freezer=fs.readFileSync("scripts/archive-board.mjs","utf8");
   const publisher=fs.readFileSync("scripts/publish-board-previews.mjs","utf8");
-  assert.match(freezer,/LOCK_HOUR=0,LOCK_MINUTE=30/);
-  assert.match(freezer,/board-drafts/);
-  assert.match(freezer,/payload\.immutable=true/);
-  assert.match(publisher,/Past 00:30 Toronto lock; refusing mutable refresh/)
+  assert.match(publisher,/Same-day published boards are refreshable/);
+  assert.doesNotMatch(publisher,/Past 00:30 Toronto lock/);
+});
+test("only today's board can refresh and dated archives stay protected",()=>{
+  const publisher=fs.readFileSync("scripts/archive-board.mjs","utf8");
+  const check=fs.readFileSync("scripts/validate-published-boards.mjs","utf8");
+  assert.match(publisher,/DATE!==TODAY/);
+  assert.match(publisher,/board.immutable=false/);
+  assert.match(publisher,/Do not replace populated Top 5 with partial refresh/);
+  assert.match(check,/date===pd.year/);
+  const october12=JSON.parse(fs.readFileSync("data/boards/2026-10-12.json","utf8"));
+  assert.equal(october12.immutable,false);
+  assert.equal(october12.state,"published");
+  assert.equal(october12.top5.length,5);
+  assert.ok(october12.top5.every(x=>x.pick?.confidenceType==="external_forecast_estimate"&&x.pick.odds===null&&x.pick.ev===null));
+  assert.ok(fs.existsSync("data/board-revisions/2026-10-12/pre-override-frozen-board.json"));
 });
 
 test("league filters use recognizable hosted marks for MLS, Bundesliga and Ligue 1",()=>{

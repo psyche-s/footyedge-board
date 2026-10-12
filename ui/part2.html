@@ -1044,7 +1044,7 @@ async function load(date=S.date){
       render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE&&draftPayload?.date===S.date){
-      S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Overnight preview · updates until 12:30 AM ET";render();planRefresh();return;
+      S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Same-day preview · refreshable";render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE){
       // A missing overnight lock must not hide today's verified last-10 stats.
