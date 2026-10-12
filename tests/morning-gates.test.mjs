@@ -109,6 +109,26 @@ test("only today's board can refresh and dated archives stay protected",()=>{
   assert.ok(fs.existsSync("data/board-revisions/2026-10-12/pre-override-frozen-board.json"));
 });
 
+test("October 12 rolling board retains three distinct researched picks per fixture and dated bookmaker quotes",()=>{
+  const b=JSON.parse(fs.readFileSync("data/boards/2026-10-12.json","utf8"));
+  assert.equal(b.games.length,6);
+  for(const g of b.games){
+    assert.equal(g.top3.length,3);
+    assert.equal(g.model.top3.length,3);
+    assert.equal(new Set(g.top3.map(x=>x.label)).size,3);
+    assert.deepEqual(g.top,g.top3[0]);
+    for(const p of g.top3){
+      assert.equal(p.ev,null);
+      if(p.verifiedPrice){
+        assert.ok(p.priceDecimal>=1.2);
+        assert.ok(/^https:/.test(p.sourceProvenance[0].url));
+        assert.ok(p.quotedAt.startsWith("2026-10-12"));
+        assert.equal(p.bookKey,"draftkings");
+      }else assert.equal(p.odds,null);
+    }
+  }
+  assert.equal(b.games.flatMap(g=>g.top3).filter(p=>p.verifiedPrice).length,5);
+});
 test("league filters use recognizable hosted marks for MLS, Bundesliga and Ligue 1",()=>{
   assert.match(p2,/"usa\.1":"https:\/\/commons\.wikimedia\.org\/wiki\/Special:Redirect\/file\/Major_League_Soccer_logo\.svg"/);
   assert.match(p2,/"ger\.1":"https:\/\/a\.espncdn\.com\/i\/leaguelogos\/soccer\/500\/720\.png"/);
