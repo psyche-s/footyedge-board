@@ -113,7 +113,11 @@ jobs:
           node scripts/validate-published-boards.mjs --base origin/main
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -A -- "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json" data/performance data/postmortems
+          files=(data/performance data/postmortems)
+          for file in "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json"; do
+            if [[ -f "$file" ]]; then files+=("$file"); fi
+          done
+          git add -A -- "${files[@]}"
           if git diff --cached --quiet; then
             echo "No board changes."
             exit 0
