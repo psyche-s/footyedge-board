@@ -123,7 +123,8 @@ function homeSelectionLabel(label,x,women){
 function renderTop5(top,emptyMessage="Checking the game schedule…",board=null){
   const el=document.getElementById("topList");
   const headNote=document.querySelector(".topHead small");
-  if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="historical_trend_hit_rate"))headNote.textContent="Research trends · no verified odds";
+  if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="external_forecast_estimate"))headNote.textContent="Independent estimates · odds unverified";
+  else if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="historical_trend_hit_rate"))headNote.textContent="Research trends · no verified odds";
   if(!top?.length){el.innerHTML='<div class="loading">'+esc(emptyMessage)+'</div>';return}
   el.innerHTML=top.slice(0,5).map((x,i)=>{
     const p=x.pick||x,women=homeWomenFixture(board,x);
@@ -132,7 +133,7 @@ function renderTop5(top,emptyMessage="Checking the game schedule…",board=null)
     const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
     const conf=p.score??x.confidence;
     const isHistorical=p.confidenceType==="historical_trend_hit_rate";
-    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(Number.isFinite(conf)?esc(conf)+(isHistorical?"% TREND":p.probabilityCalibrated===true?"% CONF":"/100 RANK"):"")+'</div></div>';
+    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div></div><div class="confidence">'+(Number.isFinite(conf)?esc(conf)+(isHistorical?"% TREND":p.confidenceType==="external_forecast_estimate"?"% EST.":p.probabilityCalibrated===true?"% CONF":"/100 RANK"):"")+'</div></div>';
   }).join("");
 }
 repoJson("data/performance/summary.json").then(p=>{

@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 export const sha256=text=>crypto.createHash('sha256').update(text).digest('hex');
 export function validateBoard(board,{requireFull=false}={}){
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(board?.date||'')||board.immutable!==true)throw new Error('Published board requires date and immutable:true');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(board?.date||'')||![true,false].includes(board.immutable)||(board.immutable===false&&board.state!=='published'))throw new Error('Published board requires date and immutable:true');
   const emptyScopeOk=board.scope==='owner-selected-competitions'||(board.scope==='mens-only-tracked-competitions'&&board.verifiedEmpty===true);
   const explicitlyCleared=board.state==='locked'&&board.coverage==='full-board'&&emptyScopeOk&&Array.isArray(board.games)&&board.games.length===0&&Array.isArray(board.top5)&&board.top5.length===0&&Object.values(board.leagueTop5||{}).every(x=>Array.isArray(x)&&x.length===0);
   if(!Array.isArray(board.games)||(!board.games.length&&!explicitlyCleared)||!Array.isArray(board.top5)||board.top5.length>5)throw new Error('Invalid board games/Top 5');
@@ -74,6 +74,9 @@ export function validateIntegrity(base){
   const previous=execFileSync('git',['ls-tree','-r','--name-only',base,'data/boards','data/daily-odds-*','data/daily-insights-*','data/research-base-*'],{encoding:'utf8'}).trim().split('\n').filter(Boolean);
   for(const file of previous){
     const date=file.match(/\d{4}-\d{2}-\d{2}/)?.[0];
+    const pd=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+    // Owner-authorized current date updates only. Prior dates still require exact audits.
+    if(date===pd.year+'-'+pd.month+'-'+pd.day)continue;
     let oldBoard;try{oldBoard=execFileSync('git',['show',base+':data/boards/'+date+'.json'],{encoding:'utf8',stdio:['ignore','pipe','ignore'],maxBuffer:32*1024*1024})}catch{continue}
     const before=execFileSync('git',['show',base+':'+file],{encoding:'utf8',maxBuffer:32*1024*1024});
     if(!fs.existsSync(file))throw new Error('Cannot delete published data: '+file);

@@ -808,6 +808,7 @@ function emptyBoardMessage(){
 }
 function pickScoreLabel(p){
   if(p?.confidenceType==="historical_trend_hit_rate")return "TREND";
+  if(p?.confidenceType==="external_forecast_estimate")return "EST.";
   if(p?.probabilityCalibrated===true)return "CONF";
   return "RANK";
 }
@@ -852,7 +853,7 @@ async function pollAttributedOdds(){
 }
 function renderBest(){
   const a=topPicks(),el=document.getElementById("best");
-  document.getElementById("topSub").textContent=S.archive?.date===S.date?(oddsState==="observed"?"Frozen picks · indicative prices seen via ESPN · verify at the book":"Frozen picks · no current bookmaker-attributed lines"):"Highest ranking · one pick per match";
+  document.getElementById("topSub").textContent=S.archive?.date===S.date?(S.archive.immutable===false?"Today’s picks · refreshable · verify bookmaker prices":oddsState==="observed"?"Archived picks · indicative prices via ESPN":"Archived picks · no verified bookmaker lines"):"Highest ranking · one pick per match";
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.archiveTopPick||g.model.top,px=observedPrice(g,p);
@@ -1033,7 +1034,7 @@ async function load(date=S.date){
       S.games=applyBoardArchive(games,archivePayload);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
       for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
-      S.boardReady=true;S.dataSource="Locked at 12:30 AM ET";
+      S.boardReady=true;S.dataSource=archivePayload.immutable===false?"Published today · refreshable":"Historical board";
       if(!S.games.length){
         S.availability=archivePayload.nextGameDate
           ?{kind:"empty",date,count:0,nextGameDate:archivePayload.nextGameDate,searchComplete:true}

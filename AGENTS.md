@@ -1,3 +1,8 @@
+## Newest owner override — October 12, 2026: no same-day locking
+- The owner explicitly requested: Stop locking the board and push the top picks. data/boards/YYYY-MM-DD.json for today's Toronto date is published as immutable:false,state:published. Initial 00:30 ET publication and 09:30/11:30 ET updates may improve the slate, never clear valid picks because a provider fails. Historical dates stay immutable.
+- October 12's researched Top 5 uses independently published statistical model forecast estimates when FootyEdge's own histories failed. This is not FootyEdge calibrated model confidence. Scores below 85% remain below 85%, visibly labelled EST., and no unverified sportsbook odds or EV are shown. Sources are preserved in sourceProvenance and the prior empty board is backed up at data/board-revisions/2026-10-12/.
+- All earlier men's-only, market-price, previous-date history, and current UI styling constraints still apply, except the superseded automatic same-day midnight permanent freeze.
+
 ## Latest owner-approved schedule override — effective October 10, 2026
 - FootyEdge's men's-only official CURRENT-TORONTO-DATE board refresh, publication, and immutable freeze are now **12:30 AM America/Toronto DAILY**, superseding every older reference to a 6:00 AM cutoff below. There is NO duplicate 6 AM official refresh.
 - Deterministic research and prior-pick review start at local **12:00 AM**; independent, research-only Dixon–Coles modeling begins approximately **12:10 AM** or upon research completion, with no guarantee it will finish before the official lock. An unavailable shadow forecast is advisory and cannot be backfilled after lock or used to fabricate official confidence.

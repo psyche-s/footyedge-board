@@ -1,4 +1,4 @@
-name: Publish and Lock FootyEdge Board
+name: Publish FootyEdge Rolling Board
 
 on:
   push:
@@ -6,9 +6,8 @@ on:
     paths:
       - ".github/workflows/archive-board.yml"
   schedule:
-    # EDT/EST alternatives for 00:30 Toronto; local-time gate rejects the other.
-    - cron: "30 4 * * *"
-    - cron: "30 5 * * *"
+    # Initial 00:30 plus 09:30 and 11:30 Toronto, DST alternatives.
+    - cron: "30 4,5,13,14,15,16 * * *"
   workflow_dispatch:
   workflow_run:
     workflows: ["Build FootyEdge Research Base"]
@@ -30,26 +29,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Toronto 00:30 gate
+      - name: Current-day rolling publication gate
         id: gate
         shell: bash
         run: |
-          DATE="$(TZ=America/Toronto date +%F)"
           HOUR="$(TZ=America/Toronto date +%H)"
-          MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
-          if [[ -f "data/boards/$DATE.json" ]]; then
-            echo "Existing immutable board for $DATE; no republishing."
-          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$GITHUB_EVENT_NAME" == "push" ]]; then
-            RUN=true
-          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
-            RUN=true
-          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && ( "$HOUR" == "00" || "$HOUR" == "01" || "$HOUR" == "02" ) && "$DATE" != "2026-10-07" ]]; then
-            RUN=true
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$GITHUB_EVENT_NAME" == "push" ]]; then RUN=true
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then RUN=true
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && ( "$HOUR" == "00" || "$HOUR" == "09" || "$HOUR" == "11" ) ]]; then RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
-          echo "Toronto date/time: $DATE $HOUR:$MINUTE; run=$RUN"
-
+          echo "Rolling publication gate=$RUN for hour $HOUR Toronto"
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.run == 'true'
         with:
@@ -92,18 +83,14 @@ jobs:
         shell: bash
         run: |
           TODAY="$(TZ=America/Toronto date +%F)"
-          if [[ -s "data/board-drafts/$TODAY.json" ]]; then
-            echo "Validated research-only draft exists; skip fragile browser capture."
+          if timeout 145s node scripts/publish-board-previews.mjs; then
+            echo "Refreshed same-day candidate draft."
           else
-            if timeout 145s node scripts/publish-board-previews.mjs; then
-              echo "Primary browser board capture completed."
-            else
-              echo "::warning::Browser capture failed. Publishing research-only fallback with no invented sportsbook lines."
-              FORCE_FALLBACK=1 node scripts/build-evidence-only-board.mjs
-            fi
+            echo "::warning::Browser capture failed. Retain current Top 5."
+            FORCE_FALLBACK=1 node scripts/build-evidence-only-board.mjs
           fi
 
-      - name: Lock today's official board
+      - name: Publish current-day picks without locking
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
@@ -117,7 +104,7 @@ jobs:
           node scripts/track-performance.mjs || echo "::warning::Tracking retry required; preserve board publication."
           node scripts/postmatch-learning.mjs || echo "::warning::Learning retry required; preserve board publication."
 
-      - name: Validate and commit official board
+      - name: Validate and commit rolling same-day picks
         if: steps.gate.outputs.run == 'true'
         shell: bash
         run: |
@@ -131,7 +118,7 @@ jobs:
             echo "No board changes."
             exit 0
           fi
-          git commit -m "chore(board): publish and lock $TODAY at 12:30am Toronto [skip ci]"
+          git commit -m "chore(board): update same-day Top 5 $TODAY [skip ci]"
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main

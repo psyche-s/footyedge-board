@@ -1,29 +1,26 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {validateBoard,validateIntegrity} from './validate-published-boards.mjs';
-const TZ='America/Toronto',LOCK_HOUR=0,LOCK_MINUTE=30;
-const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
-const TODAY=`${p.year}-${p.month}-${p.day}`,DATE=process.env.ARCHIVE_DATE||TODAY;
+const p=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+const TODAY=p.year+'-'+p.month+'-'+p.day,DATE=process.env.ARCHIVE_DATE||TODAY;
+const target=path.join('data','boards',DATE+'.json'),draftPath=path.join('data','board-drafts',DATE+'.json');
+const read=async f=>{try{return JSON.parse(await fs.readFile(f,'utf8'))}catch(e){if(e.code==='ENOENT')return null;throw e}};
 async function main(){
-  const file=path.join('data','boards',DATE+'.json'),draftFile=path.join('data','board-drafts',DATE+'.json');
-  try{const existing=JSON.parse(await fs.readFile(file,'utf8'));validateBoard(existing);console.log('Official board already locked; unchanged:',file);return}catch(e){if(e.code!=='ENOENT')throw e}
-  if(DATE<TODAY)throw new Error('Cannot generate historical published selections. Restore verified originals only with an audited owner instruction.');
-  if(DATE>TODAY)throw new Error('Future dates stay unpublished until their own 00:30 Toronto lock.');
-  if(Number(p.hour)<LOCK_HOUR||(Number(p.hour)===LOCK_HOUR&&Number(p.minute)<LOCK_MINUTE)){console.log('Before 00:30 Toronto lock; leaving rolling preview mutable');return}
-  let draft;try{draft=JSON.parse(await fs.readFile(draftFile,'utf8'))}catch(e){if(e.code==='ENOENT')throw new Error('Cannot lock '+DATE+': rolling preview is missing');throw e}
-  if(draft.date!==DATE||draft.immutable!==false||draft.state!=='preview'||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw new Error('Cannot lock invalid rolling preview '+DATE);
-  const payload=JSON.parse(JSON.stringify(draft));
-  payload.immutable=true;payload.state='locked';payload.frozenAt=new Date().toISOString();
-  payload.policyFreezeAtToronto=DATE+' 00:30 America/Toronto';
-  payload.lockedAtToronto=`${DATE} ${p.hour}:${p.minute} America/Toronto`;
-  payload.source='FootyEdge official Toronto fixture-day locked board';
-  if(Number(p.hour)>LOCK_HOUR||(Number(p.hour)===LOCK_HOUR&&Number(p.minute)>LOCK_MINUTE)){
-    payload.lateLockReason='Audited catch-up publication after the scheduled capture failed. Any native sportsbook price comes from the recorded late capture, not the original 00:30 freeze.';
-  }
-  validateBoard(payload,{requireFull:true});
-  await fs.mkdir(path.dirname(file),{recursive:true});
-  try{await fs.writeFile(file,JSON.stringify(payload,null,2)+'\n',{flag:'wx'})}catch(e){if(e.code!=='EEXIST')throw e;console.log('Another publisher locked the board first; unchanged');return}
-  validateIntegrity('HEAD');
-  console.log('Locked official board at 00:30 policy boundary:',DATE,payload.games.length,'games')
+ if(DATE!==TODAY)throw Error('Cannot publish to previous or future dates');
+ const existing=await read(target),draft=await read(draftPath);
+ if(!draft){console.log('No candidate draft; preserve current Top 5');return}
+ if(draft.date!==DATE||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw Error('Incomplete current-day draft');
+ if(!(draft.top5||[]).length){console.log('No new qualified picks. Preserve existing board.');return}
+ if(existing?.top5?.length>draft.top5.length){console.log('Do not replace populated Top 5 with partial refresh.');return}
+ const board=JSON.parse(JSON.stringify(draft));board.immutable=false;board.state='published';board.frozenAt=null;
+ board.mutableUntil='End of the Toronto fixture date';board.lastPublishedAt=new Date().toISOString();
+ board.source='FootyEdge rolling same-day published board';
+ delete board.policyFreezeAtToronto;delete board.lockedAtToronto;delete board.lateLockReason;
+ validateBoard(board,{requireFull:true});
+ if(existing&&JSON.stringify(existing.top5)===JSON.stringify(board.top5)){console.log('Picks unchanged');return}
+ validateIntegrity('HEAD');
+ await fs.mkdir(path.dirname(target),{recursive:true});
+ const tmp=target+'.tmp';await fs.writeFile(tmp,JSON.stringify(board,null,2)+'\n');await fs.rename(tmp,target);
+ console.log('Updated current-day Top 5',DATE,board.top5.length);
 }
 main().catch(e=>{console.error(e);process.exitCode=1});

@@ -88,13 +88,15 @@ function topRefs(rows){
   return rows.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
 }
 async function main(){
-  if(await exists(LOCK)){console.log('Official board already immutable; skip recovery.');return;}
+  const existing=await read(LOCK).catch(()=>null);
+  if(existing?.date===DATE&&existing.top5?.length){console.log('Preserve published Top picks');return;}
   const odds=await read(ODDS).catch(()=>null);
   if(odds?.events?.length && odds.status!=='blocked' && process.env.FORCE_FALLBACK!=='1'){
     console.log('Native prices exist: defer to full original browser publication.');return;
   }
   const research=await read(R);
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
+  if(research.fixtures.some(g=>(g.last10?.home||[]).length<5||(g.last10?.away||[]).length<5)){console.log('Incomplete team histories; skip unsupported recovery');return;}
   const games=research.fixtures.map(generate);
   const unique=new Set(games.map(g=>g.id));
   if(unique.size!==games.length)throw new Error('Duplicate research fixture IDs; publication blocked');
