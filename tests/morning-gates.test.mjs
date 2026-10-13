@@ -141,6 +141,23 @@ test("Current Top 5 separates unavailable exact pick quotes from DraftKings pric
     if(alt){assert.notEqual(alt.label,row.pick.label);assert.equal(alt.provider,"DraftKings");}
   }
 });
+test("Oct 13 match source form and H2H scores appear with named research provenance",()=>{
+ const board=JSON.parse(fs.readFileSync("data/boards/2026-10-13.json","utf8"));
+ assert.equal(board.games.length,17);
+ assert.match(p1,/g.h2hSummary=a.h2hSummary/);
+ assert.match(p2,/matchEvidenceLinks/);
+ assert.match(p2,/h2hSource/);
+ for(const g of board.games){
+  assert.ok(g.model.home.form.split(/\s+/).length>=4,g.home);
+  assert.ok(g.model.away.form.split(/\s+/).length>=4,g.away);
+  assert.ok(g.verifiedForm.home.sourceUrl.startsWith("https:"));
+  assert.equal(g.top3.length,3);
+  assert.deepEqual(g.top,g.top3[0]);
+  for(const p of g.top3){assert.equal(p.sourceBackedReason,true);assert.match(p.reason,/Sports Mole|UEFA|EFL Championship|Sky Sports/);}
+  for(const h of g.h2h){assert.ok(h.date||h.dateLabel);assert.ok(Number.isInteger(h.homeScore));assert.ok(Number.isInteger(h.awayScore));}
+ }
+ assert.ok(board.games.filter(g=>g.h2h.length).length>=10);
+});
 test("league filters use recognizable hosted marks for MLS, Bundesliga and Ligue 1",()=>{
   assert.match(p2,/"usa\.1":"https:\/\/commons\.wikimedia\.org\/wiki\/Special:Redirect\/file\/Major_League_Soccer_logo\.svg"/);
   assert.match(p2,/"ger\.1":"https:\/\/a\.espncdn\.com\/i\/leaguelogos\/soccer\/500\/720\.png"/);

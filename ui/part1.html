@@ -1943,7 +1943,7 @@ function applyBoardArchive(games,archive){
     });
     g.model={...saved,top:safePicks[0]||null,top3:safePicks,
       ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,safePicks]))};
-    g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.h2h=Array.isArray(a.h2h)?a.h2h:[];g.matchH2H=g.h2h.filter(x=>x&&x.date&&x.homeScore!=null&&x.awayScore!=null&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5);g.verifiedRanks=a.verifiedRanks||null;g.staticDetails=Boolean(a.staticDetails);g.matchDetailsPending=false;g.matchDetailsRequested=Boolean(a.staticDetails);g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
+    g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.h2h=Array.isArray(a.h2h)?a.h2h:[];g.h2hSummary=a.h2hSummary||null;g.verifiedForm=a.verifiedForm||null;g.matchH2H=g.h2h.filter(x=>x&&(x.date||x.dateLabel)&&x.homeScore!=null&&x.awayScore!=null&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5);g.verifiedRanks=a.verifiedRanks||null;g.staticDetails=Boolean(a.staticDetails);g.matchDetailsPending=false;g.matchDetailsRequested=Boolean(a.staticDetails);g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
     return g;
   });
   // Legacy partial archives must not fill gaps with today's model or add fresh props.
