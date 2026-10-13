@@ -1247,7 +1247,7 @@ function matchEvidenceLinks(p){
   const out=[],seen=new Set();
   for(const s of p?.sourceProvenance||[]){
     const url=String(s.url||"");if(!/^https:\/\//.test(url))continue;
-    const name=s.sourceName||(/sportsmole\.co\.uk/.test(url)?"Sports Mole":/uefa\.com/.test(url)?"UEFA":/skysports\.com/.test(url)?"Sky Sports":/eflchampionship/.test(url)?"EFL Championship":/agentbets/.test(url)?"Odds source":"Research");
+    const name=/sportsmole\.co\.uk/.test(url)?"Match preview":/uefa\.com/.test(url)?"Match statistics":s.sourceName||(/skysports\.com/.test(url)?"Sky Sports":/eflchampionship/.test(url)?"EFL Championship":/agentbets/.test(url)?"Odds source":"Research");
     if(seen.has(name))continue;seen.add(name);out.push('<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+' ↗</a>');if(out.length>=4)break;
   }
   return out.length?'<div class="researchSources" style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;margin-top:6px">'+out.join('')+'</div>':'';

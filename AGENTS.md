@@ -1,3 +1,8 @@
+## Owner writing preference, October 13
+- No Sports Mole or UEFA names in user-visible football betting reasons or link labels. State the football evidence directly, including form, H2H, style, player matchup, and limitations. Keep backend source URLs untouched for audit.
+- UI link labels for those providers: "Match preview" and "Match statistics".
+- Preserve official league names, original picks, prices, and verified form/H2H.
+
 ## Newest owner override — October 12, 2026: no same-day locking
 - The owner explicitly requested: Stop locking the board and push the top picks. data/boards/YYYY-MM-DD.json for today's Toronto date is published as immutable:false,state:published. Initial 00:30 ET publication and 09:30/11:30 ET updates may improve the slate, never clear valid picks because a provider fails. Historical dates stay immutable.
 - October 12's researched Top 5 uses independently published statistical model forecast estimates when FootyEdge's own histories failed. This is not FootyEdge calibrated model confidence. Scores below 85% remain below 85%, visibly labelled EST., and no unverified sportsbook odds or EV are shown. Sources are preserved in sourceProvenance and the prior empty board is backed up at data/board-revisions/2026-10-12/.

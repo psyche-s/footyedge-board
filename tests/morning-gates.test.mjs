@@ -153,10 +153,24 @@ test("Oct 13 match source form and H2H scores appear with named research provena
   assert.ok(g.verifiedForm.home.sourceUrl.startsWith("https:"));
   assert.equal(g.top3.length,3);
   assert.deepEqual(g.top,g.top3[0]);
-  for(const p of g.top3){assert.equal(p.sourceBackedReason,true);assert.match(p.reason,/Sports Mole|UEFA|EFL Championship|Sky Sports/);}
+  for(const p of g.top3){assert.equal(p.sourceBackedReason,true);assert.ok(p.reason.length>=80);assert.doesNotMatch(p.reason,/Sports Mole|\bUEFA\b/i);}
   for(const h of g.h2h){assert.ok(h.date||h.dateLabel);assert.ok(Number.isInteger(h.homeScore));assert.ok(Number.isInteger(h.awayScore));}
  }
  assert.ok(board.games.filter(g=>g.h2h.length).length>=10);
+});
+test("Owner's Oct 13 pick copy omits named publishers, retaining URLs and source evidence",()=>{
+ const b=JSON.parse(fs.readFileSync("data/boards/2026-10-13.json","utf8"));
+ assert.equal(b.games.length,17);
+ for(const g of b.games){
+  assert.equal(g.top3.length,3);
+  for(const p of g.top3){
+   assert.doesNotMatch(p.reason,/Sports Mole|\\bUEFA\\b/i);
+   assert.doesNotMatch(p.archivedCommentary,/Sports Mole|\\bUEFA\\b/i);
+   assert.ok((p.sourceProvenance||[]).some(x=>String(x.url||"").startsWith("https://")));
+  }
+ }
+ assert.match(p2,/Match preview/);
+ assert.match(p2,/Match statistics/);
 });
 test("league filters use recognizable hosted marks for MLS, Bundesliga and Ligue 1",()=>{
   assert.match(p2,/"usa\.1":"https:\/\/commons\.wikimedia\.org\/wiki\/Special:Redirect\/file\/Major_League_Soccer_logo\.svg"/);
