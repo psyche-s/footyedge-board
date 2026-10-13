@@ -145,8 +145,8 @@ test("Oct 13 match source form and H2H scores appear with named research provena
  const board=JSON.parse(fs.readFileSync("data/boards/2026-10-13.json","utf8"));
  assert.equal(board.games.length,17);
  assert.match(p1,/g.h2hSummary=a.h2hSummary/);
- assert.match(p2,/matchEvidenceLinks/);
- assert.match(p2,/h2hSource/);
+ assert.doesNotMatch(p2,/function matchEvidenceLinks/);
+ assert.doesNotMatch(p2,/class="h2hSource"/);
  for(const g of board.games){
   assert.ok(g.model.home.form.split(/\s+/).length>=4,g.home);
   assert.ok(g.model.away.form.split(/\s+/).length>=4,g.away);
@@ -169,8 +169,20 @@ test("Owner's Oct 13 pick copy omits named publishers, retaining URLs and source
    assert.ok((p.sourceProvenance||[]).some(x=>String(x.url||"").startsWith("https://")));
   }
  }
- assert.match(p2,/Match preview/);
- assert.match(p2,/Match statistics/);
+ assert.doesNotMatch(p2,/function matchEvidenceLinks/);
+ assert.doesNotMatch(p2,/class="researchSources"/);
+});
+test("Match drawer has no visible source footers but retains researched picks and H2H",()=>{
+ const b=JSON.parse(fs.readFileSync("data/boards/2026-10-13.json","utf8"));
+ assert.equal(b.games.length,17);
+ assert.ok(b.games.some(g=>g.h2h.length>0));
+ assert.ok(b.games.every(g=>g.top3.length===3));
+ assert.ok(b.games.flatMap(g=>g.top3).every(p=>Array.isArray(p.sourceProvenance)));
+ assert.doesNotMatch(p2,/function matchEvidenceLinks/);
+ assert.doesNotMatch(p2,/class="researchSources"/);
+ assert.doesNotMatch(p2,/class="h2hSource"/);
+ assert.match(p2,/function matchH2HHtml/);
+ assert.match(p2,/function plainFootballReason/);
 });
 test("league filters use recognizable hosted marks for MLS, Bundesliga and Ligue 1",()=>{
   assert.match(p2,/"usa\.1":"https:\/\/commons\.wikimedia\.org\/wiki\/Special:Redirect\/file\/Major_League_Soccer_logo\.svg"/);

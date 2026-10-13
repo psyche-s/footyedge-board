@@ -1129,9 +1129,8 @@ function matchH2HHtml(g){
     return '<div class="h2hResult"><time'+(exact?' datetime="'+esc(m.date)+'"':'')+'>'+esc(date)+'</time><span class="h2hFixture">'+esc(m.home)+' <b>'+esc(m.homeScore)+'–'+esc(m.awayScore)+'</b> '+esc(m.away)+'</span></div>';
   }).join(""):'<p class="h2hEmpty">'+esc(info.note||"No scored previous meetings verified.")+'</p>';
   const total=info.matches!=null?'<p class="h2hEmpty">'+esc(info.matches)+' historical meeting'+(info.matches===1?'':'s')+(info.lastMeeting?' · latest '+esc(info.lastMeeting):'')+'</p>':'';
-  const source=info.url&&/^https:\/\//.test(info.url)?'<a class="h2hSource" href="'+esc(info.url)+'" target="_blank" rel="noopener noreferrer">H2H source ↗</a>':'';
   const expanded=Boolean(g.h2hExpanded);
-  return '<section class="h2hSection"><button type="button" class="h2hToggle" data-h2h-toggle aria-expanded="'+expanded+'" aria-controls="h2hResults"><span>Head-to-Head · Last 5 meetings</span><span class="h2hChevron" aria-hidden="true">'+(expanded?"⌃":"⌄")+'</span></button><div class="h2hResults" id="h2hResults" '+(expanded?"":"hidden")+'>'+total+body+source+'</div></section>';
+  return '<section class="h2hSection"><button type="button" class="h2hToggle" data-h2h-toggle aria-expanded="'+expanded+'" aria-controls="h2hResults"><span>Head-to-Head · Last 5 meetings</span><span class="h2hChevron" aria-hidden="true">'+(expanded?"⌃":"⌄")+'</span></button><div class="h2hResults" id="h2hResults" '+(expanded?"":"hidden")+'>'+total+body+'</div></section>';
 }
 
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
@@ -1243,20 +1242,11 @@ function plainFootballReason(g,p){
   }
   return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
-function matchEvidenceLinks(p){
-  const out=[],seen=new Set();
-  for(const s of p?.sourceProvenance||[]){
-    const url=String(s.url||"");if(!/^https:\/\//.test(url))continue;
-    const name=/sportsmole\.co\.uk/.test(url)?"Match preview":/uefa\.com/.test(url)?"Match statistics":s.sourceName||(/skysports\.com/.test(url)?"Sky Sports":/eflchampionship/.test(url)?"EFL Championship":/agentbets/.test(url)?"Odds source":"Research");
-    if(seen.has(name))continue;seen.add(name);out.push('<a href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+' ↗</a>');if(out.length>=4)break;
-  }
-  return out.length?'<div class="researchSources" style="display:flex;flex-wrap:wrap;gap:10px;font-size:11px;margin-top:6px">'+out.join('')+'</div>':'';
-}
 function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
-  const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p>'+matchEvidenceLinks(p)+'</section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=observedPrice(g,x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'+matchEvidenceLinks(x)}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p>'+'</section>'};
+  const ranked=top3.length?top3.map((x,i)=>{const xp=observedPrice(g,x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);

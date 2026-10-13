@@ -1,3 +1,8 @@
+## Source-link presentation rule — October 13, 2026
+- Do NOT render research/source links below picks, match details, or the H2H panel. They clutter the owner's compact match dashboard.
+- Keep source URLs in data fields (sourceProvenance, sourceUrl, h2hSummary.url) for audit and model use, but no external-source link footers should appear in the public UI.
+- Match-specific pick rationale, visible form W/D/L chips, and last-five historical H2H score rows remain. Do not alter published picks or odds.
+
 ## Owner writing preference, October 13
 - No Sports Mole or UEFA names in user-visible football betting reasons or link labels. State the football evidence directly, including form, H2H, style, player matchup, and limitations. Keep backend source URLs untouched for audit.
 - UI link labels for those providers: "Match preview" and "Match statistics".
