@@ -74,11 +74,27 @@ function recentYears(today){
  const y=Number(today.slice(0,4)),m=Number(today.slice(5,7)),first=m>=7?y:y-1;
  return [first-1,first].map(n=>n+"-"+String(n+1).slice(-2));
 }
+function historicYears(today,fromYear=2015){
+ const y=Number(today.slice(0,4)),month=Number(today.slice(5,7)),latest=month>=7?y:y-1;
+ if(!Number.isInteger(fromYear)||fromYear<1900||fromYear>latest)throw Error("Invalid historical starting year");
+ return Array.from({length:latest-fromYear+1},(_,index)=>{const start=fromYear+index;return start+"-"+String(start+1).slice(-2)});
+}
+function plannedPublicYears(today,oldManifest,mode="daily",fromYear=2015){
+ const recent=recentYears(today),all=historicYears(today,fromYear),older=all.filter(s=>!recent.includes(s));
+ if(mode==="full")return [...new Set([...older,...recent])];
+ if(mode!=="daily")throw Error("Unrecognized history sync mode");
+ const done=new Set(Array.isArray(oldManifest?.attemptedHistoricSeasons)?oldManifest.attemptedHistoricSeasons:[]);
+ const next=older.find(s=>!done.has(s));
+ return [...new Set([...(next?[next]:[]),...recent])];
+}
 async function main(){
  const today=isoToday();
- const old=await fs.readdir(DEST).catch(()=>[]);
- const warehouse=Boolean(token);
- let specs=[],sha=null;
+ const oldManifest=await fs.readFile(path.join(DEST,"manifest.json"),"utf8").then(JSON.parse).catch(error=>{
+   if(error.code==="ENOENT")return null;
+   throw new Error("Historical manifest unreadable: "+error.message);
+ });
+ const warehouse=Boolean(token),mode=process.env.HUB_HISTORY_MODE||"daily",startYear=Number(process.env.HUB_HISTORY_START_YEAR||"2015");
+ let specs=[],sha=null,publicYears=[];
  if(warehouse){
    const ref=await getJson("https://api.github.com/repos/"+SOURCE+"/git/ref/heads/main",token);
    sha=ref?.object?.sha;
@@ -89,7 +105,9 @@ async function main(){
      .map(f=>({code:f.competition_id,uri:f.path}));
  }else{
    console.warn("FOOTBALL_DATA_HUB_TOKEN not configured: refreshing current/previous seasons from public CC0 OpenFootball; older Hub archive remains preserved.");
-   specs=Object.keys(COMP).flatMap(code=>recentYears(today).map(season=>({code,uri:season+"/"+code+".json"})));
+   publicYears=plannedPublicYears(today,oldManifest,mode,startYear);
+   specs=Object.keys(COMP).flatMap(code=>publicYears.map(season=>({code,uri:season+"/"+code+".json"})));
+   console.log("Public-domain backfill: "+publicYears.join(", ")+", mode="+mode);
  }
  const grouped=new Map();let seenFiles=0;
  for(const file of specs){
@@ -128,13 +146,16 @@ async function main(){
  }
  const manifest={schema:"footyedge-history-manifest-v1",license:"CC0-1.0",
    originalSource:"OpenFootball/football.json",warehouseRevision:sha,throughDateExclusive:today,
-   syncMode:warehouse?"private-hub-read-only":"public-openfootball-incremental",
-   notes:"Only completed CC0 match scores. No private entity mappings, unreviewed logos, odds, picks or player data.",
+   syncMode:warehouse?"private-hub-read-only":mode==="full"?"public-openfootball-full-backfill":"public-openfootball-incremental",
+   attemptedHistoricSeasons:warehouse?oldManifest?.attemptedHistoricSeasons||[]:[
+     ...new Set([...(oldManifest?.attemptedHistoricSeasons||[]),
+       ...publicYears.filter(year=>!recentYears(today).includes(year))])].sort(),
+   notes:"Only completed CC0 match scores, before current Toronto date. All other providers remain separate. No private entity mappings, unreviewed logos, odds, picks or player data.",
    totalCompleted:totals,leagues};
  changes+=Number(await atomicWrite(path.join(DEST,"manifest.json"),manifest));
  console.log("Verified CC0 archive: "+totals+" completed matches, "+leagues.length+" leagues, "+changes+" changed files; mode="+manifest.syncMode);
 }
-export{isoToday,validateSource,toCompact,toCompactPublic,mergeGames,recentYears};
+export{isoToday,validateSource,toCompact,toCompactPublic,mergeGames,recentYears,historicYears,plannedPublicYears};
 if(process.argv[1]&&import.meta.url===new URL("file://"+path.resolve(process.argv[1])).href){
  main().catch(error=>{console.error("History sync failed:",error.message);process.exitCode=1});
 }
