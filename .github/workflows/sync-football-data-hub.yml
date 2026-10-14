@@ -1,6 +1,13 @@
 name: Sync public-domain history from Football Data Hub
 on:
   workflow_dispatch:
+    inputs:
+      history_mode:
+        description: "Import all available CC0 seasons (full) or refresh recent seasons and backfill one older season (daily)"
+        type: choice
+        required: true
+        default: daily
+        options: [daily, full]
   schedule:
     # After the private hub's daily 07:23 UTC incremental refresh.
     - cron: "13 8 * * *"
@@ -25,12 +32,16 @@ jobs:
           python-version: '3.12'
       - name: Test historical ingestion and existing match regressions
         run: |
-          node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs
+          node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs tests/source-registry.test.mjs
           python -m unittest discover -s tests -p 'test_football_hub_model.py' -v
       - name: Update CC0 score archive only
         env:
           FOOTBALL_DATA_HUB_TOKEN: ${{ secrets.FOOTBALL_DATA_HUB_READ_TOKEN }}
+          HUB_HISTORY_MODE: ${{ inputs.history_mode || 'daily' }}
+          HUB_HISTORY_START_YEAR: "2015"
         run: node scripts/sync-football-data-hub.mjs
+      - name: Audit all existing FootyEdge data providers without fetching restricted datasets
+        run: node scripts/audit-data-sources.mjs
       - name: Validate published picks were not edited
         run: node scripts/validate-published-boards.mjs
       - name: Commit safe historical changes only
