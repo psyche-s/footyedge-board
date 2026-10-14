@@ -1,0 +1,168 @@
+{
+  "date": "2026-10-14",
+  "asOf": "2026-10-14T05:19:37.634749+00:00",
+  "modelVersion": "dc-shadow-v0.7",
+  "mode": "shadow_only",
+  "promotedToPicks": false,
+  "assumptions": {
+    "decayXiPerDay": 0.001,
+    "minTrainingMatches": 90,
+    "minTeamMatches": 4,
+    "maxDataAgeDays": 30
+  },
+  "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+  "fixtures": [
+    {
+      "fixtureId": "cz1-20261014-bohemians-1905-fk-mlada-boleslav",
+      "league": "cze.1",
+      "kickoff": "2026-10-14T16:00:00.000Z",
+      "home": "Bohemians 1905",
+      "away": "FK Mlada Boleslav",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401880223",
+      "league": "eng.2",
+      "kickoff": "2026-10-14T18:45Z",
+      "home": "Norwich City",
+      "away": "Southampton",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.30151,
+        "draw": 0.252734,
+        "away_win": 0.445756,
+        "home_or_draw": 0.554244,
+        "away_or_draw": 0.69849,
+        "over_1_5": 0.847701,
+        "under_2_5": 0.368827,
+        "over_2_5": 0.631173,
+        "under_3_5": 0.590605,
+        "btts_yes": 0.651809,
+        "btts_no": 0.348191
+      },
+      "expectedGoals": {
+        "home": 1.456,
+        "away": 1.7976
+      },
+      "trainingMatches": 653
+    },
+    {
+      "fixtureId": "401880222",
+      "league": "eng.2",
+      "kickoff": "2026-10-14T18:45Z",
+      "home": "Portsmouth",
+      "away": "Sheffield United",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.340266,
+        "draw": 0.287543,
+        "away_win": 0.37219,
+        "home_or_draw": 0.62781,
+        "away_or_draw": 0.659734,
+        "over_1_5": 0.764768,
+        "under_2_5": 0.495196,
+        "over_2_5": 0.504804,
+        "under_3_5": 0.715505,
+        "btts_yes": 0.561775,
+        "btts_no": 0.438225
+      },
+      "expectedGoals": {
+        "home": 1.3122,
+        "away": 1.3814
+      },
+      "trainingMatches": 653
+    },
+    {
+      "fixtureId": "401880221",
+      "league": "eng.2",
+      "kickoff": "2026-10-14T18:45Z",
+      "home": "Queens Park Rangers",
+      "away": "Derby County",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.383212,
+        "draw": 0.278538,
+        "away_win": 0.33825,
+        "home_or_draw": 0.66175,
+        "away_or_draw": 0.616788,
+        "over_1_5": 0.789299,
+        "under_2_5": 0.460486,
+        "over_2_5": 0.539514,
+        "under_3_5": 0.683511,
+        "btts_yes": 0.588011,
+        "btts_no": 0.411989
+      },
+      "expectedGoals": {
+        "home": 1.4688,
+        "away": 1.369
+      },
+      "trainingMatches": 653
+    },
+    {
+      "fixtureId": "401880224",
+      "league": "eng.2",
+      "kickoff": "2026-10-14T19:00Z",
+      "home": "Lincoln City",
+      "away": "West Ham United",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.215614,
+        "draw": 0.284939,
+        "away_win": 0.499448,
+        "home_or_draw": 0.500552,
+        "away_or_draw": 0.784386,
+        "over_1_5": 0.724027,
+        "under_2_5": 0.547657,
+        "over_2_5": 0.452343,
+        "under_3_5": 0.760769,
+        "btts_yes": 0.493939,
+        "btts_no": 0.506061
+      },
+      "expectedGoals": {
+        "home": 0.9408,
+        "away": 1.5443
+      },
+      "trainingMatches": 653
+    }
+  ],
+  "leagueDiagnostics": {
+    "cze.1": {
+      "trainingMatches": 71,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 24,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2024-25_cz1.txt",
+        "https://raw.githubusercontent.com/openfootball/europe/master/czech-republic/2026-27_cz1.txt"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    },
+    "eng.2": {
+      "trainingMatches": 653,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 5,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/en.2.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/en.2.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401880233"
+      ],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    }
+  },
+  "researchInputSha256": "d965b38c08d92992458506db80afb5e8690e3c58e6abb97aeca9d0e9842c19f9",
+  "researchGeneratedAt": "2026-10-14T05:18:52.223Z",
+  "researchAgeHours": 0.013,
+  "status": "completed",
+  "unmodeledFixtureCount": 24,
+  "coverage": {
+    "inputFixtures": 29,
+    "eligibleLeagueFixtures": 5,
+    "predicted": 4
+  }
+}
