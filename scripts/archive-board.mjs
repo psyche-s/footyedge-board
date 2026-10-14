@@ -8,14 +8,14 @@ const read=async f=>{try{return JSON.parse(await fs.readFile(f,'utf8'))}catch(e)
 async function main(){
  if(DATE!==TODAY)throw Error('Cannot publish to previous or future dates');
  const existing=await read(target),draft=await read(draftPath);
- if(!draft){console.log('No candidate draft; preserve current Top 5');return}
+ if(existing){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}\n if(!draft){console.log('No candidate draft; preserve current Top 5');return}
  if(draft.date!==DATE||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw Error('Incomplete current-day draft');
  if(!(draft.top5||[]).length){console.log('No new qualified picks. Preserve existing board.');return}
  if(existing?.top5?.length>draft.top5.length){console.log('Do not replace populated Top 5 with partial refresh.');return}
- const board=JSON.parse(JSON.stringify(draft));board.immutable=false;board.state='published';board.frozenAt=null;
- board.mutableUntil='End of the Toronto fixture date';board.lastPublishedAt=new Date().toISOString();
+ const board=JSON.parse(JSON.stringify(draft));board.immutable=true;board.state='locked';board.frozenAt=new Date().toISOString();
+ delete board.mutableUntil;board.lastPublishedAt=board.frozenAt;
  board.source='FootyEdge rolling same-day published board';
- delete board.policyFreezeAtToronto;delete board.lockedAtToronto;delete board.lateLockReason;
+ board.lockedAtToronto=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',dateStyle:'short',timeStyle:'medium'}).format(new Date());
  validateBoard(board,{requireFull:true});
  if(existing&&JSON.stringify(existing.top5)===JSON.stringify(board.top5)){console.log('Picks unchanged');return}
  validateIntegrity('HEAD');
