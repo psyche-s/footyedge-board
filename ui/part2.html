@@ -809,13 +809,15 @@ function emptyBoardMessage(){
 function pickScoreLabel(p){
   if(p?.confidenceType==="historical_trend_hit_rate")return "TREND";
   if(p?.confidenceType==="external_forecast_estimate")return "EST.";
+  if(p?.confidenceType==="footyedge_conviction_index_not_win_probability"||p?.confidenceType==="footyedge_loss_adjusted_rating")return "CONF";
   if(p?.probabilityCalibrated===true)return "CONF";
   return "RANK";
 }
 function pickScoreValue(p){
   const n=p?.score;
   if(!Number.isFinite(n))return "—";
-  return String(n)+(pickScoreLabel(p)==="RANK"?"/100":"%");
+  // Percentage-style presentation of FootyEdge's score, not a claim of calibration.
+  return String(Math.round(Math.max(0,Math.min(100,n))*10)/10)+"%";
 }
 
 let attributedOdds=new Map(),oddsState="unavailable",oddsCheckedAt=null,oddsRequestBusy=false;
@@ -1136,7 +1138,7 @@ function matchH2HHtml(g){
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
   const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form||g.model?.[side==="home"?"displayHome":"displayAway"]?.form)}</div></div>`};
   const first=g.liveStatusVerified&&(g.live||g.done)?status(g)+" · "+(Number.isInteger(g.home.score)?g.home.score:"–")+"–"+(Number.isInteger(g.away.score)?g.away.score:"–"):`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
-  return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. Confidence is a ranking signal, not a guarantee.</p>`;
+  return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. FootyEdge confidence is a research rating that includes loss risk, not a guarantee or calibrated win probability.</p>`;
 }
 
 function extractVerifiedH2H(g,payloads){
@@ -1252,7 +1254,7 @@ function renderModal(g){
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
     const body=items.length
       ?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(newsImpact(g,focus,item))+'</div>':'')+'</div>').join("")
-      :'<div class="teamNewsItem"><div class="newsText mutedNews">No verified absence or lineup change has been reported yet.</div></div>';
+      :'<div class="teamNewsItem"><div class="newsText mutedNews">Team news has not yet been independently verified for this fixture.</div></div>';
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(teamDisplayName(g,team))+'</b></div>'+body+'</section>'
   };
   const newsHtml=teamCard(g.home)+teamCard(g.away);
