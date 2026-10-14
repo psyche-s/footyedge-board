@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "purpose": "Auditable footprint of original FootyEdge source adapters; NOT permission to archive or redistribute each provider's output.",
+  "github_hub": "psyche-s/football-data-hub",
+  "private_hub_requires": "FOOTBALL_DATA_HUB_READ_TOKEN (fine-grained contents:read on private hub; only in GitHub Actions)",
+  "historical_sources": [
+    {
+      "id": "openfootball",
+      "name": "OpenFootball football.json",
+      "role": "completed league scores, H2H, form and Dixon-Coles historical training",
+      "mode": "daily_public_CC0_snapshot",
+      "data_license": "CC0-1.0",
+      "can_publish_completed_scores": true,
+      "module": "scripts/sync-football-data-hub.mjs",
+      "destination": "data/football-hub/",
+      "source_url": "https://github.com/openfootball/football.json",
+      "footyedge_leagues": [
+        "eng.1",
+        "eng.2",
+        "ger.1",
+        "esp.1",
+        "fra.1",
+        "ita.1",
+        "ned.1",
+        "por.1",
+        "tur.1"
+      ]
+    },
+    {
+      "id": "wikidata",
+      "name": "Wikidata",
+      "role": "club identity mappings",
+      "mode": "hub_metadata_only",
+      "data_license": "CC0 structured statements; images separate",
+      "can_publish_completed_scores": false,
+      "module": null,
+      "source_url": "https://www.wikidata.org/"
+    },
+    {
+      "id": "football_logos",
+      "name": "football-logos.cc",
+      "role": "club badge page references; published images require separate rights review",
+      "mode": "hub_catalog_only",
+      "data_license": "No blanket reproduction or redistribution license",
+      "can_publish_completed_scores": false,
+      "module": "scripts/sync-football-logos.mjs",
+      "source_url": "https://football-logos.cc/"
+    }
+  ],
+  "existing_application_sources": [
+    {
+      "id": "espn",
+      "name": "ESPN soccer endpoints",
+      "role": "fixtures, scoreboard, team season table and result form",
+      "mode": "existing_fetch_adapter",
+      "data_license": "Provider terms apply; do not relicense/ bulk-republish as CC0",
+      "can_publish_completed_scores": false,
+      "module": "api/espn-scoreboard.js",
+      "related": [
+        "api/espn-standings.js",
+        "api/espn-schedule.js"
+      ],
+      "source_url": "https://www.espn.com/soccer/"
+    },
+    {
+      "id": "api_football",
+      "name": "API-Football",
+      "role": "fixture/lineup stats when a valid key and limits permit",
+      "mode": "existing_optional_keyed_adapter",
+      "data_license": "API service terms apply",
+      "can_publish_completed_scores": false,
+      "module": "api/football.js",
+      "source_url": "https://www.api-football.com/"
+    },
+    {
+      "id": "the_odds_api",
+      "name": "The Odds API",
+      "role": "exact sportsbook quotes; separately timestamped and freeze-governed",
+      "mode": "existing_optional_keyed_adapter",
+      "data_license": "API odds usage terms apply",
+      "can_publish_completed_scores": false,
+      "module": "api/the-odds.js",
+      "source_url": "https://the-odds-api.com/"
+    },
+    {
+      "id": "espn_odds",
+      "name": "ESPN-listed sportsbook market quotes",
+      "role": "supplemental exact supported posted lines, never inferred totals",
+      "mode": "existing_odds_adapter",
+      "data_license": "Provider/market display terms apply",
+      "can_publish_completed_scores": false,
+      "module": "api/live-odds.js",
+      "source_url": "https://www.espn.com/soccer/"
+    },
+    {
+      "id": "football_whispers",
+      "name": "Football Whispers",
+      "role": "previews, lineup news and injury editorial cross-check",
+      "mode": "editorial_reference_only",
+      "data_license": "Site content not licensed for historical dataset mirroring",
+      "can_publish_completed_scores": false,
+      "module": "api/whispers.js",
+      "source_url": "https://footballwhispers.com/"
+    },
+    {
+      "id": "czech_openfootball",
+      "name": "OpenFootball Czech data",
+      "role": "Czech men's top flight verified source-specific fixtures",
+      "mode": "existing_public_domain_adapter",
+      "data_license": "Validate original source license for every dataset",
+      "can_publish_completed_scores": false,
+      "module": "assets/czech-first-league.mjs",
+      "source_url": "https://github.com/openfootball"
+    },
+    {
+      "id": "statsbomb_open",
+      "name": "StatsBomb Open Data",
+      "role": "optional selected-match event research",
+      "mode": "manual_selected_matches_only",
+      "data_license": "Selected open-data license and attribution; not globally unrestricted",
+      "can_publish_completed_scores": false,
+      "module": "scripts/advanced_adapter.py",
+      "source_url": "https://github.com/statsbomb/open-data"
+    },
+    {
+      "id": "understat",
+      "name": "Understat / soccerdata",
+      "role": "optional match-level shot events in shadow research",
+      "mode": "manual_optional_adapter_not_auto_archived",
+      "data_license": "Check provider terms before automated ingestion or redistribution",
+      "can_publish_completed_scores": false,
+      "module": "scripts/advanced_adapter.py",
+      "source_url": "https://understat.com/"
+    },
+    {
+      "id": "football_data_co_uk",
+      "name": "Football-Data.co.uk",
+      "role": "legacy research-only CSV scouting used by shadow pipeline",
+      "mode": "restricted_shadow_do_not_archive_in_hub",
+      "data_license": "Site terms restrict some automated/AI/commercial uses; require authorization",
+      "can_publish_completed_scores": false,
+      "module": "scripts/analytics_pipeline.py",
+      "source_url": "https://www.football-data.co.uk/"
+    }
+  ],
+  "reference_only": [
+    {
+      "id": "sports_mole",
+      "name": "Sports Mole",
+      "role": "human/editorial team news cross-check",
+      "source_url": "https://www.sportsmole.co.uk/"
+    },
+    {
+      "id": "sportskeeda",
+      "name": "Sportskeeda",
+      "role": "human/editorial team news cross-check",
+      "source_url": "https://www.sportskeeda.com/"
+    },
+    {
+      "id": "fbref",
+      "name": "FBref",
+      "role": "manual fact cross-check only; no bulk automated historical replication",
+      "source_url": "https://fbref.com/"
+    },
+    {
+      "id": "footystats",
+      "name": "FootyStats",
+      "role": "optional licensed plan only, not redistributed into CC0 history",
+      "source_url": "https://footystats.org/"
+    }
+  ],
+  "rule": "Only explicitly verified OpenFootball CC0 completed scores go into the public historical mirror. Existing API pipelines remain independently gated; no guessing odds/EV, stripping provenance, or changing dated boards."
+}
