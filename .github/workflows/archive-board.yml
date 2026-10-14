@@ -7,7 +7,7 @@ on:
       - ".github/workflows/archive-board.yml"
   schedule:
     # 00:30 Toronto: 04:30 UTC during EDT, 05:30 UTC during EST.
-    - cron: "30 4,5 * * *"
+    - cron: "30,50 4,5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
           HOUR="$(TZ=America/Toronto date +%H)"
           MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
-          # A manual dispatch cannot bypass the official freeze window.
+          # A manual dispatch cannot bypass the official freeze window.\n          # 00:50 retries only if the first run did not publish; archive script is write-once.
           if [[ "$HOUR" == "00" && "$MINUTE" -ge 30 ]]; then RUN=true; fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
           echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE"
