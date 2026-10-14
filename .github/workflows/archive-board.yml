@@ -6,7 +6,8 @@ on:
     paths:
       - ".github/workflows/archive-board.yml"
   schedule:
-    # 00:30 Toronto: 04:30 UTC during EDT, 05:30 UTC during EST.\n    - cron: "30 4,5 * * *"
+    # 00:30 Toronto: 04:30 UTC during EDT, 05:30 UTC during EST.
+    - cron: "30 4,5 * * *"
   workflow_dispatch:
 
 permissions:
