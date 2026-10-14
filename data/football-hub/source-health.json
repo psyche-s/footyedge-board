@@ -1,0 +1,161 @@
+{
+  "schema": "footyedge-source-health-v1",
+  "reportedAt": "2026-10-14T16:29:26.713Z",
+  "hubRepository": "psyche-s/football-data-hub",
+  "history": {
+    "mode": "public-openfootball-full-backfill",
+    "throughDateExclusive": "2026-10-14",
+    "completedMatches": 31279,
+    "leagues": 9,
+    "warehouseRevision": null,
+    "attemptedHistoricSeasons": [
+      "2015-16",
+      "2016-17",
+      "2017-18",
+      "2018-19",
+      "2019-20",
+      "2020-21",
+      "2021-22",
+      "2022-23",
+      "2023-24",
+      "2024-25"
+    ]
+  },
+  "sources": [
+    {
+      "id": "openfootball",
+      "name": "OpenFootball football.json",
+      "mode": "daily_public_CC0_snapshot",
+      "adapterPresent": true,
+      "canPublishCompletedScores": true,
+      "sourceUrl": "https://github.com/openfootball/football.json",
+      "rights": "CC0-1.0"
+    },
+    {
+      "id": "wikidata",
+      "name": "Wikidata",
+      "mode": "hub_metadata_only",
+      "adapterPresent": null,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://www.wikidata.org/",
+      "rights": "CC0 structured statements; images separate"
+    },
+    {
+      "id": "football_logos",
+      "name": "football-logos.cc",
+      "mode": "hub_catalog_only",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://football-logos.cc/",
+      "rights": "No blanket reproduction or redistribution license"
+    },
+    {
+      "id": "espn",
+      "name": "ESPN soccer endpoints",
+      "mode": "existing_fetch_adapter",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://www.espn.com/soccer/",
+      "rights": "Provider terms apply; do not relicense/ bulk-republish as CC0"
+    },
+    {
+      "id": "api_football",
+      "name": "API-Football",
+      "mode": "existing_optional_keyed_adapter",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://www.api-football.com/",
+      "rights": "API service terms apply"
+    },
+    {
+      "id": "the_odds_api",
+      "name": "The Odds API",
+      "mode": "existing_optional_keyed_adapter",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://the-odds-api.com/",
+      "rights": "API odds usage terms apply"
+    },
+    {
+      "id": "espn_odds",
+      "name": "ESPN-listed sportsbook market quotes",
+      "mode": "existing_odds_adapter",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://www.espn.com/soccer/",
+      "rights": "Provider/market display terms apply"
+    },
+    {
+      "id": "football_whispers",
+      "name": "Football Whispers",
+      "mode": "editorial_reference_only",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://footballwhispers.com/",
+      "rights": "Site content not licensed for historical dataset mirroring"
+    },
+    {
+      "id": "czech_openfootball",
+      "name": "OpenFootball Czech data",
+      "mode": "existing_public_domain_adapter",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://github.com/openfootball",
+      "rights": "Validate original source license for every dataset"
+    },
+    {
+      "id": "statsbomb_open",
+      "name": "StatsBomb Open Data",
+      "mode": "manual_selected_matches_only",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://github.com/statsbomb/open-data",
+      "rights": "Selected open-data license and attribution; not globally unrestricted"
+    },
+    {
+      "id": "understat",
+      "name": "Understat / soccerdata",
+      "mode": "manual_optional_adapter_not_auto_archived",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://understat.com/",
+      "rights": "Check provider terms before automated ingestion or redistribution"
+    },
+    {
+      "id": "football_data_co_uk",
+      "name": "Football-Data.co.uk",
+      "mode": "restricted_shadow_do_not_archive_in_hub",
+      "adapterPresent": true,
+      "canPublishCompletedScores": false,
+      "sourceUrl": "https://www.football-data.co.uk/",
+      "rights": "Site terms restrict some automated/AI/commercial uses; require authorization"
+    }
+  ],
+  "referenceOnly": [
+    {
+      "id": "sports_mole",
+      "name": "Sports Mole",
+      "mode": "manual/reference only",
+      "url": "https://www.sportsmole.co.uk/"
+    },
+    {
+      "id": "sportskeeda",
+      "name": "Sportskeeda",
+      "mode": "manual/reference only",
+      "url": "https://www.sportskeeda.com/"
+    },
+    {
+      "id": "fbref",
+      "name": "FBref",
+      "mode": "manual/reference only",
+      "url": "https://fbref.com/"
+    },
+    {
+      "id": "footystats",
+      "name": "FootyStats",
+      "mode": "manual/reference only",
+      "url": "https://footystats.org/"
+    }
+  ],
+  "policy": "Module presence is NOT a live API availability check. Provider keys, odds and licensed content are not published. Only completed CC0 scores may enter the history mirror."
+}
