@@ -122,3 +122,26 @@ jobs:
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
+
+      - name: Publish frozen Top 5 to GitHub Releases without a Vercel build
+        if: steps.gate.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          # Release data only after the board exists, is locked and passes export checks.
+          node scripts/export-release-top5.mjs
+          archive="footyedge-board-${TODAY}"
+          current="footyedge-board-current"
+          if ! gh release view "$archive" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release create "$archive" --repo "$GH_REPO" --target main --title "FootyEdge frozen Top 5 $TODAY" --notes-file published/footyedge-top5.json --latest=false
+          fi
+          if gh release view "$current" --repo "$GH_REPO" >/dev/null 2>&1; then
+            gh release edit "$current" --repo "$GH_REPO" --notes-file published/footyedge-top5.json
+          else
+            gh release create "$current" --repo "$GH_REPO" --target main --title "FootyEdge current Top 5" --notes-file published/footyedge-top5.json --latest=false
+          fi
+          echo "Published frozen Top 5 as release data; no website build required."
