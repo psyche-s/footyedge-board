@@ -87,7 +87,8 @@ test("publisher schedules only 00:30 Toronto with an immutable daily archive",()
   const shadow=fs.readFileSync(".github/workflows/shadow-dixon-coles.yml","utf8");
   assert.match(workflow,/cron: "30,50 4,5 \* \* \*"/);
   assert.match(workflow,/Toronto 00:30 publication window/);
-  for(const [yaml,starts] of [[research,["0 4","0 5"]],[shadow,["10 4","10 5"]]]){
+  assert.match(research,/cron: "0,15 4,5 \\* \\* \\*"/);
+  for(const [yaml,starts] of [[shadow,["10 4","10 5"]]]){
     for(const s of starts)assert.ok(yaml.includes('cron: "'+s+' * * *"'));
   }
   const publisher=fs.readFileSync("scripts/publish-board-previews.mjs","utf8");
@@ -212,7 +213,7 @@ test("verified native display prices can show EV while unavailable exact markets
 });
 
 test("expanded Team News keeps the original team-card layout",()=>{
-  assert.match(p2,/No verified absence or lineup change has been reported yet/);
+  assert.match(p2,/Team news has not yet been independently verified for this fixture/);
   assert.match(p2,/teamNewsCard/);
   assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
