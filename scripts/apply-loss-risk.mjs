@@ -47,7 +47,7 @@ for(const g of board.games||[]){
    success=typeof pick.modelProb==='number'&&pick.modelProb>0?pick.modelProb:label.includes(h)?m.home:label.includes(a)?m.away:label.includes('draw')?m.draw:null;
   }else if(pick.category==='Double Chance'){
    // 1X = not away win; X2 = not home win; 12 = not draw.
-   success=/\\b1x\\b|home or draw/i.test(label)?1-m.away:/\\bx2\\b|draw or away/i.test(label)?1-m.home:/\\b12\\b|home or away/i.test(label)?1-m.draw:null;
+   success=label.includes('1x')||label.includes('home or draw')?1-m.away:label.includes('x2')||label.includes('draw or away')?1-m.home:label.includes('12')||label.includes('home or away')?1-m.draw:null;
   }else if(pick.category==='Goals'){
    if(label.includes('over 1.5'))success=m.over15;
    else if(label.includes('under 3.5'))success=m.under35;
@@ -72,5 +72,5 @@ board.leagueTop5=Object.fromEntries([...new Set((board.games||[]).map(g=>g.leagu
 board.editorialTop5Order=board.top5.map(p=>p.gameId);
 board.sourceQuality={...board.sourceQuality,lossRiskCalculated:true,confidenceMethod:'100% minus estimated probability of exact-market loss; ML draws count as losses',probabilityCalibrated:false};
 board.publicationNotes=String(board.publicationNotes||'')+' Confidence is loss-risk-adjusted, not calibrated and not a guaranteed win rate.';
-fs.writeFileSync(file,JSON.stringify(board,null,2)+'\\n');
+fs.writeFileSync(file,JSON.stringify(board,null,2)+String.fromCharCode(10));
 console.log(JSON.stringify({date,reviewed,unavailable:missed,top5:board.top5.length}));
