@@ -18,7 +18,7 @@ function validateSource(doc,code){
 }
 function toCompact(game,today){
  const [hs,as]=game?.score?.full_time||[];
- if(game?.status!=="final"||typeof game.date!=="string"||!/^\\d{4}-\\d{2}-\\d{2}$/.test(game.date)||game.date>=today||
+ if(game?.status!=="final"||typeof game.date!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(game.date)||game.date>=today||
     !Number.isInteger(hs)||!Number.isInteger(as)||Math.min(hs,as)<0||Math.max(hs,as)>20||
     typeof game.id!=="string"||typeof game.home_name!=="string"||typeof game.away_name!=="string")return null;
  return {id:game.id,d:game.date,h:game.home_name,a:game.away_name,hi:game.home_team_id,ai:game.away_team_id,hs,as,s:game.season};
@@ -47,7 +47,7 @@ async function getPrivateFile(file,sha){
  const body=await getJson(uri,token);
  if(!body)return null;
  if(body.encoding!=="base64"||typeof body.content!=="string")throw Error("Unexpected private file encoding");
- return JSON.parse(Buffer.from(body.content.replace(/\\s/g,""),"base64").toString("utf8"));
+ return JSON.parse(Buffer.from(body.content.replace(/\s/g,""),"base64").toString("utf8"));
 }
 async function atomicWrite(filename,doc){
  const content=JSON.stringify(doc)+"\n";
@@ -73,7 +73,7 @@ async function main(){
    if(!/^[a-f0-9]{40}$/.test(sha||""))throw Error("Missing private hub revision; no files modified");
    const manifest=await getPrivateFile("data/manifest.json",sha);
    if(!manifest||!Array.isArray(manifest.files)||!manifest.licenses?.some(s=>String(s).includes("CC0")))throw Error("Private hub manifest not validated");
-   specs=manifest.files.filter(f=>Object.hasOwn(COMP,f.competition_id)&&/^data\\/matches\\/\\d{4}-\\d{2}\\/[a-z]{2}\\.\\d\\.json$/.test(f.path))
+   specs=manifest.files.filter(f=>Object.hasOwn(COMP,f.competition_id)&&/^data\\/matches\\/\d{4}-\d{2}\\/[a-z]{2}\\.\d\\.json$/.test(f.path))
      .map(f=>({code:f.competition_id,uri:f.path}));
  }else{
    console.warn("FOOTBALL_DATA_HUB_TOKEN not configured: refreshing current/previous seasons from public CC0 OpenFootball; older Hub archive remains preserved.");
