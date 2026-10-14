@@ -11,8 +11,7 @@ on:
       - '.github/workflows/build-research-base.yml'
   schedule:
     # Local midnight research before official 00:30 publication; EDT/EST alternatives.
-    - cron: "0 4 * * *"
-    - cron: "0 5 * * *"
+    - cron: "0,15 4,5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -58,7 +57,7 @@ jobs:
           TODAY="$(TZ=America/Toronto date +%F)"
           # A repair push rebuilds today only; scheduled midnight research still scouts five days.
           HORIZON=4
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then HORIZON=0; fi
+          if [[ "$GITHUB_EVENT_NAME" == "push" || "$(TZ=America/Toronto date +%M)" != "00" ]]; then HORIZON=0; fi
           for OFFSET in $(seq 0 "$HORIZON"); do
             DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             echo "Building research base for $DATE"
