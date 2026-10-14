@@ -175,6 +175,22 @@ async function buildFixture(g){
     return{...g,history:{home:0,away:0},facts:[],marketSignals:[],error:String(error),generatedAt:new Date().toISOString()};
   }
 }
+// Source-labelled fallback for research continuity only; never treat snapshots as live.
+function datedSnapshotEvents(snapshot){
+  const codes=new Map([[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"]]);
+  return (snapshot?.response||[]).flatMap(row=>{
+    const home=row?.teams?.home,away=row?.teams?.away,fixture=row?.fixture;
+    const code=codes.get(Number(row?.league?.id));
+    if(!code||!home?.name||!away?.name||!fixture?.id||!fixture?.date||/women|female/i.test(String(row?.league?.name||"")))return [];
+    return [{id:String(fixture.id),date:fixture.date,footyedgeLeague:code,
+      league:{name:row.league.name},season:{year:Number(row.league.season)||Number(DATE.slice(0,4))},
+      status:{type:{completed:false,state:"pre"}},
+      competitions:[{competitors:[
+        {id:String(home.id),homeAway:"home",team:{id:String(home.id),displayName:home.name}},
+        {id:String(away.id),homeAway:"away",team:{id:String(away.id),displayName:away.name}}
+      ]}]}];
+  });
+}
 async function main(){
   // Explicit owner-specified October 9 league expansion: write a NEW research
   // source, never modify the frozen original deterministic research base.
@@ -190,8 +206,16 @@ async function main(){
       board=JSON.parse(await fs.readFile(path.join("data",DATE,"scoreboard.json"),"utf8"));
       console.warn("Scoreboard API unavailable; using committed same-day scoreboard snapshot:",String(error));
     }catch(snapshotError){
-      if(!correction)throw error;
-      throw snapshotError;
+      try{
+        const saved=JSON.parse(await fs.readFile(path.join("data",DATE,"fixtures.json"),"utf8"));
+        const events=datedSnapshotEvents(saved);
+        if(!events.length)throw Error("No identifiable men's fixtures in dated snapshot");
+        board={events,footyedgeSources:{scoreboard:{live:false,kind:"dated-snapshot-research-only",date:DATE}}};
+        console.warn("Live scoreboard unavailable; dated fixture snapshot used for research only, NOT verified live data:",String(error));
+      }catch(fixtureError){
+        console.warn("No trustworthy fixture source; do not manufacture research or picks:",String(fixtureError));
+        throw error;
+      }
     }
   }
   // The public Czech top-flight source is independent from ESPN.
