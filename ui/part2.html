@@ -1190,6 +1190,18 @@ async function loadVerifiedMatchDetails(g){
   g.matchDetailsRequested=true;
   const saved=Array.isArray(g.h2h)?g.h2h.filter(x=>x&&x.date&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))):[];
   g.matchH2H=mergeVerifiedH2H(saved,[]);
+  // Read only public-domain, completed fixture scores mirrored from the
+  // private Football Data Hub into our public, rights-filtered static cache.
+  // Never query the private repository or alter published picks/ratings.
+  if(S.date===etDate()&&g.matchH2H.length<5&&window.FootyEdgeHubHistory?.sourceLeague(g.league)){
+    try{
+      const archived=await window.FootyEdgeHubHistory.findH2H(g);
+      g.matchH2H=mergeVerifiedH2H(g.matchH2H,archived);
+      if(archived.length)g.h2hSummary={...g.h2hSummary,
+        matches:g.matchH2H.length,
+        note:"Showing recorded previous meetings, most recent first."};
+    }catch(error){console.warn("FootyEdge historical cache unavailable; preserving existing match evidence.");}
+  }
   if(GITHUB_STATIC||g.matchH2H.length===5||S.date!==etDate()){
     g.matchDetailsPending=false;return;
   }
