@@ -91,6 +91,12 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
+      - name: Apply loss-risk-adjusted confidence before official commit
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          node --check scripts/apply-loss-risk.mjs
+          node scripts/apply-loss-risk.mjs
+
       - name: Audit published board editorial quality
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
