@@ -401,7 +401,7 @@ test("Premier League and MLS logos fit fully inside the existing competition ico
 
 test("October 10 owner-approved modal removes GF/GA cards and renders verified H2H accordion",()=>{
   assert.doesNotMatch(p1,/<b id="modalTitle">Match Breakdown<\/b>/);
-  assert.match(p2,/Head-to-Head · Last 5 meetings/);
+  assert.match(p2,/Head-to-Head · Last 5 available/);
   assert.match(p2,/data-h2h-toggle aria-expanded/);
   assert.match(p2,/function extractVerifiedH2H/);
   assert.match(p2,/event\?\.status\?\.type\?\.completed/);
