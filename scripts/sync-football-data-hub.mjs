@@ -91,7 +91,7 @@ async function main(){
    console.warn("FOOTBALL_DATA_HUB_TOKEN not configured: refreshing current/previous seasons from public CC0 OpenFootball; older Hub archive remains preserved.");
    specs=Object.keys(COMP).flatMap(code=>recentYears(today).map(season=>({code,uri:season+"/"+code+".json"})));
  }
- const grouped=new Map(),seenFiles=0;
+ const grouped=new Map();let seenFiles=0;
  for(const file of specs){
    let doc;
    try{
