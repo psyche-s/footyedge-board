@@ -98,7 +98,8 @@ test("only today's board can refresh and dated archives stay protected",()=>{
   const publisher=fs.readFileSync("scripts/archive-board.mjs","utf8");
   const check=fs.readFileSync("scripts/validate-published-boards.mjs","utf8");
   assert.match(publisher,/DATE!==TODAY/);
-  assert.match(publisher,/board.immutable=true/);\n  assert.match(publisher,/if\(existing\)/);
+  assert.match(publisher,/board.immutable=true/);
+  assert.match(publisher,/if\(existing\)/);
   assert.match(publisher,/Do not replace populated Top 5 with partial refresh/);
   assert.match(check,/date===pd.year/);
   const october12=JSON.parse(fs.readFileSync("data/boards/2026-10-12.json","utf8"));
