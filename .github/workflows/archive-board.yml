@@ -1,4 +1,4 @@
-name: Publish FootyEdge Rolling Board
+name: Publish FootyEdge Daily Frozen Board
 
 on:
   push:
@@ -6,12 +6,8 @@ on:
     paths:
       - ".github/workflows/archive-board.yml"
   schedule:
-    # Initial 00:30 plus 09:30 and 11:30 Toronto, DST alternatives.
-    - cron: "30 4,5,13,14,15,16 * * *"
+    # 00:30 Toronto: 04:30 UTC during EDT, 05:30 UTC during EST.\n    - cron: "30 4,5 * * *"
   workflow_dispatch:
-  workflow_run:
-    workflows: ["Build FootyEdge Research Base"]
-    types: [completed]
 
 permissions:
   contents: write
@@ -29,18 +25,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Current-day rolling publication gate
+      - name: Strict 00:30 Toronto publication gate
         id: gate
         shell: bash
         run: |
           HOUR="$(TZ=America/Toronto date +%H)"
+          MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" || "$GITHUB_EVENT_NAME" == "push" ]]; then RUN=true
-          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" && "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then RUN=true
-          elif [[ "$GITHUB_EVENT_NAME" == "schedule" && ( "$HOUR" == "00" || "$HOUR" == "09" || "$HOUR" == "11" ) ]]; then RUN=true
-          fi
+          # A manual dispatch cannot bypass the official freeze window.
+          if [[ "$HOUR" == "00" && "$MINUTE" == "30" ]]; then RUN=true; fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
-          echo "Rolling publication gate=$RUN for hour $HOUR Toronto"
+          echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE"
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.run == 'true'
         with:
@@ -90,7 +85,7 @@ jobs:
             FORCE_FALLBACK=1 node scripts/build-evidence-only-board.mjs
           fi
 
-      - name: Publish current-day picks without locking
+      - name: Publish and lock current-day picks once
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
@@ -104,7 +99,7 @@ jobs:
           node scripts/track-performance.mjs || echo "::warning::Tracking retry required; preserve board publication."
           node scripts/postmatch-learning.mjs || echo "::warning::Learning retry required; preserve board publication."
 
-      - name: Validate and commit rolling same-day picks
+      - name: Validate and commit immutable same-day picks
         if: steps.gate.outputs.run == 'true'
         shell: bash
         run: |
@@ -122,7 +117,7 @@ jobs:
             echo "No board changes."
             exit 0
           fi
-          git commit -m "chore(board): update same-day Top 5 $TODAY [skip ci]"
+          git commit -m "chore(board): freeze same-day Top 5 $TODAY [skip ci]"
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
