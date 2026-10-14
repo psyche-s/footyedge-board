@@ -81,12 +81,12 @@ test("public current-day published board renders picks before using any draft",(
   assert.match(p2,/Same-day preview · refreshable/);
   assert.doesNotMatch(p2,/Locked at 12:30 AM ET/);
 });
-test("publisher schedules initial and two same-day retries without re-locking",()=>{
+test("publisher schedules only 00:30 Toronto with an immutable daily archive",()=>{
   const workflow=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
   const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
   const shadow=fs.readFileSync(".github/workflows/shadow-dixon-coles.yml","utf8");
-  assert.match(workflow,/cron: "30 4,5,13,14,15,16 \* \* \*"/);
-  assert.match(workflow,/Current-day rolling publication gate/);
+  assert.match(workflow,/cron: "30 4,5 \* \* \*"/);
+  assert.match(workflow,/Toronto 00:30 publication window/);
   for(const [yaml,starts] of [[research,["0 4","0 5"]],[shadow,["10 4","10 5"]]]){
     for(const s of starts)assert.ok(yaml.includes('cron: "'+s+' * * *"'));
   }
@@ -98,7 +98,7 @@ test("only today's board can refresh and dated archives stay protected",()=>{
   const publisher=fs.readFileSync("scripts/archive-board.mjs","utf8");
   const check=fs.readFileSync("scripts/validate-published-boards.mjs","utf8");
   assert.match(publisher,/DATE!==TODAY/);
-  assert.match(publisher,/board.immutable=false/);
+  assert.match(publisher,/board.immutable=true/);\n  assert.match(publisher,/if\(existing\)/);
   assert.match(publisher,/Do not replace populated Top 5 with partial refresh/);
   assert.match(check,/date===pd.year/);
   const october12=JSON.parse(fs.readFileSync("data/boards/2026-10-12.json","utf8"));
