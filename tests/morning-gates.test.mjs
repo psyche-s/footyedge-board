@@ -87,7 +87,7 @@ test("publisher schedules only 00:30 Toronto with an immutable daily archive",()
   const shadow=fs.readFileSync(".github/workflows/shadow-dixon-coles.yml","utf8");
   assert.match(workflow,/cron: "30,50 4,5 \* \* \*"/);
   assert.match(workflow,/Toronto 00:30 publication window/);
-  assert.match(research,/cron: "0,15 4,5 \\* \\* \\*"/);
+  assert.ok(research.includes('cron: "0,15 4,5 * * *"'));
   for(const [yaml,starts] of [[shadow,["10 4","10 5"]]]){
     for(const s of starts)assert.ok(yaml.includes('cron: "'+s+' * * *"'));
   }
