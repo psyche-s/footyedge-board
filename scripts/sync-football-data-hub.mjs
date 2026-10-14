@@ -12,7 +12,7 @@ const SOURCE="psyche-s/football-data-hub";
 const UPSTREAM="https://raw.githubusercontent.com/openfootball/football.json/master";
 const COMP=Object.freeze({"en.1":"eng.1","en.2":"eng.2","de.1":"ger.1","es.1":"esp.1","fr.1":"fra.1","it.1":"ita.1","nl.1":"ned.1","pt.1":"por.1","tr.1":"tur.1"});
 const token=process.env.FOOTBALL_DATA_HUB_TOKEN||"";
-function isoToday(now=new Date()){return new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).format(now)}
+function isoToday(now=new Date()){const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(now);const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return p.year+"-"+p.month+"-"+p.day}
 function validateSource(doc,code){
  if(!doc||doc.source!=="openfootball/football.json"||doc.license!=="CC0-1.0"||doc.competition_id!==code||!Array.isArray(doc.matches))throw Error("Rejected untrusted or unlicensed match source "+code);
  return true;
