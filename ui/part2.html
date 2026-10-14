@@ -1129,12 +1129,12 @@ function matchH2HHtml(g){
     const exact=Boolean(m.date&&Number.isFinite(Date.parse(m.date)));
     const date=exact?new Intl.DateTimeFormat("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"}).format(new Date(m.date)):m.dateLabel||"Date unverified";
     return '<div class="h2hResult"><time'+(exact?' datetime="'+esc(m.date)+'"':'')+'>'+esc(date)+'</time><span class="h2hFixture">'+esc(m.home)+' <b>'+esc(m.homeScore)+'–'+esc(m.awayScore)+'</b> '+esc(m.away)+'</span></div>';
-  }).join(""):'<p class="h2hEmpty">'+esc(info.note||"No scored previous meetings verified.")+'</p>';
-  const total=info.matches!=null?'<p class="h2hEmpty">'+esc(info.matches)+' historical meeting'+(info.matches===1?'':'s')+(info.lastMeeting?' · latest '+esc(info.lastMeeting):'')+'</p>':'';
+  }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking previous meetings…</p>':'<p class="h2hEmpty">'+esc(info.note||"No verified previous meetings found.")+'</p>');
+  const count=rows.length;
+  const total=count?'<p class="h2hEmpty">'+count+' verified meeting'+(count===1?'':'s')+' shown (up to 5)'+(g.matchDetailsPending?' · checking older fixtures…':'')+'</p>':'';
   const expanded=Boolean(g.h2hExpanded);
-  return '<section class="h2hSection"><button type="button" class="h2hToggle" data-h2h-toggle aria-expanded="'+expanded+'" aria-controls="h2hResults"><span>Head-to-Head · Last 5 meetings</span><span class="h2hChevron" aria-hidden="true">'+(expanded?"⌃":"⌄")+'</span></button><div class="h2hResults" id="h2hResults" '+(expanded?"":"hidden")+'>'+total+body+'</div></section>';
+  return '<section class="h2hSection"><button type="button" class="h2hToggle" data-h2h-toggle aria-expanded="'+expanded+'" aria-controls="h2hResults"><span>Head-to-Head · Last 5 available'+(count?' ('+count+' found)':'')+'</span><span class="h2hChevron" aria-hidden="true">'+(expanded?"⌃":"⌄")+'</span></button><div class="h2hResults" id="h2hResults" '+(expanded?"":"hidden")+'>'+total+body+'</div></section>';
 }
-
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
   const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form||g.model?.[side==="home"?"displayHome":"displayAway"]?.form)}</div></div>`};
   const first=g.liveStatusVerified&&(g.live||g.done)?status(g)+" · "+(Number.isInteger(g.home.score)?g.home.score:"–")+"–"+(Number.isInteger(g.away.score)?g.away.score:"–"):`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
@@ -1146,15 +1146,21 @@ function extractVerifiedH2H(g,payloads){
   for(const payload of payloads){
     for(const event of payload?.events||[]){
       const id=String(event?.id||"");
-      if(!id||seen.has(id)||id===String(g.id)||!event?.status?.type?.completed)continue;
+      if(!id||seen.has(id)||id===String(g.id))continue;
       const when=Date.parse(event.date||"");
-      if(!Number.isFinite(when)||when>=Date.parse(g.date))continue;
+      if(!Number.isFinite(when)||when>=Date.parse(g.date)||when>Date.now())continue;
+      // ESPN's team-schedule feed strips event.status, unlike scoreboards.
+      // Completed results therefore require two independently populated scores.
+      if(event?.status?.type?.completed===false)continue;
       const players=event?.competitions?.[0]?.competitors||[];
       const one=players.find(c=>String(c?.id??c?.team?.id)===String(g.home.id));
       const two=players.find(c=>String(c?.id??c?.team?.id)===String(g.away.id));
       const home=players.find(c=>c.homeAway==="home"),away=players.find(c=>c.homeAway==="away");
       if(!one||!two||!home||!away)continue;
-      const hasRealScore=c=>{const raw=c.score&&typeof c.score==="object"?(c.score.value??c.score.displayValue):c.score;return raw!==null&&raw!==undefined&&raw!=="";};
+      const hasRealScore=c=>{
+        const raw=c.score&&typeof c.score==="object"?(c.score.value??c.score.displayValue):c.score;
+        return raw!==null&&raw!==undefined&&raw!=="";
+      };
       if(!hasRealScore(home)||!hasRealScore(away))continue;
       const homeScore=scoreVal(home.score),awayScore=scoreVal(away.score);
       if(!Number.isInteger(homeScore)||!Number.isInteger(awayScore)||homeScore<0||awayScore<0)continue;
@@ -1165,40 +1171,60 @@ function extractVerifiedH2H(g,payloads){
   }
   return out.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
 }
+function mergeVerifiedH2H(saved,fetched){
+  const seen=new Set(),out=[];
+  for(const row of [...saved,...fetched].sort((a,b)=>Date.parse(b.date||"")-Date.parse(a.date||""))){
+    if(!row?.date||!Number.isFinite(Date.parse(row.date)))continue;
+    if(!Number.isInteger(Number(row.homeScore))||!Number.isInteger(Number(row.awayScore)))continue;
+    const scores=[Number(row.homeScore),Number(row.awayScore)].sort((a,b)=>a-b);
+    const key=String(row.date).slice(0,10)+"|"+scores.join("-");
+    if(seen.has(key))continue;
+    seen.add(key);out.push(row);
+    if(out.length===5)break;
+  }
+  return out;
+}
 
 async function loadVerifiedMatchDetails(g){
   if(g.matchDetailsRequested)return;
-  if(GITHUB_STATIC||g.staticDetails){g.matchDetailsRequested=true;g.matchDetailsPending=false;g.matchH2H=g.matchH2H||g.h2h||[];return;}
   g.matchDetailsRequested=true;
-  const staticH2H=Array.isArray(g.h2h)?g.h2h.filter(x=>x&&x.date&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5):[];
-  if(staticH2H.length){
-    g.matchH2H=staticH2H;
-    g.matchDetailsPending=false;
-    if(S.openGameId===String(g.id)&&document.getElementById("drawer")?.classList.contains("on"))renderModal(g);
-    return;
+  const saved=Array.isArray(g.h2h)?g.h2h.filter(x=>x&&x.date&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))):[];
+  g.matchH2H=mergeVerifiedH2H(saved,[]);
+  if(GITHUB_STATIC||g.matchH2H.length===5||S.date!==etDate()){
+    g.matchDetailsPending=false;return;
   }
+  // A single saved meeting is not a reason to skip historical lookup.
+  // Search historical seasons lazily, only when the user opens a match.
+  const end=Number(g.year)||Number(S.date.slice(0,4));
+  const years=Array.from({length:8},(_,i)=>end-i).filter(y=>y>=2018);
   g.matchDetailsPending=true;
-  const years=[Number(g.year),Number(g.year)-1,Number(g.year)-2,Number(g.year)-3].filter(y=>Number.isInteger(y)&&y>=2020);
+  if(S.openGameId===String(g.id)&&document.getElementById("drawer")?.classList.contains("on"))renderModal(g);
   try{
+    if(!g.home?.id||!g.away?.id)throw Error("Team identifiers missing");
     const results=await Promise.allSettled([
       ...years.map(year=>schedule(g.league,g.home.id,year)),
       json("/api/espn-standings?league="+encodeURIComponent(g.league)+"&season="+encodeURIComponent(g.year))
     ]);
     const data=results.slice(0,years.length).filter(x=>x.status==="fulfilled").map(x=>x.value);
-    g.matchH2H=extractVerifiedH2H(g,data);
+    const fetched=extractVerifiedH2H(g,data);
+    g.matchH2H=mergeVerifiedH2H(saved,fetched);
+    g.h2hSummary={...g.h2hSummary,matches:g.matchH2H.length,
+      note:g.matchH2H.length?"Showing verified results, most recent first.":"No verified previous meetings available from the accessible records."};
     const standings=results[years.length];
     if(standings?.status==="fulfilled"&&Number(standings.value?.season)===Number(g.year)){
       const ranks=standings.value.ranks||{};
       const home=Number(ranks[String(g.home.id)]),away=Number(ranks[String(g.away.id)]);
       g.verifiedRanks={home:Number.isInteger(home)&&home>0?home:null,away:Number.isInteger(away)&&away>0?away:null};
     }
-  }catch(e){g.matchH2H=[]}
-  finally {
+  }catch(e){
+    g.matchH2H=mergeVerifiedH2H(saved,[]);
+    g.h2hSummary={...g.h2hSummary,matches:g.matchH2H.length,
+      note:g.matchH2H.length?"Saved verified previous results; older-match search is unavailable.":"Historical results are currently unavailable."};
+  }finally{
     g.matchDetailsPending=false;
     if(S.openGameId===String(g.id)&&document.getElementById("drawer")?.classList.contains("on"))renderModal(g);
   }
 }
-
 function plainFootballReason(g,p){
   if(p?.sourceBackedReason)return String(p.reason||p.archivedCommentary||"");
   const h=g.model?.home,a=g.model?.away;
