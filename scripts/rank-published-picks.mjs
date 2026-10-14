@@ -8,7 +8,7 @@ export function rankPublishedBoard(board, { minimumTop5Confidence = 85 } = {}) {
   const ordered = picks => picks.map((pick, originalIndex) => ({pick, originalIndex}))
     .sort((a, b) => {
       const score = scoreOf(b.pick)-scoreOf(a.pick);
-      if (score !== 0) return score;
+      if (!Number.isNaN(score) && score !== 0) return score;
       // Tie breaks only: a real line is preferable, then larger EV.
       const book = Number(Boolean(b.pick.verifiedPrice)) - Number(Boolean(a.pick.verifiedPrice));
       if (book !== 0) return book;
