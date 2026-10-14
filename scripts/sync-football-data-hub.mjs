@@ -4,6 +4,7 @@
 // Without a read-only hub token, keep already-imported older seasons and
 // update the current/previous seasons directly from public OpenFootball.
 import fs from "node:fs/promises";
+import {createHash} from "node:crypto";
 import path from "node:path";
 
 const ROOT=process.cwd(),DEST=path.join(ROOT,"data","football-hub");
@@ -22,6 +23,17 @@ function toCompact(game,today){
     !Number.isInteger(hs)||!Number.isInteger(as)||Math.min(hs,as)<0||Math.max(hs,as)>20||
     typeof game.id!=="string"||typeof game.home_name!=="string"||typeof game.away_name!=="string")return null;
  return {id:game.id,d:game.date,h:game.home_name,a:game.away_name,hi:game.home_team_id,ai:game.away_team_id,hs,as,s:game.season};
+}
+const COUNTRIES={"en.1":"England","en.2":"England","de.1":"Germany","es.1":"Spain","fr.1":"France","it.1":"Italy","nl.1":"Netherlands","pt.1":"Portugal","tr.1":"Turkey"};
+function slug(s){return String(s).normalize("NFKD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"unknown";}
+function toCompactPublic(game,code,season,today){
+ if(!game||typeof game.team1!=="string"||!game.team1.trim()||typeof game.team2!=="string"||!game.team2.trim())return null;
+ const [hs,as]=game?.score?.ft||[];
+ if(!Number.isInteger(hs)||!Number.isInteger(as)||Math.min(hs,as)<0||Math.max(hs,as)>20||typeof game.date!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(game.date)||game.date>=today)return null;
+ const home=game.team1.trim(),away=game.team2.trim();
+ const hash=createHash("sha256").update(["openfootball/football.json",season,code,home,away,String(game.round||"")].join("\x1f")).digest("hex").slice(0,24);
+ const country=slug(COUNTRIES[code]);
+ return {id:"of:"+hash,d:game.date,h:home,a:away,hi:"club:"+country+":"+slug(home),ai:"club:"+country+":"+slug(away),hs,as,s:season};
 }
 function mergeGames(old,newRows,today){
  const all=new Map();
@@ -85,13 +97,18 @@ async function main(){
    try{
      doc=warehouse?await getPrivateFile(file.uri,sha):await getJson(UPSTREAM+"/"+file.uri);
      if(doc===null)continue;
-     validateSource(doc,file.code);
+     if(warehouse)validateSource(doc,file.code);
+     else if(!doc||!Array.isArray(doc.matches))throw Error("Unexpected public OpenFootball schema");
    }catch(error){
      console.warn("Source fetch skipped for "+file.uri+" ("+error.message+"); retaining previous archive");
      continue;
    }
    let result=grouped.get(file.code)||[];
-   for(const match of doc.matches){const row=toCompact(match,today);if(row)result.push(row)}
+   const season=file.uri.split("/")[0];
+   for(const match of doc.matches){
+     const row=warehouse?toCompact(match,today):toCompactPublic(match,file.code,season,today);
+     if(row)result.push(row);
+   }
    grouped.set(file.code,result);seenFiles++;
  }
  if(!seenFiles)throw Error("No verified CC0 source files fetched. Existing mirror preserved.");
@@ -117,7 +134,7 @@ async function main(){
  changes+=Number(await atomicWrite(path.join(DEST,"manifest.json"),manifest));
  console.log("Verified CC0 archive: "+totals+" completed matches, "+leagues.length+" leagues, "+changes+" changed files; mode="+manifest.syncMode);
 }
-export{isoToday,validateSource,toCompact,mergeGames,recentYears};
+export{isoToday,validateSource,toCompact,toCompactPublic,mergeGames,recentYears};
 if(process.argv[1]&&import.meta.url===new URL("file://"+path.resolve(process.argv[1])).href){
  main().catch(error=>{console.error("History sync failed:",error.message);process.exitCode=1});
 }
