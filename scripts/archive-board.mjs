@@ -8,7 +8,8 @@ const read=async f=>{try{return JSON.parse(await fs.readFile(f,'utf8'))}catch(e)
 async function main(){
  if(DATE!==TODAY)throw Error('Cannot publish to previous or future dates');
  const existing=await read(target),draft=await read(draftPath);
- if(existing){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}\n if(!draft){console.log('No candidate draft; preserve current Top 5');return}
+ if(existing){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}
+ if(!draft){console.log('No candidate draft; preserve current Top 5');return}
  if(draft.date!==DATE||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw Error('Incomplete current-day draft');
  if(!(draft.top5||[]).length){console.log('No new qualified picks. Preserve existing board.');return}
  if(existing?.top5?.length>draft.top5.length){console.log('Do not replace populated Top 5 with partial refresh.');return}
