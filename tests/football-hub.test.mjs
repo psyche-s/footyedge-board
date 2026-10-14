@@ -59,6 +59,6 @@ test("Private source must be explicitly CC0",()=>{
 });
 test("Original FootyEdge board files are not sync targets",()=>{
  const src=readFileSync("scripts/sync-football-data-hub.mjs","utf8");
- assert.doesNotMatch(src,/writeFile\\([^\\n]*(?:data\\/boards|hit-rate|picks)/);
+ assert.equal(src.includes("data/boards/"),false);
  assert.match(src,/football-hub/);
 });
