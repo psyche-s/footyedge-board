@@ -47,6 +47,6 @@ export function rankPublishedBoard(board, { minimumTop5Confidence = 85 } = {}) {
   board.sourceQuality={...board.sourceQuality,rankedTop3Descending:true,
     rankingRule:"descending confidence; verified odds and EV only break ties",
     globalTop5Rule:"highest-ranked selection per match, minimum 85%; no fabricated odds",
-    rankingCorrectionMatches:correctedMatches};
+    rankingCorrectionMatches:Math.max(Number(board.sourceQuality?.rankingCorrectionMatches)||0,correctedMatches)};
   return {correctedMatches, globalTop5:board.top5.length};
 }
