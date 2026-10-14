@@ -1,0 +1,44 @@
+name: Sync public-domain history from Football Data Hub
+on:
+  workflow_dispatch:
+  schedule:
+    # After the private hub's daily 07:23 UTC incremental refresh.
+    - cron: "13 8 * * *"
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-history-publication
+  cancel-in-progress: false
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test historical ingestion and existing match regressions
+        run: |
+          node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs
+      - name: Update CC0 score archive only
+        env:
+          FOOTBALL_DATA_HUB_TOKEN: ${{ secrets.FOOTBALL_DATA_HUB_READ_TOKEN }}
+        run: node scripts/sync-football-data-hub.mjs
+      - name: Validate published picks were not edited
+        run: node scripts/validate-published-boards.mjs
+      - name: Commit safe historical changes only
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge History Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data/football-hub/
+          if git diff --cached --quiet; then
+            echo "No new verified results to publish."
+            exit 0
+          fi
+          git commit -m "data(history): refresh licensed completed match archive [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
