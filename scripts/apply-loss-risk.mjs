@@ -10,6 +10,7 @@
  * Estimates are uncalibrated and must not be advertised as 90% guaranteed.
  */
 import fs from 'node:fs';
+import {rankPublishedBoard} from './rank-published-picks.mjs';
 const local=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
 const date=process.env.BOARD_DATE||local.year+'-'+local.month+'-'+local.day;
 const file='data/boards/'+date+'.json';
@@ -67,15 +68,12 @@ for(const g of board.games||[]){
   else if(!pick.verifiedPrice)pick.ev=null;
   reviewed++;
  }
- g.top=(g.top3||[])[0]||null;
- g.model={...g.model,top:g.top,top3:g.top3,candidates:g.top3,rankedCandidates:g.top3,researchCandidates:g.top3};
 }
-const shortlist=(board.games||[]).filter(g=>g.top3?.[0]?.verifiedPrice&&Number.isFinite(g.top3[0].score)&&Number.isFinite(g.top3[0].ev)&&Number(g.top3[0].odds)>=-500).sort((a,b)=>b.top3[0].score-a.top3[0].score||(b.top3[0].ev??-1)-(a.top3[0].ev??-1));
-const refs=rows=>rows.slice(0,5).map((g,i)=>({rank:i+1,gameId:String(g.id),home:g.home,away:g.away,pick:JSON.parse(JSON.stringify(g.top3[0]))}));
-board.top5=refs(shortlist);
-board.leagueTop5=Object.fromEntries([...new Set((board.games||[]).map(g=>g.league))].map(l=>[l,refs(shortlist.filter(g=>g.league===l))]));
-board.editorialTop5Order=board.top5.map(p=>p.gameId);
+// Ranking is applied AFTER the loss-risk estimates for all candidate markets.
+// A higher-scoring goals or team-goals selection cannot be displaced by
+// a lower-scoring ML just because the latter has a bookmaker price.
+const ranking=rankPublishedBoard(board,{minimumTop5Confidence:85});
 board.sourceQuality={...board.sourceQuality,lossRiskCalculated:true,confidenceMethod:'100% minus estimated probability of exact-market loss; ML draws count as losses',probabilityCalibrated:false};
 board.publicationNotes=String(board.publicationNotes||'')+' Confidence is loss-risk-adjusted, not calibrated and not a guaranteed win rate.';
 fs.writeFileSync(file,JSON.stringify(board,null,2)+String.fromCharCode(10));
-console.log(JSON.stringify({date,reviewed,unavailable:missed,top5:board.top5.length}));
+console.log(JSON.stringify({date,reviewed,unavailable:missed,top5:board.top5.length,correctedOrdering:ranking.correctedMatches}));
