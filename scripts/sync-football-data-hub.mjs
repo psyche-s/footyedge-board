@@ -73,7 +73,7 @@ async function main(){
    if(!/^[a-f0-9]{40}$/.test(sha||""))throw Error("Missing private hub revision; no files modified");
    const manifest=await getPrivateFile("data/manifest.json",sha);
    if(!manifest||!Array.isArray(manifest.files)||!manifest.licenses?.some(s=>String(s).includes("CC0")))throw Error("Private hub manifest not validated");
-   specs=manifest.files.filter(f=>Object.hasOwn(COMP,f.competition_id)&&/^data\\/matches\\/\d{4}-\d{2}\\/[a-z]{2}\\.\d\\.json$/.test(f.path))
+   specs=manifest.files.filter(f=>Object.hasOwn(COMP,f.competition_id)&&/^data\/matches\/\d{4}-\d{2}\/[a-z]{2}\.\d\.json$/.test(f.path))
      .map(f=>({code:f.competition_id,uri:f.path}));
  }else{
    console.warn("FOOTBALL_DATA_HUB_TOKEN not configured: refreshing current/previous seasons from public CC0 OpenFootball; older Hub archive remains preserved.");
