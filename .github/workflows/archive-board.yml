@@ -91,6 +91,11 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
+      - name: Audit published board editorial quality
+        if: steps.gate.outputs.run == 'true'
+        continue-on-error: true
+        run: node scripts/audit-editorial-board.mjs
+
       - name: Reconcile prior hit rates and Top 3 post-match learning
         if: steps.gate.outputs.run == 'true'
         env:
