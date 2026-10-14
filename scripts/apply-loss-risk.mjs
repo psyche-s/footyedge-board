@@ -11,6 +11,7 @@
  */
 import fs from 'node:fs';
 import {rankPublishedBoard} from './rank-published-picks.mjs';
+import {estimateMarketOutcome} from './market-risk.mjs';
 const local=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
 const date=process.env.BOARD_DATE||local.year+'-'+local.month+'-'+local.day;
 const file='data/boards/'+date+'.json';
@@ -25,19 +26,7 @@ const frozen=Date.parse(board.frozenAt||'');
 if(board.immutable===true&&(!Number.isFinite(frozen)||Date.now()-frozen>30*60*1000)){
  console.log('Published board outside current freeze transaction; leave immutable snapshot unchanged');process.exit(0);
 }
-const r=(v)=>Number(v.toFixed(4)),clamp=(x,a,b)=>Math.min(b,Math.max(a,x)),avg=(a,k)=>a.reduce((s,x)=>s+Number(x[k]),0)/a.length;
-function pmf(k,l){let p=Math.exp(-l);for(let n=1;n<=k;n++)p*=l/n;return p}
-function markets(home,away){
- const h=clamp(.8*(.55*avg(home,'gf')+.45*avg(away,'ga'))*1.06+.2*1.3,.3,3.8);
- const a=clamp(.8*(.55*avg(away,'gf')+.45*avg(home,'ga'))*.96+.2*1.3,.3,3.8);
- const p={home:0,away:0,draw:0,over15:0,under35:0,btts:0,homeGoal:1-Math.exp(-h),awayGoal:1-Math.exp(-a)};
- for(let i=0;i<=10;i++)for(let j=0;j<=10;j++){
-  const v=pmf(i,h)*pmf(j,a);
-  if(i>j)p.home+=v;else if(i<j)p.away+=v;else p.draw+=v;
-  if(i+j>=2)p.over15+=v;if(i+j<=3)p.under35+=v;if(i>0&&j>0)p.btts+=v;
- }
- return p;
-}
+const r=(v)=>Number(v.toFixed(4)),clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
 let reviewed=0,missed=0;
 for(const g of board.games||[]){
  const home=g.baseResearch?.last10?.home||[],away=g.baseResearch?.last10?.away||[];
@@ -45,35 +34,41 @@ for(const g of board.games||[]){
   for(const pick of g.top3||[])if(pick.confidenceType!=='footyedge_loss_adjusted_rating'){pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.lossProbability=null;missed++}
   continue;
  }
- const m=markets(home,away);
  for(const pick of g.top3||[]){
-  const label=String(pick.label||'').toLowerCase(),h=String(g.home).toLowerCase(),a=String(g.away).toLowerCase();
-  let success=null;
-  if(pick.category==='Match Result'){
-   success=typeof pick.modelProb==='number'&&pick.modelProb>0?pick.modelProb:label.includes(h)?m.home:label.includes(a)?m.away:label.includes('draw')?m.draw:null;
-  }else if(pick.category==='Double Chance'){
-   // 1X = not away win; X2 = not home win; 12 = not draw.
-   success=label.includes('1x')||label.includes('home or draw')?1-m.away:label.includes('x2')||label.includes('draw or away')?1-m.home:label.includes('12')||label.includes('home or away')?1-m.draw:null;
-  }else if(pick.category==='Goals'){
-   if(label.includes('over 1.5'))success=m.over15;
-   else if(label.includes('under 3.5'))success=m.under35;
-  }else if(pick.category==='Team Goals'){
-   if(label.includes('over 0.5'))success=label.includes(h)?m.homeGoal:label.includes(a)?m.awayGoal:null;
-  }else if(pick.category==='BTTS')success=label.includes('no')?1-m.btts:m.btts;
-  if(!Number.isFinite(success)){pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.lossProbability=null;missed++;continue}
+  // Prefer the existing pre-match multi-factor forecast (including its venue,
+  // opponent and limited H2H signals). Use team-scoreline math only as a
+  // disclosed fallback for an exactly supported market.
+  const estimate=estimateMarketOutcome({pick,game:g,homeHistory:home,awayHistory:away});
+  const success=estimate.success;
+  if(!Number.isFinite(success)){
+   pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.lossProbability=null;
+   pick.confidenceType="unrated_uncalibrated";pick.ev=null;
+   pick.ratingMethod="Unavailable: exact market probability not supported by verified research";
+   missed++;continue;
+  }
   const prob=clamp(success,.01,.99),loss=1-prob,score=Math.round((1-loss)*100);
-  Object.assign(pick,{score,modelScore:score,baseScore:score,modelProb:r(prob),lossProbability:r(loss),confidenceType:'footyedge_loss_adjusted_rating',probabilityCalibrated:false,ratingMethod:'100% minus estimated losing-outcome probability for the exact market'});
-  if(pick.category==='Match Result'){const draw=Math.min(loss,m.draw);pick.lossComponents={draw:r(draw),opponentWin:r(loss-draw)}}
-  if(pick.verifiedPrice&&Number.isFinite(Number(pick.priceDecimal))&&Number(pick.priceDecimal)>1)pick.ev=r(prob*Number(pick.priceDecimal)-1);
+  Object.assign(pick,{score,modelScore:score,baseScore:score,modelProb:r(prob),lossProbability:r(loss),
+   confidenceType:"footyedge_loss_adjusted_rating",probabilityCalibrated:false,
+   confidenceSource:estimate.source,
+   ratingMethod:"100% minus model-estimated losing probability for this exact market"});
+  if(pick.category==="Match Result"){
+   if(Number.isFinite(estimate.drawLoss)&&estimate.drawLoss>0){
+    const draw=Math.min(loss,estimate.drawLoss);
+    pick.lossComponents={draw:r(draw),opponentWin:r(loss-draw)};
+   }else delete pick.lossComponents;
+  }
+  if(pick.verifiedPrice&&Number.isFinite(Number(pick.priceDecimal))&&Number(pick.priceDecimal)>1)
+   pick.ev=r(prob*Number(pick.priceDecimal)-1);
   else if(!pick.verifiedPrice)pick.ev=null;
   reviewed++;
  }
+
 }
 // Ranking is applied AFTER the loss-risk estimates for all candidate markets.
 // A higher-scoring goals or team-goals selection cannot be displaced by
 // a lower-scoring ML just because the latter has a bookmaker price.
 const ranking=rankPublishedBoard(board,{minimumTop5Confidence:85});
-board.sourceQuality={...board.sourceQuality,lossRiskCalculated:true,confidenceMethod:'100% minus estimated probability of exact-market loss; ML draws count as losses',probabilityCalibrated:false};
+board.sourceQuality={...board.sourceQuality,lossRiskCalculated:true,confidenceMethod:'100% minus estimated probability of exact-market loss, original multi-factor probability preferred; scoreline fallback explicit',probabilityCalibrated:false};
 board.publicationNotes=String(board.publicationNotes||'')+' Confidence is loss-risk-adjusted, not calibrated and not a guaranteed win rate.';
 fs.writeFileSync(file,JSON.stringify(board,null,2)+String.fromCharCode(10));
 console.log(JSON.stringify({date,reviewed,unavailable:missed,top5:board.top5.length,correctedOrdering:ranking.correctedMatches}));
