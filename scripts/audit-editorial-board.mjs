@@ -11,6 +11,12 @@ const badWords=/according to|football whispers|sports mole|sportskeeda|statz|esp
 for(const g of b.games||[]){
  const t=g.top3||[];
  if(t.length!==3)errors.push(g.id+": expected Top 3");
+ if(t.length===3){
+  if(t.some((p,i)=>i>0&&Number.isFinite(p.score)&&Number.isFinite(t[i-1].score)&&p.score>t[i-1].score))
+    errors.push(g.id+": Top 3 not sorted by descending confidence");
+  if(g.top?.label!==t[0]?.label||g.model?.top?.label!==t[0]?.label)
+    errors.push(g.id+": main match #1 differs from its highest-ranked Top 3 pick");
+ }
  if(t.some(p=>badWords.test(p.reason||"")))errors.push(g.id+": attribution in visible pick copy");
  if(t.some(p=>(p.reason||"").trim().length<65))warnings.push(g.id+": short reasoning");
  const names=t.map(x=>String(x.label||"").toLowerCase());
@@ -35,6 +41,17 @@ for(const g of b.games||[]){
  }
  if(Array.isArray(g.teamNews)&&g.teamNews.length>=2)withNews++;
  if(g.league==="uefa.champions"&&!(g.teamNews||[]).length)warnings.push(g.id+": Champions League team news absent");
+}
+const byId=new Map((b.games||[]).map(g=>[String(g.id),g]));
+for(const [key,refs] of [["global",b.top5||[]],...Object.entries(b.leagueTop5||{})]){
+ if(!Array.isArray(refs)){errors.push(key+": invalid top5 references");continue}
+ for(let i=0;i<refs.length;i++){
+  const ref=refs[i],game=byId.get(String(ref.gameId));
+  if(!game || ref.pick?.label!==game.top3?.[0]?.label || ref.pick?.score!==game.top3?.[0]?.score)
+   errors.push(key+": featured pick disagrees with game #1 at "+ref.gameId);
+  if(i>0 && refs[i-1]?.pick?.score < ref.pick?.score)
+   errors.push(key+": featured picks are out of confidence order");
+ }
 }
 for(const t of b.top5||[]){
  if(!t.pick||!t.pick.reason)errors.push("Featured selection has no explanation");
