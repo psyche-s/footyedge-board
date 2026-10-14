@@ -26,7 +26,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Strict 00:30 Toronto publication gate
+      - name: Toronto 00:30 publication window (tolerates GitHub scheduler delay)
         id: gate
         shell: bash
         run: |
@@ -34,7 +34,7 @@ jobs:
           MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
           # A manual dispatch cannot bypass the official freeze window.
-          if [[ "$HOUR" == "00" && "$MINUTE" == "30" ]]; then RUN=true; fi
+          if [[ "$HOUR" == "00" && "$MINUTE" -ge 30 ]]; then RUN=true; fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
           echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE"
       - uses: actions/setup-node@v4
