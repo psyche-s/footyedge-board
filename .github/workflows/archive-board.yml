@@ -33,7 +33,8 @@ jobs:
           HOUR="$(TZ=America/Toronto date +%H)"
           MINUTE="$(TZ=America/Toronto date +%M)"
           RUN=false
-          # A manual dispatch cannot bypass the official freeze window.\n          # 00:50 retries only if the first run did not publish; archive script is write-once.
+          # A manual dispatch cannot bypass the official freeze window.
+          # 00:50 retries only if the first run did not publish; archive script is write-once.
           if [[ "$HOUR" == "00" && "$MINUTE" -ge 30 ]]; then RUN=true; fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
           echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE"
