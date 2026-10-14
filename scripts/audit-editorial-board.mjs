@@ -7,7 +7,7 @@ const file="data/boards/"+boardDate+".json";
 const warn=x=>console.log("::warning::FootyEdge editorial audit: "+x);
 if(!fs.existsSync(file)){warn("No board yet for "+boardDate);process.exit(0);}
 const b=JSON.parse(fs.readFileSync(file,"utf8"));let errors=[],warnings=[],quoted=0,withNews=0;
-const badWords=/\\b(?:according to|football whispers|sports mole|sportskeeda|statz(?:\\.ai)?|espn)\\b|https?:\\/\\//i;
+const badWords=/according to|football whispers|sports mole|sportskeeda|statz|espn|https?:/i;
 for(const g of b.games||[]){
  const t=g.top3||[];
  if(t.length!==3)errors.push(g.id+": expected Top 3");
