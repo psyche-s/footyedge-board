@@ -19,6 +19,11 @@ if(board.date!==date)throw Error('Same-day guard failed');
 if(board.sourceQuality?.lossRiskCalculated===true||board.sourceQuality?.confidenceMethod?.startsWith('modeled probability of not losing')){
   console.log('Already loss-adjusted: frozen board untouched');process.exit(0);
 }
+// Do not retroactively modify a board already published in a previous run.
+const frozen=Date.parse(board.frozenAt||'');
+if(board.immutable===true&&(!Number.isFinite(frozen)||Date.now()-frozen>30*60*1000)){
+ console.log('Published board outside current freeze transaction; leave immutable snapshot unchanged');process.exit(0);
+}
 const r=(v)=>Number(v.toFixed(4)),clamp=(x,a,b)=>Math.min(b,Math.max(a,x)),avg=(a,k)=>a.reduce((s,x)=>s+Number(x[k]),0)/a.length;
 function pmf(k,l){let p=Math.exp(-l);for(let n=1;n<=k;n++)p*=l/n;return p}
 function markets(home,away){
