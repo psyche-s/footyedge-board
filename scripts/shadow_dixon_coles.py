@@ -176,6 +176,43 @@ def get_league_data(league: str, cutoff: date, fetch=fetch_json) -> tuple[list[d
     uniq = {(x["date"], x["home"], x["away"]): x for x in matches}
     return sorted(uniq.values(), key=lambda x: (x["date"], x["home"], x["away"])), fetched, errors
 
+def load_hub_league_data(root: Path, league: str, cutoff: date) -> tuple[list[dict], list[str]]:
+    """Use a sanitized CC0 snapshot from Football Data Hub, never private APIs.
+
+    No future-day result is allowed into a pre-match model. Incomplete matches,
+    bad scores, unknown source licenses and malformed identities are ignored.
+    The model remains shadow-only and does not change published picks.
+    """
+    location = root / "data" / "football-hub" / f"{league}.json"
+    try:
+        doc = json.loads(location.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return [], []
+    if (doc.get("schema") != "footyedge-history-v1" or
+            doc.get("license") != "CC0-1.0" or
+            doc.get("competition") != league or
+            not isinstance(doc.get("games"), list)):
+        return [], []
+    matches = {}
+    for game in doc["games"]:
+        try:
+            played = date.fromisoformat(game["d"])
+            if played >= cutoff:
+                continue
+            hg, ag = game["hs"], game["as"]
+            if type(hg) is not int or type(ag) is not int or min(hg, ag) < 0 or max(hg, ag) > 20:
+                continue
+            h, a = key(game["h"]), key(game["a"])
+            if not h or not a or h == a:
+                continue
+            k = str(game["id"])
+            matches[k] = {"date": played, "home": h, "away": a, "hg": hg, "ag": ag}
+        except (TypeError, KeyError, ValueError):
+            continue
+    rows = sorted(matches.values(), key=lambda x: (x["date"], x["home"], x["away"]))
+    return rows, [str(location.relative_to(root))] if rows else []
+
+
 def load_verified_prior_scores(root: Path, league: str, cutoff: date, lookback: int = 7) -> tuple[list[dict], list[str]]:
     """Use only truly completed prior-day men's board fixtures in dated ESPN archives.
 
@@ -321,7 +358,15 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
         # Source is static match-result data. A pre-match prediction must not use results
         # from the fixture's calendar date, nor results beyond the as-of date.
         first_cutoff = min(day, asof.date())
-        rows, urls, errors = get_league_data(league, first_cutoff, fetch)
+        # Consume the Hub's rights-filtered cached results first. Fall back to
+        # OpenFootball only when the warehouse snapshot is absent/too stale.
+        hub_rows, hub_urls = load_hub_league_data(root, league, first_cutoff)
+        hub_recent = max((m["date"] for m in hub_rows), default=None)
+        if (len(hub_rows) >= MIN_TRAIN_MATCHES and hub_recent is not None and
+                (first_cutoff - hub_recent).days <= MAX_SOURCE_AGE_DAYS):
+            rows, urls, errors = hub_rows, hub_urls, []
+        else:
+            rows, urls, errors = get_league_data(league, first_cutoff, fetch)
         completed, completed_ids = load_verified_prior_scores(root, league, first_cutoff)
         rows, conflicting = merge_results(rows, completed)
         count = Counter(t for x in rows for t in (x["home"], x["away"]))
