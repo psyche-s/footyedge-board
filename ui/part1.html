@@ -1916,6 +1916,23 @@ window.FootyEdgeArchive=()=>boardArchivePayload("archive");
 window.FootyEdgeDraft=()=>boardArchivePayload("draft");
 // Lightweight readiness probe: never serialize the entire board inside polling.
 window.FootyEdgeCaptureReady=()=>Boolean(S.boardReady);
+function archivedFormAndStats(g, side){
+  // Published snapshots store recent match logs in verifiedForm / baseResearch.
+  // Derive presentation-only metrics without changing any frozen selections.
+  const verified=g.verifiedForm?.[side]?.matches;
+  const source=Array.isArray(verified)&&verified.length>=5?verified:g.baseResearch?.last10?.[side];
+  const valid=Array.isArray(source)?source.filter(x=>Number.isFinite(Number(x.gf))&&Number.isFinite(Number(x.ga))&&["W","D","L"].includes(x.result)&&(!x.date||Date.parse(x.date)<Date.parse(g.date))):[];
+  if(!valid.length)return null;
+  const sample=valid.slice(0,10),n=sample.length;
+  const fraction=fn=>sample.filter(fn).length/n;
+  const average=field=>sample.reduce((sum,x)=>sum+Number(x[field]),0)/n;
+  const form=valid.slice(0,5).map(x=>x.result).reverse().join(" ");
+  return {n,form,gf:average("gf"),ga:average("ga"),btts:fraction(x=>Number(x.gf)>0&&Number(x.ga)>0),
+    o15:fraction(x=>Number(x.gf)+Number(x.ga)>=2),o25:fraction(x=>Number(x.gf)+Number(x.ga)>=3),
+    u35:fraction(x=>Number(x.gf)+Number(x.ga)<=3),scored:fraction(x=>Number(x.gf)>0),
+    conceded:fraction(x=>Number(x.ga)>0),wins:fraction(x=>x.result==="W"),draws:fraction(x=>x.result==="D"),
+    losses:fraction(x=>x.result==="L"),source:"verified finished matches"};
+}
 function applyBoardArchive(games,archive){
   if(!archive||archive.date!==S.date)return games;
   const byId=new Map(games.map(g=>[String(g.id),g]));
@@ -1943,7 +1960,7 @@ function applyBoardArchive(games,archive){
     });
     g.model={...saved,top:safePicks[0]||null,top3:safePicks,
       ...Object.fromEntries(["candidates","rankedCandidates","researchCandidates"].map(k=>[k,safePicks]))};
-    g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.h2h=Array.isArray(a.h2h)?a.h2h:[];g.h2hSummary=a.h2hSummary||null;g.verifiedForm=a.verifiedForm||null;g.matchH2H=g.h2h.filter(x=>x&&(x.date||x.dateLabel)&&x.homeScore!=null&&x.awayScore!=null&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5);g.verifiedRanks=a.verifiedRanks||null;g.staticDetails=Boolean(a.staticDetails);g.matchDetailsPending=false;g.matchDetailsRequested=Boolean(a.staticDetails);g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
+    g.ownerResearchNote=a.ownerResearchNote||null;g.ownerEditorial=a.ownerEditorial||null;g.h2h=Array.isArray(a.h2h)?a.h2h:[];g.h2hSummary=a.h2hSummary||null;g.verifiedForm=a.verifiedForm||null;g.matchH2H=g.h2h.filter(x=>x&&(x.date||x.dateLabel)&&x.homeScore!=null&&x.awayScore!=null&&Number.isInteger(Number(x.homeScore))&&Number.isInteger(Number(x.awayScore))).slice(0,5);g.verifiedRanks=a.verifiedRanks||null;g.model.home=g.model.home||archivedFormAndStats(g,"home");g.model.away=g.model.away||archivedFormAndStats(g,"away");g.model.displayHome=g.model.displayHome||g.model.home;g.model.displayAway=g.model.displayAway||g.model.away;g.staticDetails=Boolean(a.staticDetails);g.matchDetailsPending=false;g.matchDetailsRequested=Boolean(a.staticDetails);g.published=true;g.preview=archive.immutable!==true;g.frozenTeamNews=a.teamNews||[];g.teamNewsReview=a.teamNewsReview||null;g.recoveryStatus=a.recoveryStatus||null;g.archiveUnavailable=Boolean(a.recoveryStatus&&!a.top);
     return g;
   });
   // Legacy partial archives must not fill gaps with today's model or add fresh props.
