@@ -1917,21 +1917,25 @@ window.FootyEdgeDraft=()=>boardArchivePayload("draft");
 // Lightweight readiness probe: never serialize the entire board inside polling.
 window.FootyEdgeCaptureReady=()=>Boolean(S.boardReady);
 function archivedFormAndStats(g, side){
-  // Published snapshots store recent match logs in verifiedForm / baseResearch.
-  // Derive presentation-only metrics without changing any frozen selections.
+  // Show verified last-five form; use the full last-ten research sample for
+  // averages, BTTS and totals. Avoid conflating these different time windows.
   const verified=g.verifiedForm?.[side]?.matches;
-  const source=Array.isArray(verified)&&verified.length>=5?verified:g.baseResearch?.last10?.[side];
-  const valid=Array.isArray(source)?source.filter(x=>Number.isFinite(Number(x.gf))&&Number.isFinite(Number(x.ga))&&["W","D","L"].includes(x.result)&&(!x.date||Date.parse(x.date)<Date.parse(g.date))):[];
-  if(!valid.length)return null;
-  const sample=valid.slice(0,10),n=sample.length;
-  const fraction=fn=>sample.filter(fn).length/n;
-  const average=field=>sample.reduce((sum,x)=>sum+Number(x[field]),0)/n;
-  const form=valid.slice(0,5).map(x=>x.result).reverse().join(" ");
-  return {n,form,gf:average("gf"),ga:average("ga"),btts:fraction(x=>Number(x.gf)>0&&Number(x.ga)>0),
-    o15:fraction(x=>Number(x.gf)+Number(x.ga)>=2),o25:fraction(x=>Number(x.gf)+Number(x.ga)>=3),
-    u35:fraction(x=>Number(x.gf)+Number(x.ga)<=3),scored:fraction(x=>Number(x.gf)>0),
-    conceded:fraction(x=>Number(x.ga)>0),wins:fraction(x=>x.result==="W"),draws:fraction(x=>x.result==="D"),
-    losses:fraction(x=>x.result==="L"),source:"verified finished matches"};
+  const history=g.baseResearch?.last10?.[side];
+  const isValid=x=>Number.isFinite(Number(x.gf))&&Number.isFinite(Number(x.ga))&&
+    ["W","D","L"].includes(x.result)&&(!x.date||Date.parse(x.date)<Date.parse(g.date));
+  const lastFive=Array.isArray(verified)?verified.filter(isValid):[];
+  const full=Array.isArray(history)?history.filter(isValid):[];
+  const formSource=lastFive.length>=5?lastFive:full;
+  const sample=(full.length>=6?full:formSource).slice(0,10);
+  if(!sample.length)return null;
+  const n=sample.length,ratio=fn=>sample.filter(fn).length/n;
+  const mean=field=>sample.reduce((sum,x)=>sum+Number(x[field]),0)/n;
+  const form=formSource.slice(0,5).map(x=>x.result).reverse().join(" ");
+  return {n,form,gf:mean("gf"),ga:mean("ga"),btts:ratio(x=>Number(x.gf)>0&&Number(x.ga)>0),
+    o15:ratio(x=>Number(x.gf)+Number(x.ga)>=2),o25:ratio(x=>Number(x.gf)+Number(x.ga)>=3),
+    u35:ratio(x=>Number(x.gf)+Number(x.ga)<=3),scored:ratio(x=>Number(x.gf)>0),
+    conceded:ratio(x=>Number(x.ga)>0),wins:ratio(x=>x.result==="W"),draws:ratio(x=>x.result==="D"),
+    losses:ratio(x=>x.result==="L"),source:"verified last-ten match outcomes"};
 }
 function applyBoardArchive(games,archive){
   if(!archive||archive.date!==S.date)return games;
