@@ -20,9 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
       - name: Test historical ingestion and existing match regressions
         run: |
           node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs
+          python -m unittest discover -s tests -p 'test_football_hub_model.py' -v
       - name: Update CC0 score archive only
         env:
           FOOTBALL_DATA_HUB_TOKEN: ${{ secrets.FOOTBALL_DATA_HUB_READ_TOKEN }}
