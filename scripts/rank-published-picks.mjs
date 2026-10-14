@@ -2,11 +2,12 @@
 // Mutates only the supplied unpublished/current owner-authorized board object.
 // Odds, reasons, EV and probabilities stay attached to their exact selections.
 export function rankPublishedBoard(board, { minimumTop5Confidence = 85 } = {}) {
-  const valid = p => p && typeof p.score === "number" &&
-    Number.isFinite(p.score) && p.score >= 0 && p.score <= 100;
+  const valid = p => p && (p.score == null || (typeof p.score === "number" &&
+    Number.isFinite(p.score) && p.score >= 0 && p.score <= 100));
+  const scoreOf = p => p?.score == null ? -Infinity : p.score;
   const ordered = picks => picks.map((pick, originalIndex) => ({pick, originalIndex}))
     .sort((a, b) => {
-      const score = b.pick.score - a.pick.score;
+      const score = scoreOf(b.pick)-scoreOf(a.pick);
       if (score !== 0) return score;
       // Tie breaks only: a real line is preferable, then larger EV.
       const book = Number(Boolean(b.pick.verifiedPrice)) - Number(Boolean(a.pick.verifiedPrice));
@@ -31,11 +32,11 @@ export function rankPublishedBoard(board, { minimumTop5Confidence = 85 } = {}) {
       candidates:sorted, rankedCandidates:sorted, researchCandidates:sorted};
   }
   const ranked = [...(board.games || [])].sort((a,b) =>
-    b.top3[0].score-a.top3[0].score ||
+    scoreOf(b.top3[0])-scoreOf(a.top3[0]) ||
     Number(Boolean(b.top3[0].verifiedPrice))-Number(Boolean(a.top3[0].verifiedPrice)) ||
     (b.top3[0].ev ?? -Infinity)-(a.top3[0].ev ?? -Infinity) ||
     String(a.id).localeCompare(String(b.id)));
-  const qualified=ranked.filter(g=>g.top3[0].score>=minimumTop5Confidence);
+  const qualified=ranked.filter(g=>Number.isFinite(scoreOf(g.top3[0])) && scoreOf(g.top3[0])>=minimumTop5Confidence);
   const refs = games => games.slice(0,5).map((g,i)=>({
     rank:i+1,gameId:String(g.id),home:g.home,away:g.away,
     pick:JSON.parse(JSON.stringify(g.top3[0]))
