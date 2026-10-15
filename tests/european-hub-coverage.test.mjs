@@ -48,7 +48,9 @@ test("owner-approved v4 adds 36 European fixtures and retains original frozen ar
  assert.equal(correction.games.length,39);
  assert.equal(correction.games.filter(g=>g.league==="uefa.europa").length,18);
  assert.equal(correction.games.filter(g=>g.league==="uefa.europa.conf").length,18);
- assert.ok(correction.games.filter(g=>g.league.startsWith("uefa.")).every(g=>g.top3.length===0&&g.top===null));
- assert.equal(correction.top5.length,3);
+ assert.equal(correction.games.filter(g=>g.league.startsWith("uefa.")&&g.top3.length>0).length,5);
+ assert.equal(correction.games.filter(g=>g.league==="uefa.europa"&&g.top3.length>0).length,2);
+ assert.equal(correction.games.filter(g=>g.league==="uefa.europa.conf"&&g.top3.length>0).length,3);
+ assert.equal(correction.top5.length,5);
  assert.match(fs.readFileSync("ui/part2.html","utf8"),/approvedCorrection\.games\.map/);
 });
