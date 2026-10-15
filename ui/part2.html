@@ -995,7 +995,7 @@ async function load(date=S.date){
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
     // Owner-approved, versioned research correction is a display overlay only.
     // Original immutable data/boards archive remains untouched.
-    const approvedCorrection=S.date==="2026-10-15"?await repoData("data/corrections/2026-10-15-v5.json").catch(()=>null):null;
+    const approvedCorrection=S.date==="2026-10-15"?await repoData("data/corrections/2026-10-15-v6.json").catch(()=>null):null;
     const validCorrection=approvedCorrection?.schema==="footyedge-owner-approved-research-correction-v1"&&approvedCorrection.date===S.date&&approvedCorrection.ownerApproved===true&&approvedCorrection.immutableOriginalPreserved===true&&archivePayload?.immutable===true;
     const displayArchive=validCorrection?{...archivePayload,top5:approvedCorrection.top5,leagueTop5:Object.fromEntries([...new Set(approvedCorrection.games.map(g=>g.league))].map(l=>[l,approvedCorrection.top5.filter(x=>approvedCorrection.games.some(g=>g.id===x.gameId&&g.league===l)).map((x,i)=>({...x,rank:i+1}))])),games:approvedCorrection.games.map(correction=>{const g=archivePayload.games.find(x=>String(x.id)===String(correction.id))||correction;return {...g,top:correction.top,top3:correction.top3,model:{...g.model,top:correction.top,top3:correction.top3}}}),displayCorrection:"v1-unpriced-research-only"}:archivePayload;
     S.archive=displayArchive;S.draft=draftPayload;
