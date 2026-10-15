@@ -160,7 +160,7 @@ repoJson("data/performance/summary.json").then(p=>{
   // for its date only; the frozen original and release remain unchanged.
   if(date==="2026-10-15"){
     try{
-      const correction=await repoJson("data/corrections/2026-10-15-v1.json");
+      const correction=await repoJson("data/corrections/2026-10-15-v2.json");
       if(correction?.schema==="footyedge-owner-approved-research-correction-v1"&&correction.ownerApproved===true&&correction.immutableOriginalPreserved===true&&correction.date===date&&correction.top5?.length){
         renderTop5(correction.top5,"",correction);
         return;
