@@ -992,7 +992,13 @@ async function load(date=S.date){
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null)))
     ]);
     if(S.date!==date)return;
-    S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;S.archive=archivePayload;S.draft=draftPayload;
+    S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
+    // Owner-approved, versioned research correction is a display overlay only.
+    // Original immutable data/boards archive remains untouched.
+    const approvedCorrection=S.date==="2026-10-15"?await repoData("data/corrections/2026-10-15-v1.json").catch(()=>null):null;
+    const validCorrection=approvedCorrection?.schema==="footyedge-owner-approved-research-correction-v1"&&approvedCorrection.date===S.date&&approvedCorrection.ownerApproved===true&&approvedCorrection.immutableOriginalPreserved===true&&archivePayload?.immutable===true;
+    const displayArchive=validCorrection?{...archivePayload,top5:approvedCorrection.top5,leagueTop5:Object.fromEntries([...new Set(approvedCorrection.games.map(g=>g.league))].map(l=>[l,approvedCorrection.top5.filter(x=>approvedCorrection.games.some(g=>g.id===x.gameId&&g.league===l)).map((x,i)=>({...x,rank:i+1}))])),games:archivePayload.games.map(g=>{const correction=approvedCorrection.games.find(x=>String(x.id)===String(g.id));return correction?{...g,top:correction.top,top3:correction.top3,model:{...g.model,top:correction.top,top3:correction.top3}}:g}),displayCorrection:"v1-unpriced-research-only"}:archivePayload;
+    S.archive=displayArchive;S.draft=draftPayload;
     const analyticsOverlay=await repoData('data/analytics/'+S.date+'.json').catch(()=>null);
     if(S.date!==date)return;
     const advancedById=new Map(analyticsOverlay?.date===S.date?(analyticsOverlay.matches||[]).filter(x=>x.verifiedJoin===true).map(x=>[String(x.fixtureId),x]):[]);
@@ -1028,8 +1034,8 @@ async function load(date=S.date){
     // Independent pre-match match-level research is display-only until the
     // new predictive model has passed chronological calibration tests.
     for(const g of games)g.advancedResearch=advancedById.get(String(g.id))||null;
-    if(archivePayload?.date===S.date){
-      S.games=applyBoardArchive(games,archivePayload);
+    if(displayArchive?.date===S.date){
+      S.games=applyBoardArchive(games,displayArchive);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
       for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
       S.boardReady=true;S.dataSource=archivePayload.immutable===false?"Published today · refreshable":"Historical board";
