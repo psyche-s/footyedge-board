@@ -39,7 +39,7 @@ test("dated October 15 snapshot includes both European men's competitions",()=>{
 });
 
 test("owner-approved v4 adds 36 European fixtures and retains original frozen archive",()=>{
- const correction=JSON.parse(fs.readFileSync("data/corrections/2026-10-15-v4.json","utf8"));
+ const correction=JSON.parse(fs.readFileSync("data/corrections/2026-10-15-v5.json","utf8"));
  const original=JSON.parse(fs.readFileSync("data/boards/2026-10-15.json","utf8"));
  assert.equal(correction.ownerApproved,true);
  assert.equal(correction.immutableOriginalPreserved,true);
