@@ -3,7 +3,7 @@ import {loadCzechSeason,eventsForCzechDate} from "../assets/czech-first-league.m
 
 // A previously captured ESPN-derived fixture snapshot is a labelled FALLBACK,
 // never a fresh/live scoreboard or proof of confirmed lineups, results or odds.
-const VERIFIED_CLUB_LEAGUES=new Map([[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[2310,"uefa.europa.conf"]]);
+const VERIFIED_CLUB_LEAGUES=new Map([[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"],[2310,"uefa.europa.conf"]]);
 function cachedEvent(row){
   const fid=row?.fixture, league=row?.league, teams=row?.teams;
   if(!fid?.id||!fid.date||!teams?.home?.name||!teams?.away?.name)return null;
