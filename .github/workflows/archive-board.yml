@@ -136,7 +136,7 @@ jobs:
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
 
-      - name: Publish frozen Top 5 to GitHub Releases without a Vercel build
+      - name: Publish frozen Top 5 to GitHub Releases when picks qualify
         if: steps.gate.outputs.run == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
@@ -145,6 +145,10 @@ jobs:
         run: |
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
+          if ! jq -e '.top5 | length > 0' "data/boards/$TODAY.json" >/dev/null; then
+            echo "No qualifying Top 5 for $TODAY; PASS-only board is already published."
+            exit 0
+          fi
           # Release data only after the board exists, is locked and passes export checks.
           node scripts/export-release-top5.mjs
           archive="footyedge-board-${TODAY}"

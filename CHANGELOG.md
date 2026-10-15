@@ -845,3 +845,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - UI impact: no layout, styling, navigation, card, filter, logo or modal redesign. Only invalid confidence/EV values are suppressed as N/A.
 - Tracking/history impact: October 12–14 performance snapshots were created from their existing published selections without changing the boards; October 15 contains zero selections to settle.
 - Deployment result: pending GitHub main push, Actions verification and Vercel production verification.
+
+
+## 2026-10-15 — PASS-only board production verification
+**Status:** ✅ Deployed and verified
+
+- GitHub main published the immutable October 15 board with three tracked men's fixtures and zero recommendations; the integrity, UI syntax, live-score, fixture-refresh and shadow-model checks passed.
+- Vercel production reached READY for commit `9424f0715e0b11eb67c7da25efff8016f57dcd87`. The public board JSON matches the committed file byte-for-byte and the live metric renderer contains the calibrated-probability/EV safety gate.
+- The publication workflow successfully completed research fallback, archive preservation and metric validation. Its optional release-export step incorrectly rejected an empty Top 5 after the board had already published, so the step now exits successfully for a valid PASS-only board.
+- Model/data impact: no picks or probabilities were added; the provider quota and missing calibrated probabilities remain explicit limitations.
+- UI impact: unchanged apart from suppressing invalid numeric metrics as N/A.
+- Tracking/history impact: historical board content and correction archives remain unchanged; the October 15 record has no selections.
+- Deployment result: production verified at `https://footyedge-board.vercel.app`; no Vercel Hobby deployment limit was encountered.
