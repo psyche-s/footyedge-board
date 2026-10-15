@@ -1,67 +1,35 @@
 {
-  "checkedAt": "2026-10-10T04:45:27.365Z",
+  "checkedAt": "2026-10-15T04:39:50.265Z",
   "timeZone": "America/Toronto",
   "horizonDays": 5,
   "providerStatus": {
-    "liveSchedule": "failed-http-500",
-    "endpoint": "/api/espn-scoreboard",
-    "fallback": "dated verified repository snapshots",
-    "interpretation": "provider-failure-not-empty-slate"
+    "fixtureSchedule": "available",
+    "liveScoreboard": "failed-http-500",
+    "nativeOdds": "blocked-quota-exhausted",
+    "interpretation": "fixtures-confirmed-picks-fail-closed"
   },
   "days": [
     {
-      "date": "2026-10-10",
-      "scheduledGames": 66,
-      "researchFixtures": 66,
+      "date": "2026-10-15",
+      "scheduledGames": 3,
+      "researchFixtures": 3,
       "published": true,
-      "status": "locked-with-explicit-passes",
-      "officialBoard": "data/boards/2026-10-10.json",
-      "researchFile": "data/research-base-2026-10-10.json",
-      "exactNativeOddsEvents": 62,
-      "publishedSelections": 3,
-      "passes": 63
+      "status": "locked-pass-only-no-verified-native-odds",
+      "officialBoard": "data/boards/2026-10-15.json",
+      "researchFile": "data/research-base-2026-10-15.json",
+      "exactNativeOddsEvents": 0,
+      "publishedSelections": 0,
+      "passes": 3
     },
-    {
-      "date": "2026-10-11",
-      "scheduledGames": 35,
-      "researchFixtures": 35,
-      "published": false,
-      "status": "schedule-snapshot-only-provider-refresh-failed",
-      "snapshotEvents": 274,
-      "researchFile": "data/research-base-2026-10-11.json"
-    },
-    {
-      "date": "2026-10-12",
-      "scheduledGames": 6,
-      "researchFixtures": 6,
-      "published": false,
-      "status": "schedule-snapshot-only-provider-refresh-failed",
-      "snapshotEvents": 49,
-      "researchFile": "data/research-base-2026-10-12.json"
-    },
-    {
-      "date": "2026-10-13",
-      "scheduledGames": 17,
-      "researchFixtures": 17,
-      "published": false,
-      "status": "schedule-snapshot-only-provider-refresh-failed",
-      "snapshotEvents": 119,
-      "researchFile": "data/research-base-2026-10-13.json"
-    },
-    {
-      "date": "2026-10-14",
-      "scheduledGames": null,
-      "researchFixtures": null,
-      "published": false,
-      "status": "schedule-not-confirmed-provider-refresh-failed",
-      "researchFile": null
-    }
+    {"date": "2026-10-16", "scheduledGames": 8, "published": false, "status": "schedule-only"},
+    {"date": "2026-10-17", "scheduledGames": 55, "published": false, "status": "schedule-only"},
+    {"date": "2026-10-18", "scheduledGames": 29, "published": false, "status": "schedule-only"},
+    {"date": "2026-10-19", "scheduledGames": 10, "published": false, "status": "schedule-only-live-provider-verified"}
   ],
   "notes": [
     "Men's soccer only; women's fixtures are excluded before publication and tracking.",
-    "Only the current Toronto date has betting content. October 11-14 remain schedule/readiness metadata only.",
-    "The October 10 lock used a verified dated fixture snapshot after the live schedule provider returned HTTP 500.",
-    "Only exact current native DraftKings moneylines from the freeze-window odds snapshot were eligible; unavailable markets were PASS, not stale-filled.",
-    "October 14 is not labelled as no games because the live provider check failed and no dated snapshot exists."
+    "Only the current Toronto date contains betting-board state. October 16-19 are schedule readiness only.",
+    "The October 15 native sportsbook capture returned zero events because the provider quota was exhausted, so all three tracked fixtures are explicit PASS rows.",
+    "No unverified or stale odds, confidence, EV, Top 3 or Top 5 selection was published."
   ]
 }

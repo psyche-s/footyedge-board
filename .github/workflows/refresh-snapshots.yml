@@ -24,6 +24,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Refresh fixture horizon with retained-last-good semantics
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        run: node scripts/refresh-fixture-horizon.mjs
 
       - name: Capture verified live snapshots or retain dated source on provider error
         shell: bash
@@ -49,13 +57,6 @@ jobs:
               echo "::warning::Scoreboard provider failed for $SNAP_DATE; retained dated repository snapshot; NOT live."
             else
               echo "::warning::Scoreboard unavailable for $SNAP_DATE; no empty slate inferred."
-            fi
-
-            if curl --fail --max-time 15 --retry 1 --silent --show-error               "https://footyedge-board.vercel.app/api/football?endpoint=fixtures&date=$SNAP_DATE"               -o "/tmp/fixtures-$KEY.json" &&
-              jq -e '.response | type=="array"' "/tmp/fixtures-$KEY.json" >/dev/null; then
-              cp "/tmp/fixtures-$KEY.json" "$DIR/fixtures.json"
-            elif [[ -s "$DIR/fixtures.json" ]]; then
-              echo "::warning::Fixture provider unavailable for $SNAP_DATE; retained dated source."
             fi
 
             # Future dates are schedule-only. Never refresh bookmaker prices

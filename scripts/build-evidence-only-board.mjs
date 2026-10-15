@@ -98,6 +98,16 @@ async function main(){
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
   if(research.fixtures.some(g=>(g.last10?.home||[]).length<5||(g.last10?.away||[]).length<5)){console.log('Incomplete team histories; skip unsupported recovery');return;}
   const games=research.fixtures.map(generate);
+  // A history trend is not an exact-priced betting recommendation. When the
+  // native sportsbook capture is blocked, retain the researched fixtures and
+  // form context but publish explicit PASS rows instead of Top 3/Top 5 picks.
+  if(!odds?.events?.length){
+    for(const game of games){
+      game.top=null;game.top3=[];
+      game.model={...game.model,top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
+      game.recoveryStatus='pass-no-verified-native-odds';
+    }
+  }
   const unique=new Set(games.map(g=>g.id));
   if(unique.size!==games.length)throw new Error('Duplicate research fixture IDs; publication blocked');
   const ranked=arr=>arr.filter(g=>g.top&&g.top.score>=85&&Date.parse(g.date)>Date.now())
@@ -109,7 +119,7 @@ async function main(){
     mutableUntil:DATE+' 00:30 America/Toronto',coverage:'full-board',source:'Audited research-only recovery from dated pre-match historical stats',
     top5:topRefs(ranked(games)),leagueTop5,games,
     scope:'mens-only-tracked-competitions',
-    publicationNotes:'Late recovery. No verified live sportsbook prices; odds and EV absent. Trend percentages describe the two teams last five-to-ten completed matches, not calibrated match success probabilities.',
+    publicationNotes:'Exact native sportsbook prices were unavailable. Every fixture is an explicit PASS; no odds, confidence, EV, Top 3 or Top 5 recommendation was published.',
     dataSources:{researchBase:R,odds:'unavailable: provider usage quota exhausted'}};
   // Validate the exact same top-to-Top3 and reference invariants enforced for
   // official boards, without mutating any existing lock.

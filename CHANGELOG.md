@@ -831,3 +831,17 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - UI impact: none. No layout, styling, navigation, logo, filter, card, modal, page-structure or component file changed.
 - Tracking/history impact: prior frozen boards and explanations are unchanged. October 10 tracking begins with only the three published selections; PASS fixtures create no retrospective picks.
 - Deployment result: pending GitHub main push and production verification.
+
+
+## 2026-10-15 — PASS-only board, calibrated-metric gate and horizon refresh
+**Status:** 🟡 Code/data ready · deployment verification pending
+
+- Published the complete three-fixture tracked men's slate for October 15 as explicit PASS rows. The native sportsbook provider returned no events because its usage quota was exhausted, so no Top 3, Top 5, odds, confidence or EV was forced.
+- Added a fail-closed public metric gate: confidence is shown only for a finite explicitly calibrated exact-market probability, and EV is computed only as `p × decimal odds − 1` for the same exact verified market. Ungrounded values render N/A.
+- Added regressions for the previously observed +540%, +1620%, +4040%, null/NaN and default-zero metric failures, plus card/modal metric consistency checks through the shared renderer.
+- Moved prior-board settlement and post-match learning ahead of daily pick publication, and aligned the standalone tracking job to the 00:05 Toronto EDT/EST-gated window. Historical selections and correction archives remain unchanged.
+- Added retained-last-good current-plus-four-day fixture fetching to the hourly data refresh. October 16–19 contain schedule readiness only; no future betting content was published.
+- Model/data impact: no model weight or calibration change. Thirty-six saved selections remain outcome-graded with process review pending where incident-level evidence is unavailable.
+- UI impact: no layout, styling, navigation, card, filter, logo or modal redesign. Only invalid confidence/EV values are suppressed as N/A.
+- Tracking/history impact: October 12–14 performance snapshots were created from their existing published selections without changing the boards; October 15 contains zero selections to settle.
+- Deployment result: pending GitHub main push, Actions verification and Vercel production verification.

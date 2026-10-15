@@ -170,7 +170,7 @@ function publishedTop5(today){
   const file=path.join(ROOT,"data","boards",today+".json");
   if(!fs.existsSync(file))return null;
   const board=readJson(file);
-  if(board.date!==today||board.immutable!==true)throw new Error("Tracker requires immutable published board");
+  if(board.date!==today||!(board.immutable===true||board.state==="published"))throw new Error("Tracker requires a published board");
   return (board.top5||[]).map(x=>({rank:x.rank,gameId:x.gameId,home:x.home,away:x.away,
     fixture:x.home+" vs "+x.away,category:x.pick.category,selection:x.pick.label,confidence:x.pick.score,
     odds:x.pick.odds??x.pick.oddsDisplay??null,book:x.pick.provider??null,result:"pending",finalScore:null}));
@@ -178,8 +178,8 @@ function publishedTop5(today){
 
 async function main(){
   const nowParts=torontoParts(),today=todayToronto();
-  if(!FORCE&&nowParts.hour!=="07"){
-    console.log("Skip: Toronto local hour is",nowParts.hour,"not 07");return;
+  if(!FORCE&&nowParts.hour!=="00"){
+    console.log("Skip: Toronto local hour is",nowParts.hour,"not 00");return;
   }
 
   fs.mkdirSync(PERF_DIR,{recursive:true});
@@ -192,9 +192,9 @@ async function main(){
     const date=name.slice(0,10);if(date>today)continue;
     const dailyFile=path.join(PERF_DIR,name);
     const existing=fs.existsSync(dailyFile)?readJson(dailyFile):null;
-    // Existing historical snapshots are permanent. Today's first 7 AM snapshot locks selections.
-    if(existing&&(date<today||existing.lockedAt7am))continue;
-    if(date===today&&Number(nowParts.hour)<7)continue;
+    // Existing historical snapshots are permanent. Today's publication snapshot
+    // records selections without rewriting an earlier performance record.
+    if(existing&&(date<today||existing.lockedAtPublication||existing.lockedAt7am))continue;
     const top5=publishedTop5(date);
     const board=readJson(path.join(boardsDir,name));
     const previous=new Map((existing?.top5||[]).map(p=>[p.gameId+"|"+p.selection,p]));
@@ -203,8 +203,8 @@ async function main(){
       return old?{...p,result:old.result,finalScore:old.finalScore,settledAt:old.settledAt}:p;
     });
     writeJson(dailyFile,{date,publishedAt:board.publishedAt||null,recordedAt:new Date().toISOString(),
-      lockedAt7am:date===today?new Date().toISOString():null,
-      source:"Official FootyEdge Top 5 at 7 AM America/Toronto",frozen:true,top5:aligned});
+      lockedAtPublication:date===today?new Date().toISOString():null,
+      source:"Official FootyEdge Top 5 at publication",frozen:true,top5:aligned});
     console.log("Locked",aligned.length,"official Top 5 picks for",date);
     await settleDailyFile(dailyFile);
   }

@@ -10,7 +10,7 @@ const b=JSON.parse(fs.readFileSync(file,"utf8"));let errors=[],warnings=[],quote
 const badWords=/according to|football whispers|sports mole|sportskeeda|statz|espn|https?:/i;
 for(const g of b.games||[]){
  const t=g.top3||[];
- if(t.length!==3)errors.push(g.id+": expected Top 3");
+ if(t.length!==0&&t.length!==3)errors.push(g.id+": expected three picks or explicit PASS");
  if(t.length===3){
   if(t.some((p,i)=>i>0&&Number.isFinite(p.score)&&Number.isFinite(t[i-1].score)&&p.score>t[i-1].score))
     errors.push(g.id+": Top 3 not sorted by descending confidence");
@@ -35,8 +35,10 @@ for(const g of b.games||[]){
   if(p.verifiedPrice){
    quoted++;
    if(!Number.isFinite(Number(p.priceDecimal))||Number(p.priceDecimal)<1.2)errors.push(g.id+": missing or below -500 verified quote");
-   if(!Number.isFinite(Number(p.ev))||!Number.isFinite(Number(p.modelProb)))errors.push(g.id+": invalid EV/probability");
-   else if(Math.abs((p.modelProb*Number(p.priceDecimal)-1)-p.ev)>.003)errors.push(g.id+": EV arithmetic mismatch");
+   const probability=Number(p.calibratedProbability??p.modelProb);
+   const calibrated=p.probabilityCalibrated===true&&Number.isFinite(probability)&&probability>=0&&probability<=1;
+   if(!calibrated&&p.ev!=null)errors.push(g.id+": EV without calibrated exact-market probability");
+   else if(calibrated&&p.ev!=null&&Math.abs((probability*Number(p.priceDecimal)-1)-p.ev)>.003)errors.push(g.id+": EV arithmetic mismatch");
   }else if(p.ev!=null)errors.push(g.id+": EV without sportsbook price");
  }
  if(Array.isArray(g.teamNews)&&g.teamNews.length>=2)withNews++;
@@ -67,7 +69,7 @@ if(fs.existsSync("ui/part1.html")){
 }
 if(fs.existsSync("ui/part2.html")){
  const renderer=fs.readFileSync("ui/part2.html","utf8");
- if(!renderer.includes('return String(Math.round(Math.max(0,Math.min(100,n))*10)/10)+"%";'))errors.push("UI confidence should be a plain percentage");
+ if(!renderer.includes('if(probability==null)return "N/A";'))errors.push("UI must suppress uncalibrated confidence");
 }
 for(const w of warnings)warn(w);
 console.log(JSON.stringify({date:boardDate,matches:b.games?.length||0,withNews,quotedPicks:quoted,warnings:warnings.length,errors},null,2));

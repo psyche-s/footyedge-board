@@ -131,13 +131,13 @@ function renderTop5(top,emptyMessage="Checking the game schedule…",board=null)
     const home=homeTeamName(x.home,women),away=homeTeamName(x.away,women);
     const fixture=home+(away?" vs "+away:"");
     const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
-    const conf=p.score??x.confidence;
-    const isHistorical=p.confidenceType==="historical_trend_hit_rate";
+    const calibrated=p.probabilityCalibrated===true?Number(p.calibratedProbability??p.modelProb):null;
     const alt=board?.games?.find(g=>String(g.id)===String(x.gameId))?.top3?.find(q=>q?.verifiedPrice&&q.bookKey==="draftkings"&&q.label!==p.label);
     const quote=alt?Number(String(alt.odds).replace("+","")):null;
     const altQuote=Number.isFinite(quote)?'<div style="font-size:11px;color:#78b896;margin-top:4px">Priced alternative: '+esc(alt.label)+' · DraftKings '+esc(quote>0?"+"+quote:quote)+'</div>':'';
 
-    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div>'+altQuote+'</div><div class="confidence">'+(Number.isFinite(conf)?esc(conf)+(isHistorical?"% TREND":p.confidenceType==="external_forecast_estimate"?"% EST.":p.probabilityCalibrated===true?"% CONF":"/100 RANK"):"")+'</div></div>';
+    const confidence=Number.isFinite(calibrated)&&calibrated>=0&&calibrated<=1?(Math.round(calibrated*1000)/10)+"% CONF":"N/A";
+    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div>'+altQuote+'</div><div class="confidence">'+confidence+'</div></div>';
   }).join("");
 }
 repoJson("data/performance/summary.json").then(p=>{

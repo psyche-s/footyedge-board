@@ -11,7 +11,7 @@ async function main(){
  if(existing){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}
  if(!draft){console.log('No candidate draft; preserve current Top 5');return}
  if(draft.date!==DATE||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw Error('Incomplete current-day draft');
- if(!(draft.top5||[]).length){console.log('No new qualified picks. Preserve existing board.');return}
+ if(!Array.isArray(draft.top5))throw Error('Current-day draft has no Top 5 array');
  if(existing?.top5?.length>draft.top5.length){console.log('Do not replace populated Top 5 with partial refresh.');return}
  const board=JSON.parse(JSON.stringify(draft));board.immutable=true;board.state='locked';board.frozenAt=new Date().toISOString();
  delete board.mutableUntil;board.lastPublishedAt=board.frozenAt;

@@ -43,6 +43,15 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Settle prior boards and ingest post-match learning before picks
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FORCE_TRACK: '1'
+        run: |
+          node scripts/track-performance.mjs
+          node scripts/postmatch-learning.mjs
+
       - name: Install browser
         if: steps.gate.outputs.run == 'true'
         run: |
@@ -96,21 +105,12 @@ jobs:
         run: |
           node --check scripts/apply-loss-risk.mjs
           node scripts/apply-loss-risk.mjs
+          node scripts/validate-public-metrics.mjs
 
       - name: Audit published board editorial quality
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: node scripts/audit-editorial-board.mjs
-
-      - name: Reconcile prior hit rates and Top 3 post-match learning
-        if: steps.gate.outputs.run == 'true'
-        env:
-          FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          FORCE_TRACK: '1'
-        run: |
-          # Never recalculate or overwrite archived selections themselves.
-          node scripts/track-performance.mjs || echo "::warning::Tracking retry required; preserve board publication."
-          node scripts/postmatch-learning.mjs || echo "::warning::Learning retry required; preserve board publication."
 
       - name: Validate and commit immutable same-day picks
         if: steps.gate.outputs.run == 'true'
@@ -119,6 +119,7 @@ jobs:
           TODAY="$(TZ=America/Toronto date +%F)"
           mkdir -p data/board-drafts data/boards
           node scripts/validate-published-boards.mjs --base origin/main
+          node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
           files=(data/performance data/postmortems)

@@ -2046,17 +2046,31 @@ function displayAmericanOdds(p){
   if(Number.isFinite(raw)&&Math.abs(raw)>=100)return raw>0?("+"+raw):String(raw);
   return p.priceStatus?"N/A":"—"
 }
+function calibratedPickProbability(p){
+  if(p?.probabilityCalibrated!==true)return null;
+  const n=Number(p.calibratedProbability??p.modelProb);
+  return Number.isFinite(n)&&n>=0&&n<=1?n:null
+}
+function groundedPickEv(p){
+  const probability=calibratedPickProbability(p),decimal=Number(p?.priceDecimal);
+  if(probability==null||p?.verifiedPrice!==true||p?.bookExact!==true||
+     !Number.isFinite(decimal)||decimal<=1)return null;
+  return probability*decimal-1
+}
 function priceInfo(p){
   if(!p)return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
   const bookKey=p.bookKey||inferBookKey(p.provider);
-  if(p.verifiedPrice)return{
+  if(p.verifiedPrice){
+    const ev=groundedPickEv(p);
+    return{
     oddsLabel:"",
     odds:displayAmericanOdds(p),
     evLabel:"EV",
-    ev:p.ev==null?"—":evText(p.ev),
-    cls:p.ev==null?"fair":p.ev>=0?"evPos":"evNeg",
+    ev:ev==null?"N/A":evText(ev),
+    cls:ev==null?"fair":ev>=0?"evPos":"evNeg",
     bookKey
-  };
+    }
+  }
   if(p.priceStatus)return{oddsLabel:"",odds:"N/A",evLabel:"EV",ev:"N/A",cls:"fair",bookKey:null};
   return{oddsLabel:"",odds:"—",evLabel:"EV",ev:"—",cls:"fair",bookKey:null};
 }
@@ -2115,4 +2129,4 @@ async function schedule(league,id,year){
   try{const v=await json(`/api/espn-schedule?league=${encodeURIComponent(league)}&team=${encodeURIComponent(id)}&season=${year}&scope=all`);const rec={t:now,v};S.cache.set(key,rec);try{localStorage.setItem(key,JSON.stringify(rec))}catch{}return v}catch(e){if(stored?.v)return stored.v;throw e}
 }
 let refreshTimer=null;
-function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const now=Date.now(),live=S.games.some(g=>g.live),near=S.games.some(g=>!g.done&&!g.live&&new Date(g.date).getTime()-now<=3*60*60*1000&&new Date(g.date).getTime()>=now-5*60*1000);const ms=live?60000:near?120000:300000;refreshTimer=setTimeout(()=>load(S.d
+function planRefresh(){clearTimeout(refreshTimer);if(S.date!==etDate())return;const now=Date.now(),live=S.games.some(g=>g.live),near=S.games.some(g=>!g.done&&!g.live&&new Date(g.date).getTime()-now<=3*60*60*1000&&new Date(g.date).getTime()>=now-5*60*1000);const ms=live?60000:near?120000:300000;refreshTimer=setTimeout(()=>load(S.date),ms);document.getElementById("source").textContent=S.dataSource?.startsWith("Daily posted odds")?`${S.dataSource} · scores/news refresh ${ms===60000?"60s":ms===120000?"2m":"5m"}`:`Live data · refresh ${ms===60000?"60s":ms===120000?"2m":"5m"} · history cached 6h`}

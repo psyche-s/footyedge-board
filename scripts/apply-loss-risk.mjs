@@ -1,74 +1,42 @@
 #!/usr/bin/env node
-/**
- * FootyEdge publication-time loss-risk confidence normalizer.
- * Runs only before the freshly generated daily board is committed; once applied
- * the frozen board is never changed by this job. Older boards are untouched.
- *
- * For exact market M, confidence = 1 - P(M loses).
- * ML loss includes DRAW as well as the other side winning.
- * DC loss excludes draws when a draw pays as a win.
- * Estimates are uncalibrated and must not be advertised as 90% guaranteed.
- */
+/** Publication-time metric safety gate. Historical boards are untouched. */
 import fs from 'node:fs';
-import {rankPublishedBoard} from './rank-published-picks.mjs';
-import {estimateMarketOutcome} from './market-risk.mjs';
 const local=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
 const date=process.env.BOARD_DATE||local.year+'-'+local.month+'-'+local.day;
 const file='data/boards/'+date+'.json';
-if(!fs.existsSync(file)){console.log('No same-day board to normalize');process.exit(0)}
+if(!fs.existsSync(file)){console.log('No same-day board to sanitize');process.exit(0)}
 const board=JSON.parse(fs.readFileSync(file,'utf8'));
 if(board.date!==date)throw Error('Same-day guard failed');
-if(board.sourceQuality?.lossRiskCalculated===true||board.sourceQuality?.confidenceMethod?.startsWith('modeled probability of not losing')){
-  console.log('Already loss-adjusted: frozen board untouched');process.exit(0);
-}
-// Do not retroactively modify a board already published in a previous run.
-const frozen=Date.parse(board.frozenAt||'');
-if(board.immutable===true&&(!Number.isFinite(frozen)||Date.now()-frozen>30*60*1000)){
- console.log('Published board outside current freeze transaction; leave immutable snapshot unchanged');process.exit(0);
-}
-const r=(v)=>Number(v.toFixed(4)),clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
-let reviewed=0,missed=0;
-for(const g of board.games||[]){
- const home=g.baseResearch?.last10?.home||[],away=g.baseResearch?.last10?.away||[];
- if(home.length<5||away.length<5||home.some(x=>!Number.isFinite(Number(x.gf))||!Number.isFinite(Number(x.ga)))||away.some(x=>!Number.isFinite(Number(x.gf))||!Number.isFinite(Number(x.ga)))){
-  for(const pick of g.top3||[])if(pick.confidenceType!=='footyedge_loss_adjusted_rating'){pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.lossProbability=null;missed++}
-  continue;
- }
- for(const pick of g.top3||[]){
-  // Prefer the existing pre-match multi-factor forecast (including its venue,
-  // opponent and limited H2H signals). Use team-scoreline math only as a
-  // disclosed fallback for an exactly supported market.
-  const estimate=estimateMarketOutcome({pick,game:g,homeHistory:home,awayHistory:away});
-  const success=estimate.success;
-  if(!Number.isFinite(success)){
-   pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.lossProbability=null;
-   pick.confidenceType="unrated_uncalibrated";pick.ev=null;
-   pick.ratingMethod="Unavailable: exact market probability not supported by verified research";
-   missed++;continue;
+const round=v=>Number(v.toFixed(6));
+let calibrated=0,suppressed=0;
+for(const game of board.games||[])for(const pick of game.top3||[]){
+  const probability=Number(pick.calibratedProbability??pick.modelProb),decimal=Number(pick.priceDecimal);
+  const validProbability=pick.probabilityCalibrated===true&&Number.isFinite(probability)&&probability>=0&&probability<=1;
+  const exactPrice=pick.verifiedPrice===true&&pick.bookExact===true&&Number.isFinite(decimal)&&decimal>1;
+  if(validProbability){
+    pick.score=Math.round(probability*1000)/10;
+    pick.modelProb=probability;
+    pick.confidenceType='calibrated_exact_market_probability';
+    pick.ev=exactPrice?round(probability*decimal-1):null;
+    calibrated++;
+  }else{
+    pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.ev=null;
+    pick.probabilityCalibrated=false;pick.confidenceType='unrated_uncalibrated';
+    pick.ratingMethod='N/A: no calibrated exact-market probability';suppressed++;
   }
-  const prob=clamp(success,.01,.99),loss=1-prob,score=Math.round((1-loss)*100);
-  Object.assign(pick,{score,modelScore:score,baseScore:score,modelProb:r(prob),lossProbability:r(loss),
-   confidenceType:"footyedge_loss_adjusted_rating",probabilityCalibrated:false,
-   confidenceSource:estimate.source,
-   ratingMethod:"100% minus model-estimated losing probability for this exact market"});
-  if(pick.category==="Match Result"){
-   if(Number.isFinite(estimate.drawLoss)&&estimate.drawLoss>0){
-    const draw=Math.min(loss,estimate.drawLoss);
-    pick.lossComponents={draw:r(draw),opponentWin:r(loss-draw)};
-   }else delete pick.lossComponents;
-  }
-  if(pick.verifiedPrice&&Number.isFinite(Number(pick.priceDecimal))&&Number(pick.priceDecimal)>1)
-   pick.ev=r(prob*Number(pick.priceDecimal)-1);
-  else if(!pick.verifiedPrice)pick.ev=null;
-  reviewed++;
- }
-
 }
-// Ranking is applied AFTER the loss-risk estimates for all candidate markets.
-// A higher-scoring goals or team-goals selection cannot be displaced by
-// a lower-scoring ML just because the latter has a bookmaker price.
-const ranking=rankPublishedBoard(board,{minimumTop5Confidence:85});
-board.sourceQuality={...board.sourceQuality,lossRiskCalculated:true,confidenceMethod:'100% minus estimated probability of exact-market loss, original multi-factor probability preferred; scoreline fallback explicit',probabilityCalibrated:false};
-board.publicationNotes=String(board.publicationNotes||'')+' Confidence is loss-risk-adjusted, not calibrated and not a guaranteed win rate.';
-fs.writeFileSync(file,JSON.stringify(board,null,2)+String.fromCharCode(10));
-console.log(JSON.stringify({date,reviewed,unavailable:missed,top5:board.top5.length,correctedOrdering:ranking.correctedMatches}));
+for(const game of board.games||[]){
+  game.top=game.top3?.[0]||null;
+  game.model={...game.model,top:game.top,top3:game.top3||[],candidates:game.top3||[],rankedCandidates:game.top3||[],researchCandidates:game.top3||[]};
+}
+const eligible=(board.games||[]).filter(g=>Number.isFinite(g.top?.score));
+eligible.sort((a,b)=>b.top.score-a.top.score||String(a.id).localeCompare(String(b.id)));
+const refs=games=>games.slice(0,5).map((g,i)=>({rank:i+1,gameId:String(g.id),home:g.home,away:g.away,pick:JSON.parse(JSON.stringify(g.top))}));
+board.top5=refs(eligible);
+board.leagueTop5=Object.fromEntries([...new Set((board.games||[]).map(g=>g.league))].map(league=>[league,refs(eligible.filter(g=>g.league===league))]));
+board.sourceQuality={...board.sourceQuality,metricSafetyGate:true,probabilityCalibrated:calibrated>0,
+  confidenceMethod:calibrated?'finite calibrated exact-market probability only':'N/A: no calibrated exact-market probability available',
+  evMethod:'100 * (p * decimal_odds - 1), exact market only; stored internally as decimal return'};
+board.publicationNotes=String(board.publicationNotes||'').replace(/\s*Confidence is loss-risk-adjusted[^.]*\./g,'').trim();
+fs.writeFileSync(file,JSON.stringify(board,null,2)+'\n');
+console.log(JSON.stringify({date,calibrated,suppressed,top5:board.top5.length}));

@@ -46,7 +46,11 @@ async function main(){
   if(insights.date!==date)fail("Daily insights date mismatch");
   if(odds.date!==date)fail("Daily odds date mismatch");
   if(insights.status&&!['ready','ready-with-passes'].includes(insights.status))fail("Research/team-news review is not ready for publication");
-  if(odds.status==="blocked")fail("Verified native sportsbook odds are not ready for publication");
+  const passOnly=(insights.fixtures||[]).length>0&&(insights.fixtures||[]).every(x=>x.reviewStatus==='pass-insufficient-data'&&!(x.supportedMarkets||[]).length&&!(x.markets||[]).length);
+  if(odds.status==="blocked"){
+    if(passOnly)warn("Native sportsbook provider blocked; validated explicit PASS-only publication");
+    else fail("Verified native sportsbook odds are not ready for publication");
+  }
 
   const insightRows=insights.fixtures||[];
   const insightByKey=new Map(insightRows.map(x=>[norm(x.home)+"|"+norm(x.away),x]));
@@ -110,7 +114,7 @@ async function main(){
   }
 
   for(const k of fixtures.keys())if(!insightKeys.has(k))fail("Tracked fixture lacks current research/team-news review: "+k);
-  if(fixtures.size&&!(odds.events||[]).length)fail("No verified native sportsbook odds available for the tracked slate");
+  if(fixtures.size&&!(odds.events||[]).length&&!passOnly)fail("No verified native sportsbook odds available for the tracked slate");
 
   const oddsKeys=new Set();
   for(const e of odds.events||[]){

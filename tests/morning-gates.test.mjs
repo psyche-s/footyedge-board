@@ -206,8 +206,10 @@ test("expanded analysis uses uppercase WHY THIS PICK and preserves existing Team
   assert.match(p2,/WHY THIS PICK/);
   assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
-test("verified native display prices can show EV while unavailable exact markets are explicit",()=>{
-  assert.match(p1,/p\.ev==null\?"—":evText\(p\.ev\)/);
+test("EV requires calibrated probability and unavailable exact markets are explicit",()=>{
+  assert.match(p1,/function groundedPickEv/);
+  assert.match(p1,/p\?\.probabilityCalibrated!==true/);
+  assert.match(p1,/ev==null\?"N\/A":evText\(ev\)/);
   assert.match(p1,/p\.priceStatus/);
   assert.match(p1,/odds:"N\/A"/);
 });

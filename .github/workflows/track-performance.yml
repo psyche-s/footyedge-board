@@ -2,9 +2,9 @@ name: Track FootyEdge Performance
 
 on:
   schedule:
-    # 07:00 Toronto EDT/EST alternatives; script gates on Toronto hour 07.
-    - cron: "0 11 * * *"
-    - cron: "0 12 * * *"
+    # 00:05 Toronto EDT/EST alternatives; script gates on local hour 00.
+    - cron: "5 4 * * *"
+    - cron: "5 5 * * *"
   workflow_dispatch:
 
 permissions:
