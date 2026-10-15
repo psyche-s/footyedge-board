@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 const read=p=>JSON.parse(fs.readFileSync(p,"utf8"));
 test("owner-approved correction is separate from locked archive",()=>{
- const b=read("data/boards/2026-10-15.json"),c=read("data/corrections/2026-10-15-v1.json");
+ const b=read("data/boards/2026-10-15.json"),c=read("data/corrections/2026-10-15-v3.json");
  assert.equal(b.immutable,true);assert.equal(b.state,"locked");assert.equal(b.top5.length,0);
  assert.equal(c.date,b.date);assert.equal(c.ownerApproved,true);assert.equal(c.immutableOriginalPreserved,true);
  assert.equal(c.originalArchive,"data/boards/2026-10-15.json");
