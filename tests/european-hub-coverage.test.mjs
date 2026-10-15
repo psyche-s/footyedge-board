@@ -38,8 +38,8 @@ test("dated October 15 snapshot includes both European men's competitions",()=>{
  }
 });
 
-test("owner-approved v4 adds 36 European fixtures and retains original frozen archive",()=>{
- const correction=JSON.parse(fs.readFileSync("data/corrections/2026-10-15-v6.json","utf8"));
+test("owner-approved v7 adds 36 European fixtures and retains original frozen archive",()=>{
+ const correction=JSON.parse(fs.readFileSync("data/corrections/2026-10-15-v7.json","utf8"));
  const original=JSON.parse(fs.readFileSync("data/boards/2026-10-15.json","utf8"));
  assert.equal(correction.ownerApproved,true);
  assert.equal(correction.immutableOriginalPreserved,true);
@@ -48,9 +48,9 @@ test("owner-approved v4 adds 36 European fixtures and retains original frozen ar
  assert.equal(correction.games.length,39);
  assert.equal(correction.games.filter(g=>g.league==="uefa.europa").length,18);
  assert.equal(correction.games.filter(g=>g.league==="uefa.europa.conf").length,18);
- assert.equal(correction.games.filter(g=>g.league.startsWith("uefa.")&&g.top3.length===3).length,18);
- assert.equal(correction.games.filter(g=>g.league==="uefa.europa"&&g.top3.length===3).length,11);
- assert.equal(correction.games.filter(g=>g.league==="uefa.europa.conf"&&g.top3.length===3).length,7);
+ assert.equal(correction.games.filter(g=>g.league.startsWith("uefa.")&&g.top3.length===3).length,36);
+ assert.equal(correction.games.filter(g=>g.league==="uefa.europa"&&g.top3.length===3).length,18);
+ assert.equal(correction.games.filter(g=>g.league==="uefa.europa.conf"&&g.top3.length===3).length,18);
  assert.equal(correction.top5.length,5);
  assert.match(fs.readFileSync("ui/part2.html","utf8"),/approvedCorrection\.games\.map/);
 });
