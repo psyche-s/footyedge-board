@@ -194,6 +194,23 @@ async function hubEvidence(g){
  return {license:"CC0-1.0",warehouse:"psyche-s/football-data-hub",coverage:"domestic-league-completed-results-only",homeLast10:side(h),awayLast10:side(a),h2h};
 }
 
+let derivedHubCache;
+async function derivedHubMetrics(g){
+ if(derivedHubCache===undefined){
+   derivedHubCache=await fs.readFile(path.join("data","football-hub","derived-latest.json"),"utf8").then(JSON.parse).catch(e=>{if(e.code!=="ENOENT")console.warn("Derived hub unavailable:",e.message);return null});
+ }
+ const doc=derivedHubCache,cutoff=String(g.date||"").slice(0,10);
+ if(!doc||doc.schema!=="footyedge-hub-derived-v1"||doc.rights!=="CC0-1.0"||doc.notCalibrated!==true||doc.asOfExclusive>cutoff)return null;
+ const league=g.league,byLeague=await getHubRows(),rows=byLeague.get(league)||[];
+ function matchTeam(name){
+   const ids=new Set(rows.flatMap(m=>[[m.h,m.hi],[m.a,m.ai]]).filter(([n,id])=>hubKey(n)===hubKey(name)&&id).map(([,id])=>id));
+   if(ids.size!==1)return null;
+   return doc.teams[league+"|"+[...ids][0]]||null;
+ }
+ const home=matchTeam(g.home.name),away=matchTeam(g.away.name);
+ if(!home&&!away)return null;
+ return {asOfExclusive:doc.asOfExclusive,rights:"CC0-1.0",historicalOnly:true,notCalibrated:true,home,away};
+}
 async function buildFixture(g){
   try{
     let hh,ah;
@@ -210,7 +227,8 @@ async function buildFixture(g){
     const facts=[...teamFacts(g.home.name,hh,"home"),...teamFacts(g.away.name,ah,"away"),...h2hFacts(g,hh)]
       .sort((a,b)=>b.priority-a.priority).slice(0,12);
     const hub=await hubEvidence(g);
-    return{...g,hubHistory:hub,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
+    const hubDerived=await derivedHubMetrics(g);
+    return{...g,hubHistory:hub,hubDerived,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
   }catch(error){
     return{...g,history:{home:0,away:0},facts:[],marketSignals:[],error:String(error),generatedAt:new Date().toISOString()};
   }
