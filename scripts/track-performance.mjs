@@ -30,32 +30,64 @@ async function fetchJson(url){
   if(!r.ok)throw new Error("HTTP "+r.status+" for "+url);
   return r.json();
 }
+// Only grade actually completed fixtures; the score endpoint can return an older
+// fixture-only snapshot (or a 500) even after a match finishes.
+function eventInfo(e){
+  const c=e?.competitions?.[0]||{},cs=c?.competitors||[];
+  const h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1];
+  const num=v=>{
+    const raw=v&&typeof v==="object"?(v.value??v.displayValue):v;
+    if(raw===undefined||raw===null||raw==="")return null;
+    const n=Number(raw);return Number.isInteger(n)&&n>=0?n:null;
+  };
+  return{
+    home:h?.team?.displayName||h?.team?.name||"",
+    away:a?.team?.displayName||a?.team?.name||"",
+    homeScore:num(h?.score),awayScore:num(a?.score),
+    done:Boolean(e?.status?.type?.completed)||String(e?.status?.type?.state||"").toLowerCase()==="post"
+  };
+}
 async function verifiedScoreboardFor(date){
-  const url=SITE+"/api/espn-scoreboard?dates="+date.replaceAll("-","")+"&limit=1000";
+  const found=new Map();
+  const add=payload=>{
+    for(const e of payload?.events||[]){
+      const id=String(e?.id||"");if(!id)continue;
+      const old=found.get(id);
+      const now=eventInfo(e),previous=old?eventInfo(old):null;
+      // Prefer a final scoreboard with verified integer scores to pre-match placeholders.
+      const quality=x=>x?.done&&Number.isInteger(x.homeScore)&&Number.isInteger(x.awayScore)?2:x?.done?1:0;
+      if(!old||quality(now)>quality(previous))found.set(id,e);
+    }
+  };
+  const dayKey=date.replaceAll("-","");
+  const providerUrl=SITE+"/api/espn-scoreboard?dates="+dayKey+"&limit=1000";
   try{
-    const live=await fetchJson(url);
-    if(Array.isArray(live.events)&&live.footyedgeSources?.scoreboard?.live!==false)return live;
-  }catch(e){console.log("Live settlement scoreboard unavailable:",date,e.message)}
-  // Only use date-scoped, actual captured ESPN results; never infer a score.
+    const live=await fetchJson(providerUrl);
+    if(Array.isArray(live?.events)&&live.footyedgeSources?.scoreboard?.live!==false)add(live);
+  }catch(e){console.log("Proxy settlement scoreboard unavailable:",date,e.message)}
+  // A Toronto match after 7pm can belong to the NEXT UTC date. ESPN's /all
+  // endpoint and league APIs also differ by timezone. Check adjacent dates.
+  // This is independent of the site's failing Vercel proxy.
+  const directDates=[date,addDays(date,1),addDays(date,-1)];
+  await Promise.all(directDates.map(async day=>{
+    const url="https://site.api.espn.com/apis/site/v2/sports/soccer/all/scoreboard?dates="+day.replaceAll("-","")+"&limit=1000";
+    try{
+      const r=await fetch(url,{headers:{accept:"application/json","user-agent":"FootyEdgeTracker/1.0"},signal:AbortSignal.timeout(12500)});
+      if(!r.ok)throw Error("HTTP "+r.status);
+      const d=await r.json();if(Array.isArray(d?.events))add(d);
+    }catch(e){console.log("ESPN direct scoreboard unavailable:",day,e.message)}
+  }));
+  if(found.size){console.log("Settlement scoreboard recovered:",date,found.size,"events");return{events:[...found.values()]}}
+  // A date-scoped snapshot is acceptable only when it actually says FINAL.
   const file=path.join(ROOT,"data",date,"scoreboard.json");
   if(fs.existsSync(file)){
     const saved=readJson(file);
-    if(Array.isArray(saved.events)){
-      console.log("Settling from preserved, date-scoped ESPN snapshot:",date);
+    if(Array.isArray(saved?.events)){
+      console.log("Using preserved ESPN snapshot (final scores only):",date);
       return saved;
     }
   }
   throw new Error("No verified live or saved ESPN scoreboard for "+date);
-}
-function eventInfo(e){
-  const c=e?.competitions?.[0]||{},cs=c?.competitors||[];
-  const h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1];
-  return{
-    home:h?.team?.displayName||h?.team?.name||"",
-    away:a?.team?.displayName||a?.team?.name||"",
-    homeScore:h?.score==null?null:Number(h.score),awayScore:a?.score==null?null:Number(a.score),
-    done:Boolean(e?.status?.type?.completed)||String(e?.status?.type?.state||"").toLowerCase()==="post"
-  }
 }
 function settlePick(p,event){
   if(!event?.done||!Number.isInteger(event.homeScore)||!Number.isInteger(event.awayScore)||event.homeScore<0||event.awayScore<0)return{result:"pending",finalScore:null};
@@ -67,6 +99,12 @@ function settlePick(p,event){
     const team=selection.replace(/\s+ML$/i,"").trim();
     if(norm(team)===norm(event.home))return hit(hs>as);
     if(norm(team)===norm(event.away))return hit(as>hs);
+  }
+  const teamTotals=selection.match(/^(.*?)\s+(Over|Under)\s+(\d+(?:\.\d+)?)\s+Team Goals?$/i);
+  if(teamTotals){
+    const team=teamTotals[1].trim(),side=teamTotals[2].toLowerCase(),line=Number(teamTotals[3]);
+    const goals=norm(team)===norm(event.home)?hs:norm(team)===norm(event.away)?as:null;
+    if(goals!=null){if(goals===line)return{result:"push",finalScore};return hit(side==="over"?goals>line:goals<line)}
   }
   const totalMatch=selection.match(/\b(Over|Under)\s+(\d+(?:\.\d+)?)\s+Goals?/i);
   if(totalMatch){

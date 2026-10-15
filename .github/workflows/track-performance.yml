@@ -36,6 +36,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Verify settlement grading rules
+        run: node --test tests/track-performance.test.mjs
+
       - name: Track official Top 5 and run postmatch learning
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
