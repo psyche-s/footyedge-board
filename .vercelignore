@@ -1,0 +1,29 @@
+# Keep historical research and workflows in GitHub without packaging them
+# into every Vercel deployment. These files are not used by the live frontend
+# or the serverless API routes. The public board JSON, H2H history, images,
+# HTML, and runtime assets intentionally remain deployed.
+.github/
+scripts/
+tests/
+docs/
+AGENTS.md
+CHANGELOG.md
+EDITORIAL_STYLE.md
+README.md
+requirements-advanced.txt
+requirements-shadow.txt
+cloudflare-worker.js
+wrangler.toml
+.assetsignore
+
+# Generated intermediate research; available in GitHub, not live site routes.
+data/model-previews/
+data/model-backtests/
+data/model-research/
+data/model-reviews/
+data/model-candidates/
+data/model-candidates-expanded/
+data/model-shadow/
+data/odds-audits/
+data/odds-coverage/
+data/postmortems/
