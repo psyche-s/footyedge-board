@@ -1,6 +1,7 @@
 import '../assets/board-availability.js';
 import fs from "node:fs/promises";
 import path from "node:path";
+import {evaluatePlayerProps} from "./player-prop-research.mjs";
 import {loadCzechSeason,eventsForCzechDate} from "../assets/czech-first-league.mjs";
 
 const SITE=(process.env.FOOTYEDGE_URL||"https://footyedge-board.vercel.app").replace(/\/$/,"");
@@ -277,7 +278,16 @@ async function main(){
     fixtures.push(...await Promise.all(games.slice(i,i+4).map(buildFixture)));
   }
   let learningIngested=null;try{const x=JSON.parse(await fs.readFile(path.join("data","postmortems","diagnostics.json"),"utf8"));learningIngested={generatedAt:x.generatedAt,decision:x.decision,modelChange:x.modelChange}}catch(e){if(e.code!=="ENOENT")throw e}
-  const out={date:DATE,modelVersion:"v69-gates",learningIngested,generatedAt:new Date().toISOString(),source:"FootyEdge deterministic all-competition history",fixtures};
+  // Player props require their own sourced event-level goals/assists and confirmed starters.
+  // The domestic scores hub has neither, so no player is inferred from team trends.
+  let playerFeed=null;
+  try{playerFeed=JSON.parse(await fs.readFile(path.join("data",DATE,"verified-player-events.json"),"utf8"))}catch(e){if(e.code!=="ENOENT")throw e}
+  const propCoverage={feedAvailable:playerFeed?.date===DATE&&Array.isArray(playerFeed.fixtures),markets:["ATGS","Score or Assist"],note:"Unverified player minutes, lineups or exact market quotes => PASS; no confidence/EV inferred."};
+  for(const fixture of fixtures){
+    const row=propCoverage.feedAvailable?playerFeed.fixtures.find(x=>String(x.fixtureId)===String(fixture.id)):null;
+    fixture.playerPropResearch=evaluatePlayerProps({fixture,players:row?.players||[],quotes:row?.quotes||[]});
+  }
+  const out={date:DATE,modelVersion:"v69-gates",learningIngested,generatedAt:new Date().toISOString(),source:"FootyEdge deterministic all-competition history",playerPropCoverage:propCoverage,fixtures};
   const file=path.join("data",correction?`research-base-expanded-${DATE}.json`:`research-base-${DATE}.json`);
   await fs.mkdir("data",{recursive:true});
   await fs.writeFile(file,JSON.stringify(out,null,2)+"\n");
