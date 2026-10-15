@@ -156,6 +156,17 @@ repoJson("data/performance/summary.json").then(p=>{
 (async()=>{
   const date=todayToronto();
   let board=null;
+  // Explicit owner-approved versioned research correction takes precedence
+  // for its date only; the frozen original and release remain unchanged.
+  if(date==="2026-10-15"){
+    try{
+      const correction=await repoJson("data/corrections/2026-10-15-v1.json");
+      if(correction?.schema==="footyedge-owner-approved-research-correction-v1"&&correction.ownerApproved===true&&correction.immutableOriginalPreserved===true&&correction.date===date&&correction.top5?.length){
+        renderTop5(correction.top5,"",correction);
+        return;
+      }
+    }catch{}
+  }
   // Release data updates independently of Vercel builds. Reject stale or malformed releases.
   try{
     const response=await fetch("https://api.github.com/repos/psyche-s/footyedge-board/releases/tags/footyedge-board-current?v="+Date.now(),{cache:"no-store",headers:{Accept:"application/vnd.github+json"}});
