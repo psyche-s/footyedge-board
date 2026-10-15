@@ -144,6 +144,24 @@ async function main(){
    changes+=Number(await atomicWrite(file,doc));
    totals+=games.length;leagues.push({league:code,games:games.length});
  }
+ // Import only dated CC0-derived team trends from the private hub, if authorised.
+ // These are descriptive history, never calibrated probabilities or bookmaker odds.
+ let derivedSnapshot=null;
+ if(warehouse){
+   for(const day of [today,new Date(Date.parse(today+"T12:00:00Z")-86400000).toISOString().slice(0,10)]){
+     const doc=await getPrivateFile("data/derived/"+day+".json",sha).catch(error=>{console.warn("Derived trend lookup skipped:",error.message);return null});
+     if(!doc)continue;
+     if(doc.schema!==1||doc.rights!=="CC0-1.0"||doc.not_calibrated_probabilities!==true||doc.as_of_exclusive!==day||!doc.historical_only||!doc.teams||typeof doc.teams!=="object")throw Error("Rejected unverified derived trend snapshot");
+     const safeTeams={};
+     for(const [k,v] of Object.entries(doc.teams)){
+       if(!Object.hasOwn(COMP,v?.league)||k!==v.league+"|"+v.team_id)continue;
+       safeTeams[COMP[v.league]+"|"+v.team_id]={...v,league:COMP[v.league]};
+     }
+     derivedSnapshot={schema:"footyedge-hub-derived-v1",rights:"CC0-1.0",asOfExclusive:day,warehouseRevision:sha,notCalibrated:true,teams:safeTeams};
+     changes+=Number(await atomicWrite(path.join(DEST,"derived-latest.json"),derivedSnapshot));
+     break;
+   }
+ }
  const manifest={schema:"footyedge-history-manifest-v1",license:"CC0-1.0",
    originalSource:"OpenFootball/football.json",warehouseRevision:sha,throughDateExclusive:today,
    syncMode:warehouse?"private-hub-read-only":mode==="full"?"public-openfootball-full-backfill":"public-openfootball-incremental",
