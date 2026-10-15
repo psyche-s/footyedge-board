@@ -1035,6 +1035,24 @@ async function load(date=S.date){
     // new predictive model has passed chronological calibration tests.
     for(const g of games)g.advancedResearch=advancedById.get(String(g.id))||null;
     if(displayArchive?.date===S.date){
+      // The archived ESPN snapshot can omit European fixtures even when the
+      // owner-approved correction has their verified fixture IDs. Restore
+      // correction-only fixtures before attaching published picks.
+      if(validCorrection){
+        const existing=new Set(games.map(g=>String(g.id)));
+        for(const c of approvedCorrection.games){
+          if(existing.has(String(c.id)))continue;
+          if(!/^uefa\\.europa(?:\\.conf)?$/.test(c.league)||!c.id||!c.date||!c.home||!c.away)continue;
+          games.push({id:String(c.id),apiFixtureId:String(c.id),date:c.date,year:Number(S.date.slice(0,4)),
+            league:c.league,leagueName:c.leagueName||displayLeagueName(c.league),leagueLogo:LEAGUE_LOGOS[c.league]||null,
+            home:{id:String(c.teams?.home?.id||""),name:c.home,logo:c.teams?.home?.logo||null,score:null},
+            away:{id:String(c.teams?.away?.id||""),name:c.away,logo:c.teams?.away?.logo||null,score:null},
+            odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
+            live:false,done:false,detail:"Verified dated European fixture",model:null,context:null,apiPrediction:null,
+            availability:null,availabilityLoaded:false,dailyInsight:null,baseResearch:null});
+          existing.add(String(c.id));
+        }
+      }
       S.games=applyBoardArchive(games,displayArchive);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
       for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
