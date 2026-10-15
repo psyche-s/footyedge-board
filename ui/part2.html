@@ -881,7 +881,7 @@ function fifthFactLabel(g){
 }
 function renderGames(){
   let list=S.games.filter(filterOK);
-  list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.score||0)-(viewPick(a)?.score||0):(a,b)=>new Date(a.date)-new Date(b.date));
+  list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.confidenceRating??viewPick(b)?.score??0)-(viewPick(a)?.confidenceRating??viewPick(a)?.score??0):(a,b)=>new Date(a.date)-new Date(b.date));
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
