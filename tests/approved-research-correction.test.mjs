@@ -13,5 +13,5 @@ test("owner-approved correction is separate from locked archive",()=>{
  for(const [i,x] of c.top5.entries()){assert.equal(x.rank,i+1);assert.deepEqual(x.pick,c.games.find(g=>g.id===x.gameId)?.top)}
 });
 test("both homepage and match cards explicitly load versioned correction",()=>{
- for(const p of ["index.html","ui/part2.html"]){const s=fs.readFileSync(p,"utf8");assert.match(s,/data\/corrections\/2026-10-15-v2\.json/)}
+ for(const p of ["index.html","ui/part2.html"]){const s=fs.readFileSync(p,"utf8");assert.match(s,/data\/corrections\/2026-10-15-v3\.json/)}
 });
