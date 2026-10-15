@@ -26,3 +26,14 @@ test("Do not change October 15 frozen official selections",()=>{
  assert.equal(board.immutable,true);
  assert.equal(board.state,"locked");
 });
+
+test("dated October 15 snapshot includes both European men's competitions",()=>{
+ const snapshot=JSON.parse(fs.readFileSync("data/2026-10-15/fixtures.json","utf8"));
+ const ids=snapshot.response.map(x=>Number(x.league?.id));
+ assert.equal(ids.filter(x=>x===776).length,18);
+ assert.equal(ids.filter(x=>x===20296).length,18);
+ for(const p of ["scripts/build-research-base.mjs","api/espn-scoreboard.js","assets/board-availability.js"]){
+  const code=fs.readFileSync(p,"utf8");
+  assert.match(code,/20296/);assert.match(code,/776/);
+ }
+});
