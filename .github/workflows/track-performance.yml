@@ -1,10 +1,17 @@
 name: Track FootyEdge Performance
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/track-performance.yml"
   schedule:
     # 00:05 Toronto EDT/EST alternatives; script gates on local hour 00.
     - cron: "5 4 * * *"
     - cron: "5 5 * * *"
+    # Afternoon result settlement catches scores unavailable at midnight.
+    - cron: "10 22 * * *"
+    - cron: "10 23 * * *"
   workflow_dispatch:
 
 permissions:
@@ -32,9 +39,11 @@ jobs:
       - name: Track official Top 5 and run postmatch learning
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          FORCE_TRACK: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          FORCE_TRACK: ${{ github.event_name != 'schedule' && '1' || '0' }}
         run: |
-          node scripts/track-performance.mjs
+          HOUR="$(TZ=America/Toronto date +%H)"
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$HOUR" != "00" && "$HOUR" != "18" ]]; then echo "Outside Toronto settlement window"; exit 0; fi
+          FORCE_TRACK=1 node scripts/track-performance.mjs
           node scripts/postmatch-learning.mjs
 
       - name: Commit performance and learning data
