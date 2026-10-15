@@ -155,6 +155,44 @@ function czechHistory(teamId,before){
         oppId:"cz1-"+key(other).replace(/ /g,"-"),oppName:other};
     }).sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,10);
 }
+
+// Licensed domestic match history mirrored from psyche-s/football-data-hub.
+// This supplements, but never masquerades as, all-competition results.
+const HUB_LEAGUES=["eng.1","eng.2","ger.1","esp.1","fra.1","ita.1","ned.1","por.1","tur.1"];
+const HUB_ALIAS=new Map([["man city","manchester city"],["man utd","manchester united"],["psg","paris saint germain"],["bayern munich","bayern munchen"],["inter milan","internazionale"],["bournemouth","afc bournemouth"],["lyon","olympique lyonnais"],["braga","sporting clube de braga"]]);
+const hubKey=name=>{const v=key(name).replace(/ (fc|afc|sc|cf)$/,"");return HUB_ALIAS.get(v)||v};
+let hubRows=null;
+async function getHubRows(){
+ if(hubRows)return hubRows;
+ const byLeague=new Map();
+ for(const league of HUB_LEAGUES){
+  try{
+   const doc=JSON.parse(await fs.readFile(path.join("data","football-hub",league+".json"),"utf8"));
+   if(doc.schema!=="footyedge-history-v1"||doc.license!=="CC0-1.0"||doc.competition!==league||!Array.isArray(doc.games))continue;
+   byLeague.set(league,doc.games.filter(m=>/^\\d{4}-\\d{2}-\\d{2}$/.test(m.d||"")&&Number.isInteger(m.hs)&&Number.isInteger(m.as)));
+  }catch(error){if(error.code!=="ENOENT")console.warn("Hub archive not usable",league,String(error).slice(0,90))}
+ }
+ hubRows=byLeague;return byLeague;
+}
+async function hubEvidence(g){
+ const byLeague=await getHubRows(),cutoff=String(g.date||"").slice(0,10);
+ const h=hubKey(g.home.name),a=hubKey(g.away.name);
+ const matches=[];
+ for(const [league,rows] of byLeague)for(const m of rows){
+  if(m.d>=cutoff)continue;
+  const home=hubKey(m.h),away=hubKey(m.a);
+  if(home!==h&&away!==h&&home!==a&&away!==a)continue;
+  matches.push({date:m.d,home:m.h,away:m.a,homeScore:m.hs,awayScore:m.as,league,source:"OpenFootball CC0 via Football Data Hub",sourceId:m.id});
+ }
+ matches.sort((x,y)=>y.date.localeCompare(x.date));
+ const side=name=>matches.filter(m=>hubKey(m.home)===name||hubKey(m.away)===name).slice(0,10).map(m=>{
+  const isHome=hubKey(m.home)===name,gf=isHome?m.homeScore:m.awayScore,ga=isHome?m.awayScore:m.homeScore;
+  return {...m,venue:isHome?"home":"away",gf,ga,result:gf>ga?"W":gf<ga?"L":"D"};
+ });
+ const h2h=matches.filter(m=>(hubKey(m.home)===h&&hubKey(m.away)===a)||(hubKey(m.home)===a&&hubKey(m.away)===h)).slice(0,5);
+ return {license:"CC0-1.0",warehouse:"psyche-s/football-data-hub",coverage:"domestic-league-completed-results-only",homeLast10:side(h),awayLast10:side(a),h2h};
+}
+
 async function buildFixture(g){
   try{
     let hh,ah;
@@ -170,7 +208,8 @@ async function buildFixture(g){
     }
     const facts=[...teamFacts(g.home.name,hh,"home"),...teamFacts(g.away.name,ah,"away"),...h2hFacts(g,hh)]
       .sort((a,b)=>b.priority-a.priority).slice(0,12);
-    return{...g,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
+    const hub=await hubEvidence(g);
+    return{...g,hubHistory:hub,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
   }catch(error){
     return{...g,history:{home:0,away:0},facts:[],marketSignals:[],error:String(error),generatedAt:new Date().toISOString()};
   }
