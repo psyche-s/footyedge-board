@@ -105,11 +105,20 @@ async function getJson(url){
 const BOOK_PRIORITY=["draftkings","fanduel","espnbet"];
 const BOOK_LABELS={draftkings:"DraftKings",fanduel:"FanDuel",espnbet:"ESPN BET"};
 function selectBook(books,key){return (books||[]).find(b=>b.key===key)}
+function quoteBookRef(book,market,eventId,line=null){
+  const detail=(book?.markets||[]).find(x=>x.key===market);
+  const suffix=line===null?"":":"+line;
+  return {key:book.key,name:BOOK_LABELS[book.key]||book.title||book.key,
+    quoteRef:"the-odds-api:"+eventId+":"+book.key+":"+market+suffix,
+    sourceProvider:"The Odds API",sourceUrl:"https://the-odds-api.com/sports-odds-data/bookmaker-apis.html",
+    marketUpdatedAt:detail?.last_update||null};
+}
 function h2hFromBook(book,home,away){
   const m=(book?.markets||[]).find(x=>x.key==="h2h");if(!m)return null;
   const get=n=>{const o=(m.outcomes||[]).find(x=>norm(x.name)===norm(n));return o&&Number.isFinite(Number(o.price))?Number(o.price):null};
   const homeML=get(home),drawML=get("draw"),awayML=get(away);
-  return homeML!=null&&awayML!=null?{homeML,drawML,awayML}:null
+  // Soccer match-winner markets are three-way. Never infer a no-draw market.
+  return homeML!=null&&drawML!=null&&awayML!=null?{homeML,drawML,awayML}:null
 }
 function totalsFromBook(book){
   const m=(book?.markets||[]).find(x=>x.key==="totals");if(!m)return{};
@@ -135,7 +144,7 @@ function summarizeEvent(event,league){
   let ml=null,mlBook=null;
   for(const key of BOOK_PRIORITY){
     const book=selectBook(books,key),x=h2hFromBook(book,home,away);
-    if(x){ml=x;mlBook={key,name:BOOK_LABELS[key]};break}
+    if(x){ml=x;mlBook=quoteBookRef(book,"h2h",event.id);break}
   }
   const lines=new Set();
   for(const key of BOOK_PRIORITY){
@@ -148,7 +157,7 @@ function summarizeEvent(event,league){
       const book=selectBook(books,key),t=totalsFromBook(book)[line];
       if(t?.over!=null&&t?.under!=null){
         const nv=noVig([impliedAmerican(t.over),impliedAmerican(t.under)]);
-        totals[line]={over:t.over,under:t.under,book:{key,name:BOOK_LABELS[key]},probs:{over:nv[0],under:nv[1]}};
+        totals[line]={over:t.over,under:t.under,book:quoteBookRef(book,"totals",event.id,line),probs:{over:nv[0],under:nv[1]}};
         break
       }
     }
@@ -156,7 +165,7 @@ function summarizeEvent(event,league){
   const spreads=[];
   for(const key of BOOK_PRIORITY){
     const book=selectBook(books,key),s=spreadFromBook(book,home,away);
-    if(s){spreads.push({...s,book:{key,name:BOOK_LABELS[key]}});break}
+    if(s){spreads.push({...s,book:quoteBookRef(book,"spreads",event.id,s.homeLine)});break}
   }
   const homeML=ml?.homeML??null,drawML=ml?.drawML??null,awayML=ml?.awayML??null;
   const mlp=noVig([impliedAmerican(homeML),impliedAmerican(drawML),impliedAmerican(awayML)]);
@@ -165,6 +174,7 @@ function summarizeEvent(event,league){
     id:event.id,league,sportKey:event.sport_key,sportTitle:event.sport_title,
     commenceTime:event.commence_time,home,away,
     provider:mlBook?.name||null,bookPriority:BOOK_PRIORITY,mlBook,
+    quoteSource:{vendor:"The Odds API",kind:"bookmaker-attributed snapshot",bookmakerMarket:"US",eventId:event.id,sportKey:event.sport_key},
     homeML,drawML,awayML,over25:t25.over??null,under25:t25.under??null,totals,spreads,
     probs:{home:mlp[0],draw:mlp[1],away:mlp[2],over25:t25.probs?.over??null,under25:t25.probs?.under??null}
   };
@@ -199,13 +209,14 @@ export default async function handler(req,res){
     const to=new Date(from.getTime()+36*60*60*1000);
     const fromIso=from.toISOString().replace(/\.000Z$/,"Z"),toIso=to.toISOString().replace(/\.000Z$/,"Z");
     const events=[],attempts=[];
-    let remaining=null,used=null,last=null;
+    let remaining=sportsResult.headers.get("x-requests-remaining"),used=sportsResult.headers.get("x-requests-used"),last=null,quotaExhausted=false;
     const publish=String(req.query.publish||"")==="1";
 
     for(const {league,sport} of resolved){
       let eventCount=null,skipped=false;
-      if(!publish){
-        // Normal browsing conserves credits by checking the free events endpoint first.
+      {
+        // Always check the FREE events endpoint, including scheduled publication.
+        // Avoid spending credits on leagues without a fixture today.
         const eventsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/events?apiKey="+encodeURIComponent(key)+"&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
         try{
           const eventCheck=await getJson(eventsUrl);
@@ -213,10 +224,14 @@ export default async function handler(req,res){
           if(!eventCount){skipped=true;attempts.push({league,sportKey:sport.key,paidRequest:false,eventCount:0,reason:"no_free_events"});continue}
         }catch(error){
           attempts.push({league,sportKey:sport.key,paidRequest:false,eventCount:null,reason:"event_check_failed"});
-          continue
+          // Do not suppress scheduled publication if the free preflight is down.
+          if(!publish)continue
         }
       }
 
+      if(remaining!==null&&Number.isFinite(Number(remaining))&&Number(remaining)===0){
+        quotaExhausted=true;attempts.push({league,sportKey:sport.key,paidRequest:false,reason:"quota_exhausted_preflight"});break;
+      }
       const oddsUrl=API_BASE+"/sports/"+encodeURIComponent(sport.key)+"/odds?apiKey="+encodeURIComponent(key)+"&bookmakers=draftkings,fanduel,espnbet&markets=h2h,totals,spreads&oddsFormat=american&dateFormat=iso&commenceTimeFrom="+encodeURIComponent(fromIso)+"&commenceTimeTo="+encodeURIComponent(toIso);
       try{
         const result=await getJson(oddsUrl),data=Array.isArray(result.data)?result.data:[];
@@ -224,15 +239,23 @@ export default async function handler(req,res){
         used=result.headers.get("x-requests-used")??used;
         last=result.headers.get("x-requests-last")??last;
         attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:data.length,requestsLast:result.headers.get("x-requests-last")||null});
-        for(const event of data)if(torontoDateOf(event.commence_time)===date)events.push(summarizeEvent(event,league));
+        const capturedAt=new Date().toISOString();
+        for(const event of data)if(torontoDateOf(event.commence_time)===date){
+          const quoted=summarizeEvent(event,league);quoted.quoteSource.capturedAt=capturedAt;events.push(quoted);
+        }
       }catch(error){
-        attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:0,error:error instanceof Error?error.message:String(error)});
+        const message=error instanceof Error?error.message:String(error);
+        attempts.push({league,sportKey:sport.key,paidRequest:true,eventCount:0,error:message});
+        if(/usage quota|quota has been reached|OUT_OF_USAGE_CREDITS/i.test(message)){
+          quotaExhausted=true;break; // Do not hammer every remaining league after quota rejection.
+        }
       }
     }
 
     res.setHeader("Cache-Control",publish?"no-store":`public, s-maxage=${CACHE_SECONDS}, stale-while-revalidate=30`);
     return res.status(200).json({
       enabled:true,publish,bookmakerPriority:["draftkings","fanduel","espnbet"],markets:["h2h","totals","spreads"],events,
+      quoteSource:"The Odds API / attributed US sportsbook odds",quotaExhausted,reason:quotaExhausted?"quota_exhausted":null,
       sports:resolved.map(x=>({league:x.league,key:x.sport.key,title:x.sport.title})),
       attempts,quota:{remaining,used,last},fetchedAt:new Date().toISOString()
     });
