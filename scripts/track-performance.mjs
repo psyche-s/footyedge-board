@@ -53,12 +53,12 @@ function eventInfo(e){
   return{
     home:h?.team?.displayName||h?.team?.name||"",
     away:a?.team?.displayName||a?.team?.name||"",
-    homeScore:Number(h?.score??0),awayScore:Number(a?.score??0),
+    homeScore:h?.score==null?null:Number(h.score),awayScore:a?.score==null?null:Number(a.score),
     done:Boolean(e?.status?.type?.completed)||String(e?.status?.type?.state||"").toLowerCase()==="post"
   }
 }
 function settlePick(p,event){
-  if(!event?.done)return{result:"pending",finalScore:null};
+  if(!event?.done||!Number.isInteger(event.homeScore)||!Number.isInteger(event.awayScore)||event.homeScore<0||event.awayScore<0)return{result:"pending",finalScore:null};
   const hs=event.homeScore,as=event.awayScore,total=hs+as,selection=String(p.selection||""),category=String(p.category||"").toLowerCase();
   const finalScore=event.home+" "+hs+"-"+as+" "+event.away;
   const hit=r=>({result:r?"hit":"miss",finalScore});
