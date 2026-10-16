@@ -421,7 +421,11 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
     # Completed execution is not a completed forecast. Never archive false-success
     # candidates when every eligible match failed fitting or prediction.
     if eligible and output["coverage"]["predicted"] == 0:
-        output["status"] = "no_valid_predictions"
+        statuses = {item["status"] for item in output["fixtures"]}
+        if statuses and statuses.issubset({"already_started", "invalid_kickoff"}):
+            output["status"] = "outside_prematch_window"
+        else:
+            output["status"] = "no_valid_predictions"
     return output
 
 def main() -> int:
