@@ -42,7 +42,7 @@ def check(package=None):
                     agoals.append((j + round_number + i * 2) % 3)
         model = goal_model(hgoals, agoals, home, away, weights=[1.0] * len(home))
         model.fit(use_gradient=True, minimizer_options={"maxiter": 700})
-        if model.fitted is not True:
+        if not bool(model.fitted):
             raise RuntimeError("Optimizer did not report fitted=True")
         result["checks"]["synthetic_fit"] = "passed"
         pred = model.predict("Atlas", "Boreal")
