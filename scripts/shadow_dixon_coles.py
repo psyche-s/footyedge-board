@@ -418,6 +418,10 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
             output["fixtures"].append(entry)
     output["coverage"] = {"inputFixtures": len(games), "eligibleLeagueFixtures": len(eligible),
                           "predicted": sum(g["status"] == "shadow_prediction" for g in output["fixtures"])}
+    # Completed execution is not a completed forecast. Never archive false-success
+    # candidates when every eligible match failed fitting or prediction.
+    if eligible and output["coverage"]["predicted"] == 0:
+        output["status"] = "no_valid_predictions"
     return output
 
 def main() -> int:
@@ -443,6 +447,12 @@ def main() -> int:
         result = forecast_day(args.repo, day, asof)
         print(f"Shadow dry run: {day} status={result['status']} "
               f"coverage={result.get('coverage')}")
+        # Diagnostics contain only error types/brief messages, no API secrets.
+        # Show actual model failure reasons rather than a green workflow badge.
+        for code, info in sorted(result.get("leagueDiagnostics", {}).items()):
+            print(f"  League {code}: {info.get('status')}, "
+                  f"matches={info.get('trainingMatches', 0)}, "
+                  f"reason={info.get('error', '')[:120]}")
         return 0
     need_original = not dest.exists()
     need_candidate = args.capture_candidate and not candidate.exists()
