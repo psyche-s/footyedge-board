@@ -9,6 +9,10 @@ on:
     branches: [main]
     paths:
       - "scripts/shadow_dixon_coles.py"
+      - "scripts/model_healthcheck.py"
+      - "scripts/sgp_readiness.py"
+      - "tests/test_model_healthcheck.py"
+      - "tests/test_sgp_readiness.py"
       - "assets/board-availability.js"
       - "scripts/backtest_shadow.py"
       - "scripts/compare-frozen-slates.mjs"
@@ -44,6 +48,10 @@ on:
       - ".github/workflows/archive-board.yml"
       - ".github/workflows/shadow-dixon-coles.yml"
       - "requirements-shadow.txt"
+      - "scripts/model_healthcheck.py"
+      - "scripts/sgp_readiness.py"
+      - "tests/test_model_healthcheck.py"
+      - "tests/test_sgp_readiness.py"
   schedule:
     # Local 00:10 shadow forecast; workflow_run still triggers after completed research.
     - cron: "10 4 * * *"
@@ -77,8 +85,13 @@ jobs:
         run: node --test tests/audit-shadow-refresh.test.mjs tests/model-board.test.mjs tests/saudi-league.test.mjs tests/czech-league.test.mjs
       - name: Install modeling dependencies
         run: pip install -r requirements-shadow.txt
+      - name: Confirm model dependency and prediction API before forecasting
+        run: python scripts/model_healthcheck.py --output "$RUNNER_TEMP/footyedge-model-health.json"
       - name: Unit tests
-        run: python -m unittest discover -s tests -p 'test_shadow_model.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_shadow_model.py' -v
+          python -m unittest discover -s tests -p 'test_model_healthcheck.py' -v
+          python -m unittest discover -s tests -p 'test_sgp_readiness.py' -v
       - name: Historical domestic holdout (research only)
         shell: bash
         run: |
@@ -129,6 +142,26 @@ jobs:
               echo "New model candidate or native odds not yet available; preserve official board."
             fi
           fi
+      - name: Audit same-game research readiness (diagnostic only)
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
+          if [[ -f "data/boards/$TODAY.json" ]]; then
+            python scripts/sgp_readiness.py --board "data/boards/$TODAY.json" --output "$RUNNER_TEMP/footyedge-sgp-readiness.json"
+          else
+            echo "No frozen board available yet; diagnostic skipped."
+          fi
+      - name: Upload research diagnostics (not production data)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: footyedge-model-sgp-preflight-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/footyedge-model-health.json
+            ${{ runner.temp }}/footyedge-sgp-readiness.json
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Archive immutable model snapshots and fixed holdout
         if: github.ref == 'refs/heads/main'
         shell: bash
