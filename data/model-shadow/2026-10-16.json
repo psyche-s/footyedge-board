@@ -1,0 +1,214 @@
+{
+  "date": "2026-10-16",
+  "asOf": "2026-10-16T04:35:53.647441+00:00",
+  "modelVersion": "dc-shadow-v0.7",
+  "mode": "shadow_only",
+  "promotedToPicks": false,
+  "assumptions": {
+    "decayXiPerDay": 0.001,
+    "minTrainingMatches": 90,
+    "minTeamMatches": 4,
+    "maxDataAgeDays": 30
+  },
+  "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+  "fixtures": [
+    {
+      "fixtureId": "401880218",
+      "league": "eng.2",
+      "kickoff": "2026-10-16T19:00Z",
+      "home": "Burnley",
+      "away": "Wolverhampton Wanderers",
+      "status": "fit_failed"
+    },
+    {
+      "fixtureId": "401882844",
+      "league": "esp.1",
+      "kickoff": "2026-10-16T19:00Z",
+      "home": "Deportivo",
+      "away": "Levante",
+      "status": "fit_failed"
+    },
+    {
+      "fixtureId": "401876437",
+      "league": "fra.1",
+      "kickoff": "2026-10-16T18:45Z",
+      "home": "Le Mans",
+      "away": "Toulouse",
+      "status": "fit_failed"
+    },
+    {
+      "fixtureId": "401884770",
+      "league": "ger.1",
+      "kickoff": "2026-10-16T18:30Z",
+      "home": "Eintracht Frankfurt",
+      "away": "FC Cologne",
+      "status": "fit_failed"
+    },
+    {
+      "fixtureId": "401874959",
+      "league": "ita.1",
+      "kickoff": "2026-10-16T18:45Z",
+      "home": "Frosinone",
+      "away": "Sassuolo",
+      "status": "fit_failed"
+    },
+    {
+      "fixtureId": "401900901",
+      "league": "ksa.1",
+      "kickoff": "2026-10-16T13:15Z",
+      "home": "Al Qadsiah",
+      "away": "Abha",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401875583",
+      "league": "ned.1",
+      "kickoff": "2026-10-16T18:00Z",
+      "home": "Heerenveen",
+      "away": "Excelsior",
+      "status": "fit_failed"
+    },
+    {
+      "fixtureId": "401888377",
+      "league": "tur.1",
+      "kickoff": "2026-10-16T17:00Z",
+      "home": "\u00c7orum FK",
+      "away": "Caykur Rizespor",
+      "status": "fit_failed"
+    }
+  ],
+  "leagueDiagnostics": {
+    "eng.2": {
+      "trainingMatches": 5046,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [
+        "data/football-hub/eng.2.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401880233"
+      ],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    },
+    "esp.1": {
+      "trainingMatches": 4220,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [
+        "data/football-hub/esp.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401882851"
+      ],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    },
+    "fra.1": {
+      "trainingMatches": 3875,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [
+        "data/football-hub/fra.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401876447"
+      ],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    },
+    "ger.1": {
+      "trainingMatches": 3388,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [
+        "data/football-hub/ger.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401884781"
+      ],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    },
+    "ita.1": {
+      "trainingMatches": 4184,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 26,
+      "sourceUrls": [
+        "data/football-hub/ita.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    },
+    "ksa.1": {
+      "trainingMatches": 3,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [],
+      "sourceErrors": [
+        "2025-26: HTTPError",
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [
+        "401900908",
+        "401900912",
+        "401900907"
+      ],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    },
+    "ned.1": {
+      "trainingMatches": 2426,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [
+        "data/football-hub/ned.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [
+        "401875592"
+      ],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    },
+    "tur.1": {
+      "trainingMatches": 100,
+      "latestResultDate": "2026-10-09",
+      "resultAgeDays": 7,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/tr.1.json"
+      ],
+      "sourceErrors": [
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [
+        "401888280"
+      ],
+      "sourceConflictCount": 0,
+      "status": "fit_failed",
+      "error": "ModuleNotFoundError: No module named 'penaltyblog'"
+    }
+  },
+  "researchInputSha256": "ff7fbf933054fa7d7f16949584bd3cd1be88775b08efee741be37928c789a581",
+  "researchGeneratedAt": "2026-10-16T04:34:51.167Z",
+  "researchAgeHours": 0.017,
+  "status": "completed",
+  "unmodeledFixtureCount": 0,
+  "coverage": {
+    "inputFixtures": 8,
+    "eligibleLeagueFixtures": 8,
+    "predicted": 0
+  }
+}

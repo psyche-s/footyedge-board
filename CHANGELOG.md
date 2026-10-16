@@ -857,3 +857,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - UI impact: unchanged apart from suppressing invalid numeric metrics as N/A.
 - Tracking/history impact: historical board content and correction archives remain unchanged; the October 15 record has no selections.
 - Deployment result: production verified at `https://footyedge-board.vercel.app`; no Vercel Hobby deployment limit was encountered.
+## 2026-10-16 — Daily men’s board and settlement-safe integrity guard
+**Status:** ✅ Code ready; production verification pending
+
+- Refreshed the October 16 men’s fixture slate and next-four-day readiness data. Eight tracked matches were researched for today; future dates remain unpublished readiness records only.
+- Published an explicit PASS-only October 16 board because the native sportsbook capture returned no exact events and the uncalibrated shadow run produced no eligible forecasts. No odds, EV, confidence, Top 3 or Top 5 was invented.
+- Corrected the October 10 legacy tracking exception so its owner-corrected selection identity stays pinned while legitimate result and final-score settlement fields can update. The archived board and original selections remain byte-for-byte unchanged.
+- Model/data impact: no weight or calibration change; insufficient verified inputs fail closed. UI impact: none. Tracking/history impact: prior archives remain intact and the completed-result settlement path is no longer blocked by an obsolete whole-file hash.
+- Deployment result: pending GitHub commit, workflow checks and Vercel production verification.
+

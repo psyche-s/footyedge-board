@@ -65,6 +65,18 @@ test('Integrity rejects an unaudited overwrite',async()=>{
   }finally{fs.writeFileSync(file,saved)}
 });
 
+test('October 10 pinned tracking identity permits result settlement fields',async()=>{
+  const {validateIntegrity}=await import('../scripts/validate-published-boards.mjs');
+  const file='data/performance/2026-10-10.json',saved=fs.readFileSync(file,'utf8');
+  try{
+    const performance=JSON.parse(saved);
+    performance.top5[0].result='pending';
+    performance.top5[0].finalScore=null;
+    fs.writeFileSync(file,JSON.stringify(performance,null,2)+'\n');
+    assert.doesNotThrow(()=>validateIntegrity('HEAD'));
+  }finally{fs.writeFileSync(file,saved)}
+});
+
 test("Oct 10 static board provides validated historical form and match H2H rather than empty UI placeholders",()=>{
   const b=JSON.parse(fs.readFileSync("data/boards/2026-10-10.json","utf8"));
   assert.equal(b.games.length,66);
