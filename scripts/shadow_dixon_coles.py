@@ -453,6 +453,10 @@ def main() -> int:
             print(f"  League {code}: {info.get('status')}, "
                   f"matches={info.get('trainingMatches', 0)}, "
                   f"reason={info.get('error', '')[:120]}")
+        for item in result.get("fixtures", []):
+            print(f"  Fixture {item.get('league')} {item.get('home')} / {item.get('away')}: "
+                  f"{item.get('status')}, teamKeys={item.get('teamKeys', [])}, "
+                  f"error={str(item.get('error', ''))[:120]}")
         return 0
     need_original = not dest.exists()
     need_candidate = args.capture_candidate and not candidate.exists()
