@@ -1,0 +1,31 @@
+name: FootyEdge asset and data coverage (diagnostic only)
+on:
+  pull_request:
+    paths:
+      - "config/league-coverage.json"
+      - "scripts/audit-coverage.mjs"
+      - "tests/audit-coverage.test.mjs"
+      - ".github/workflows/coverage-audit.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test audit against synthetic cases
+        run: node --test tests/audit-coverage.test.mjs
+      - name: Audit repo's actual local league asset cache and source coverage
+        run: node scripts/audit-coverage.mjs --out "$RUNNER_TEMP/footyedge-coverage.json"
+      - name: Show coverage summary
+        run: node -e 'const d=require(process.env.RUNNER_TEMP+"/footyedge-coverage.json");console.log(JSON.stringify(d.summary,null,2))'
+      - name: Upload coverage report (never production board)
+        uses: actions/upload-artifact@v4
+        with:
+          name: footyedge-coverage-${{ github.run_id }}
+          path: ${{ runner.temp }}/footyedge-coverage.json
+          retention-days: 7
