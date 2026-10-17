@@ -66,11 +66,23 @@ jobs:
           git fetch --quiet origin main || echo "Shadow source ref refresh unavailable; publishing remains independent."
           node scripts/audit-shadow-refresh.mjs --ref origin/main
 
-      - name: Capture verified native sportsbook odds once
+      - name: Capture verified native sportsbook odds once (GitHub secret, capped)
         if: steps.gate.outputs.run == 'true'
         env:
+          THEODDSAPI: ${{ secrets.THEODDSAPI }}
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
-        run: node scripts/capture-native-odds.mjs
+          ODDS_MAX_PAID_CALLS: "8"
+          ODDS_MAX_CREDITS: "20"
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/capture-github-odds.mjs
+          if [[ -n "$THEODDSAPI" ]]; then
+            node scripts/capture-github-odds.mjs
+          else
+            echo "::warning::GitHub THEODDSAPI secret unavailable; using existing Vercel capture fallback."
+            node scripts/capture-native-odds.mjs
+          fi
 
       - name: Evidence-only recovery when sportsbook quota is exhausted
         if: steps.gate.outputs.run == 'true'
