@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.7"
+VERSION = "dc-shadow-v0.8"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
@@ -26,7 +26,7 @@ LEAGUES = {
 }
 MIN_TRAIN_MATCHES = 90
 MIN_TEAM_MATCHES = 4
-MAX_SOURCE_AGE_DAYS = 30
+MAX_SOURCE_AGE_DAYS = 14
 DECAY_XI = 0.001  # experimental baseline; NOT optimized or calibrated
 TORONTO = ZoneInfo("America/Toronto")
 # Auditable exact aliases only; avoid fuzzy mismatches across teams.
