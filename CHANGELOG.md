@@ -879,3 +879,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Tracking/history impact: the October 16 official Top 5 was settled into its performance record without altering the frozen board. All earlier archives remain unchanged; October 17 is a new immutable lock.
 - Deployment result: pending GitHub main push, Actions integrity verification and Vercel production verification.
 
+
+## 2026-10-17 — Full-slate recovery production verification
+**Status:** ✅ Deployed and verified
+
+- GitHub main published the immutable October 17 board at commit `a802e8711dd3f9edce6ec25e69dcbe571b7206dd`; the Published board integrity workflow completed successfully.
+- Vercel production deployment `dpl_BfLSkSTtfZULhNPiwTa4M9tex32X` reached `READY` from that exact commit with no alias error or Hobby deployment-limit failure.
+- The public board file matched the committed immutable archive byte-for-byte: 60 men’s fixtures, 11 competitions, 45 complete Top-3 research cards, 15 explicit PASS fixtures, zero women’s fixtures, and zero non-null odds, calibrated confidence or EV fields.
+- UI impact: none. Production continues to serve the existing owner-approved interface without layout, styling, navigation, logo, filter, card or modal changes.
+
