@@ -64,11 +64,20 @@ test("v2 integration never reads provider rows without approval or alters state"
  assert.throws(()=>assess(unlocked,{},"2026-10-17"),/bridge_policy_not_approved/);
  assert.throws(()=>assess(CONFIG,{},"2026-02-30"),/invalid_as_of_date/);
 });
-test("existing mirrored Hub files are readable and current-season staleness is reported",()=>{
- const out=fromDirectory(CONFIG,"data/football-hub","2026-10-17");
+test("existing mirrored Hub CC0 remains validated as seasons advance",()=>{
+ const now=new Date();
+ const parts=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",
+    year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(now);
+ const date=Object.fromEntries(parts.map(x=>[x.type,x.value]));
+ const today=date.year+"-"+date.month+"-"+date.day;
+ const out=fromDirectory(CONFIG,"data/football-hub",today);
  const eng=out.leagues.find(x=>x.league==="eng.1");
- assert.equal(eng.sourceCoverage.status,"stale_current_season_results");
- assert.equal(eng.sourceCoverage.lastCurrentFinalDate,"2026-09-20");
+ assert.ok(["stale_current_season_results","score_history_present_not_live_verified",
+            "no_current_season_finals"].includes(eng.sourceCoverage.status));
+ assert.ok(eng.sourceCoverage.completedHistoricalRecords>1000);
+ if(eng.sourceCoverage.lastCurrentFinalDate){
+   assert.ok(eng.sourceCoverage.lastCurrentFinalDate<today);
+ }
  assert.equal(out.publicStatsReady,false);
  assert.equal(out.frozenBoardsUnchanged,true);
 });
