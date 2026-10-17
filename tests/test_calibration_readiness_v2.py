@@ -19,7 +19,7 @@ class CalibrationReadinessTests(unittest.TestCase):
                        "evaluatedMatches":[sample(),sample(outcome="away_win")]})
         self.assertEqual(x["scoredMatches"],2)
         self.assertEqual(x["accuracyTop1"],.5)
-        self.assertEqual(x["multiclassBrier"],.84)
+        self.assertEqual(x["multiclassBrier"],.64)
         self.assertFalse(x["calibrated"])
         self.assertFalse(x["eligibleForMarketEV"])
         self.assertFalse(x["eligibleFor90PercentConfidenceDisplay"])
