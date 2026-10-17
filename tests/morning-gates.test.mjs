@@ -133,7 +133,7 @@ test("October 12 rolling board retains three distinct researched picks per fixtu
 });
 test("Current Top 5 separates unavailable exact pick quotes from DraftKings priced alternatives",()=>{
   const board=JSON.parse(fs.readFileSync("data/boards/2026-10-12.json","utf8"));
-  assert.match(p2,/Priced alternative ·/);
+  assert.doesNotMatch(p2,/Priced alternative ·/);
   assert.match(home,/Priced alternative:/);
   assert.equal(board.top5.length,5);
   for(const row of board.top5){
