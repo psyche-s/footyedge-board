@@ -779,18 +779,28 @@ function playerCandidates(g,type){
     if(!key||seen.has(key))return false;seen.add(key);return true
   }).sort((a,b)=>(b.score||0)-(a.score||0)||(b.crossSources||0)-(a.crossSources||0))
 }
+function resultMarketCandidates(g){
+  const defined=g.model?.resultCandidates;
+  const candidates=Array.isArray(defined)&&defined.length?defined:(g.model?.top3||[]).filter(p=>p.category==="Match Result"||p.category==="Double Chance");
+  return [...candidates].sort((a,b)=>Number(b.confidenceRating??b.score??-1)-Number(a.confidenceRating??a.score??-1));
+}
 function viewCandidates(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
+  if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
   return g.model?.top3||[]
 }
 function viewPick(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
+  if(S.filter==="result")return resultMarketCandidates(g)[0]||null;
   const top3=g.model?.top3||[];
   return g.model?.top||top3[0]||null
 }
-function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return p.category==="Match Result"||p.category==="Double Chance";return true}
+function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
+  if(S.filter==="result"&&S.archive?.date===S.date){
+    return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&statusOK(g)&&resultMarketCandidates(g).length).map(g=>({...g,archiveTopPick:resultMarketCandidates(g)[0]})).sort((a,b)=>Number(b.archiveTopPick.confidenceRating??b.archiveTopPick.score??-1)-Number(a.archiveTopPick.confidenceRating??a.archiveTopPick.score??-1)).slice(0,5);
+  }
   if(S.archive?.date===S.date){
     const refs=S.league!=="all"&&S.archive.leagueTop5?.[S.league]?S.archive.leagueTop5[S.league]:S.archive.top5||[];
     return refs.map(x=>{
