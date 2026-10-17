@@ -10,9 +10,10 @@ spec.loader.exec_module(audit)
 class AuditTests(unittest.TestCase):
     def base(self):
         return {"date":"2026-10-16","asOf":"2026-10-16T04:15:00Z",
+                "researchGeneratedAt":"2026-10-16T04:10:00Z",
                 "status":"completed","promotedToPicks":False,
                 "coverage":{"eligibleLeagueFixtures":1,"predicted":1},
-                "fixtures":[{"status":"predicted"}],"leagueDiagnostics":{}}
+                "fixtures":[{"status":"shadow_prediction"}],"leagueDiagnostics":{}}
     def test_successful_synthetic_run_is_not_published(self):
         report=audit.inspect_snapshot(self.base())
         self.assertEqual(report["actualForecastStatus"],"model_execution_only")
@@ -34,6 +35,20 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(r["actualForecastStatus"],"no_forecasts")
         self.assertIn("no_actual_forecasts",r["blockers"])
         self.assertTrue(r["failedFitMessages"])
+    def test_missing_research_provenance_is_rejected(self):
+        d=self.base()
+        del d["researchGeneratedAt"]
+        report=audit.inspect_snapshot(d)
+        self.assertIn("unverified_research_timestamp",report["blockers"])
+        self.assertFalse(report["eligibleForPublication"])
+
+    def test_late_research_cannot_be_certified_as_prematch(self):
+        d=self.base()
+        d["researchGeneratedAt"]="2026-10-16T04:34:51Z"
+        report=audit.inspect_snapshot(d)
+        self.assertIn("research_generated_after_official_freeze",report["blockers"])
+        self.assertIn("research_newer_than_forecast",report["blockers"])
+
     def test_mismatched_counts_not_approved(self):
         d=self.base()
         d["coverage"]["predicted"]=3
