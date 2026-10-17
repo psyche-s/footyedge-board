@@ -13,6 +13,10 @@ test("eight metadata-only competitions, eleven men leagues and zero live rights"
  const result=assess(CONFIG,{},"2026-10-17");
  assert.equal(result.leagues.length,11);
  assert.equal(result.verifiedMetadataLeagues,8);
+ assert.equal(result.leagues.find(x=>x.league==="eng.1").fdorg.oneDayMatchEndpointTested,true);
+ assert.equal(result.leagues.find(x=>x.league==="eng.2").fdorg.oneDayMatchEndpointTested,false);
+ assert.equal(result.leagues.find(x=>x.league==="eng.1").fdorg.matchEndpointVerified,false);
+
  assert.equal(result.currentSeasonArchives,0);
  assert.equal(result.staleOrMissingLeagues,11);
  assert.equal(result.noNetworkCalls,true);
