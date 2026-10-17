@@ -981,7 +981,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -992,10 +992,15 @@ async function load(date=S.date){
       repoData('data/research-base-'+S.date+'.json').catch(()=>null),
       CAPTURE_FAST?Promise.resolve(null):repoData('data/boards/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/board-drafts/'+S.date+'.json').catch(()=>null),
-      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null)))
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null))),
+      repoData('data/market-reviews/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
+    // Supplemental 1X2 trend review is never a substitute for immutable picks.
+    S.resultMarketReview=marketReviewPayload?.schema==="footyedge-fulltime-market-review-v1"
+      &&marketReviewPayload.date===S.date&&marketReviewPayload.officialBoardUnchanged===true
+      &&marketReviewPayload.oddsVerified===false?marketReviewPayload:null;
     // Owner-approved, versioned research correction is a display overlay only.
     // Original immutable data/boards archive remains untouched.
     const approvedCorrection=S.date==="2026-10-15"?await repoData("data/corrections/2026-10-15-v7.json").catch(()=>null):null;
@@ -1386,7 +1391,24 @@ function renderModal(g){
     '</div><p class="modelFootnote">Third-party odds observed at '+
       esc(new Date(liveEntry.prices[0].observedAt).toLocaleTimeString('en-US',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit'}))+
       ' ET, not directly verified with the bookmaker. Different lines are not substitutes for the frozen picks. Check current odds before betting.</p></section>':'';
-  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+oddsExtra;
+  const marketEntry=S.resultMarketReview?.games?.find(x=>String(x.id)===String(g.id));
+  // Supplemental markets are only shown before kickoff and are NEVER
+  // promoted to the saved Top 3, global Top 5, settlement or bookmaker odds.
+  const reviewMarkets=marketEntry&&Date.parse(g.date)>Date.now()&&marketEntry.preKickoff
+      ?marketEntry.resultMarkets||[]:[];
+  const marketReviewHtml=reviewMarkets.length?
+    '<section class="researchBox" aria-label="Full-time result market research, not official picks">'+
+    '<div class="researchTitle">ML / DRAW / DOUBLE CHANCE · RESEARCH CHECK</div>'+
+    '<div class="researchFacts">'+reviewMarkets.map(x=>{
+      const h=x.firstSample||{},a=x.opponentSample||{};
+      const flag=x.reviewStatus==="research-watch"?"WATCH — verify line & team news":"PASS — historical support not sufficient";
+      return '<div class="researchFact"><span class="researchDot"></span><span>'+
+        esc(x.label)+' · '+esc(flag)+' · '+esc(String(h.hits??0))+'/'+esc(String(h.sample??0))+
+        ' selected-side results; '+esc(String(a.hits??0))+'/'+esc(String(a.sample??0))+
+        ' opponent-side results</span></div>';
+    }).join('')+'</div>'+
+    '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No sportsbook line, calibrated EV, or new official selection is implied. Official frozen picks remain unchanged.</p></section>':'';
+  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
   const btn=event?.target?.closest?.("[data-h2h-toggle]");if(!btn)return;
