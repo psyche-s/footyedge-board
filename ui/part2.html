@@ -1407,7 +1407,7 @@ function renderModal(g){
         ' selected-side results; '+esc(String(a.hits??0))+'/'+esc(String(a.sample??0))+
         ' opponent-side results</span></div>';
     }).join('')+'</div>'+
-    '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No sportsbook line, calibrated EV, or new official selection is implied. Today's frozen picks remain unchanged.</p></section>':'';
+    '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No sportsbook line, calibrated EV, or new official selection is implied. Official frozen picks remain unchanged.</p></section>':'';
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
