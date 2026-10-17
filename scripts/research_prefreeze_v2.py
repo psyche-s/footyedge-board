@@ -84,7 +84,9 @@ def assess(day: date, model_time: datetime, research: dict | None,
             except (KeyError,ValueError,TypeError):
                 coverage.append({"fixtureId":match_id,"league":league,
                                  "status":"invalid_kickoff"})
-        if eligible_count and not any(x["status"]=="prematch_window_candidate" for x in coverage):
+        if eligible_count == 0:
+            blockers.append("no_supported_model_fixtures")
+        elif not any(x["status"]=="prematch_window_candidate" for x in coverage):
             blockers.append("zero_prematch_eligible_fixtures")
     blockers=sorted(set(blockers))
     return {
