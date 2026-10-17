@@ -74,6 +74,8 @@ jobs:
 
       - name: Evidence-only recovery when sportsbook quota is exhausted
         if: steps.gate.outputs.run == 'true'
+        env:
+          OWNER_RESEARCH_PICKS: "1"
         run: node scripts/build-evidence-only-board.mjs
 
       # Missing leagues are restored from independently verified dated research.
@@ -95,6 +97,12 @@ jobs:
             echo "::warning::Browser capture failed. Retain current Top 5."
             FORCE_FALLBACK=1 node scripts/build-evidence-only-board.mjs
           fi
+
+      - name: Restore last-five form and three market-diverse picks before freeze
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          node --check scripts/ensure-daily-research-picks.mjs
+          node scripts/ensure-daily-research-picks.mjs
 
       - name: Publish and lock current-day picks once
         if: steps.gate.outputs.run == 'true'
