@@ -30,7 +30,7 @@ def assess(day: date, model_time: datetime, research: dict | None,
     if model_time.tzinfo is None:
         raise ValueError("Model time requires timezone")
     asof=model_time.astimezone(timezone.utc)
-    freeze=datetime.combine(day,time(0,30),TZ)
+    freeze=datetime.combine(day,time(0,30),TORONTO)
     freeze_utc=freeze.astimezone(timezone.utc)
     blockers=[]
     coverage=[]
