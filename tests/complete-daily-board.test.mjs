@@ -19,7 +19,13 @@ test('published, owner-approved research slate has five-result form and exactly 
   assert.equal(g.top?.label,g.top3[0]?.label,'Top and #1 disagree '+g.id);
   const ratings=g.top3.map(p=>p.confidenceRating??p.score);
   assert.ok(ratings.every(Number.isFinite),'Missing rating '+g.id);
-  assert.ok(ratings[0]>=ratings[1]&&ratings[1]>=ratings[2],'Incorrect ranking '+g.id);
+  if(g.ownerSelectedMarket==='Match Result'){
+    // Owner-requested moneyline #1 is an editorial market preference, NOT
+    // an inflated 85% win prediction. Remaining alternatives stay ranked.
+    assert.equal(g.top3[0].category,'Match Result','Owner-requested ML not first '+g.id);
+    assert.equal(g.top3[0].ownerRequestedTopPick,true,'Missing owner-requested provenance '+g.id);
+    assert.ok(ratings[1]>=ratings[2],'Non-featured alternatives out of order '+g.id);
+  }else assert.ok(ratings[0]>=ratings[1]&&ratings[1]>=ratings[2],'Incorrect ranking '+g.id);
   assert.equal((g.model?.resultCandidates||[]).filter(p=>p.category==='Match Result').length,2,'Two moneylines must be evaluated '+g.id);
   for(const p of g.top3)if(!p.probabilityCalibrated){
     assert.equal(p.score,null,'Research rating must not be claimed as calibrated confidence');
