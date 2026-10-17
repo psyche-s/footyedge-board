@@ -1,0 +1,43 @@
+name: V2 Free Data Hub Integration Readiness (development only)
+on:
+  pull_request:
+    paths:
+      - "config/v2-free-data-bridge.json"
+      - "scripts/v2-data-source-readiness.mjs"
+      - "tests/v2-data-source-readiness.test.mjs"
+      - ".github/workflows/v2-free-hub-readiness.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test CC0-only Hub readiness, freshness, closed provider rights
+        run: node --test tests/v2-data-source-readiness.test.mjs
+      - name: Report live mirrored Hub readiness (no fetching or writes to git)
+        shell: bash
+        run: |
+          node scripts/v2-data-source-readiness.mjs 2026-10-17 > "$RUNNER_TEMP/v2-free-hub-readiness.json"
+          node --input-type=module - "$RUNNER_TEMP/v2-free-hub-readiness.json" <<'JS'
+          import fs from "node:fs";
+          const r=JSON.parse(fs.readFileSync(process.argv[2],"utf8"));
+          if(r.noNetworkCalls!==true||r.changesPublished!==false||r.publicStatsReady!==false||
+             r.verifiedMetadataLeagues!==8)process.exit(1);
+          const eng=r.leagues.find(x=>x.league==="eng.1");
+          console.log("CC0 EPL last final:",eng?.sourceCoverage?.lastCurrentFinalDate);
+          console.log("Free provider metadata verified:",r.verifiedMetadataLeagues);
+          console.log("Leagues needing fresh scores or mapping:",r.staleOrMissingLeagues);
+          console.log("Public publishing:",r.changesPublished,"unlicensed rows:",r.noProviderRowsAdded);
+          JS
+      - name: Retain private diagnostic report (not published to public site)
+        uses: actions/upload-artifact@v4
+        with:
+          name: v2-free-source-readiness
+          path: ${{ runner.temp }}/v2-free-hub-readiness.json
+          retention-days: 3
