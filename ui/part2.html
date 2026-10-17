@@ -1018,6 +1018,43 @@ async function load(date=S.date){
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null,baseResearch:researchBaseMap.get(fixtureMatchKey(homeName,awayName))||null}
     }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
 
+    // Recover dated men's fixtures that the ESPN scoreboard did not include.
+    // Fixture-only cards never manufacture odds, confidence or betting picks.
+    const eligibleFixtureLeagues={
+      "Premier League":"eng.1","La Liga":"esp.1","Serie A":"ita.1",
+      "Bundesliga":"ger.1","Ligue 1":"fra.1","Eredivisie":"ned.1",
+      "eng.2":"eng.2","tur.1":"tur.1","ksa.1":"ksa.1",
+      "sco.1":"sco.1","esp.2":"esp.2","ger.2":"ger.2","ita.2":"ita.2",
+      "fra.2":"fra.2","por.1":"por.1","cze.1":"cze.1"
+    };
+    const knownFixtureIds=new Set(games.map(g=>String(g.apiFixtureId||g.id)));
+    const knownFixtureKeys=new Set(games.map(g=>fixtureMatchKey(g.home.name,g.away.name)));
+    for(const item of fixturesPayload?.response||[]){
+      const fid=String(item?.fixture?.id||""),date=item?.fixture?.date;
+      const homeName=item?.teams?.home?.name,awayName=item?.teams?.away?.name;
+      const rawLeague=String(item?.league?.name||"");
+      const league=eligibleFixtureLeagues[rawLeague];
+      if(!league||!fid||!date||!homeName||!awayName)continue;
+      if(FootyEdgeAvailability.eventDay({date})!==S.date)continue;
+      if(/women|female|\\.w\\.|nwsl/i.test(rawLeague+" "+homeName+" "+awayName))continue;
+      const key=fixtureMatchKey(homeName,awayName);
+      if(knownFixtureIds.has(fid)||knownFixtureKeys.has(key))continue;
+      const st=String(item?.fixture?.status?.short||"");
+      const done=/^(FT|AET|PEN)$/i.test(st),live=/^(1H|2H|HT|ET|P|LIVE)$/i.test(st);
+      games.push({
+        id:fid,apiFixtureId:fid,date,year:Number(item.league?.season||S.date.slice(0,4)),
+        league,leagueName:displayLeagueName(league,rawLeague),
+        leagueLogo:item.league?.logo||LEAGUE_LOGOS[league]||null,
+        home:{id:String(item.teams.home.id||""),name:homeName,logo:item.teams.home.logo||null,score:done||live?scoreVal(item.goals?.home):null},
+        away:{id:String(item.teams.away.id||""),name:awayName,logo:item.teams.away.logo||null,score:done||live?scoreVal(item.goals?.away):null},
+        odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
+        live,done,detail:item.fixture.status?.long||"",model:null,context:null,
+        apiPrediction:null,availability:null,availabilityLoaded:false,
+        dailyInsight:insightMap.get(key)||null,baseResearch:researchBaseMap.get(key)||null
+      });
+      knownFixtureIds.add(fid);knownFixtureKeys.add(key);
+    }
+
     // ESPN's saved scoreboard omits the Czech top flight. The independently
     // retrieved Czech season feed is already preserved in our dated research base.
     // Recover ONLY those verified fixtures; never invent games from odds listings.
