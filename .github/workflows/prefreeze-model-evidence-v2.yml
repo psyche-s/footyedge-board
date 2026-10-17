@@ -1,0 +1,57 @@
+name: V2 pre-freeze model evidence audit (no production publishing)
+on:
+  pull_request:
+    paths:
+      - "scripts/research_prefreeze_v2.py"
+      - "tests/test_research_prefreeze_v2.py"
+      - "scripts/calibration_readiness_v2.py"
+      - "tests/test_calibration_readiness_v2.py"
+      - "scripts/model_snapshot_audit.py"
+      - "tests/test_model_snapshot_audit.py"
+      - ".github/workflows/prefreeze-model-evidence-v2.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate future, late and stale research evidence
+        run: |
+          python -m unittest discover -s tests -p "test_research_prefreeze_v2.py" -v
+          python -m unittest discover -s tests -p "test_model_snapshot_audit.py" -v
+          python -m unittest discover -s tests -p "test_calibration_readiness_v2.py" -v
+      - name: Audit archived October 16 base (expected not pre-freeze)
+        shell: bash
+        run: |
+          python scripts/research_prefreeze_v2.py --date 2026-10-16 --as-of 2026-10-16T04:35:53Z             --research data/research-base-2026-10-16.json             --output "$RUNNER_TEMP/research-early-window.json" || true
+          python - "$RUNNER_TEMP/research-early-window.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          print("Research pre-freeze gate:",x["status"], "blockers",x["blockers"])
+          assert x["status"] == "not_ready"
+          assert x["publishPicks"] is False
+          assert "research_generated_after_freeze" in x["blockers"]
+          PY
+      - name: Audit actual 118-game retrospective holdout; do not claim calibrated
+        run: |
+          python scripts/calibration_readiness_v2.py --output "$RUNNER_TEMP/calibration-readiness-v2.json"
+          python - "$RUNNER_TEMP/calibration-readiness-v2.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          print("Retrospective holdout",r["scoredMatches"],"matches; top1",r["accuracyTop1"])
+          assert r["scoredMatches"] == 118
+          assert r["status"] == "insufficient_sample_no_probability_certification"
+          assert r["eligibleForMarketEV"] is False
+          PY
+      - name: Store private model timing report
+        uses: actions/upload-artifact@v4
+        with:
+          name: footyedge-research-prefreeze-v2
+          path: ${{ runner.temp }}/research-early-window.json
+          retention-days: 7

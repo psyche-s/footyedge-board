@@ -1,0 +1,30 @@
+name: V2 Shadow Forecast Snapshot Validator
+on:
+  pull_request:
+    paths:
+      - "scripts/model_snapshot_audit.py"
+      - "tests/test_model_snapshot_audit.py"
+      - ".github/workflows/validate-shadow-snapshot.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Test stale, failed and late model snapshots
+        run: python -m unittest discover -s tests -p "test_model_snapshot_audit.py" -v
+      - name: Audit original immutable failed snapshot
+        run: |
+          python scripts/model_snapshot_audit.py --snapshot data/model-shadow/2026-10-16.json --out "$RUNNER_TEMP/footyedge-model-snapshot-audit.json"
+          cat "$RUNNER_TEMP/footyedge-model-snapshot-audit.json"
+      - name: Upload audit report; no canonical writes
+        uses: actions/upload-artifact@v4
+        with:
+          name: footyedge-shadow-audit
+          path: ${{ runner.temp }}/footyedge-model-snapshot-audit.json
+          retention-days: 7

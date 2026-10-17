@@ -16,7 +16,7 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-VERSION = "dc-shadow-v0.7"
+VERSION = "dc-shadow-v0.8"
 SOURCE_ROOT = "https://raw.githubusercontent.com/openfootball/football.json/master"
 # Explicit men's top-flight scope. International/cup and women's matches are NOT modeled.
 LEAGUES = {
@@ -26,7 +26,7 @@ LEAGUES = {
 }
 MIN_TRAIN_MATCHES = 90
 MIN_TEAM_MATCHES = 4
-MAX_SOURCE_AGE_DAYS = 30
+MAX_SOURCE_AGE_DAYS = 14
 DECAY_XI = 0.001  # experimental baseline; NOT optimized or calibrated
 TORONTO = ZoneInfo("America/Toronto")
 # Auditable exact aliases only; avoid fuzzy mismatches across teams.
@@ -322,7 +322,7 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
         "mode": "shadow_only", "promotedToPicks": False,
         "assumptions": {"decayXiPerDay": DECAY_XI, "minTrainingMatches": MIN_TRAIN_MATCHES,
                         "minTeamMatches": MIN_TEAM_MATCHES, "maxDataAgeDays": MAX_SOURCE_AGE_DAYS},
-        "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+        "source": "OpenFootball CC0 league results only; legacy ESPN-derived supplementation disabled in V2 shadow research",
         "fixtures": [], "leagueDiagnostics": {},
     }
     if not path.exists():
@@ -367,7 +367,10 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
             rows, urls, errors = hub_rows, hub_urls, []
         else:
             rows, urls, errors = get_league_data(league, first_cutoff, fetch)
-        completed, completed_ids = load_verified_prior_scores(root, league, first_cutoff)
+        # Existing ESPN scoreboard archives may have match scores, but those
+        # are not an approved secondary dataset for automated model training.
+        # Keep the legacy parser for migration audits; never ingest by default.
+        completed, completed_ids = [], []
         rows, conflicting = merge_results(rows, completed)
         count = Counter(t for x in rows for t in (x["home"], x["away"]))
         recent = max((x["date"] for x in rows), default=None)
@@ -418,6 +421,14 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
             output["fixtures"].append(entry)
     output["coverage"] = {"inputFixtures": len(games), "eligibleLeagueFixtures": len(eligible),
                           "predicted": sum(g["status"] == "shadow_prediction" for g in output["fixtures"])}
+    # Completed execution is not a completed forecast. Never archive false-success
+    # candidates when every eligible match failed fitting or prediction.
+    if eligible and output["coverage"]["predicted"] == 0:
+        statuses = {item["status"] for item in output["fixtures"]}
+        if statuses and statuses.issubset({"already_started", "invalid_kickoff"}):
+            output["status"] = "outside_prematch_window"
+        else:
+            output["status"] = "no_valid_predictions"
     return output
 
 def main() -> int:
@@ -443,6 +454,16 @@ def main() -> int:
         result = forecast_day(args.repo, day, asof)
         print(f"Shadow dry run: {day} status={result['status']} "
               f"coverage={result.get('coverage')}")
+        # Diagnostics contain only error types/brief messages, no API secrets.
+        # Show actual model failure reasons rather than a green workflow badge.
+        for code, info in sorted(result.get("leagueDiagnostics", {}).items()):
+            print(f"  League {code}: {info.get('status')}, "
+                  f"matches={info.get('trainingMatches', 0)}, "
+                  f"reason={info.get('error', '')[:120]}")
+        for item in result.get("fixtures", []):
+            print(f"  Fixture {item.get('league')} {item.get('home')} / {item.get('away')}: "
+                  f"{item.get('status')}, teamKeys={item.get('teamKeys', [])}, "
+                  f"error={str(item.get('error', ''))[:120]}")
         return 0
     need_original = not dest.exists()
     need_candidate = args.capture_candidate and not candidate.exists()
