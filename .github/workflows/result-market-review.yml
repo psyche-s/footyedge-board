@@ -1,0 +1,71 @@
+name: FootyEdge Result Market Review (ML / Draw / DC)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/review-result-markets.mjs"
+      - ".github/workflows/result-market-review.yml"
+  schedule:
+    - cron: "18 4 * * *"
+    - cron: "18 5 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: result-market-reviews-only
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Unit tests: independent 1X2 review, no fabricated prices
+        run: node --test tests/review-result-markets.test.mjs
+      - name: Build dated read-only result-market review
+        id: build
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          HOUR="$(TZ=America/Toronto date +%H)"
+          MINUTE="$(TZ=America/Toronto date +%M)"
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" ]] && { [[ "$HOUR" != "00" ]] || [[ "$((10#$MINUTE))" -ge 30 ]]; }; then
+            echo "Skip outside Toronto 00:00–00:29 prefreeze slot"
+            exit 0
+          fi
+          if [[ ! -s "data/research-base-$TODAY.json" ]]; then
+            echo "::warning::No research base available: no review published"
+            exit 0
+          fi
+          node scripts/review-result-markets.mjs "$TODAY"
+          node --input-type=module - "$TODAY" <<'JS'
+          import fs from "node:fs";
+          const date=process.argv[2];
+          const doc=JSON.parse(fs.readFileSync("data/market-reviews/"+date+".json","utf8"));
+          if(doc.date!==date||doc.schema!=="footyedge-fulltime-market-review-v1"||doc.officialBoardUnchanged!==true||
+             doc.noProviderApiRequests!==true||doc.oddsVerified!==false||doc.confidenceCalibrated!==false)
+              throw Error("Market-review publication safety gate failed");
+          console.log("Reviewed",doc.summary.marketChecks,"result-market options in",doc.summary.games,"fixtures");
+          JS
+          node scripts/validate-published-boards.mjs
+      - name: Commit supplemental market reviews only; never board files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A data/market-reviews/
+          if git diff --cached --quiet; then
+            echo "No new market review"
+            exit 0
+          fi
+          git config user.name "FootyEdge Market Research Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data(markets): record independent 1X2 research watchlist [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
