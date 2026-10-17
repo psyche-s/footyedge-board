@@ -63,7 +63,7 @@ for(const game of draft.games){
   const name=label(code),nH=H.filter(fh).length,nA=A.filter(fa).length;
   let prob=p[key];if(!Number.isFinite(prob))continue;
   const trend=(nH+nA+2)/(H.length+A.length+4),weaker=Math.min((nH+1)/(H.length+2),(nA+1)/(A.length+2));
-  let grade=Math.round(100*((hasShadow?.92:.78)*prob+(hasShadow?.06:.18)*trend+(hasShadow?.02:.04)*weaker));
+  let grade=Math.round(100*((hasShadow ? 0.92 : 0.78)*prob+(hasShadow ? 0.06 : 0.18)*trend+(hasShadow ? 0.02 : 0.04)*weaker));
   if(key==="under_4_5")grade=Math.min(grade,82);if(key==="over_1_5")grade=Math.min(grade,87);
   if(key==="home_goal"||key==="away_goal")grade=Math.min(grade,88);if(!full)grade=Math.min(grade,77);
   let reason=name+": recent trend "+nH+"/"+H.length+" "+home+" matches and "+nA+"/"+A.length+" "+away+" matches. "+home+" are "+h.wins+"W-"+h.draws+"D-"+h.losses+"L, scoring "+h.gf.toFixed(1)+" and conceding "+h.ga.toFixed(1)+" per game; "+away+" are "+a.wins+"W-"+a.draws+"D-"+a.losses+"L, scoring "+a.gf.toFixed(1)+" and conceding "+a.ga.toFixed(1)+".";
