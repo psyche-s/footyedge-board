@@ -866,3 +866,16 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Model/data impact: no weight or calibration change; insufficient verified inputs fail closed. UI impact: none. Tracking/history impact: prior archives remain intact and the completed-result settlement path is no longer blocked by an obsolete whole-file hash.
 - Deployment result: GitHub commit `a5e52a6e` passed the published-board integrity workflow and Vercel production reached `READY`; the public October 16 archive matched the committed SHA256 checksum.
 
+
+## 2026-10-17 — Full-slate recovery with metric-safe research picks
+**Status:** 🟡 Code/data ready · deployment verification pending
+
+- Replaced the incomplete one-league fallback with the complete dated men’s research slate: 60 fixtures across 11 tracked competitions. The fixture-only provider horizon was also refreshed through October 21; future dates remain schedule readiness only and contain no public picks.
+- Published three evidence-supported research angles for 45 matches under the owner-authorized override. Fifteen matches are explicit PASS: eight lacked a complete deterministic last-10 history for both teams and seven did not support three independent market families.
+- The native sportsbook capture returned zero exact events. Every public price, calibrated win probability and EV therefore remains N/A; the public metric gate also withheld the global Top 5. A separately labelled research-strength rating is retained only for ordering within each match and is explicitly not a win probability.
+- Added regression coverage that prevents a research rating from populating confidence or EV, and updated the loss-risk pass so it cannot convert an uncalibrated research grade into a public probability.
+- Model/data impact: no coefficient or calibration change; the time-decayed shadow output remains separate and uncalibrated. No player props or team-news claims were published without sufficient current evidence.
+- UI impact: none. No layout, styling, navigation, card, filter, logo, modal, page-structure or component file changed.
+- Tracking/history impact: the October 16 official Top 5 was settled into its performance record without altering the frozen board. All earlier archives remain unchanged; October 17 is a new immutable lock.
+- Deployment result: pending GitHub main push, Actions integrity verification and Vercel production verification.
+

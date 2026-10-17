@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-10-16T04:37:41.911Z",
+  "checkedAt": "2026-10-17T04:40:00.000Z",
   "timeZone": "America/Toronto",
   "horizonDays": 5,
   "providerStatus": {
@@ -7,30 +7,30 @@
     "liveScoreboard": "failed-http-500",
     "nativeOdds": "blocked-no-exact-events",
     "calibratedModel": "no-eligible-forecasts",
-    "interpretation": "fixtures-confirmed-picks-fail-closed"
+    "interpretation": "fixtures-confirmed-research-picks-owner-authorized-with-public-metrics-withheld"
   },
   "days": [
     {
-      "date": "2026-10-16",
-      "scheduledGames": 8,
-      "researchFixtures": 8,
+      "date": "2026-10-17",
+      "scheduledGames": 60,
+      "researchFixtures": 60,
       "published": true,
-      "status": "locked-pass-only-no-verified-native-odds-or-calibrated-probability",
-      "officialBoard": "data/boards/2026-10-16.json",
-      "researchFile": "data/research-base-2026-10-16.json",
+      "status": "locked-owner-authorized-research-picks-public-odds-confidence-ev-withheld",
+      "officialBoard": "data/boards/2026-10-17.json",
+      "researchFile": "data/research-base-2026-10-17.json",
       "exactNativeOddsEvents": 0,
-      "publishedSelections": 0,
-      "passes": 8
+      "publishedSelections": 135,
+      "passes": 15
     },
-    {"date": "2026-10-17", "scheduledGames": 60, "published": false, "status": "schedule-research-readiness-only"},
-    {"date": "2026-10-18", "scheduledGames": 32, "published": false, "status": "schedule-research-readiness-only"},
-    {"date": "2026-10-19", "scheduledGames": 10, "published": false, "status": "schedule-research-readiness-only"},
-    {"date": "2026-10-20", "scheduledGames": 14, "published": false, "status": "schedule-research-readiness-only"}
+    {"date": "2026-10-18", "scheduledGames": 296, "published": false, "status": "schedule-readiness-only"},
+    {"date": "2026-10-19", "scheduledGames": 39, "published": false, "status": "schedule-readiness-only"},
+    {"date": "2026-10-20", "scheduledGames": 82, "published": false, "status": "schedule-readiness-only"},
+    {"date": "2026-10-21", "scheduledGames": 105, "published": false, "status": "schedule-readiness-only"}
   ],
   "notes": [
     "Men's soccer only; women's fixtures are excluded before publication and tracking.",
-    "Only the current Toronto date contains betting-board state. October 17-20 remain non-public readiness data.",
-    "The October 16 native sportsbook capture returned zero exact events and the shadow model produced zero eligible forecasts, so all eight tracked fixtures are explicit PASS rows.",
-    "No stale odds, uncalibrated confidence, unsupported EV, Top 3 or Top 5 selection was published."
+    "Only the current Toronto date contains betting-board state. October 18-21 remain non-public schedule readiness data.",
+    "The October 17 native sportsbook capture returned zero exact events. Owner-authorized research picks are published for 45 matches with complete three-market support; eight incomplete-history matches and seven matches with fewer than three independent markets are explicit PASS.",
+    "No stale odds, calibrated-confidence claim, unsupported EV, player prop or global Top 5 selection was published. The separately labelled research rating is not a win probability."
   ]
 }

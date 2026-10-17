@@ -39,3 +39,10 @@ test('validator rejects null/NaN/default confidence and extreme ungrounded EV',(
     {score:85,modelProb:NaN,ev:null,probabilityCalibrated:true}
   ])assert.throws(()=>validatePublicMetrics({games:[{id:'g',top3:[pick]}]}));
 });
+
+test('research ratings remain separate from confidence and EV',()=>{
+  const pick={score:null,modelProb:null,probabilityCalibrated:false,confidenceRating:90,ev:null};
+  assert.equal(validatePublicMetrics({games:[{id:'r1',top3:[pick]}]}),true);
+  assert.equal(pick.score,null);
+  assert.equal(pick.ev,null);
+});

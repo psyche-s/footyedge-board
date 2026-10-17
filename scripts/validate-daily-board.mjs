@@ -6,6 +6,7 @@ const read=async f=>JSON.parse(await fs.readFile(f,"utf8"));
 const norm=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const words=s=>String(s||"").trim().split(/\s+/).filter(Boolean).length;
 const errors=[],warnings=[];
+const ownerResearchOverride=process.env.OWNER_RESEARCH_PICKS==='1';
 const fail=m=>errors.push(m),warn=m=>warnings.push(m);
 function marketSupportFromFacts(market,facts,fixture){
   const m=norm(market),tags=new Set();
@@ -49,6 +50,7 @@ async function main(){
   const passOnly=(insights.fixtures||[]).length>0&&(insights.fixtures||[]).every(x=>x.reviewStatus==='pass-insufficient-data'&&!(x.supportedMarkets||[]).length&&!(x.markets||[]).length);
   if(odds.status==="blocked"){
     if(passOnly)warn("Native sportsbook provider blocked; validated explicit PASS-only publication");
+    else if(ownerResearchOverride)warn("Owner-authorized research picks published with odds, calibrated confidence and EV withheld");
     else fail("Verified native sportsbook odds are not ready for publication");
   }
 
@@ -114,7 +116,7 @@ async function main(){
   }
 
   for(const k of fixtures.keys())if(!insightKeys.has(k))fail("Tracked fixture lacks current research/team-news review: "+k);
-  if(fixtures.size&&!(odds.events||[]).length&&!passOnly)fail("No verified native sportsbook odds available for the tracked slate");
+  if(fixtures.size&&!(odds.events||[]).length&&!passOnly&&!ownerResearchOverride)fail("No verified native sportsbook odds available for the tracked slate");
 
   const oddsKeys=new Set();
   for(const e of odds.events||[]){

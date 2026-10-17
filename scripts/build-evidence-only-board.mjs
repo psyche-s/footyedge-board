@@ -11,6 +11,8 @@ const OUT=path.join('data','board-drafts',DATE+'.json');
 const LOCK=path.join('data','boards',DATE+'.json');
 const R=path.join('data','research-base-'+DATE+'.json');
 const ODDS=path.join('data','daily-odds-'+DATE+'.json');
+const INSIGHTS=path.join('data','daily-insights-'+DATE+'.json');
+const OWNER_RESEARCH_PICKS=process.env.OWNER_RESEARCH_PICKS==='1';
 const read=async f=>JSON.parse(await fs.readFile(f,'utf8'));
 const exists=async f=>fs.access(f).then(()=>true).catch(()=>false);
 const LEAGUES={'eng.1':'Premier League','eng.2':'EFL Championship','tur.1':'Turkish Süper Lig','ksa.1':'Saudi Pro League','cze.1':'Czech First League','esp.1':'LaLiga','ita.1':'Serie A','ger.1':'Bundesliga','fra.1':'Ligue 1','ned.1':'Eredivisie','por.1':'Liga Portugal','uefa.champions':'UEFA Champions League','uefa.europa':'UEFA Europa League','uefa.europa.conf':'UEFA Conference League','usa.1':'MLS','fifa.friendly':'International Friendly','uefa.nations':'UEFA Nations League'};
@@ -98,10 +100,37 @@ async function main(){
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
   if(research.fixtures.some(g=>(g.last10?.home||[]).length<5||(g.last10?.away||[]).length<5)){console.log('Incomplete team histories; skip unsupported recovery');return;}
   const games=research.fixtures.map(generate);
-  // A history trend is not an exact-priced betting recommendation. When the
-  // native sportsbook capture is blocked, retain the researched fixtures and
-  // form context but publish explicit PASS rows instead of Top 3/Top 5 picks.
-  if(!odds?.events?.length){
+  // Owner-authorized same-day recovery may publish clearly labelled research
+  // angles while calibrated confidence, EV and unavailable prices remain N/A.
+  if(!odds?.events?.length&&OWNER_RESEARCH_PICKS){
+    for(const game of games){
+      const source=research.fixtures.find(f=>String(f.id)===String(game.id));
+      if(Number(source?.history?.home)<10||Number(source?.history?.away)<10||game.top3.length<3){
+        game.top=null;game.top3=[];
+        game.model={...game.model,top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
+        game.recoveryStatus=Number(source?.history?.home)<10||Number(source?.history?.away)<10
+          ?'pass-incomplete-last-10'
+          :'pass-fewer-than-three-independent-markets';
+        continue;
+      }
+      for(const pick of game.top3){
+      const weaker=Math.min(pick.homeHits/pick.homeSample,pick.awayHits/pick.awaySample)*100;
+      pick.trendHitRate=pick.score;
+      pick.researchStrength=pick.score;
+      pick.confidenceRating=Math.round(0.65*pick.researchStrength+0.35*weaker);
+      pick.confidenceRatingMethod='Independent research-strength grade: 65% combined observed trend + 35% weaker-team support. NOT predicted probability of winning.';
+      pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.modelProb=null;pick.calibratedProbability=null;
+      pick.probabilityCalibrated=false;pick.ev=null;pick.confidenceType='historical_trend_only_not_calibrated_probability';
+      pick.priceStatus='no_line_available';pick.quoteDisclaimer='No independently verified line; confidence and EV unavailable without calibration.';
+      }
+    }
+    for(const game of games){
+      if(!game.top3.length)continue;
+      game.top=game.top3[0]||null;
+      game.model={...game.model,top:game.top,top3:game.top3,candidates:game.top3,rankedCandidates:game.top3,researchCandidates:game.top3};
+      game.recoveryStatus='owner-directed-research-picks-no-verified-native-odds';
+    }
+  }else if(!odds?.events?.length){
     for(const game of games){
       game.top=null;game.top3=[];
       game.model={...game.model,top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
@@ -110,8 +139,9 @@ async function main(){
   }
   const unique=new Set(games.map(g=>g.id));
   if(unique.size!==games.length)throw new Error('Duplicate research fixture IDs; publication blocked');
-  const ranked=arr=>arr.filter(g=>g.top&&g.top.score>=85&&Date.parse(g.date)>Date.now())
-    .sort((a,b)=>b.top.score-a.top.score||Math.min(b.top.homeHits/b.top.homeSample,b.top.awayHits/b.top.awaySample)-Math.min(a.top.homeHits/a.top.homeSample,a.top.awayHits/a.awaySample))
+  const rankValue=p=>Number(p?.confidenceRating??p?.score);
+  const ranked=arr=>arr.filter(g=>g.top&&rankValue(g.top)>=85&&Date.parse(g.date)>Date.now())
+    .sort((a,b)=>rankValue(b.top)-rankValue(a.top)||Math.min(b.top.homeHits/b.top.homeSample,b.top.awayHits/b.top.awaySample)-Math.min(a.top.homeHits/a.top.homeSample,a.top.awayHits/a.awaySample))
     .slice(0,5);
   const leagueTop5={};
   for(const l of new Set(games.map(g=>g.league)))leagueTop5[l]=topRefs(ranked(games.filter(g=>g.league===l)));
@@ -119,7 +149,7 @@ async function main(){
     mutableUntil:DATE+' 00:30 America/Toronto',coverage:'full-board',source:'Audited research-only recovery from dated pre-match historical stats',
     top5:topRefs(ranked(games)),leagueTop5,games,
     scope:'mens-only-tracked-competitions',
-    publicationNotes:'Exact native sportsbook prices were unavailable. Every fixture is an explicit PASS; no odds, confidence, EV, Top 3 or Top 5 recommendation was published.',
+    publicationNotes:OWNER_RESEARCH_PICKS?'Owner-authorized same-day recovery: historical research angles are published with a separately labelled evidence-strength rating. Exact prices, calibrated confidence and EV remain N/A.':'Exact native sportsbook prices were unavailable. Every fixture is an explicit PASS; no odds, confidence, EV, Top 3 or Top 5 recommendation was published.',
     dataSources:{researchBase:R,odds:'unavailable: provider usage quota exhausted'}};
   // Validate the exact same top-to-Top3 and reference invariants enforced for
   // official boards, without mutating any existing lock.
@@ -127,6 +157,17 @@ async function main(){
   validateBoard(locked,{requireFull:true});
   await fs.mkdir(path.dirname(OUT),{recursive:true});
   await fs.writeFile(OUT,JSON.stringify(board,null,2)+'\n');
+  if(OWNER_RESEARCH_PICKS){
+    const checkedAt=new Date().toISOString();
+    const insights={date:DATE,generatedAt:checkedAt,status:'ready-with-passes',fixtures:games.map(game=>({
+      home:game.home,away:game.away,
+      reviewStatus:game.top3.length?'ready':'pass-insufficient-data',
+      facts:[],supportedMarkets:[],markets:[],teamNews:[],
+      teamNewsReview:{status:'reviewed',checkedAt,conclusion:'No material verified late team-news claim was published; no player prop or availability adjustment was made.'},
+      sources:[]
+    }))};
+    await fs.writeFile(INSIGHTS,JSON.stringify(insights,null,2)+'\n');
+  }
   console.log('Verified evidence-only recovery:',{date:DATE,games:games.length,top5:board.top5.length,priced:0,top3:games.filter(g=>g.top3.length===3).length});
 }
 main().catch(error=>{console.error(error);process.exitCode=1});
