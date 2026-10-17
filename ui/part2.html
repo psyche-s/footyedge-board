@@ -867,16 +867,13 @@ function renderBest(){
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.archiveTopPick||g.model.top,px=observedPrice(g,p);
-    const quotedAlt=(g.model?.top3||[]).find(q=>q?.verifiedPrice&&q.bookKey==="draftkings"&&q.label!==p?.label);
-    const quotedAltHtml=quotedAlt&&(!px?.odds||px.odds==="—"||px.odds==="N/A")?
-      '<div style="font-size:11px;color:#78b896;margin-top:5px">Priced alternative · '+esc(quotedAlt.label)+' · DK '+esc(displayAmericanOdds(quotedAlt))+'</div>':'';
 
     return '<article class="bestRow" data-game-id="'+esc(g.id)+'" onclick="openGame(\''+g.id+'\')">'+
       '<div class="rankBadge">'+(i+1)+'</div>'+
       '<div class="bestFlags">'+teamImgTag(g.home)+teamImgTag(g.away)+'</div>'+
       '<div class="bestCore"><div class="bestFixture">'+esc(teamDisplayName(g,g.home))+' <span>vs</span> '+esc(teamDisplayName(g,g.away))+'</div>'+
       '<div class="bestLeague">'+esc(displayLeagueName(g.league,g.leagueName))+' · '+esc(g.liveStatusVerified&&(g.live||g.done)?status(g)+' · '+(Number.isInteger(g.home.score)?g.home.score:'–')+'–'+(Number.isInteger(g.away.score)?g.away.score:'–'):timeET(g.date)+' ET')+'</div>'+
-      '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div>'+quotedAltHtml+'</div>'+
+      '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div>'</div>'+
       '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
       '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="bestMetric bestConfidence"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div><div class="rowChev">›</div></article>';
