@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import * as childProcess from 'node:child_process';
 const today=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(p=>[p.type,p.value]));
 const date=today.year+'-'+today.month+'-'+today.day;
 const path='data/boards/'+date+'.json';
@@ -39,4 +40,18 @@ test('result filter can surface moneylines beyond the default Top 3',()=>{
  const ui=fs.readFileSync('ui/part2.html','utf8');
  assert.match(ui,/function resultMarketCandidates\(g\)/);
  assert.match(ui,/if\(S\.filter==="result"\)return resultMarketCandidates\(g\)/);
+});
+
+test('the scheduled fallback repair script is valid Node.js',()=>{
+ const {execFileSync}=requireNodeCheck();
+ execFileSync(process.execPath,['--check','scripts/ensure-daily-research-picks.mjs'],{stdio:'pipe'});
+});
+function requireNodeCheck(){return {execFileSync:childProcess.execFileSync}}
+
+test('ML-only filter changes both match cards and ranked Top Picks',()=>{
+ const markup=fs.readFileSync('ui/part1.html','utf8');
+ const logic=fs.readFileSync('ui/part2.html','utf8');
+ assert.match(markup,/data-filter="ml">ML<\/button>/);
+ assert.ok(logic.includes('if(S.filter==="ml")return moneylineCandidates(g)[0]||null'));
+ assert.ok(logic.includes('S.filter=b.dataset.filter;renderBest();renderGames()'));
 });
