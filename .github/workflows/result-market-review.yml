@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Unit tests: independent 1X2 review, no fabricated prices
+      - name: 'Unit tests: independent 1X2 review, no fabricated prices'
         run: node --test tests/review-result-markets.test.mjs
       - name: Build dated read-only result-market review
         id: build
