@@ -86,7 +86,8 @@ async function main(){
  }
  const sportsResult=await get(endpoint+'/sports/?apiKey='+encodeURIComponent(key));
  const available=new Set((Array.isArray(sportsResult.data)?sportsResult.data:[]).map(x=>x.key));
- let remaining=Number(sportsResult.headers.get('x-requests-remaining'));
+ const quotaHeader=sportsResult.headers.get('x-requests-remaining');
+ let remaining=quotaHeader===null?null:Number(quotaHeader);
  if(!Number.isFinite(remaining))remaining=null;
  let used=0,calls=0,events=[],attempts=[],quotaExhausted=false;
  // The fixture preflight is free. It avoids paid requests for competitions with no matches.
