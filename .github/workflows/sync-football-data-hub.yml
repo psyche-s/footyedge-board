@@ -9,8 +9,16 @@ on:
         default: daily
         options: [daily, full]
   schedule:
-    # After the private hub's daily 07:23 UTC incremental refresh.
-    - cron: "13 8 * * *"
+    # 00:09 America/Toronto on EDT and EST. The first step gates off-season UTC hour,
+    # GitHub delays and post-00:25 runs. No edits to locked picks.
+    - cron: "9 4 * * *"
+    - cron: "9 5 * * *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-football-data-hub.yml"
+      - "scripts/v2-data-source-readiness.mjs"
+      - "config/v2-free-data-bridge.json"
 permissions:
   contents: write
 concurrency:
@@ -21,30 +29,75 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
+      - name: Gate the scheduled refresh to pre-freeze Toronto window
+        id: timing
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" != "schedule" ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          HOUR="$(TZ=America/Toronto date +%H)"
+          MINUTE="$(TZ=America/Toronto date +%M)"
+          if [[ "$HOUR" == "00" && "$((10#$MINUTE))" -lt 25 ]]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            echo "Scheduled CC0 history research before official 00:30 Toronto freeze."
+          else
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Outside official prefreeze slot; no data changes."
+          fi
       - uses: actions/checkout@v4
+        if: steps.timing.outputs.run == 'true'
         with:
           persist-credentials: true
       - uses: actions/setup-node@v4
+        if: steps.timing.outputs.run == 'true'
         with:
           node-version: '22'
       - uses: actions/setup-python@v5
+        if: steps.timing.outputs.run == 'true'
         with:
           python-version: '3.12'
       - name: Test historical ingestion and existing match regressions
+        if: steps.timing.outputs.run == 'true'
         run: |
           node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs tests/source-registry.test.mjs
           python -m unittest discover -s tests -p 'test_football_hub_model.py' -v
       - name: Update CC0 score archive only
+        if: steps.timing.outputs.run == 'true'
         env:
           FOOTBALL_DATA_HUB_TOKEN: ${{ secrets.FOOTBALL_DATA_HUB_READ_TOKEN }}
           HUB_HISTORY_MODE: ${{ inputs.history_mode || 'daily' }}
           HUB_HISTORY_START_YEAR: "2015"
         run: node scripts/sync-football-data-hub.mjs
+      - name: Validate and publish honest CC0 source freshness status
+        if: steps.timing.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          DAY="$(TZ=America/Toronto date +%F)"
+          node --test tests/v2-data-source-readiness.test.mjs
+          node scripts/v2-data-source-readiness.mjs "$DAY" > data/football-hub/readiness.json
+          node --input-type=module - <<'JS'
+          import fs from "node:fs";
+          const p="data/football-hub/readiness.json";
+          const d=JSON.parse(fs.readFileSync(p,"utf8"));
+          if(d.noNetworkCalls!==true||d.providerApiRequests!==0||
+             d.noProviderRowsAdded!==true||d.changesPublished!==false||
+             d.publicStatsReady!==false||d.frozenBoardsUnchanged!==true||
+             d.verifiedMetadataLeagues!==8) throw Error("Unsafe source readiness status");
+          console.log("CC0 history audited; target leagues:",d.leagues.length,
+                      "stale/missing:",d.staleOrMissingLeagues,
+                      "licensed provider-row imports:",0);
+          JS
       - name: Audit all existing FootyEdge data providers without fetching restricted datasets
+        if: steps.timing.outputs.run == 'true'
         run: node scripts/audit-data-sources.mjs
       - name: Validate published picks were not edited
+        if: steps.timing.outputs.run == 'true'
         run: node scripts/validate-published-boards.mjs
       - name: Commit safe historical changes only
+        if: steps.timing.outputs.run == 'true'
         run: |
           set -euo pipefail
           git config user.name "FootyEdge History Bot"
