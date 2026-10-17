@@ -84,7 +84,10 @@ export function assess(config,docs,asOf){
        sourceCoverage:coverage,
        fdorg:{competition:c.fdorgCandidate,
          freeMetadataListed:!!c.fdorgCandidate && config.metadataCheck?.returnedAllEight===true,
-         metadataCheckOnly:true,matchEndpointVerified:false,
+         metadataCheckOnly:true,
+         oneDayMatchEndpointTested:c.fdorgCandidate==="PL" &&
+             config.metadataCheck?.singleDayMatchTest?.authenticatedMatchEndpointWorked===true,
+         matchEndpointVerified:false,
          rowsPermittedForPublicUse:false,storagePermissionConfirmed:false},
        playerStatsAvailable:false,standingsCurrentVerified:false,
        modelScoreFreshnessCandidate:coverage.status==="score_history_present_not_live_verified",
