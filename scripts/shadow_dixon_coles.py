@@ -322,7 +322,7 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
         "mode": "shadow_only", "promotedToPicks": False,
         "assumptions": {"decayXiPerDay": DECAY_XI, "minTrainingMatches": MIN_TRAIN_MATCHES,
                         "minTeamMatches": MIN_TEAM_MATCHES, "maxDataAgeDays": MAX_SOURCE_AGE_DAYS},
-        "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+        "source": "OpenFootball CC0 league results only; legacy ESPN-derived supplementation disabled in V2 shadow research",
         "fixtures": [], "leagueDiagnostics": {},
     }
     if not path.exists():
@@ -367,7 +367,10 @@ def forecast_day(root: Path, day: date, asof: datetime, fetch=fetch_json, fitter
             rows, urls, errors = hub_rows, hub_urls, []
         else:
             rows, urls, errors = get_league_data(league, first_cutoff, fetch)
-        completed, completed_ids = load_verified_prior_scores(root, league, first_cutoff)
+        # Existing ESPN scoreboard archives may have match scores, but those
+        # are not an approved secondary dataset for automated model training.
+        # Keep the legacy parser for migration audits; never ingest by default.
+        completed, completed_ids = [], []
         rows, conflicting = merge_results(rows, completed)
         count = Counter(t for x in rows for t in (x["home"], x["away"]))
         recent = max((x["date"] for x in rows), default=None)
