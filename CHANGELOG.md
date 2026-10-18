@@ -888,3 +888,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - The public board file matched the committed immutable archive byte-for-byte: 60 men’s fixtures, 11 competitions, 45 complete Top-3 research cards, 15 explicit PASS fixtures, zero women’s fixtures, and zero non-null odds, calibrated confidence or EV fields.
 - UI impact: none. Production continues to serve the existing owner-approved interface without layout, styling, navigation, logo, filter, card or modal changes.
 
+
+## 2026-10-18 — Same-day men’s research board and metric-safe freeze
+**Status:** 🟡 Code/data ready · deployment verification pending
+
+- Settled the saved October 17 global Top 5 into a new performance record without changing its frozen selections, prices, grades or explanations. Incident-level process reviews remain pending where reliable post-match evidence is unavailable; no model weight or calibration change was made.
+- Refreshed the October 18 men’s schedule and rebuilt the deterministic research base for 32 tracked fixtures across 10 competitions. The next four dates were refreshed for schedule readiness only; no future betting content was published.
+- Published three distinct research angles for each tracked match. Three fixtures with nine-match histories on both sides remain capped below premium grade rather than being presented as 85%+ selections.
+- The native sportsbook capture returned zero exact events. Odds, calibrated confidence and EV remain N/A, and the public metric gate withheld the global Top 5. No player props, team-news claims or unverified H2H details were added.
+- Model/data impact: no coefficient change; uncalibrated shadow outputs remain separate from official confidence. UI impact: none. Tracking/history impact: all earlier board archives remain unchanged; October 18 is a new immutable record.
+- Deployment result: pending GitHub main push, integrity checks and Vercel production verification.
+
