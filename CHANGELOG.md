@@ -899,3 +899,12 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Model/data impact: no coefficient change; uncalibrated shadow outputs remain separate from official confidence. UI impact: none. Tracking/history impact: all earlier board archives remain unchanged; October 18 is a new immutable record.
 - Deployment result: pending GitHub main push, integrity checks and Vercel production verification.
 
+
+## 2026-10-18 — Same-day board production verification
+**Status:** ✅ Deployed and verified
+
+- GitHub main published the October 18 board at commit `f340d93e2b5c1ee030e41bc0f31ac45dbfd8154d`; the Published board integrity workflow completed successfully.
+- Vercel production deployment `dpl_6SSZrEHqMSk5o8ToUBLK383cqgFi` reached `READY` from that exact commit with no alias error or Hobby deployment-limit failure.
+- The public October 18 archive matched the committed file exactly and serves 32 men’s fixtures across 10 competitions, 32 complete Top-3 research cards, zero women’s fixtures, and no unsupported odds, calibrated confidence, EV or global Top 5.
+- UI impact: none. The existing owner-approved interface and all earlier board archives remain unchanged.
+
