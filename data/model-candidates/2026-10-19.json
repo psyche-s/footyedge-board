@@ -1,0 +1,237 @@
+{
+  "date": "2026-10-19",
+  "asOf": "2026-10-19T09:34:56.583098+00:00",
+  "modelVersion": "dc-shadow-v0.7",
+  "mode": "shadow_only",
+  "promotedToPicks": false,
+  "assumptions": {
+    "decayXiPerDay": 0.001,
+    "minTrainingMatches": 90,
+    "minTeamMatches": 4,
+    "maxDataAgeDays": 30
+  },
+  "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+  "fixtures": [
+    {
+      "fixtureId": "401879257",
+      "league": "eng.1",
+      "kickoff": "2026-10-19T19:00Z",
+      "home": "Tottenham Hotspur",
+      "away": "Coventry City",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.804429,
+        "draw": 0.158463,
+        "away_win": 0.037108,
+        "home_or_draw": 0.962892,
+        "away_or_draw": 0.195571,
+        "over_1_5": 0.656446,
+        "under_2_5": 0.608507,
+        "over_2_5": 0.391493,
+        "under_3_5": 0.808808,
+        "btts_yes": 0.182147,
+        "btts_no": 0.817853
+      },
+      "expectedGoals": {
+        "home": 2.0146,
+        "away": 0.2385
+      },
+      "trainingMatches": 4198
+    },
+    {
+      "fixtureId": "401882842",
+      "league": "esp.1",
+      "kickoff": "2026-10-19T19:00Z",
+      "home": "Getafe",
+      "away": "Rayo Vallecano",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.536059,
+        "draw": 0.25749,
+        "away_win": 0.206451,
+        "home_or_draw": 0.793549,
+        "away_or_draw": 0.463941,
+        "over_1_5": 0.654214,
+        "under_2_5": 0.608079,
+        "over_2_5": 0.391921,
+        "under_3_5": 0.808487,
+        "btts_yes": 0.415458,
+        "btts_no": 0.584542
+      },
+      "expectedGoals": {
+        "home": 1.4652,
+        "away": 0.7895
+      },
+      "trainingMatches": 4219
+    },
+    {
+      "fixtureId": "401874762",
+      "league": "ita.1",
+      "kickoff": "2026-10-19T16:30Z",
+      "home": "Monza",
+      "away": "Cagliari",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "monza",
+        "cagliari"
+      ]
+    },
+    {
+      "fixtureId": "401874784",
+      "league": "ita.1",
+      "kickoff": "2026-10-19T18:45Z",
+      "home": "Parma",
+      "away": "Torino",
+      "status": "unknown_or_undersampled_team",
+      "teamKeys": [
+        "parma",
+        "torino"
+      ]
+    },
+    {
+      "fixtureId": "401900897",
+      "league": "ksa.1",
+      "kickoff": "2026-10-19T15:05Z",
+      "home": "Al Fayha",
+      "away": "Al Ahli",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900896",
+      "league": "ksa.1",
+      "kickoff": "2026-10-19T18:00Z",
+      "home": "Al Hilal",
+      "away": "Al Hazem",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900895",
+      "league": "ksa.1",
+      "kickoff": "2026-10-19T18:00Z",
+      "home": "Al Shabab",
+      "away": "Al Faisaly",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401885480",
+      "league": "por.1",
+      "kickoff": "2026-10-19T19:15Z",
+      "home": "Braga",
+      "away": "Gil Vicente",
+      "status": "shadow_prediction",
+      "probabilities": {
+        "home_win": 0.613929,
+        "draw": 0.197645,
+        "away_win": 0.188426,
+        "home_or_draw": 0.811574,
+        "away_or_draw": 0.386071,
+        "over_1_5": 0.743946,
+        "under_2_5": 0.486029,
+        "over_2_5": 0.513971,
+        "under_3_5": 0.707217,
+        "btts_yes": 0.481227,
+        "btts_no": 0.518773
+      },
+      "expectedGoals": {
+        "home": 1.8476,
+        "away": 0.8836
+      },
+      "trainingMatches": 2487
+    },
+    {
+      "fixtureId": "401888277",
+      "league": "tur.1",
+      "kickoff": "2026-10-19T17:00Z",
+      "home": "Trabzonspor",
+      "away": "Besiktas",
+      "status": "insufficient_or_stale_data"
+    }
+  ],
+  "leagueDiagnostics": {
+    "eng.1": {
+      "trainingMatches": 4198,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 29,
+      "sourceUrls": [
+        "data/football-hub/eng.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "esp.1": {
+      "trainingMatches": 4219,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 29,
+      "sourceUrls": [
+        "data/football-hub/esp.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "ita.1": {
+      "trainingMatches": 4184,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 29,
+      "sourceUrls": [
+        "data/football-hub/ita.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "ksa.1": {
+      "trainingMatches": 0,
+      "latestResultDate": null,
+      "resultAgeDays": null,
+      "sourceUrls": [],
+      "sourceErrors": [
+        "2025-26: HTTPError",
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    },
+    "por.1": {
+      "trainingMatches": 2487,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 29,
+      "sourceUrls": [
+        "data/football-hub/por.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "ready"
+    },
+    "tur.1": {
+      "trainingMatches": 99,
+      "latestResultDate": "2025-11-03",
+      "resultAgeDays": 350,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/tr.1.json"
+      ],
+      "sourceErrors": [
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    }
+  },
+  "researchInputSha256": "a74549896cbc2a55cf3eaf62dba8abfe6c36de51c2a4d2cf7457f1e0356c628d",
+  "researchGeneratedAt": "2026-10-19T04:33:50.088Z",
+  "researchAgeHours": 5.018,
+  "status": "completed",
+  "unmodeledFixtureCount": 0,
+  "coverage": {
+    "inputFixtures": 9,
+    "eligibleLeagueFixtures": 9,
+    "predicted": 3
+  }
+}
