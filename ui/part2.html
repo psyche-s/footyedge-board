@@ -1392,15 +1392,7 @@ function renderModal(g){
   const current=Boolean(!g.done&&!g.live&&Date.parse(g.date)>Date.now());
   const alternatives=current?(liveEntry?.prices||[]).filter(x=>Number.isInteger(x.odds)&&x.odds>=-500&&
     Date.now()-Date.parse(x.observedAt)<240000):[];
-  const oddsExtra=alternatives.length?
-    '<section class="researchBox" aria-label="Other currently observed bookmaker markets">'+
-    '<div class="researchTitle">OTHER AVAILABLE LINES · ESPN OBSERVED</div>'+
-    '<div class="researchFacts">'+alternatives.slice(0,8).map(q=>
-      '<div class="researchFact"><span class="researchDot"></span><span>'+esc(q.label)+
-      ' <strong>'+(q.odds>0?'+':'')+esc(q.odds)+'</strong> · '+esc(q.book)+'</span></div>').join('')+
-    '</div><p class="modelFootnote">Third-party odds observed at '+
-      esc(new Date(liveEntry.prices[0].observedAt).toLocaleTimeString('en-US',{timeZone:'America/Toronto',hour:'numeric',minute:'2-digit'}))+
-      ' ET, not directly verified with the bookmaker. Different lines are not substitutes for the frozen picks. Check current odds before betting.</p></section>':'';
+  const oddsExtra=''; // Owner-approved: hide supplemental odds box; official pick prices remain unchanged.
   const marketEntry=S.resultMarketReview?.games?.find(x=>String(x.id)===String(g.id));
   // Supplemental markets are only shown before kickoff and are NEVER
   // promoted to the saved Top 3, global Top 5, settlement or bookmaker odds.
