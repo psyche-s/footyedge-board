@@ -119,3 +119,12 @@ Use independent previews as internal research references only: short key-stat fr
 
 Never copy their sentences or distinctive phrasing. FootyEdge must write original copy from its own verified evidence.
 
+
+## Permanent external-preview cross-check (owner approved 2026-10-20)
+
+- For each current-day eligible men's fixture, check relevant Football Whispers previews when available, plus independently verified match records, last-10 form, current team news, and other reliable sources. An external preview is a candidate signal, never an automatic pick or a replacement for verified statistics.
+- Record each preview's URL, publication date, fixture identity, proposed exact market and line, cited evidence, and quoted indicative price in internal research metadata. Reject stale, contradictory, unverified or mismatched claims.
+- Convert explicitly quoted decimal preview prices to **indicative** American format for internal comparison only: decimal >= 2 uses +(decimal-1)*100; decimal < 2 uses -100/(decimal-1), rounded to an integer. Never substitute these for exact native sportsbook quotes in published selections.
+- Do not derive calibrated confidence or EV from external preview odds or implied bookmaker probabilities. Require an independently verified exact-market sportsbook quote and validated calibrated probability for public EV/confidence; otherwise N/A or PASS.
+- Write original 2-4 sentence football reasoning in our evidence-first voice; do not name preview providers in public cards. Keep sources internal. Never reproduce article wording.
+- Never show a supplemental 'Other Available Lines' panel. Preserve all other owner-approved UI and immutable archives. Apply these rules to future daily research, not by rewriting frozen boards.
