@@ -32,12 +32,17 @@ jobs:
         run: |
           HOUR="$(TZ=America/Toronto date +%H)"
           MINUTE="$(TZ=America/Toronto date +%M)"
+          TODAY="$(TZ=America/Toronto date +%F)"
+          MINUTES_SINCE_MIDNIGHT=$((10#$HOUR * 60 + 10#$MINUTE))
           RUN=false
-          # A manual dispatch cannot bypass the official freeze window.
-          # 00:50 retries only if the first run did not publish; archive script is write-once.
-          if [[ "$HOUR" == "00" && "$MINUTE" -ge 30 ]]; then RUN=true; fi
+          # GitHub scheduled runs may arrive hours late. Permit a delayed same-day
+          # recovery after 00:30 only while today's write-once archive is absent.
+          # The EDT/EST retries therefore cannot create a duplicate official board.
+          if (( MINUTES_SINCE_MIDNIGHT >= 30 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
+            RUN=true
+          fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
-          echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE"
+          echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE; board=data/boards/$TODAY.json"
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.run == 'true'
         with:
