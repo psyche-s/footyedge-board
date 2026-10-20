@@ -928,3 +928,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Model/data impact: no coefficient or calibration change; experimental shadow outputs remain separate. UI impact: none. Tracking/history impact: all earlier boards remain immutable and unchanged; October 19 is a new locked archive.
 - Deployment result: pending GitHub main push, integrity checks and Vercel production verification.
 
+
+## 2026-10-20 — Same-day men’s research board and delayed-run recovery
+**Status:** ✅ Deployed and production verified
+
+- Settled the available October 19 record and ingested the rolling postmatch diagnostics before publication. No repeated, verified pattern justified a weight or calibration change.
+- Published and locked the October 20 men’s board at 00:35 Toronto: 14 tracked fixtures across the Champions League, English Championship and Saudi Pro League, with three evidence-screened research angles per match.
+- The protected GitHub sportsbook capture was available but found zero exact matching events, so it made no paid calls. Exact odds, calibrated confidence and EV remain N/A; the global Top 5 and player props were withheld rather than inferred.
+- Refreshed schedule readiness through October 24. Future dates remain schedule-only and contain no public picks, prices, confidence or recommendations.
+- Corrected the publication gate so a GitHub-scheduled run delayed past the 00:xx hour can recover later the same Toronto date only while that date’s write-once archive is absent. Existing boards still prevent duplicate freezes.
+- Model/data impact: no model coefficients changed; experimental shadow output was unavailable and remained separate from official picks. UI impact: none. Tracking/history impact: all earlier frozen boards remain unchanged.
+- Deployment result: GitHub board commit `abf19c0` completed the archive and metric validations. Vercel production deployment `dpl_H6YEXb6yGzvXTbrKqazWksdpMrSi` reached `READY`, serves the locked October 20 archive from the public alias, and reported no alias or Hobby-limit error.
+
