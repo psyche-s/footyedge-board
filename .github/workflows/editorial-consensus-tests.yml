@@ -1,0 +1,29 @@
+name: Editorial Consensus Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/apply-editorial-consensus.mjs"
+      - "tests/apply-editorial-consensus.test.mjs"
+      - ".github/workflows/editorial-consensus-tests.yml"
+  pull_request:
+    paths:
+      - "scripts/apply-editorial-consensus.mjs"
+      - "tests/apply-editorial-consensus.test.mjs"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate consensus input rights, market rank and fact explanations
+        run: |
+          node --check scripts/apply-editorial-consensus.mjs
+          node --test tests/apply-editorial-consensus.test.mjs
+          node scripts/validate-published-boards.mjs --base HEAD

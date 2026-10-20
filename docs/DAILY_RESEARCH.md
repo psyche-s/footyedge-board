@@ -109,3 +109,33 @@ All picks are locked at first publication, including every game and player prop,
 Check today's slate plus the next four Toronto dates. Scheduled fixtures remain visible even when prices are not posted. Prepare future research/verified native prices separately; a future board may be captured through Archive Published Board's explicit `board_date` input after the usual validation succeeds. Past dates cannot be regenerated. Every future board becomes immutable at first publication.
 
 On Home and Picks, verified empty schedules say no games and give the next confirmed game date within the checked 14-day horizon. Missing providers are unavailable, not empty. Scheduled dates without a saved board say picks have not been published yet.
+
+
+## 00:30 Toronto editorial consensus (source-consensus-v1)
+The official archive job now calls `scripts/apply-editorial-consensus.mjs`
+**after** the normal draft and research are generated and **before** locking
+`data/boards/YYYY-MM-DD.json`. It uses exact fixture joins, our verified
+last-ten/last-five form and per-match attacking/defending rates to rewrite
+research explanations and rank the three strongest distinct market families.
+The global Top 5 uses at most one #1 selection per eligible match and ranks
+by the research-strength index. When missing independent sources, it
+transparently records model-only coverage (no fabricated agreement).
+
+External Forebet, Football Whispers, Sportskeeda and Sports Mole votes are
+considered only if supplied by an authorised *structured JSON feed* or dated
+`data/editorial-evidence/YYYY-MM-DD.json` and accompanied by an
+actual licensing/permission reference. The daily schedule never directly
+scrapes the four editorial publishers. GitHub Secrets
+`FOOTYEDGE_RESEARCH_FEED_URL` and optionally
+`FOOTYEDGE_RESEARCH_FEED_TOKEN`, plus GitHub Actions variable
+`FOOTYEDGE_RESEARCH_FEED_APPROVED=1`, opt into a separately approved HTTPS
+JSON provider; without them it runs model-only. Consent is not inferred from
+a public page URL.
+
+Each opinion must have fixture_date, match_id, source, source_url,
+permission="authorized", permission_reference, captured_at, market_key
+and stance="support" or "oppose". Only one opinion per source/market/match
+counts. Missing source data cannot become a confidence boost. Consensus
+affects the uncalibrated research index modestly, never synthesises odds,
+EV, calibrated win probability, or confirmed lineup information. Existing
+published boards are write-once; this stage skips any date already frozen.

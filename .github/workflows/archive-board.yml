@@ -121,6 +121,16 @@ jobs:
           node --check scripts/ensure-daily-research-picks.mjs
           node scripts/ensure-daily-research-picks.mjs
 
+      - name: Compare licensed editorial research, rank three per game and daily five
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FOOTYEDGE_RESEARCH_FEED_URL: ${{ secrets.FOOTYEDGE_RESEARCH_FEED_URL }}
+          FOOTYEDGE_RESEARCH_FEED_TOKEN: ${{ secrets.FOOTYEDGE_RESEARCH_FEED_TOKEN }}
+          FOOTYEDGE_RESEARCH_FEED_APPROVED: ${{ vars.FOOTYEDGE_RESEARCH_FEED_APPROVED }}
+        run: |
+          node --test tests/apply-editorial-consensus.test.mjs
+          node scripts/apply-editorial-consensus.mjs
+
       - name: Publish and lock current-day picks once
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
