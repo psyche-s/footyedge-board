@@ -80,7 +80,7 @@ function candidate(g,f,p,news,h2h){
  const absences=(news?.home?.out?.length||0)+(news?.away?.out?.length||0);
  if(absences>=3){rating-=4;risk.push("Multiple reported absences");}
  if(m.family==="player"&&!(news?.home?.predictedXI?.length&&news?.away?.predictedXI?.length)){rating-=5;risk.push("Starting role unverified");}
- rating=grade(rating);if(rating<70)return null;
+ rating=Math.min(95,grade(rating));if(rating<70)return null; // Never present a perfect-confidence sports selection.
  const common=H.length+" home and "+A.length+" away recent results screened.";
  const evidence=supported?String(hits(h,Boolean))+"/"+H.length+" of "+f.home.name+"'s matches and "+hits(a,Boolean)+"/"+A.length+" of "+f.away.name+"'s matches matched the researched angle.":String(p.reason||"");
  const h2hText=previous.length?" In "+positive+"/"+previous.length+" verified H2H results it occurred.":" No verified recent H2H were available.";

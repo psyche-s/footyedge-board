@@ -82,6 +82,13 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
+      - name: Freeze same-day slips from official unchanged pick board
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
+          SLIP_DATE="$TODAY" node scripts/build-daily-slips.mjs
+
       - name: Check non-priced percentage integrity
         if: steps.gate.outputs.run == 'true'
         run: node scripts/validate-public-metrics.mjs
@@ -102,7 +109,7 @@ jobs:
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
           files=(data/performance data/postmortems)
-          for file in "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json"; do
+          for file in "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json" "data/slips/$TODAY.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
           done
           git add -A -- "${files[@]}"
