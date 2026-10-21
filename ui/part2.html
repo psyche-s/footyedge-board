@@ -1368,12 +1368,51 @@ function feLineupsPanel(g){
  if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return '<section class="fe-panel"><h3>LINEUPS</h3>'+
    '<p class="fe-panelNote">A reliable, date-matched starting XI has not been verified for this fixture.</p></section>';
  return '<section class="fe-panel fe-lineupPanel"><div class="fe-panelHeading"><h3>LINEUPS</h3><span class="fe-sourceTag">SOURCE-DATED</span></div>'+
+   '<button type="button" class="fe-matchRefresh fe-refreshXi" data-refresh-match>↻ Refresh XI & news</button>'+
    '<div class="fe-xiGrid">'+fePlayerPitch(intel.home,g.home,g)+fePlayerPitch(intel.away,g.away,g)+'</div>'+
    '<p class="fe-sourceLine">Predictions and availability from <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
-   esc(intel.source.label||"match preview")+'</a>. Confirm official XI before kickoff.</p></section>';
+   esc(intel.source.label||"match preview")+'</a>. Confirm official XI before kickoff.</p>'+feMatchSourceStatus(g)+'</section>';
+}
+function feMatchSourceStatus(g){
+ const state=g.feMatchCheck;
+ if(!state)return '';
+ const time=Number.isFinite(Date.parse(state.checkedAt))?new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Toronto"}).format(new Date(state.checkedAt))+" ET":"recently";
+ return '<p class="fe-matchDataNote">Latest data check '+esc(time)+': '+esc(state.note||"Match provider check completed.")+'</p>';
+}
+async function feRefreshMatch(g){
+ const now=Date.now();
+ if(g.feLastRefreshTime&&now-g.feLastRefreshTime<4*60000){
+  g.feMatchCheck={...(g.feMatchCheck||{}),checkedAt:new Date(g.feLastRefreshTime).toISOString(),
+    note:"Recently checked; source data is cached for four minutes."};
+  renderModal(g);return;
+ }
+ g.feLastRefreshTime=now;
+ g.feMatchCheck={checkedAt:new Date(now).toISOString(),note:"Checking verified team news and official lineups…"};
+ const scroll=document.getElementById("modalBody").scrollTop;
+ renderModal(g);document.getElementById("modalBody").scrollTop=scroll;
+ try{
+  const data=await json('/api/match-updates?league='+encodeURIComponent(g.league)+'&id='+encodeURIComponent(g.id)+'&date='+encodeURIComponent(S.date));
+  if(data?.schema!=="footyedge-match-check-v1"||String(data.id)!==String(g.id))throw Error("Match feed could not be verified");
+  g.feMatchCheck=data;
+  const team=(side)=>{const t=g[side];const match=(data.confirmedXIs||[]).find(x=>String(x.teamId)===String(t?.id));
+    const reports=(data.reportedInjuries||{})[String(t?.id)]||[];
+    return{...(g.teamIntel?.[side]||{}),confirmedXI:match?.players||[],liveInjuries:reports};};
+  const h=team("home"),a=team("away");
+  if(h.confirmedXI.length===11||a.confirmedXI.length===11){
+   g.liveIntel={...(g.teamIntel||{}),home:h,away:a,
+    source:{label:"ESPN verified complete XI",url:data.sourceUrl,checkedAt:data.checkedAt}};
+  }else g.liveIntel=null;
+ }catch(error){g.feMatchCheck={checkedAt:new Date().toISOString(),note:"The latest match source is unavailable; dated research is unchanged."};}
+ const current=S.games.find(x=>String(x.id)===String(S.openGameId));
+ if(current&&document.getElementById("drawer").classList.contains("on")){
+  const pos=document.getElementById("modalBody").scrollTop;
+  renderModal(current);document.getElementById("modalBody").scrollTop=pos;
+ }
 }
 function feNewsPanel(g,newsHtml){
-  return '<section class="fe-newsSection"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3><div class="modalTeamNews">'+newsHtml+'</div></section>';
+  return '<section class="fe-newsSection"><div class="fe-sourceHead"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3>'+
+   '<button type="button" class="fe-matchRefresh" data-refresh-match>↻ Check updates</button></div>'+
+   '<div class="modalTeamNews">'+newsHtml+'</div>'+feMatchSourceStatus(g)+'</section>';
 }
 
 function feExperimentalProjection(g){
@@ -1685,9 +1724,10 @@ function renderModal(g){
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
-  const action=event?.target?.closest?.("[data-fe-tab],[data-h2h-toggle],[data-last5-toggle]");
+  const action=event?.target?.closest?.("[data-fe-tab],[data-h2h-toggle],[data-last5-toggle],[data-refresh-match]");
   if(!action)return;
   const g=S.games.find(x=>x.id===String(S.openGameId));if(!g)return;
+  if(action.hasAttribute("data-refresh-match")){feRefreshMatch(g);return;}
   if(action.hasAttribute("data-fe-tab"))g.feTab=action.getAttribute("data-fe-tab");
   else if(action.hasAttribute("data-h2h-toggle"))g.h2hExpanded=!g.h2hExpanded;
   else if(action.hasAttribute("data-last5-toggle"))g.last5Expanded=!g.last5Expanded;
