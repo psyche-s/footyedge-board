@@ -8,9 +8,14 @@ test("Do not stack two goal-total lines or redundant winner/double chance",()=>{
  assert.equal(compatible(mk("1","total",94,"Over 1.5 Goals"),mk("1","team-goal",90,"Team A 1+ Goal")),false);
  assert.equal(compatible(mk("1","team-goal",90,"Team A 1+ Goal"),mk("1","team-goal",83,"Team B 1+ Goal")),false);
 });
-test("SGP has one fixture with at least two supported compatible markets, else pass",()=>{
- const x=[mk("1","total",90,"Under 4.5 Goals"),mk("1","double-chance",86,"Team A or Draw"),mk("2","winner",96,"Team C ML")];
- assert.equal(sgp(x).status,"qualified");assert.ok(sgp(x).legs.every(v=>v.gameId==="1"));assert.equal(sgp(x.slice(-1)).status,"pass");
+test("SGP requires at least three supported compatible markets in one fixture, else pass",()=>{
+ const x=[mk("1","total",90,"Under 4.5 Goals"),mk("1","double-chance",86,"Team A or Draw"),
+   mk("1","btts",82,"BTTS Yes"),mk("2","winner",96,"Team C ML")];
+ assert.equal(sgp(x).status,"qualified");
+ assert.ok(sgp(x).legs.length>=3&&sgp(x).legs.length<=5);
+ assert.ok(sgp(x).legs.every(v=>v.gameId==="1"));
+ assert.equal(sgp(x.slice(0,2)).status,"pass");
+ assert.equal(sgp(x.slice(-1)).status,"pass");
 });
 test("ACCA restricts to one leg per fixture and caps families",()=>{
  const x=Array.from({length:7},(_,i)=>mk(String(i),i%2?"team-goal":"total",94-i,"selection "+i));
