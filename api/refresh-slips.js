@@ -1,4 +1,99 @@
-import {sgp,acca} from "../scripts/build-daily-slips.mjs";
+const norm=v=>String(v??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+function market(p){
+ const label=String(p.label||"").trim().toLowerCase().replace(/\s+/g," ");
+ const m=label.match(/^(over|under) (\d+(?:\.\d+)?) goals$/);
+ if(m)return{family:"total",dir:m[1],line:Number(m[2])};
+ const n=label.match(/^(.+) ([123])\+ goals?$/);
+ if(n)return{family:"team-goal",team:n[1],line:Number(n[2])};
+ if(label.endsWith(" or draw"))return{family:"double-chance",team:label.slice(0,-8)};
+ if(label.endsWith(" ml"))return{family:"winner",team:label.slice(0,-3)};
+ if(label.includes("btts")||label.includes("both teams to score"))return{family:"btts",yes:!label.includes("no")};
+ const cat=norm(p.category);
+ if(["player","shots","shots on target","fouls","cards","corners","assists"].includes(cat))return{family:"player"};
+ return null;
+}
+
+function compatible(a,b){
+ if(a.gameId!==b.gameId)return true;
+ if(norm(a.label)===norm(b.label))return false;
+ const A=market(a),B=market(b);if(!A||!B)return false;
+ if(A.family==="total"&&B.family==="total")return false;
+ if(A.family==="btts"&&B.family==="btts")return false;
+ if(A.family==="team-goal"&&B.family==="team-goal"&&A.team===B.team)return false;
+ if(A.family==="double-chance"&&B.family==="double-chance")return false;
+ if(A.family==="winner"&&B.family==="winner")return false;
+ if(A.family==="winner"&&B.family==="double-chance")return false;
+ if(B.family==="winner"&&A.family==="double-chance")return false;
+ if(A.family==="btts"&&A.yes&&B.family==="team-goal")return false;
+ if(B.family==="btts"&&B.yes&&A.family==="team-goal")return false;
+ if(A.family==="btts"&&A.yes&&B.family==="total"&&B.dir==="over"&&B.line<=1.5)return false;
+ if(B.family==="btts"&&B.yes&&A.family==="total"&&A.dir==="over"&&A.line<=1.5)return false;
+ return true;
+}
+function correlation(a,b){
+ const aF=a.family,bF=b.family;
+ if(aF==="total"&&bF==="team-goal"||bF==="total"&&aF==="team-goal")return 5;
+ if(aF==="winner"&&bF==="team-goal"||bF==="winner"&&aF==="team-goal")return 6;
+ if(aF==="team-goal"&&bF==="team-goal")return 4;
+ if(aF==="double-chance"&&bF==="team-goal"||bF==="double-chance"&&aF==="team-goal")return 3;
+ return 1;
+}
+// SGP/ACCA are the marquee competitions only. J1, K League 1, Saudi
+// Pro League, Czech and friendly slates remain on Fixtures, not on the slips.
+const MAJOR_SLIP_LEAGUES=new Set([
+ "eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1",
+ "uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"
+]);
+function isMajor(league){return MAJOR_SLIP_LEAGUES.has(String(league||""));}
+function overallRating(legs,isSameGame=false){
+ if(!legs.length)return null;
+ const minimum=Math.min(...legs.map(x=>Number(x.rating)||0));
+ // Ranking heuristic, deliberately NOT a multi-leg winning probability.
+ return Math.max(0,Math.min(95,Math.round(minimum-3*Math.max(0,legs.length-1)-(isSameGame?2:0))));
+}
+function sgp(all){
+ const groups=new Map();
+ for(const x of all.filter(v=>isMajor(v.league))){if(!groups.has(x.gameId))groups.set(x.gameId,[]);groups.get(x.gameId).push(x);}
+ const choices=[];
+ for(const [id,group] of groups){
+  const eligible=group.filter(x=>x.rating>=73).sort((a,b)=>b.rating-a.rating||a.label.localeCompare(b.label)).slice(0,11);
+  let best=null;
+  for(let mask=1;mask<2**eligible.length;mask++){
+   const legs=eligible.filter((_,i)=>mask&(1<<i));
+   if(legs.length<2||legs.length>5||legs.some((x,i)=>legs.slice(i+1).some(y=>!compatible(x,y))))continue;
+   let overlap=0;for(let i=0;i<legs.length;i++)for(let j=i+1;j<legs.length;j++)overlap+=correlation(legs[i],legs[j]);
+   const weakest=Math.min(...legs.map(x=>x.rating)),avg=legs.reduce((n,x)=>n+x.rating,0)/legs.length;
+   const fitness=.68*weakest+.32*avg+Math.min(4,legs.length)*1.8-overlap-legs.reduce((n,x)=>n+x.risk.length,0);
+   if(!best||fitness>best.fitness)best={fitness,legs,id,overlap};
+  }
+  if(best)choices.push(best);
+ }
+ choices.sort((a,b)=>b.fitness-a.fitness||a.id.localeCompare(b.id));
+ const best=choices[0];
+ return best?{status:"qualified",format:"Best same-game parlay",overallResearchRating:overallRating(best.legs,true),legs:best.legs.sort((a,b)=>b.rating-a.rating),
+  caution:best.legs.length===2?"Two strong, compatible legs qualified. A third leg was not forced; recheck starting XIs and exact market availability.":best.overlap>5?"Some legs positively overlap; avoid treating the selection grades as an independent combination probability.":"Check confirmed lineups and availability of exact markets before placement."}:
+ {status:"pass",format:"Same-game parlay",legs:[],caution:"No fixture has two compatible, sufficiently supported selections. Passing rather than forcing a slip."};
+}
+function acca(all){
+ const sorted=all.filter(x=>isMajor(x.league)&&x.rating>=79).sort((a,b)=>b.rating-a.rating||a.gameId.localeCompare(b.gameId));
+ const used=new Set(),categories=new Map(),leagues=new Map(),legs=[];
+ while(legs.length<5){
+  let choice=null,best=-Infinity;
+  for(const x of sorted){
+   if(used.has(x.gameId)||(categories.get(x.family)||0)>=2)continue;
+   const fitness=x.rating-(categories.get(x.family)||0)*5-(leagues.get(x.league)||0)*2-x.risk.length;
+   if(fitness>best){best=fitness;choice=x;}
+  }
+  if(!choice)break;
+  legs.push(choice);used.add(choice.gameId);categories.set(choice.family,(categories.get(choice.family)||0)+1);
+  leagues.set(choice.league,(leagues.get(choice.league)||0)+1);
+ }
+ return legs.length>=4?{status:"qualified",format:"Cross-game accumulator",overallResearchRating:overallRating(legs),legs,
+  caution:"One leg per match; market types diversified. Weakest evidence rating "+Math.min(...legs.map(x=>x.rating))+"%. Accumulator risk compounds."}:
+ {status:"pass",format:"Cross-game accumulator",legs:[],caution:"Fewer than four strong, diverse fixtures qualify."};
+}
+
+
 // Source-backed, read-only 4-minute overlay. No GitHub commit or Vercel deployment.
 const GH="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/data/slips/";
 const MAJOR=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"]);
