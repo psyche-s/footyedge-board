@@ -986,3 +986,54 @@
  .fe-playerStat strong{font-size:23px}
  .fe-playerDetails{gap:6px}
 }
+
+/* Clean player cut-outs: consistent silhouette size with NO photo tile/frame. */
+.fe-playerPhotoStage{
+  position:relative;flex:0 0 142px;width:142px;height:170px;
+  overflow:hidden;align-self:flex-end;border:0!important;border-radius:0!important;
+  background:none!important;box-shadow:none!important;
+}
+.fe-playerHero{align-items:flex-end!important;min-height:187px;padding:17px 20px 0!important;
+  gap:15px!important;background:linear-gradient(110deg,rgba(15,94,63,.48),rgba(1,24,16,.05))!important}
+.fe-playerPhotoStage>.fe-playerPortrait{
+  display:block;width:100%!important;height:100%!important;max-width:none!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:none!important;box-shadow:none!important;object-fit:cover!important;
+  object-position:50% 31%!important;transform:scale(1.20)!important;
+  transform-origin:50% 55%!important;
+}
+.fe-playerPhotoStage>.fe-playerPortraitPlaceholder{
+  width:100%!important;height:100%!important;
+  background:none!important;border:0!important;box-shadow:none!important;
+  color:#5be4ac!important;font-size:43px!important;
+}
+.fe-playerIdentity{align-self:center;padding:4px 0 20px;min-width:0}
+.fe-playerIdentity h2{font-size:clamp(22px,5vw,29px)!important}
+.fe-playerStatsGrid{gap:7px!important}
+.fe-playerStat{flex-direction:column-reverse!important;justify-content:center!important;
+  padding:9px 2px!important;min-height:78px!important}
+.fe-playerStat strong{
+  font-size:clamp(20px,4vw,27px)!important;line-height:1.1!important;
+  overflow:visible!important;overflow-wrap:normal!important;white-space:nowrap!important;
+}
+.fe-playerStatEmpty strong{font-size:21px!important;color:#829f91!important}
+.fe-playerStat span{line-height:1.25!important;font-size:9.5px!important;max-width:100%!important;
+  overflow-wrap:break-word!important}
+.fe-playerUnavailable{font-size:12px!important;font-weight:450!important;line-height:1.5!important;
+  color:#99beaa!important;margin:8px 1px!important}
+.fe-competitionName{color:#92d5ae!important;font-size:11px!important;margin:0 0 11px!important}
+.fe-playerLoadingPanel{min-height:170px;padding:27px 22px!important}
+.fe-profileShimmer{height:84px;border-radius:12px;background:linear-gradient(
+  100deg,rgba(38,110,72,.23) 0%,rgba(67,150,97,.38) 35%,rgba(38,110,72,.23) 65%);
+  background-size:220% 100%;animation:fe-player-shimmer 1.6s linear infinite}
+@keyframes fe-player-shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
+@media(max-width:460px){
+ .fe-playerHero{min-height:169px;padding:14px 12px 0!important;gap:10px!important}
+ .fe-playerPhotoStage{width:121px;height:157px;flex-basis:121px}
+ .fe-playerIdentity{padding-bottom:15px}
+ .fe-playerStat{min-height:70px!important}
+ .fe-playerStat strong{font-size:22px!important}
+ .fe-playerStat span{font-size:9px!important}
+ .fe-playerScroll{padding:8px 13px 18px!important}
+}
+@media(prefers-reduced-motion:reduce){.fe-profileShimmer{animation:none!important}}
