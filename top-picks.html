@@ -45,14 +45,80 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .btnLink{color:#57e4a0;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:800px){.grid,.marketList{grid-template-columns:1fr}}
 @media(max-width:550px){.nav{padding:15px 13px}.links{gap:9px}.links a{font-size:10px}.logo{font-size:18px}.container{padding:21px 12px 42px}.headline{gap:12px}.dateControl{width:100%;justify-content:center}.dateControl button{flex:1}.slipHead{padding:14px}.slipHead h2{font-size:17px}.legTitle{font-size:13px}.slipBody{padding:8px 13px 11px}.marketItem{padding:12px}}
+
+/* FootyEdge matchday paper tickets — warm editorial layout inspired by the supplied ticket. */
+.grid{align-items:start;gap:20px}
+.ticketPaper{
+  --paper:#f4f0e6;--paperInk:#121416;--paperMuted:#777673;
+  position:relative;isolation:isolate;overflow:visible;
+  border:0!important;border-radius:22px 22px 17px 17px!important;
+  background:var(--paper)!important;color:var(--paperInk)!important;
+  box-shadow:0 2px 0 #c7c2b5,0 18px 45px rgba(0,0,0,.27)!important;
+  min-width:0;
+}
+.ticketPaper .slipHead{padding:25px 27px 14px;display:block;border:0!important;min-width:0}
+.ticketPaper .slipTopline{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:23px;min-width:0}
+.ticketPaper .slipEyebrow{font-size:10.5px!important;font-weight:850!important;letter-spacing:.11em!important;color:#77736d!important;line-height:1.4;min-width:0}
+.ticketPaper .slipBadge{font-size:10px!important;background:none!important;border:0!important;padding:0!important;border-radius:0!important;color:#7b7974!important;letter-spacing:.13em!important;white-space:nowrap}
+.ticketPaper .slipHead h2{font-size:clamp(23px,2.55vw,33px)!important;font-weight:1000!important;font-stretch:condensed;line-height:1.07!important;letter-spacing:-1.1px!important;color:#111216!important;margin:0!important;text-transform:uppercase!important;overflow-wrap:anywhere}
+.ticketPaper .slipIntro{font-size:11px;color:#89847a;line-height:1.45;margin:11px 0 0}
+.ticketPaper .slipBody{padding:10px 27px 20px!important;display:block!important}
+.ticketPaper .leg{position:relative;display:flex!important;align-items:flex-start!important;gap:10px!important;padding:17px 0 18px!important;border-bottom:1px solid #d5d0c7!important}
+.ticketPaper .leg:last-child{border-bottom:0!important}
+.ticketPaper .legIndex{display:none!important}
+.ticketPaper .legCore{flex:1;min-width:0}
+.ticketPaper .legTitle{font-size:clamp(16px,1.55vw,19px)!important;font-weight:800!important;letter-spacing:-.02em;line-height:1.35!important;color:#111216!important}
+.ticketPaper .legMatch{margin-top:7px!important;color:#787773!important;font-size:12px!important;line-height:1.55!important;font-weight:550}
+.ticketPaper .legFixtureTime{white-space:normal}
+.ticketPaper .legReason{font-size:11px!important;line-height:1.55!important;color:#918d85!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:7px!important}
+.ticketPaper .legRating{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:51px;flex:0 0 auto;padding:2px 0!important;border:none!important;border-radius:0!important;background:none!important;color:#187d53!important;font-size:16px!important;font-weight:950!important;line-height:1.1}
+.ticketPaper .legRating small{font-size:8px;color:#6f8074;letter-spacing:.08em;font-weight:850}
+.ticketPaper .empty{border:1px dashed #bcb5a9;background:#faf8f2;color:#76716a;font-size:12px!important;padding:17px!important;border-radius:9px}
+.ticketPaper .ticketTear{height:18px;margin:0 0 -1px;background:repeating-linear-gradient(to right,#cdc7bb 0 8px,transparent 8px 21px) center 9px / 100% 2px no-repeat;position:relative}
+.ticketPaper .ticketTear:before,.ticketPaper .ticketTear:after{content:"";position:absolute;top:0;width:25px;height:25px;background:#031008;border-radius:50%;transform:translateY(-3px)}
+.ticketPaper .ticketTear:before{left:-13px}.ticketPaper .ticketTear:after{right:-13px}
+.ticketPaper .slipFooter{border:0!important;background:transparent!important;padding:15px 27px 20px!important;display:flex!important;align-items:center;gap:7px!important;flex-wrap:wrap}
+.ticketPaper .slipFooter span{color:#89837a!important;font-size:10px!important;font-weight:750;letter-spacing:.06em}
+.ticketPaper .slipFooter strong{color:#716f6a!important;font-size:9px!important;letter-spacing:.09em!important;font-weight:900!important}
+.ticketPaper .slipFooter .slipFootmark{color:#208a5f!important;font-size:10px!important}
+@media(max-width:800px){.grid{gap:19px}}
+@media(max-width:550px){
+ .ticketPaper{border-radius:19px 19px 15px 15px!important}
+ .ticketPaper .slipHead{padding:23px 21px 10px!important}
+ .ticketPaper .slipTopline{margin-bottom:20px}
+ .ticketPaper .slipHead h2{font-size:clamp(24px,7vw,31px)!important;letter-spacing:-1px!important}
+ .ticketPaper .slipBody{padding:8px 21px 19px!important}
+ .ticketPaper .leg{padding:16px 0!important;gap:9px!important}
+ .ticketPaper .legTitle{font-size:16px!important}
+ .ticketPaper .legMatch{font-size:11px!important}
+ .ticketPaper .legRating{font-size:15px!important;min-width:44px}
+ .ticketPaper .slipFooter{padding:12px 21px 19px!important}
+ .ticketPaper .slipEyebrow{font-size:9.5px!important}
+ .ticketPaper .slipBadge{font-size:9px!important}
+}
+
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
   <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. SGP and ACCA layouts are indicative research slips, not sportsbook-confirmed bet builders.</p></div>
   <div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div>
-  <section class="grid"><article class="slip" aria-labelledby="sgpTitle"><header class="slipHead"><div><span class="slipEyebrow">SAME GAME COMBINATION</span><h2 id="sgpTitle">Best SGP Research Slip</h2></div><span class="slipBadge">SAME MATCH</span></header><div class="slipBody" id="sgpSlip"><div class="empty">Loading selections…</div></div><div class="slipFooter"><span id="sgpCount">Verifying available markets</span><strong>No odds · Confidence only</strong></div></article>
-  <article class="slip" aria-labelledby="accaTitle"><header class="slipHead"><div><span class="slipEyebrow">CROSS-GAME COMBINATION</span><h2 id="accaTitle">Best ACCA Research Slip</h2></div><span class="slipBadge">MULTI-MATCH</span></header><div class="slipBody" id="accaSlip"><div class="empty">Loading selections…</div></div><div class="slipFooter"><span id="accaCount">Verifying available markets</span><strong>No odds · Confidence only</strong></div></article></section>
+  <section class="grid" aria-label="FootyEdge research slips">
+  <article class="slip ticketPaper" aria-labelledby="sgpTitle">
+    <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="sgpMeta">SGP · MATCHDAY</span><span class="slipBadge" id="sgpLegBadge">RESEARCH</span></div>
+      <h2 id="sgpTitle">THE SAME-GAME FLYER</h2><p class="slipIntro" id="sgpIntro">One fixture. Independent, supported selections.</p></header>
+    <div class="slipBody" id="sgpSlip"><div class="empty">Loading supported selections…</div></div>
+    <div class="ticketTear" aria-hidden="true"></div>
+    <div class="slipFooter"><span id="sgpCount">Checking available legs</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span> RESEARCH ONLY</strong></div>
+  </article>
+  <article class="slip ticketPaper" aria-labelledby="accaTitle">
+    <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="accaMeta">ACCA · MATCHDAY</span><span class="slipBadge" id="accaLegBadge">RESEARCH</span></div>
+      <h2 id="accaTitle">THE MATCHDAY ACCA</h2><p class="slipIntro" id="accaIntro">The highest-supported selections across different games.</p></header>
+    <div class="slipBody" id="accaSlip"><div class="empty">Loading supported selections…</div></div>
+    <div class="ticketTear" aria-hidden="true"></div>
+    <div class="slipFooter"><span id="accaCount">Checking available legs</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span> RESEARCH ONLY</strong></div>
+  </article>
+</section>
   <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
   <p class="notice">Confidence percentages describe the relative strength of research evidence, not calibrated hit probabilities. Legs can be correlated, and the ability to combine them is not verified against a sportsbook. Player shots, shots on target, fouls, cards and corners are shown only when individually supported by a dated data source and a real selection; otherwise they are omitted. <a class="btnLink" href="picks.html">See all fixture analysis ↗</a></p>
 </main>
@@ -92,14 +158,25 @@ function validProp(p){const category=kinds(p);return ["goals","team goals","btts
 function props(games){
  return games.flatMap(g=>gamePicks(g).filter(validProp).map(p=>pick(g,p))).sort((a,b)=>b.rating-a.rating).slice(0,10);
 }
+function legKickoff(g){const d=new Date(g?.date||"");if(!Number.isFinite(d.getTime()))return "Time unverified";
+ return new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",hour:"numeric",minute:"2-digit",hour12:true}).format(d)+" ET";}
+function slipDate(legs){if(!legs.length)return "MATCHDAY";
+ const values=legs.map(x=>new Date(x.g?.date||"")).filter(d=>Number.isFinite(d.getTime())).sort((a,b)=>a-b);
+ if(!values.length)return "MATCHDAY";
+ return new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",month:"short",day:"numeric"}).format(values[0]).toUpperCase();}
 function legHTML(x,i){
  const p=x.p,g=x.g;
- return '<div class="leg"><div class="legIndex">'+(i+1)+'</div><div class="legCore"><div class="legTitle">'+esc(p.label)+'</div><div class="legMatch">'+esc(matches(g))+'</div>'+
-   '<div class="legReason">'+esc(p.reason||"Dated model evidence is available in the match details.")+'</div></div><span class="legRating">'+x.rating+'%</span></div>';
+ return '<div class="leg"><div class="legIndex" aria-hidden="true">'+String(i+1).padStart(2,"0")+'</div><div class="legCore"><div class="legTitle">'+esc(p.label)+'</div><div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+
+   '<div class="legReason">'+esc(p.reason||"Read the verified match analysis for supporting evidence.")+'</div></div>'+
+   '<span class="legRating" title="FootyEdge confidence rating">'+x.rating+'%<small>CONF.</small></span></div>';
 }
 function printSlip(id,items,empty){
  document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
- document.getElementById(id==="sgpSlip"?"sgpCount":"accaCount").textContent=items.length?items.length+" researched legs":"PASS · Insufficient supported legs";
+ const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
+ document.getElementById(prefix+"Count").textContent=items.length?items.length+" RESEARCHED LEG"+(items.length===1?"":"S"):"PASS · NO QUALIFIED TICKET";
+ document.getElementById(prefix+"LegBadge").textContent=items.length?items.length+" LEG"+(items.length===1?"":"S"):"NO SLIP";
+ document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
+ document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Independent matches · "+slipDate(items)):(isSgp?"No verified same-game combination qualifies yet.":"No verified cross-game combination qualifies yet.");
 }
 function printProps(items){
  document.getElementById("props").innerHTML=items.length?items.map((x,i)=>'<article class="marketItem"><div class="marketRank">'+(i+1)+'</div><div class="marketInfo"><h3>'+esc(x.p.label)+'</h3>'+
