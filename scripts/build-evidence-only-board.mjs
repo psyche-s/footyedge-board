@@ -45,12 +45,12 @@ function generate(g){
   const candidates=[];
   function angle(label,category,fH,fA,family){
     const h=H.filter(fH).length,a=A.filter(fA).length,n=H.length+A.length,observed=Math.round(100*(h+a)/n);
-    if(Math.min(h/H.length,a/A.length)<0.60||observed<70)return;
+    if(Math.min(h/H.length,a/A.length)<0.50||observed<65)return; // Secondary angles may be moderate, never label them elite.
     const facts=[g.home.name+': '+h+'/'+H.length+' recent games matched this trend.',g.away.name+': '+a+'/'+A.length+' recent games matched the corresponding trend.'];
     // Write like a football preview, based on the exact relevant match sample.
     let description='';
     if(category==='Goals'){
-      const verb=label.startsWith('Over')?'finished with '+label.slice(5).toLowerCase():'stayed '+label.toLowerCase();
+      const verb=label.startsWith('Over')?'finished '+(label.includes('1.5')?'with at least two total goals':'above '+label.match(/[0-9.]+/)?.[0]+' total goals'):'stayed '+label.toLowerCase();
       description=g.home.name+' have '+verb+' in '+h+' of their last '+H.length+' matches, while '+g.away.name+' have done so in '+a+' of '+A.length+'.';
     }else if(category==='Team Goals'){
       const first=label.startsWith(g.home.name);
@@ -112,12 +112,12 @@ async function main(){
   if(OWNER_RESEARCH_PICKS){
     for(const game of games){
       const source=research.fixtures.find(f=>String(f.id)===String(game.id));
-      if(Number(source?.history?.home)<10||Number(source?.history?.away)<10||game.top3.length<3){
+      if(Number(source?.history?.home)<10||Number(source?.history?.away)<10||!game.top3.length){
         game.top=null;game.top3=[];
         game.model={...game.model,top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
         game.recoveryStatus=Number(source?.history?.home)<10||Number(source?.history?.away)<10
           ?'pass-incomplete-last-10'
-          :'pass-fewer-than-three-independent-markets';
+          :'pass-no-supported-market';
         continue;
       }
       for(const pick of game.top3){
