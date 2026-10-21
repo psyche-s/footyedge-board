@@ -990,7 +990,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1002,7 +1002,8 @@ async function load(date=S.date){
       CAPTURE_FAST?Promise.resolve(null):repoData('data/boards/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/board-drafts/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null))),
-      repoData('data/market-reviews/'+S.date+'.json').catch(()=>null)
+      repoData('data/market-reviews/'+S.date+'.json').catch(()=>null),
+      repoData('data/h2h/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
@@ -1023,6 +1024,21 @@ async function load(date=S.date){
     const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
     const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
     const researchBaseMap=new Map((researchBasePayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home?.name||x.home,x.away?.name||x.away),x]));
+    // H2H is a separate historical-data overlay, NOT part of frozen predictions.
+    const h2hCache=new Map((h2hPayload?.schema==='footyedge-h2h-history-v1'&&h2hPayload.date===S.date
+      ?h2hPayload.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
+    const attachSavedH2H=items=>{
+      for(const game of items){
+        const row=h2hCache.get(String(game.id));
+        if(!row||String(row.homeId)!==String(game.home?.id)||String(row.awayId)!==String(game.away?.id))continue;
+        const before=(row.h2h||[]).filter(m=>Number.isFinite(Date.parse(m.date))&&Date.parse(m.date)<Date.parse(game.date)&&
+          Number.isInteger(Number(m.homeScore))&&Number.isInteger(Number(m.awayScore)));
+        if(!before.length)continue;
+        const merged=mergeVerifiedH2H(game.matchH2H||game.h2h||[],before);
+        game.h2h=merged;game.matchH2H=merged;
+        game.h2hSummary={...game.h2hSummary,matches:merged.length,note:'Source-verified previous results, most recent first.'};
+      }
+    };
     let games=(p?.events||[]).filter(e=>!FootyEdgeAvailability.excludedTaggedEvent?.(e)).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
       const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
@@ -1114,7 +1130,7 @@ async function load(date=S.date){
           existing.add(String(c.id));
         }
       }
-      S.games=applyBoardArchive(games,displayArchive);
+      S.games=applyBoardArchive(games,displayArchive);attachSavedH2H(S.games);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
       for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
       S.boardReady=true;S.dataSource=archivePayload.immutable===false?"Published today · refreshable":"Historical board";
@@ -1127,7 +1143,7 @@ async function load(date=S.date){
       render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE&&draftPayload?.date===S.date){
-      S.games=applyBoardArchive(games,draftPayload);S.boardReady=true;S.dataSource="Same-day preview · refreshable";render();planRefresh();return;
+      S.games=applyBoardArchive(games,draftPayload);attachSavedH2H(S.games);S.boardReady=true;S.dataSource="Same-day preview · refreshable";render();planRefresh();return;
     }
     if(!ARCHIVE_CAPTURE){
       // A missing overnight lock must not hide today's verified last-10 stats.
@@ -1140,7 +1156,7 @@ async function load(date=S.date){
           g.model.top=null;
         }else g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
       }
-      S.games=games;S.dataSource="Verified historical research · waiting for official board";render();
+      S.games=games;attachSavedH2H(S.games);S.dataSource="Verified historical research · waiting for official board";render();
       if(!games.length){
         const info=await FootyEdgeAvailability.load(date,json,p);
         if(S.date!==date)return;
@@ -1191,7 +1207,7 @@ async function load(date=S.date){
     }
     for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
     S.boardReady=true;
-    S.games=games;S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
+    S.games=games;attachSavedH2H(S.games);S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
 }
 

@@ -9,6 +9,7 @@ on:
       - 'assets/czech-first-league.mjs'
       - 'scripts/build-research-base.mjs'
       - 'scripts/build-evidence-only-board.mjs'
+      - 'scripts/build-h2h-cache.mjs'
       - 'scripts/sync-asia-research.mjs'
       - '.github/workflows/build-research-base.yml'
   schedule:
@@ -74,6 +75,16 @@ jobs:
             echo "Building research base for $DATE"
             FORCE_RESEARCH=1 RESEARCH_DATE="$DATE" node scripts/build-research-base.mjs
           done
+      - name: Refresh verifiable historical H2H for tomorrow's match details
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        shell: bash
+        run: |
+          node --test tests/h2h-score-cache.test.mjs
+          TOMORROW="$(TZ=America/Toronto date -d 'tomorrow' +%F)"
+          if [[ -f "data/research-base-$TOMORROW.json" ]]; then
+            H2H_DATE="$TOMORROW" node scripts/build-h2h-cache.mjs
+          fi
       - name: Publish confidence-only tomorrow preview using verified research
         env:
           OWNER_RESEARCH_PICKS: "1"
@@ -89,6 +100,7 @@ jobs:
           git add -A -- data/research-base-*.json
           git add -A -- data/board-drafts/ || true
           if [[ -d data/asia ]]; then git add -A -- data/asia/; fi
+          if [[ -d data/h2h ]]; then git add -A -- data/h2h/; fi
           if [[ -d data/model-reviews ]]; then git add -A -- data/model-reviews/; fi
           if git diff --cached --quiet; then
             echo "No research-base changes."
