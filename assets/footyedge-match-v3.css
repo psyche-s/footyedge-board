@@ -248,3 +248,73 @@
 #filters .searchBar{grid-row:2;grid-column:1!important}
 #filters #feLeagueSelect{display:block}
 @media(max-width:620px){.fe-xiGrid{grid-template-columns:1fr}.fe-xiCard{padding:11px}.fe-newsSection .modalTeamNews{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fe-projTile{padding:10px 7px;min-height:78px}.fe-projTile strong{font-size:23px}.fe-scoreMode{padding:12px}.fe-scoreMode strong{font-size:20px}.fe-scoreMode span{font-size:10px}.fe-projResultLabels{font-size:9px}.fe-xiBadge{font-size:9px!important}}
+
+/* FootyEdge v5 mobile polish: intentional spacing, source-based lineup field */
+.fe-down{display:grid!important;place-items:center!important;flex:0 0 34px!important;min-width:34px!important;width:34px!important;height:34px!important;border:0!important;border-radius:0!important;padding:0!important;background:transparent!important}
+.fe-arrowIcon{display:block;width:25px;height:25px;transition:transform .16s ease;color:#e7fff1}
+.fe-arrowIcon.open{transform:rotate(180deg)}
+.fe-historyRow{display:grid!important;grid-template-columns:28px minmax(0,1fr) 50px 88px!important;gap:8px!important;min-width:0;align-items:center}
+.fe-historyRow .fe-historyScore{display:block!important;text-align:center!important;font-size:13px!important;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fe-historyRow time{width:100%;text-align:right!important;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:10px!important}
+.fe-historyOpp{min-width:0}
+.fe-newsPlayers{list-style:none;display:grid;gap:8px;margin:7px 0 14px;padding:0!important}
+.fe-newsPlayers li{position:relative;padding-left:12px;line-height:1.5;font-size:12px;color:#dae9e0;overflow-wrap:anywhere}
+.fe-newsPlayers li:before{content:"";width:5px;height:5px;position:absolute;top:.65em;left:0;border-radius:50%;background:#e9ba7a}
+.fe-matchCard .fe-cardBottom{display:none!important}
+.fe-matchCard .fe-hero{padding-bottom:16px!important;background:radial-gradient(ellipse at center bottom,#092f20 0%,#03160f 73%)!important}
+.fe-matchCard .fe-hero:before{width:53%!important;opacity:1!important;background:linear-gradient(90deg,color-mix(in srgb,var(--fe-home,#33445b) 52%,transparent) 0%,color-mix(in srgb,var(--fe-home,#33445b) 28%,transparent) 43%,transparent 100%)!important}
+.fe-matchCard .fe-hero:after{width:53%!important;opacity:1!important;background:linear-gradient(270deg,color-mix(in srgb,var(--fe-away,#33552f) 52%,transparent) 0%,color-mix(in srgb,var(--fe-away,#33552f) 28%,transparent) 43%,transparent 100%)!important}
+.fe-matchCard:after{content:"›";position:absolute;right:16px;bottom:8px;color:#96dcb5;font-size:25px;line-height:1;pointer-events:none}
+.fe-lineupPanel .fe-xiGrid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.fe-lineupPanel .fe-xiCard{background:transparent!important;border:0!important;padding:0!important;min-width:0}
+.fe-fieldHead{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:9px}
+.fe-fieldHead h4{display:flex;align-items:center;gap:6px;line-height:1.4;font-size:12px;margin:0;min-width:0;overflow-wrap:anywhere}
+.fe-fieldHead .fe-xiBadge{font-size:9px!important;padding:4px 8px!important}
+.fe-pitch{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-around;gap:3px;padding:12px 5px;overflow:hidden;aspect-ratio:5/6.7;background:repeating-linear-gradient(to bottom,#1c6947 0% 12.5%,#145b3c 12.5% 25%)!important;border:2px solid rgba(202,251,212,.73);border-radius:12px}
+.fe-pitch:before{content:"";position:absolute;inset:8px 7px;border:1px solid rgba(222,255,230,.6);z-index:-1}
+.fe-pitchStripe{position:absolute;top:50%;left:8px;right:8px;height:1px;background:rgba(221,255,232,.6)}
+.fe-pitchCenter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);height:52px;width:52px;border:1px solid rgba(224,255,230,.62);border-radius:50%}
+.fe-goalTop,.fe-goalBottom{position:absolute;width:46%;left:27%;height:10%;border:1px solid rgba(230,255,234,.58)}
+.fe-goalTop{top:8px;border-top:0}.fe-goalBottom{bottom:8px;border-bottom:0}
+.fe-pitchRow{display:flex;flex:1;align-items:center;justify-content:space-evenly;gap:1px;z-index:2;min-height:0}
+.fe-fieldPlayer{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;max-width:24%;flex:1}
+.fe-fieldAvatar{height:35px;width:35px;display:grid;place-items:center;border:2px solid #e1fae5;border-radius:50%;background:#17402f;box-shadow:0 2px 7px #083723;overflow:hidden}
+.fe-fieldAvatar img{width:100%;height:100%;object-fit:cover}
+.fe-fieldAvatar>span{font-size:10px;font-weight:900;color:#effff5}
+.fe-fieldPlayerName{font-size:9px;line-height:1.15;font-weight:800;color:#f5fff6;text-align:center;max-width:100%;overflow-wrap:anywhere;text-shadow:0 2px 4px #03291a}
+.fe-lineupCaution{color:#acc8b3;font-size:10px;line-height:1.6;margin:8px 2px 12px}
+.fe-sourceTag{font-size:9px;font-weight:800;color:#c6dece;letter-spacing:.06em;white-space:nowrap}
+.fe-projections{padding:14px!important;background:linear-gradient(165deg,#062b1a,#03150e)!important}
+.fe-projections .fe-panelHeading{margin-bottom:15px!important}
+.fe-projGoals{margin:12px 0 18px!important}
+.fe-projGoals>span{font-weight:800!important;font-size:10px!important;letter-spacing:.11em;color:#b4d4bf!important}
+.fe-projGoals>strong{font-size:clamp(29px,4vw,38px)!important;line-height:1.2!important;color:#f2fff7}
+.fe-projGoals>strong small{font-size:22px;color:#9bbcaa}
+.fe-goalTeams{font-size:11px;color:#a6c2ad;text-align:center;line-height:1.45}
+.fe-goalTeams>span{padding:0 6px;color:#648a6f}
+.fe-projBars{height:46px!important}
+.fe-projResultLabels{margin-bottom:17px!important}
+.fe-projTile{height:100%;min-height:100px!important;padding:15px 8px!important;border-radius:12px!important;background:linear-gradient(145deg,#0b3925,#08271a)!important}
+.fe-projTile strong{font-size:29px;font-variant-numeric:tabular-nums}
+.fe-projTile span{max-width:100%;min-height:31px;display:grid;place-items:center;font-size:10px!important;line-height:1.45;overflow-wrap:anywhere;letter-spacing:.04em!important}
+.fe-projGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch;gap:10px!important}
+.fe-scoreMode{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;align-items:center!important;gap:9px!important;padding:13px!important;background:#0b3421!important;margin-bottom:14px}
+.fe-scoreMode>span{font-size:10px!important;font-weight:850!important;letter-spacing:.04em!important}
+.fe-scoreMode>strong{font-size:25px!important}
+.fe-scoreMode>em{font-size:10px;color:#a9c9b3;white-space:nowrap;font-style:normal}
+#statusRow{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+#statusRow .filterPill{white-space:nowrap}
+@media(max-width:620px){
+ .fe-historyRow{grid-template-columns:25px minmax(0,1fr) 48px 83px!important;gap:6px!important}
+ .fe-historyRow time{font-size:10px!important}
+ .fe-lineupPanel .fe-xiGrid{grid-template-columns:1fr!important}
+ .fe-pitch{width:100%;max-width:450px;margin:auto;aspect-ratio:5/5.8;padding:9px}
+ .fe-fieldAvatar{height:43px;width:43px}
+ .fe-fieldPlayerName{font-size:10px}
+ .fe-projTile{min-height:91px!important}
+ .fe-projTile strong{font-size:25px}
+ .fe-projTile span{font-size:9.5px!important}
+ .fe-scoreMode{grid-template-columns:minmax(0,1fr) auto!important}
+ .fe-scoreMode>em{grid-column:1/-1;text-align:right}
+}
+@media(prefers-reduced-motion:reduce){.fe-arrowIcon{transition:none!important}}
