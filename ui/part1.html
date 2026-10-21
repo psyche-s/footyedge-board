@@ -1629,6 +1629,15 @@ body{background:#031008}
 @keyframes livePulse{50%{opacity:.3}}
 @media(max-width:540px){.teamCompact.hasLiveScore{grid-template-columns:36px minmax(0,1fr) 32px}.teamScoreBadge{font-size:17px;padding:5px 3px}}
 
+/* Confidence-only mode: all legacy price and EV surfaces are hidden. */
+.bestRow{grid-template-columns:34px 58px minmax(0,1fr) 85px 18px!important}
+.bestMetric.oddsMetric,.bestMetric.evMetric,.pickMetric.oddsBlock,.pickMetric.evBlock,
+.top3Odds,.priceRow,.priceTag,.oddsPriceTag,.evMetric{display:none!important}
+.pickMetrics{grid-template-columns:minmax(0,1fr)!important}
+.pickMetric.confMetric{min-width:0;text-align:center}
+.bestConfidence b,.confMetric b{color:#47e590!important}
+@media(max-width:760px){.bestRow{grid-template-columns:28px 45px minmax(0,1fr) 72px 12px!important;gap:7px}}
+@media(max-width:500px){.bestRow{grid-template-columns:28px 40px minmax(0,1fr) 59px 10px!important}}
 </style>
 </head>
 <body>
@@ -1665,7 +1674,7 @@ const TZ="America/Toronto";
 const S={date:null,games:[],filter:"all",league:"all",status:"all",cache:new Map(),openGameId:null,performance:null,insights:null,researchBase:null,archive:null};
 const leagueNames={
   "eng.1":"Premier League","eng.2":"EFL Championship","tur.1":"Turkish Süper Lig","ksa.1":"Saudi Pro League","cze.1":"Czech First League","esp.1":"LaLiga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1",
-  "ned.1":"Eredivisie","por.1":"Liga Portugal","usa.1":"MLS",
+  "ned.1":"Eredivisie","por.1":"Liga Portugal","usa.1":"MLS","jpn.1":"J1 League","kor.1":"K League 1",
   "uefa.champions":"UEFA Champions League","uefa.europa":"UEFA Europa League","uefa.europa.conf":"UEFA Conference League",
   "uefa.nations":"UEFA Nations League","uefa.euro":"UEFA Euro","uefa.euroq":"Euro Qualifying",
   "fifa.world":"FIFA World Cup","fifa.worldq.uefa":"World Cup Qualifying","fifa.worldq.conmebol":"World Cup Qualifying","fifa.worldq.concacaf":"World Cup Qualifying",
@@ -2004,6 +2013,8 @@ function candidateAmerican(p){
   return p.modelProb!=null?americanFromProb(p.modelProb):null
 }
 function priceAllowed(p){
+  // Confidence-only model. A valid selection never needs a sportsbook quote.
+  if(p&&Number.isFinite(Number(p.confidenceRating??p.score)))return true;
   if(!p)return false;
   if(p.odds!=null){
     const n=Number(String(p.odds).replace("+",""));

@@ -811,21 +811,22 @@ function topPicks(){
       return g?{...g,archiveTopPick:restoreArchivedPick(x.pick)}:null;
     }).filter(g=>g&&(S.league==="all"||g.league===S.league)&&statusOK(g));
   }
-  return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&g.model.top.score>=80&&priceAllowed(g.model.top)&&statusOK(g)).sort((a,b)=>b.model.top.score-a.model.top.score||(b.model.top.ev??-99)-(a.model.top.ev??-99)).slice(0,5)
+  return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&g.model.top.score>=80&&statusOK(g)).sort((a,b)=>Number(b.model.top.confidenceRating??b.model.top.score)-Number(a.model.top.confidenceRating??a.model.top.score)).slice(0,5)
 }
 function emptyBoardMessage(){
   return FootyEdgeAvailability.message(S.games.length?{kind:"games",date:S.date,count:S.games.length}:S.availability,S.date===etDate(),!!S.archive);
 }
 function pickScoreLabel(p){
-  if(p&&Number.isFinite(Number(p.confidenceRating))&&!p.probabilityCalibrated)return "RESEARCH RATING";
+  if(p&&Number.isFinite(Number(p.confidenceRating))&&!p.probabilityCalibrated)return "CONFIDENCE";
   return "CONF";
 }
 function pickScoreValue(p){
   if(p&&Number.isFinite(Number(p.confidenceRating))&&!p.probabilityCalibrated)
     return Math.round(Number(p.confidenceRating))+"%";
+  const n=Number(p?.confidenceRating??p?.score);
+  if(Number.isFinite(n)&&n>=0&&n<=100)return Math.round(n)+"%";
   const probability=calibratedPickProbability(p);
-  if(probability==null)return "N/A";
-  return String(Math.round(probability*1000)/10)+"%";
+  return probability==null?"N/A":Math.round(probability*100)+"%";
 }
 
 let attributedOdds=new Map(),oddsState="unavailable",oddsCheckedAt=null,oddsRequestBusy=false;
@@ -841,6 +842,7 @@ function observedPrice(g,p){
     oddsLabel:"Seen via ESPN",ev:"—",evLabel:"EV",cls:"fair",observed:true};
 }
 async function pollAttributedOdds(){
+  return; // Confidence-only: never query sportsbook prices in the browser.
   if(oddsRequestBusy||S.date!==etDate()||document.hidden||ARCHIVE_CAPTURE||GITHUB_STATIC)return;
   oddsRequestBusy=true;const date=S.date;
   try{
@@ -862,8 +864,8 @@ async function pollAttributedOdds(){
   }finally{oddsRequestBusy=false}
 }
 function renderBest(){
-  const a=topPicks(),el=document.getElementById("best");
-  document.getElementById("topSub").textContent=S.filter==="ml"?"Moneyline research rankings · draws count as losses · no invented odds":S.archive?.date===S.date?(S.archive.immutable===false?"Today’s picks · refreshable · verify bookmaker prices":oddsState==="observed"?"Archived picks · indicative prices via ESPN":"Archived picks · no verified bookmaker lines"):"Highest ranking · one pick per match";
+  const a=[...topPicks()].sort((x,y)=>Number((y.archiveTopPick||y.model?.top)?.confidenceRating??(y.archiveTopPick||y.model?.top)?.score??0)-Number((x.archiveTopPick||x.model?.top)?.confidenceRating??(x.archiveTopPick||x.model?.top)?.score??0)),el=document.getElementById("best");
+  document.getElementById("topSub").textContent="Confidence-ranked match predictions · source-backed evidence";
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.archiveTopPick||g.model.top,px=observedPrice(g,p);
@@ -874,8 +876,6 @@ function renderBest(){
       '<div class="bestCore"><div class="bestFixture">'+esc(teamDisplayName(g,g.home))+' <span>vs</span> '+esc(teamDisplayName(g,g.away))+'</div>'+
       '<div class="bestLeague">'+esc(displayLeagueName(g.league,g.leagueName))+' · '+esc(g.liveStatusVerified&&(g.live||g.done)?status(g)+' · '+(Number.isInteger(g.home.score)?g.home.score:'–')+'–'+(Number.isInteger(g.away.score)?g.away.score:'–'):timeET(g.date)+' ET')+'</div>'+
       '<div class="bestCategory">'+esc(p.category).toUpperCase()+'</div><div class="bestSelection">'+esc(displayPickLabel(g,p))+'</div></div>'+
-      '<div class="bestMetric oddsMetric"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
-      '<div class="bestMetric green evMetric"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>'+
       '<div class="bestMetric bestConfidence"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div><div class="rowChev">›</div></article>';
   }).join("")
 }
@@ -904,12 +904,10 @@ function renderGames(){
       '<div class="teamCompact'+(g.liveStatusVerified&&(g.live||g.done)?' hasLiveScore':'')+'">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div>'+teamScoreTag(g,"away")+'</div></div>';
     if(p){
       html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
-      '<div class="pickMetrics"'+(g.ownerEditorial?' style="grid-template-columns:repeat(2,minmax(0,1fr))"':'')+'><div class="pickMetric oddsBlock"><b>'+oddsWithLogo(px)+'</b><small>'+(px.observed?'SEEN · ESPN':'ODDS')+'</small></div>'+
-      (g.ownerEditorial?'':'<div class="pickMetric evBlock"><b>'+px.ev+'</b><small>'+px.evLabel+'</small></div>')+
-      '<div class="pickMetric confMetric"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div></div></div>';
+      '<div class="pickMetrics">'+'<div class="pickMetric confMetric"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div></div></div>';
     }else html+='<div class="pickSide"><div class="pass">'+(g.archiveUnavailable?'Original published picks were not saved.':S.dataSource==="Awaiting published board"?'Awaiting published picks.':'PASS — no market cleared the model threshold.')+'</div></div>';
     html+='</div>';
-    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=observedPrice(g,x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+pickScoreValue(x)+'</em><div class="top3Odds">'+oddsWithLogo(tx)+'<small>'+(tx.observed?'SEEN · ESPN':'ODDS')+'</small></div></div></div>'}).join("")+'</div>';
+    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=observedPrice(g,x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+pickScoreValue(x)+'</em></div></div>'}).join("")+'</div>';
     if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
       '<div class="statStrip"><div class="statCell"><b>'+(h?.gf==null?"—":Number(h.gf).toFixed(1))+'</b><small>HOME GF AVG</small></div>'+
       '<div class="statCell"><b>'+(a?.gf==null?"—":Number(a.gf).toFixed(1))+'</b><small>AWAY GF AVG</small></div>'+
@@ -931,7 +929,8 @@ const FILTER_LEAGUE_LOGOS={
   "fra.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/710.png",
   "ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png",
   "por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
-  "usa.1":"assets/logos/competitions/usa.1.png"
+  "usa.1":"assets/logos/competitions/usa.1.png",
+  "jpn.1":"", "kor.1":""
 };
 function filterLeagueIconHtml(id){
   const src=FILTER_LEAGUE_LOGOS[id]||"";
@@ -941,7 +940,7 @@ function filterLeagueIconHtml(id){
   return '<span class="leagueIcon league-'+safeId+'" aria-hidden="true"><img class="leagueLogoImg'+extra+'" src="'+esc(src)+'" alt="" loading="eager" decoding="async" onerror="this.parentElement.outerHTML=leagueFallbackHtml()"></span>'
 }
 function renderLeagues(){
-  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.map(g=>g.league).filter(Boolean))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","cze.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
+  const row=document.getElementById("leagueRow"),available=[...new Set([...S.games.map(g=>g.league).filter(Boolean),"jpn.1","kor.1"])],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","cze.1","jpn.1","kor.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
   row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":filterLeagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
@@ -973,7 +972,7 @@ function renderLanding(){
   const el=document.getElementById("landingTopPicks");if(!el)return;
   const picks=topPicks();
   if(!picks.length){el.innerHTML='<div class="landingEmpty">No pick has cleared today’s strict Top Pick rules yet.</div>';return}
-  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top,px=priceInfo(p),od=px?.odds&&px.odds!=="—"?" · "+px.odds:"";return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+esc(od)+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+pickScoreLabel(p)+'</small></div></div>'}).join("")
+  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top;return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+pickScoreLabel(p)+'</small></div></div>'}).join("")
 }
 
 function render(){
@@ -995,8 +994,8 @@ async function load(date=S.date){
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
-      ((GITHUB_STATIC||CAPTURE_FAST)?repoData("data/"+S.date+"/odds.json").catch(()=>null):json(`/api/football?endpoint=odds&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/odds.json").catch(()=>null):null)),
-      (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=odds&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
+      Promise.resolve(null),
+      Promise.resolve(null),
       repoData("data/performance/summary.json").catch(()=>null),
       repoData('data/daily-insights-'+S.date+'.json').catch(()=>null),
       repoData('data/research-base-'+S.date+'.json').catch(()=>null),
@@ -1074,16 +1073,16 @@ async function load(date=S.date){
     // retrieved Czech season feed is already preserved in our dated research base.
     // Recover ONLY those verified fixtures; never invent games from odds listings.
     for(const row of researchBasePayload?.fixtures||[]){
-      if(row.league!=="cze.1"||!row.id||!row.date||!row.home?.name||!row.away?.name)continue;
+      if(!["cze.1","jpn.1","kor.1"].includes(row.league)||!row.id||!row.date||!row.home?.name||!row.away?.name)continue;
       if(FootyEdgeAvailability.eventDay({date:row.date})!==S.date)continue;
       if(games.some(g=>String(g.id)===String(row.id)||fixtureMatchKey(g.home.name,g.away.name)===fixtureMatchKey(row.home.name,row.away.name)))continue;
-      const home={id:String(row.home.id||""),name:row.home.name,logo:null,score:null};
-      const away={id:String(row.away.id||""),name:row.away.name,logo:null,score:null};
+      const home={id:String(row.home.id||""),name:row.home.name,logo:row.home.logo||null,score:null};
+      const away={id:String(row.away.id||""),name:row.away.name,logo:row.away.logo||null,score:null};
       games.push({id:String(row.id),apiFixtureId:String(row.id),date:row.date,year:Number(row.season||S.date.slice(0,4)),
-        league:"cze.1",leagueName:displayLeagueName("cze.1","Czech First League"),leagueLogo:LEAGUE_LOGOS["cze.1"]||null,
+        league:row.league,leagueName:displayLeagueName(row.league),leagueLogo:LEAGUE_LOGOS[row.league]||null,
         home,away,odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
-        live:false,done:false,detail:"Dated verified Czech fixture",model:null,context:null,apiPrediction:null,availability:null,
-        availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(home.name,away.name))||null,baseResearch:row});
+        live:false,done:false,detail:"Source-verified dated fixture",model:null,context:null,apiPrediction:null,availability:null,
+        availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(home.name,away.name))||(row.teamNews?.length?{teamNews:row.teamNews}:null),baseResearch:row});
     }
 
     // Independent pre-match match-level research is display-only until the
@@ -1357,7 +1356,7 @@ function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
   const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p>'+'</section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=observedPrice(g,x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4><div class="priceRow"><span class="priceTag ${xp.cls}">Odds <b>${oddsWithLogo(xp)}</b></span></div>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const ranked=top3.length?top3.map((x,i)=>{const xp=observedPrice(g,x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
@@ -1372,7 +1371,7 @@ function renderModal(g){
   const noteHtml=ownerNote?'<section class="researchBox"><div class="researchTitle">MATCHUP ANALYSIS · RESEARCH LEAN</div>'+
     '<p class="candidateCommentary">'+esc(ownerNote.body)+'</p>'+
     '<div class="researchFacts"><div class="researchFact"><span class="researchDot"></span><span>'+
-    esc(ownerNote.lean)+(ownerNote.quote?.homeML==null?' · odds unavailable':' · saved DraftKings ML '+(ownerNote.quote.homeML>0?'+':'')+esc(ownerNote.quote.homeML))+
+    esc(ownerNote.lean)+
     '</span></div>'+
     '<div class="researchFact"><span class="researchDot"></span><span>'+
     (typeof modelPct==='number'?'Dixon–Coles home-win estimate: '+(modelPct*100).toFixed(1)+'%':'Dixon–Coles result: insufficient verified recent league data')+
@@ -1380,11 +1379,9 @@ function renderModal(g){
   const dc=g.dcResearch;
   const dcHtml=!g.ownerEditorial&&dc?.markets?.length?'<section class="researchBox"><div class="researchTitle">DIXON–COLES MODEL CHECK · EXPERIMENTAL</div>'+
     '<div class="researchFacts">'+[...dc.markets,...(dc.totalMarkets||[])].map(m=>'<div class="researchFact"><span class="researchDot"></span><span>'+
-      esc(m.label)+': '+(m.modelProbability==null?'model probability unavailable':(Math.round(m.modelProbability*1000)/10).toFixed(1)+'% modeled')+' · '+
-      (m.odds==null?'odds unavailable':esc(m.sportsbook)+' '+(m.odds>0?'+':'')+esc(m.odds))+
-      (m.rawModelEV==null?'':' · model EV '+(m.rawModelEV>=0?'+':'')+(m.rawModelEV*100).toFixed(1)+'%')+
+      esc(m.label)+': '+(m.modelProbability==null?'estimate unavailable':Math.round(m.modelProbability*100)+'% confidence')+
       '</span></div>').join('')+'</div>'+
-    '<p class="modelFootnote">Independent, uncalibrated pre-match estimate; does not change official picks or confidence. Only verified morning moneyline and exact posted goal-total prices are shown. Unpriced markets remain unavailable.</p></section>':'';
+    '<p class="modelFootnote">Independent, uncalibrated pre-match estimate; does not change official picks or confidence. Figures are uncalibrated model estimates, not observed win rates.</p></section>':'';
   const modelApproach=g.ownerEditorial?'<p class="modelFootnote">We weigh recent form, head-to-head results and matchup trends for each pick.</p>':'';
   // Extra full-time markets can be inspected without substituting the
   // different published market or recalculating frozen confidence/EV.
@@ -1409,7 +1406,7 @@ function renderModal(g){
         ' selected-side results; '+esc(String(a.hits??0))+'/'+esc(String(a.sample??0))+
         ' opponent-side results</span></div>';
     }).join('')+'</div>'+
-    '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No sportsbook line, calibrated EV, or new official selection is implied. Official frozen picks remain unchanged.</p></section>':'';
+    '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No recalibration or new official selection is implied. Official frozen picks remain unchanged.</p></section>':'';
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{

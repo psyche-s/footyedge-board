@@ -80,7 +80,7 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
       </article>
     </section>
   </main>
-  <footer class="footer">FootyEdge is an independent soccer research tool and is not affiliated with any league, club, governing body, or sportsbook. Team names, crests, competition marks, and trademarks belong to their respective owners. Statistics, odds, and analysis are compiled from public and third-party sources for informational purposes only. Nothing on FootyEdge is guaranteed or should be considered betting advice. Gamble responsibly.</footer>
+  <footer class="footer">FootyEdge is an independent soccer research tool and is not affiliated with any league, club, governing body, or sportsbook. Team names, crests, competition marks, and trademarks belong to their respective owners. Statistics and analysis are compiled from public and third-party sources for informational purposes only. Nothing on FootyEdge is guaranteed or should be considered betting advice. Gamble responsibly.</footer>
 </div>
 
 <script>
@@ -123,9 +123,7 @@ function homeSelectionLabel(label,x,women){
 function renderTop5(top,emptyMessage="Checking the game schedule…",board=null){
   const el=document.getElementById("topList");
   const headNote=document.querySelector(".topHead small");
-  if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="external_forecast_estimate"))headNote.textContent="Independent estimates · odds unverified";
-  else if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="historical_trend_hit_rate"))headNote.textContent="Research trends · no verified odds";
-  else if(headNote&&top?.some(x=>(x.pick||x)?.confidenceType==="editorial_evidence_rating_not_probability"))headNote.textContent="Research rating · not a win probability";
+  if(headNote)headNote.textContent="Confidence-ranked picks";
   if(!top?.length){el.innerHTML='<div class="loading">'+esc(emptyMessage)+'</div>';return}
   el.innerHTML=top.slice(0,5).map((x,i)=>{
     const p=x.pick||x,women=homeWomenFixture(board,x);
@@ -133,12 +131,8 @@ function renderTop5(top,emptyMessage="Checking the game schedule…",board=null)
     const fixture=home+(away?" vs "+away:"");
     const selection=homeSelectionLabel(p.label||x.selection||"Pick",x,women);
     const calibrated=p.probabilityCalibrated===true?Number(p.calibratedProbability??p.modelProb):null;
-    const alt=board?.games?.find(g=>String(g.id)===String(x.gameId))?.top3?.find(q=>q?.verifiedPrice&&q.bookKey==="draftkings"&&q.label!==p.label);
-    const quote=alt?Number(String(alt.odds).replace("+","")):null;
-    const altQuote=Number.isFinite(quote)?'<div style="font-size:11px;color:#78b896;margin-top:4px">Priced alternative: '+esc(alt.label)+' · DraftKings '+esc(quote>0?"+"+quote:quote)+'</div>':'';
-
-    const confidence=Number.isFinite(calibrated)&&calibrated>=0&&calibrated<=1?(Math.round(calibrated*1000)/10)+"% CONF":Number.isFinite(Number(p.confidenceRating))?Math.round(Number(p.confidenceRating))+"% RATING":"N/A";
-    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div>'+altQuote+'</div><div class="confidence">'+confidence+'</div></div>';
+    const confidence=Number.isFinite(calibrated)&&calibrated>=0&&calibrated<=1?(Math.round(calibrated*1000)/10)+"% CONF":Number.isFinite(Number(p.confidenceRating??p.score))?Math.round(Number(p.confidenceRating??p.score))+"% CONF":"N/A";
+    return '<div class="pick"><span class="rank">'+(x.rank||i+1)+'</span><div><div class="fixture">'+esc(fixture)+'</div><div class="selection">'+esc(selection)+'</div>'+'</div><div class="confidence">'+confidence+'</div></div>';
   }).join("");
 }
 repoJson("data/performance/summary.json").then(p=>{
