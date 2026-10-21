@@ -1011,6 +1011,7 @@ function renderLanding(){
 
 function render(){
   renderMeta();renderLeagues();renderBest();renderGames();renderLanding();
+  if(!GITHUB_STATIC&&!ARCHIVE_CAPTURE){const firstByLeague=new Map();for(const game of S.games)if(!firstByLeague.has(game.league))firstByLeague.set(game.league,game);for(const game of firstByLeague.values())feEnsureTable(game).catch(()=>{});}
   if(S.openGameId&&document.getElementById("drawer").classList.contains("on")){
     const open=S.games.find(x=>x.id===String(S.openGameId));
     if(open)renderModal(open)
@@ -1024,7 +1025,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1038,7 +1039,8 @@ async function load(date=S.date){
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null))),
       repoData('data/market-reviews/'+S.date+'.json').catch(()=>null),
       repoData('data/h2h/'+S.date+'.json').catch(()=>null),
-      repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null)
+      repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null),
+      repoData('data/league-tables/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
@@ -1068,6 +1070,13 @@ async function load(date=S.date){
     const attachSavedH2H=items=>{
       for(const game of items){
         game.teamIntel=verifiedIntel.get(String(game.id))||null;
+        const snapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
+        if(snapshot?.season===Number(game.year||S.date.slice(0,4))&&Array.isArray(snapshot.table)){
+          game.feTable={...snapshot,status:'verified',source:leagueTablePayload.source?.label,sourceUrl:leagueTablePayload.source?.url,asOf:leagueTablePayload.asOf};
+          const hs=snapshot.table.find(t=>String(t.id)===String(game.home?.id))||snapshot.table.find(t=>normName(t.name)===normName(game.home?.name));
+          const as=snapshot.table.find(t=>String(t.id)===String(game.away?.id))||snapshot.table.find(t=>normName(t.name)===normName(game.away?.name));
+          if(hs||as)game.verifiedRanks={home:hs?.rank||null,away:as?.rank||null};
+        }
         // Restored frozen previews retain their immutable picks; attach
         // verified last-five form and news only as a read-only display overlay.
         game.baseResearch=game.baseResearch||researchBaseMap.get(fixtureMatchKey(game.home?.name,game.away?.name))||null;
@@ -1381,15 +1390,51 @@ function feProjectionsPanel(g){
    '<p class="fe-projDisclaimer">Independent Poisson projections from both teams’ last 10 completed matches, using attack and defensive goal averages. These are uncalibrated estimates, may not account for starting XI or injuries, and are separate from FootyEdge confidence ratings.</p></section>';
 }
 
+
+const feStandingsCache=new Map();
+async function feEnsureTable(g){
+ if(!g?.league||g.feTable?.status==="verified")return;
+ const season=Number(g.year||String(S.date).slice(0,4)),key=g.league+":"+season;
+ if(!feStandingsCache.has(key)){
+   const job=json("/api/espn-standings?league="+encodeURIComponent(g.league)+"&season="+season)
+     .then(x=>(Number(x?.season)===season&&Array.isArray(x.table)&&x.table.length)?x:null).catch(()=>null);
+   feStandingsCache.set(key,job);
+ }
+ const result=await feStandingsCache.get(key);
+ if(!result||S.games.every(x=>x.league!==g.league))return;
+ let changed=false;
+ for(const game of S.games.filter(x=>x.league===g.league&&Number(x.year)===season)){
+   if(game.feTable?.status==="verified")continue;
+   game.feTable={...result,sourceUrl:"https://www.espn.com/soccer/standings/_/league/"+encodeURIComponent(g.league)};
+   const byId=id=>result.table.find(row=>String(row.id)===String(id));
+   const byName=name=>result.table.find(row=>normName(row.name)===normName(name));
+   const h=byId(game.home?.id)||byName(game.home?.name);
+   const a=byId(game.away?.id)||byName(game.away?.name);
+   game.verifiedRanks={home:h?.rank||null,away:a?.rank||null};changed=true;
+ }
+ if(changed){renderGames();const opened=S.games.find(x=>x.id===String(S.openGameId));if(opened&&opened.feTab==="standings")renderModal(opened);}
+}
 function feTableTab(g){
-  const positions=["home","away"].map(side=>{
-    const rank=Number(g.verifiedRanks?.[side]);
-    return '<div class="fe-standingTeam">'+teamImgTag(g[side],"fe-historyLogo")+
-    '<strong>'+esc(teamDisplayName(g,g[side]))+'</strong><span>'+
-      (Number.isInteger(rank)&&rank>=1&&rank<=40?"#"+rank+" in league":"League position not verified")+'</span></div>';
-  }).join("");
-  return '<section class="fe-panel"><h3>LEAGUE STANDINGS</h3><div class="fe-standingGrid">'+positions+'</div>'+
-    '<p class="fe-panelNote">Only league positions confirmed by the active standings source are shown.</p></section>';
+ const table=g.feTable?.status==="verified"&&Array.isArray(g.feTable.table)?g.feTable.table:[];
+ const display=x=>Number.isFinite(Number(x))&&x!==null&&x!==""?String(x):"—";
+ if(!table.length)return '<section class="fe-panel"><h3>LEAGUE TABLE</h3><p class="fe-panelNote">Verified season standings are being checked. No league position will be estimated from a different season.</p>'+
+    '<a class="fe-sourceLine" href="https://www.google.com/search?q='+encodeURIComponent(displayLeagueName(g.league)+" "+g.year+" standings")+
+    '" target="_blank" rel="noopener noreferrer">Search current league standings ↗</a></section>';
+ const names=new Set([String(g.home?.id),String(g.away?.id)]);
+ const rows=table.slice().sort((a,b)=>Number(a.rank)-Number(b.rank));
+ const body=rows.map(row=>{
+   const relevant=names.has(String(row.id))||normName(row.name)===normName(g.home?.name)||normName(row.name)===normName(g.away?.name);
+   const pic=/^https:\/\//.test(String(row.logo||""))?'<img src="'+esc(row.logo)+'" alt="" loading="lazy">':'';
+   return '<tr'+(relevant?' class="fe-tableFocus"':'')+'><td>'+display(row.rank)+'</td><td><span class="fe-tableTeam">'+pic+esc(row.name)+'</span></td>'+
+     '<td>'+display(row.played)+'</td><td>'+display(row.won)+'</td><td>'+display(row.drawn)+'</td><td>'+display(row.lost)+'</td>'+
+     '<td>'+display(row.gd)+'</td><td><b>'+display(row.points)+'</b></td></tr>';
+ }).join('');
+ const provenance=g.feTable.sourceUrl&&/^https:\/\//.test(g.feTable.sourceUrl)?'<p class="fe-sourceLine">Source: <a href="'+esc(g.feTable.sourceUrl)+
+   '" target="_blank" rel="noopener noreferrer">'+esc(g.feTable.source||'ESPN competition standings')+'</a>'+
+   (g.feTable.asOf?' · As of '+esc(g.feTable.asOf.slice(0,10)):'')+'</p>':'';
+ return '<section class="fe-panel"><h3>LEAGUE TABLE · '+esc(displayLeagueName(g.league))+'</h3><div class="fe-tableWrap">'+
+   '<table class="fe-leagueTable"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead>'+
+   '<tbody>'+body+'</tbody></table></div>'+provenance+'</section>';
 }
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
   const active=["overview","stats","lineups","standings","projections"].includes(g.feTab)?g.feTab:"overview";
@@ -1629,6 +1674,7 @@ function openGame(id){
   g.feTab="overview";
   renderModal(g);document.getElementById("drawer").classList.add("on");
   loadVerifiedMatchDetails(g);
+  feEnsureTable(g).catch(()=>{});
   if(!g.availabilityLoaded&&!GITHUB_STATIC){
     g.availabilityLoaded=true;
     matchAvailability(g).then(data=>{
