@@ -635,3 +635,23 @@
  .fe-matchCard .fe-scoreStatus{font-size:10px!important;min-width:40px!important}
  .fe-cardTicket{font-size:11px}
 }
+
+/* FootyEdge owner-approved mockup fidelity — photo-free kit-color treatment.
+   Keep scores verified and place status centrally; no ticket footer. */
+.fe-matchCard{overflow:hidden!important;border:1px solid rgba(77,164,116,.46)!important;border-radius:21px!important;background:#06160e!important}
+.fe-matchCard .fe-cardTicket{display:none!important}
+.fe-matchCard .fe-hero.fe-kitHero{position:relative!important;isolation:isolate!important;overflow:hidden!important;background:#031209!important;border-radius:20px!important;min-height:252px}
+.fe-matchCard .fe-hero.fe-kitHero::before,.fe-matchCard .fe-hero.fe-kitHero::after{content:""!important;position:absolute!important;top:0!important;bottom:0!important;width:51%!important;pointer-events:none!important;z-index:0!important;opacity:.95!important;background-size:auto,38px 38px,100% 100%!important}
+.fe-matchCard .fe-hero.fe-kitHero::before{left:0!important;background-image:linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 80%,#0b0a0c),color-mix(in srgb,var(--fe-home) 60%,#06180e) 65%,transparent),repeating-linear-gradient(122deg,transparent 0 10px,rgba(255,255,255,.07) 10px 13px,transparent 13px 27px),linear-gradient(90deg,var(--fe-home),transparent)!important;mask-image:linear-gradient(90deg,#000 65%,transparent)!important}
+.fe-matchCard .fe-hero.fe-kitHero::after{right:0!important;background-image:linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 80%,#090d12),color-mix(in srgb,var(--fe-away) 60%,#06180e) 65%,transparent),repeating-linear-gradient(58deg,transparent 0 10px,rgba(255,255,255,.07) 10px 13px,transparent 13px 27px),linear-gradient(270deg,var(--fe-away),transparent)!important;mask-image:linear-gradient(270deg,#000 65%,transparent)!important}
+.fe-matchCard .fe-hero>.fe-heroHead,.fe-matchCard .fe-hero>.fe-heroTeams{position:relative!important;z-index:3!important}
+.fe-matchCard .fe-heroTeams{padding-bottom:16px!important}
+.fe-matchCard .fe-center{align-self:center!important}
+.fe-matchCard .fe-scoreLine{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important}
+.fe-matchCard .fe-scoreLine>strong{font-weight:950!important;font-size:clamp(35px,7vw,62px)!important;color:#fff!important}
+.fe-matchCard .fe-scoreStatus{display:flex!important;flex-direction:column!important;align-items:center!important;gap:4px!important;font-weight:900!important}
+.fe-matchCard .fe-kickoff{display:flex!important;flex-direction:column!important;align-items:center!important}
+.fe-matchCard .fe-logoWrap img,.fe-matchCard .fe-crest{background:transparent!important;border:0!important;box-shadow:none!important;object-fit:contain!important}
+.fe-recentTeam img,.fe-recentLogo,.fe-historyLogo,.fe-recentHead img,.fe-tableTeam img,.fe-sourceNews img{background:transparent!important;background-color:transparent!important;border:0!important;border-radius:0!important;padding:0!important;box-shadow:none!important;object-fit:contain!important;mix-blend-mode:normal!important}
+.fe-recentForm .fe-miniResult{border-radius:5px!important}
+.fe-sourceLine,.fe-whySources,.fe-sourceSpan{display:none!important}
