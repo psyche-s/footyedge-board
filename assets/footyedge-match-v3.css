@@ -715,3 +715,52 @@
 }
 .fe-recentForm .fe-miniResult{border-radius:50%!important}
 .fe-sourceLine,.fe-whySources,.fe-sourceSpan{display:none!important}
+
+/* 2026/27 kit pattern variants: 10–16% fabric detail, subdued side color,
+   black/green 65%+ center. Applies to cards AND expanded fixture hero. */
+.fe-kitHero{
+ --fe-home-texture:repeating-linear-gradient(132deg,rgba(255,255,255,.065) 0 2px,transparent 2px 28px);
+ --fe-away-texture:repeating-linear-gradient(48deg,rgba(255,255,255,.065) 0 2px,transparent 2px 28px);
+}
+.fe-kitHero[data-home-kit="vertical"]{--fe-home-texture:repeating-linear-gradient(90deg,transparent 0 15px,color-mix(in srgb,var(--fe-home-accent) 15%,transparent) 15px 29px,transparent 29px 47px)}
+.fe-kitHero[data-away-kit="vertical"]{--fe-away-texture:repeating-linear-gradient(90deg,transparent 0 15px,color-mix(in srgb,var(--fe-away-accent) 15%,transparent) 15px 29px,transparent 29px 47px)}
+.fe-kitHero[data-home-kit="pinstripe"]{--fe-home-texture:repeating-linear-gradient(90deg,transparent 0 11px,color-mix(in srgb,var(--fe-home-accent) 19%,transparent) 11px 13px,transparent 13px 24px)}
+.fe-kitHero[data-away-kit="pinstripe"]{--fe-away-texture:repeating-linear-gradient(90deg,transparent 0 11px,color-mix(in srgb,var(--fe-away-accent) 19%,transparent) 11px 13px,transparent 13px 24px)}
+.fe-kitHero[data-home-kit="halves"]{--fe-home-texture:linear-gradient(90deg,color-mix(in srgb,var(--fe-home-accent) 15%,transparent) 0 45%,transparent 45% 100%)}
+.fe-kitHero[data-away-kit="halves"]{--fe-away-texture:linear-gradient(90deg,color-mix(in srgb,var(--fe-away-accent) 15%,transparent) 0 45%,transparent 45% 100%)}
+.fe-kitHero[data-home-kit="hoops"]{--fe-home-texture:repeating-linear-gradient(0deg,transparent 0 14px,color-mix(in srgb,var(--fe-home-accent) 14%,transparent) 14px 30px,transparent 30px 45px)}
+.fe-kitHero[data-away-kit="hoops"]{--fe-away-texture:repeating-linear-gradient(0deg,transparent 0 14px,color-mix(in srgb,var(--fe-away-accent) 14%,transparent) 14px 30px,transparent 30px 45px)}
+.fe-kitHero[data-home-kit="diagonal"]{--fe-home-texture:repeating-linear-gradient(135deg,transparent 0 17px,color-mix(in srgb,var(--fe-home-accent) 16%,transparent) 17px 24px,transparent 24px 42px)}
+.fe-kitHero[data-away-kit="diagonal"]{--fe-away-texture:repeating-linear-gradient(45deg,transparent 0 17px,color-mix(in srgb,var(--fe-away-accent) 16%,transparent) 17px 24px,transparent 24px 42px)}
+.fe-kitHero[data-home-kit="waves"]{--fe-home-texture:repeating-radial-gradient(ellipse at 12% 10%,transparent 0 13px,rgba(255,255,255,.06) 15px 17px,transparent 19px 37px)}
+.fe-kitHero[data-away-kit="waves"]{--fe-away-texture:repeating-radial-gradient(ellipse at 87% 10%,transparent 0 13px,rgba(255,255,255,.06) 15px 17px,transparent 19px 37px)}
+.fe-kitHero[data-home-kit="gradient"]{--fe-home-texture:linear-gradient(125deg,color-mix(in srgb,var(--fe-home-accent) 14%,transparent),transparent 62%)}
+.fe-kitHero[data-away-kit="gradient"]{--fe-away-texture:linear-gradient(55deg,color-mix(in srgb,var(--fe-away-accent) 14%,transparent),transparent 62%)}
+.fe-kitHero[data-home-kit="plain"]{--fe-home-texture:linear-gradient(135deg,rgba(255,255,255,.055),transparent 64%)}
+.fe-kitHero[data-away-kit="plain"]{--fe-away-texture:linear-gradient(45deg,rgba(255,255,255,.055),transparent 64%)}
+.fe-matchCard .fe-hero.fe-kitHero::before,.fe-dialogHero .fe-hero.fe-kitHero::before{
+ opacity:1!important;
+ background-image:var(--fe-home-texture),linear-gradient(90deg,
+ color-mix(in srgb,var(--fe-home) 37%,#041711),
+ color-mix(in srgb,var(--fe-home) 28%,#041711) 48%,
+ color-mix(in srgb,var(--fe-home) 9%,#02130c) 76%,transparent)!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::after,.fe-dialogHero .fe-hero.fe-kitHero::after{
+ opacity:1!important;
+ background-image:var(--fe-away-texture),linear-gradient(270deg,
+ color-mix(in srgb,var(--fe-away) 37%,#041711),
+ color-mix(in srgb,var(--fe-away) 28%,#041711) 48%,
+ color-mix(in srgb,var(--fe-away) 9%,#02130c) 76%,transparent)!important;
+}
+/* Crest pixels must never multiply with the dark card: that made Feyenoord
+   and Betis almost black. Use transparent images and unobtrusive edge lift. */
+.fe-recentTeam img.clubCrest,.fe-recentHead img.clubCrest,
+.fe-h2hTeam img.clubCrest,.fe-tableTeam img[src*="espncdn"],
+.newsTeamLogo.clubCrest,.fe-historyLogo.clubCrest,.fe-recentLogo.clubCrest,
+.fe-hero .clubCrest,.fe-matchCard .clubCrest,.fe-sourceNews .clubCrest{
+ mix-blend-mode:normal!important;filter:drop-shadow(0 0 1px rgba(242,255,248,.5))!important;
+ background:transparent!important;background-color:transparent!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;
+ object-fit:contain!important;
+}
+.fe-recentForm i.fe-miniResult{border-radius:50%!important}
