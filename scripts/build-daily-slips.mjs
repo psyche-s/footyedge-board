@@ -169,7 +169,7 @@ function sgp(all){
   let best=null;
   for(let mask=1;mask<2**eligible.length;mask++){
    const legs=eligible.filter((_,i)=>mask&(1<<i));
-   if(legs.length<2||legs.length>5||legs.some((x,i)=>legs.slice(i+1).some(y=>!compatible(x,y))))continue;
+   if(legs.length<3||legs.length>5||legs.some((x,i)=>legs.slice(i+1).some(y=>!compatible(x,y))))continue;
    let overlap=0;for(let i=0;i<legs.length;i++)for(let j=i+1;j<legs.length;j++)overlap+=correlation(legs[i],legs[j]);
    const weakest=Math.min(...legs.map(x=>x.rating)),avg=legs.reduce((n,x)=>n+x.rating,0)/legs.length;
    const fitness=.68*weakest+.32*avg+Math.min(4,legs.length)*1.8-overlap-legs.reduce((n,x)=>n+x.risk.length,0);
@@ -180,8 +180,8 @@ function sgp(all){
  choices.sort((a,b)=>b.fitness-a.fitness||a.id.localeCompare(b.id));
  const best=choices[0];
  return best?{status:"qualified",format:"Best same-game parlay",overallResearchRating:overallRating(best.legs,true),legs:best.legs.sort((a,b)=>b.rating-a.rating),
-  caution:best.legs.length===2?"Two strong, compatible legs qualified. A third leg was not forced; recheck starting XIs and exact market availability.":best.overlap>5?"Some legs positively overlap; avoid treating the selection grades as an independent combination probability.":"Check confirmed lineups and availability of exact markets before placement."}:
- {status:"pass",format:"Same-game parlay",legs:[],caution:"No fixture has two compatible, sufficiently supported selections. Passing rather than forcing a slip."};
+  caution:best.overlap>5?"Some legs positively overlap; avoid treating the selection grades as an independent combination probability.":"Check confirmed lineups and availability of exact markets before placement."}:
+ {status:"pass",format:"Same-game parlay",legs:[],caution:"No fixture has three compatible, sufficiently supported selections. Passing rather than forcing a slip."};
 }
 function acca(all){
  const sorted=all.filter(x=>isMajor(x.league)&&x.rating>=79).sort((a,b)=>b.rating-a.rating||a.gameId.localeCompare(b.gameId));
