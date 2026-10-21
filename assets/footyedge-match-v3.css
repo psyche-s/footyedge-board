@@ -1204,3 +1204,21 @@
  .fe-playerLastTenTable th:first-child{min-width:128px;max-width:128px;width:128px}
  .fe-playerLastTenTable tbody .fe-playerOpponent strong{max-width:116px}
 }
+
+/* Compact player match log: one readable row per appearance on iPhone. */
+.fe-playerLastTenTable th,.fe-playerLastTenTable td{vertical-align:middle}
+.fe-playerLastTenTable tbody td{font-weight:750;font-size:12px;color:#f1fff6}
+.fe-playerLastTenTable .fe-playerOpponent{vertical-align:middle}
+.fe-playerAppearance{
+ display:inline-flex;align-items:center;margin-top:6px;padding:2px 7px;
+ border:1px solid rgba(79,206,138,.35);border-radius:6px;
+ background:rgba(22,91,57,.45);color:#b5efcf;font-size:9px;
+ font-weight:750;letter-spacing:.01em;
+}
+.fe-playerLastTenTable tbody tr:hover{background:rgba(34,129,80,.20)}
+@media(max-width:460px){
+ .fe-playerLastTenTable th,.fe-playerLastTenTable td{padding:10px 6px!important}
+ .fe-playerLastTenTable tbody td{font-size:11px}
+ .fe-playerLastTenTable th:first-child{width:122px;min-width:122px;max-width:122px}
+ .fe-playerLastTenTable tbody .fe-playerOpponent strong{max-width:110px}
+}
