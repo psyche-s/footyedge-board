@@ -915,7 +915,7 @@ const FE_KIT_COLORS={
 function feColor(t){return FE_KIT_COLORS[String(t?.name||"").toLowerCase()]||"#25583c";}
 function feUpcoming(g){return Date.parse(g.date)>Date.now()-120000;}
 function feActualLive(g){return !feUpcoming(g)&&g.liveStatusVerified===true&&g.live===true&&!g.done;}
-function feActualFinal(g){return !feUpcoming(g)&&g.liveStatusVerified===true&&g.done===true;}
+function feActualFinal(g){return !feUpcoming(g)&&g.done===true;}
 function feIcon(kind){
  const paths={history:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',form:'<path d="M4 20V11M10 20V4M16 20v-8M22 20V7"/>',news:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h5M7 16h7M15 12h2v4h-2"/>'};
  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[kind]||paths.history)+'</svg>';
@@ -928,7 +928,7 @@ function feMatchHero(g){
      :'<div class="fe-kickoff"><span>'+esc(feDay(g.date))+'</span><strong>'+esc(timeET(g.date))+'</strong><small>ET</small></div>';
   return '<div class="fe-hero" style="--fe-home:'+feColor(g.home)+';--fe-away:'+feColor(g.away)+'">'+
     '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span>'+
-    '<span class="fe-heroStatus '+(live?'is-live':final?'is-final':'is-upcoming')+'">'+(g.live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
+    '<span class="fe-heroStatus '+(live?'is-live':final?'is-final':'is-upcoming')+'">'+(live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
     '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div>'+
     '</div>';
 }
@@ -1327,8 +1327,12 @@ function feOfficialNewsHTML(g){
    const out=Array.isArray(x?.out)?x.out.slice(0,8):[],doubt=Array.isArray(x?.doubtful)?x.doubtful.slice(0,6):[],reports=Array.isArray(x?.injuryReports)?x.injuryReports.slice(0,6):[];
    const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><p class="fe-availabilityText">'+arr.map(esc).join(' · ')+'</p>':'';
    return '<section class="teamNewsCard fe-sourceNews"><div class="teamNewsHead">'+teamImgTag(t,"newsTeamLogo")+
-     '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+(item(out,'REPORTED OUT / SUSPENDED','out')+item(doubt,'DOUBTFUL','doubt')+item(reports,'INJURY REPORT · AVAILABILITY NOT CONFIRMED','doubt')||
-      '<p class="fe-newsClear">No absence reported in the cited pre-match preview.</p>')+'</section>';
+     '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+
+     (out.length+doubt.length+reports.length?item(out,'REPORTED OUT / SUSPENDED','out')+
+       item(doubt,'DOUBTFUL','doubt')+item(reports,'INJURY REPORT · AVAILABILITY NOT CONFIRMED','doubt'):
+       '<p class="fe-newsClear">No absence reported in the cited pre-match preview.</p>')+
+     (Array.isArray(x.reportUrls)&&x.reportUrls.length?'<p class="fe-sourceLine">'+x.reportUrls.filter(u=>/^https:\/\//.test(u)).slice(0,2).map((u,i)=>
+       '<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Official club report '+(i+1)+' ↗</a>').join(' · ')+'</p>':'')+'</section>';
  };
  return side(intel.home,g.home)+side(intel.away,g.away)+
    '<p class="fe-sourceLine fe-sourceSpan">As reported '+esc(intel.source.publishedOn||S.date)+' · <a href="'+esc(intel.source.url)+
