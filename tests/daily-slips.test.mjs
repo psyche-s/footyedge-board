@@ -1,6 +1,6 @@
 import test from "node:test";import assert from "node:assert/strict";
 import{market,compatible,sgp,acca,build}from"../scripts/build-daily-slips.mjs";
-const mk=(id,family,rating,label)=>({gameId:id,league:"a",family,rating,label:label||family,risk:[]});
+const mk=(id,family,rating,label)=>({gameId:id,league:"eng.1",family,rating,label:label||family,risk:[]});
 test("classify goal markets and results",()=>{assert.equal(market({label:"Over 1.5 Goals"}).family,"total");assert.equal(market({label:"Team A ML"}).family,"winner");assert.equal(market({label:"Team A or Draw"}).family,"double-chance");});
 test("Do not stack two goal-total lines or redundant winner/double chance",()=>{
  assert.equal(compatible(mk("1","total",85,"Over 1.5 Goals"),mk("1","total",84,"Under 4.5 Goals")),false);
