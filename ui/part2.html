@@ -889,6 +889,38 @@ function fifthFactLabel(g){
   const h=g.advancedResearch?.homeStats?.shotsOnTargetAvg,a=g.advancedResearch?.awayStats?.shotsOnTargetAvg;
   return Number.isFinite(h)&&Number.isFinite(a)?"SOT AVG · H / A":"FORM SAMPLE · H / A";
 }
+
+function feDay(date){
+  const d=new Date(date);
+  if(!Number.isFinite(d.getTime()))return "Scheduled";
+  return new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",month:"short",day:"numeric"}).format(d);
+}
+function feVerifiedScore(g){
+  return Boolean(g.liveStatusVerified&&(g.live||g.done)
+     &&Number.isInteger(g.home?.score)&&g.home.score>=0
+     &&Number.isInteger(g.away?.score)&&g.away.score>=0);
+}
+function feSide(g,which){
+  const t=g[which]||{},m=g.model?.[which==="home"?"displayHome":"displayAway"]||g.model?.[which]||{};
+  const pos=Number(g.verifiedRanks?.[which]);
+  return '<div class="fe-side fe-'+which+'">'+
+    '<div class="fe-logoWrap">'+teamImgTag(t,"fe-crest")+'</div>'+
+    '<div class="fe-sideName">'+esc(teamDisplayName(g,t))+'</div>'+
+    (Number.isInteger(pos)&&pos>0&&pos<=40?'<span class="fe-standing">'+pos+(pos%100>=11&&pos%100<=13?'th':pos%10===1?'st':pos%10===2?'nd':pos%10===3?'rd':'th')+'</span>':'')+
+    '<div class="fe-form" aria-label="'+(which==="home"?"Home":"Away")+' last five match form">'+formHTML(m.form)+'</div>'+
+  '</div>';
+}
+function feMatchHero(g){
+  const scored=feVerifiedScore(g),label=g.live?'LIVE':g.done?'FINAL':'UPCOMING';
+  const core=scored
+     ?'<div class="fe-scoreLine"><strong>'+g.home.score+'</strong><span class="fe-scoreStatus '+(g.live?'fe-status-live':'')+'">'+(g.live?'<i class="fe-liveDot"></i>':'')+esc(label)+(g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+g.away.score+'</strong></div>'
+     :'<div class="fe-kickoff"><span>'+esc(feDay(g.date))+'</span><strong>'+esc(timeET(g.date))+'</strong><small>ET</small></div>';
+  return '<div class="fe-hero">'+
+    '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span>'+
+    '<span class="fe-heroStatus '+(g.live?'is-live':g.done?'is-final':'')+'">'+(g.live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
+    '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div>'+
+    '</div>';
+}
 function renderGames(){
   let list=S.games.filter(filterOK);
   list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.confidenceRating??viewPick(b)?.score??0)-(viewPick(a)?.confidenceRating??viewPick(a)?.score??0):(a,b)=>new Date(a.date)-new Date(b.date));
@@ -896,26 +928,15 @@ function renderGames(){
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
-    const top3=viewCandidates(g),p=viewPick(g),px=null,h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
-    let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
-      '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span><span class="'+(g.live?'matchStatusLive':g.done?'matchStatusFinal':'')+'">'+esc(status(g))+'</span></div>'+
-      '<div class="gameBody"><div class="teamStack">'+
-      '<div class="teamCompact'+(g.liveStatusVerified&&(g.live||g.done)?' hasLiveScore':'')+'">'+teamImgTag(g.home,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.home))+'</div><div class="form">'+formHTML(dh?.form)+'</div></div>'+teamScoreTag(g,"home")+'</div>'+
-      '<div class="teamCompact'+(g.liveStatusVerified&&(g.live||g.done)?' hasLiveScore':'')+'">'+teamImgTag(g.away,"teamLogo")+'<div class="teamInfo"><div class="teamName">'+esc(teamDisplayName(g,g.away))+'</div><div class="form">'+formHTML(da?.form)+'</div></div>'+teamScoreTag(g,"away")+'</div></div>';
-    if(p){
-      html+='<div class="pickSide"><div class="pickTitle"><small>'+esc(p.displayOnly?"MODEL LEAN · "+p.category:p.category)+'</small><strong>'+esc(displayPickLabel(g,p))+'</strong></div>'+
-      '<div class="pickMetrics">'+'<div class="pickMetric confMetric"><b>'+pickScoreValue(p)+'</b><small>'+pickScoreLabel(p)+'</small></div></div></div>';
-    }else html+='<div class="pickSide"><div class="pass">'+(g.archiveUnavailable?'Original published picks were not saved.':S.dataSource==="Awaiting published board"?'Awaiting published picks.':'PASS — no market cleared the model threshold.')+'</div></div>';
-    html+='</div>';
-    if(top3.length)html+='<div class="top3Strip">'+top3.map((x,i)=>{const tx=observedPrice(g,x);return '<div class="top3Pick"><div class="top3PickMain"><span>#'+(i+1)+' · '+esc(x.category).toUpperCase()+'</span><b>'+esc(displayPickLabel(g,x))+'</b></div><div class="top3Right"><em>'+pickScoreValue(x)+'</em></div></div>'}).join("")+'</div>';
-    if(p)html+='<div class="analysisLower"><div class="analysisContent"><div class="commentaryLine">'+esc(cardCommentary(g,p))+'</div>'+
-      '<div class="statStrip"><div class="statCell"><b>'+(h?.gf==null?"—":Number(h.gf).toFixed(1))+'</b><small>HOME GF AVG</small></div>'+
-      '<div class="statCell"><b>'+(a?.gf==null?"—":Number(a.gf).toFixed(1))+'</b><small>AWAY GF AVG</small></div>'+
-      '<div class="statCell"><b>'+pctInt(btts)+'</b><small>BTTS</small></div>'+
-      '<div class="statCell"><b>'+pctInt(o25)+'</b><small>OVER 2.5</small></div>'+
-      '<div class="statCell"><b>'+fifthFactValue(g)+'</b><small>'+fifthFactLabel(g)+'</small></div></div></div></div>';
-    html+='<button class="details" onclick="event.stopPropagation();openGame(\''+g.id+'\')">VIEW FULL ANALYSIS →</button></article>';return html;
-  }).join("")
+    const selections=viewCandidates(g),first=viewPick(g);
+    const label=selections.length+" pick"+(selections.length===1?"":"s");
+    const strongest=first?pickScoreValue(first)+" highest confidence":"Match research pending";
+    return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
+      'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
+      feMatchHero(g)+
+      '<div class="fe-cardBottom"><span>'+esc(label)+' <i>·</i> '+esc(strongest)+'</span><span class="fe-cardArrow" aria-hidden="true">›</span></div>'+
+    '</article>';
+  }).join("");
 }
 const FILTER_LEAGUE_LOGOS={
   "eng.1":"assets/logos/competitions/eng.1.png",
@@ -1228,21 +1249,76 @@ function matchH2HHtml(g){
     const exact=Boolean(m.date&&Number.isFinite(Date.parse(m.date)));
     const date=exact?new Intl.DateTimeFormat("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"}).format(new Date(m.date)):m.dateLabel||"Date unverified";
     return '<div class="h2hResult"><time'+(exact?' datetime="'+esc(m.date)+'"':'')+'>'+esc(date)+'</time><span class="h2hFixture">'+esc(m.home)+' <b>'+esc(m.homeScore)+'–'+esc(m.awayScore)+'</b> '+esc(m.away)+'</span></div>';
-  }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking previous meetings…</p>':'<p class="h2hEmpty">'+esc(info.note||"No verified previous meetings found.")+'</p>');
-  const count=rows.length;
-  const total=count?'<p class="h2hEmpty">'+count+' verified meeting'+(count===1?'':'s')+' shown (up to 5)'+(g.matchDetailsPending?' · checking older fixtures…':'')+'</p>':'';
-  const expanded=Boolean(g.h2hExpanded);
-  return '<section class="h2hSection"><button type="button" class="h2hToggle" data-h2h-toggle aria-expanded="'+expanded+'" aria-controls="h2hResults"><span>Head-to-Head · Last 5 available'+(count?' ('+count+' found)':'')+'</span><span class="h2hChevron" aria-hidden="true">'+(expanded?"⌃":"⌄")+'</span></button><div class="h2hResults" id="h2hResults" '+(expanded?"":"hidden")+'>'+total+body+'</div></section>';
+  }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking recorded previous meetings…</p>':'<p class="h2hEmpty">'+esc(info.note||"No verified previous meetings in the available historical records.")+'</p>');
+  const count=rows.length,expanded=Boolean(g.h2hExpanded);
+  return '<section class="h2hSection fe-accordion"><button type="button" class="h2hToggle fe-accordionButton" data-h2h-toggle aria-expanded="'+expanded+'">'+
+    '<span class="fe-accordionGlyph">◷</span><span class="fe-accordionLabel"><strong>H2H</strong><small>Last '+(count||"5")+' meeting'+(count===1?"":"s")+(count?' recorded':' checked')+' · Tap to expand</small></span><span class="fe-down">'+(expanded?"⌃":"⌄")+'</span></button>'+
+    '<div class="h2hResults fe-accordionBody" '+(expanded?"":"hidden")+'>'+body+'</div></section>';
+}
+function feLastFive(g){
+  const lists=[{side:"home",team:g.home,rows:g.baseResearch?.last5?.home||g.baseResearch?.last10?.home?.slice(0,5)||[]},
+               {side:"away",team:g.away,rows:g.baseResearch?.last5?.away||g.baseResearch?.last10?.away?.slice(0,5)||[]}];
+  const grouped=lists.map(x=>{
+    const html=x.rows.length?x.rows.slice(0,5).map(row=>{
+      const gf=Number(row.gf),ga=Number(row.ga);
+      if(!Number.isFinite(gf)||!Number.isFinite(ga))return"";
+      const result=gf>ga?"W":gf<ga?"L":"D";
+      const opponent=row.oppName||row.opponentName||"Opponent";
+      const date=Number.isFinite(Date.parse(row.date||""))?feDay(row.date):"Date unavailable";
+      return '<div class="fe-historyRow"><span class="fe-miniResult '+result+'">'+result+'</span>'+
+        '<span class="fe-historyOpp">'+esc(opponent)+'</span><strong>'+gf+'–'+ga+'</strong><time>'+esc(date)+'</time></div>';
+    }).join(""):'<p class="fe-empty">Last-five dated results are not available from the verified research feed.</p>';
+    return '<div class="fe-historyTeam"><h4>'+teamImgTag(x.team,"fe-historyLogo")+esc(teamDisplayName(g,x.team))+'</h4>'+html+'</div>';
+  }).join("");
+  return '<section class="fe-accordion"><button type="button" class="fe-accordionButton" data-last5-toggle aria-expanded="'+Boolean(g.last5Expanded)+'">'+
+    '<span class="fe-accordionGlyph">▥</span><span class="fe-accordionLabel"><strong>LAST 5 GAMES</strong><small>Recent verified form for both teams · Tap to expand</small></span><span class="fe-down">'+(g.last5Expanded?'⌃':'⌄')+'</span></button>'+
+    '<div class="fe-accordionBody" '+(g.last5Expanded?'':'hidden')+'><div class="fe-historyGrid">'+grouped+'</div></div></section>';
+}
+function feStatsTab(g){
+  const h=g.model?.home||g.model?.displayHome||{},a=g.model?.away||g.model?.displayAway||{};
+  const vals=[["RECENT GAMES",h.n,a.n],["GOALS FOR · AVG",h.gf,a.gf],["GOALS AGAINST · AVG",h.ga,a.ga],
+    ["BOTH TEAMS SCORE",h.btts,a.btts],["OVER 2.5 GOALS",h.o25,a.o25]];
+  const row=([key,home,away])=>{
+    const rate=/BOTH TEAMS|OVER 2.5/.test(key);
+    const format=v=>Number.isFinite(v)?rate?Math.round(v*100)+"%":key==="RECENT GAMES"?String(v):Number(v).toFixed(2):"—";
+    return '<div class="fe-statRow"><strong>'+format(home)+'</strong><span>'+esc(key)+'</span><strong>'+format(away)+'</strong></div>';
+  };
+  const regional=g.teamMetrics;
+  const measured=regional&&Object.keys({...regional.home,...regional.away}).length
+    ?'<section class="fe-panel"><h3>VERIFIED SEASON METRICS</h3>'+Object.keys({...regional.home,...regional.away}).map(key=>
+       '<div class="fe-statRow"><strong>'+esc(regional.home?.[key]??"—")+'</strong><span>'+esc(key.replaceAll("_"," ").toUpperCase())+'</span><strong>'+esc(regional.away?.[key]??"—")+'</strong></div>').join("")+'</section>':'';
+  return '<section class="fe-panel"><h3>MATCH STATISTICS · LAST 10</h3><div class="fe-statTeamNames"><b>'+esc(g.home.name)+'</b><b>'+esc(g.away.name)+'</b></div>'+
+    vals.map(row).join("")+'<p class="fe-panelNote">Historical averages and rates describe recorded results, not guaranteed match probabilities.</p></section>'+measured+feLastFive(g);
+}
+function feNewsPanel(g,newsHtml){
+  return '<section class="fe-newsSection"><h3><span aria-hidden="true">▤</span> TEAM NEWS</h3><div class="modalTeamNews">'+newsHtml+'</div></section>';
+}
+function feTableTab(g){
+  const positions=["home","away"].map(side=>{
+    const rank=Number(g.verifiedRanks?.[side]);
+    return '<div class="fe-standingTeam">'+teamImgTag(g[side],"fe-historyLogo")+
+    '<strong>'+esc(teamDisplayName(g,g[side]))+'</strong><span>'+
+      (Number.isInteger(rank)&&rank>=1&&rank<=40?"#"+rank+" in league":"League position not verified")+'</span></div>';
+  }).join("");
+  return '<section class="fe-panel"><h3>LEAGUE STANDINGS</h3><div class="fe-standingGrid">'+positions+'</div>'+
+    '<p class="fe-panelNote">Only league positions confirmed by the active standings source are shown.</p></section>';
 }
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
-  const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form||g.model?.[side==="home"?"displayHome":"displayAway"]?.form)}</div></div>`};
-  const first=g.liveStatusVerified&&(g.live||g.done)?status(g)+" · "+(Number.isInteger(g.home.score)?g.home.score:"–")+"–"+(Number.isInteger(g.away.score)?g.away.score:"–"):`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
-  const regional=g.teamMetrics;
-  const metricsHtml=regional?'<section class="researchBox"><div class="researchTitle">SEASON STATISTICS · LICENSED FEED</div><div class="researchFacts">'+
-    Object.keys({...regional.home,...regional.away}).map(key=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(key.replaceAll("_"," ").toUpperCase())+': '+esc(regional.home?.[key]??"—")+' / '+esc(regional.away?.[key]??"—")+' (home / away)</span></div>').join("")+'</div></section>':'';
-  return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}${metricsHtml}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Confidence is a model-derived estimate from historical evidence, not a guaranteed result or independently calibrated win probability.</p>`;
+  const active=["overview","stats","lineups","standings","comments"].includes(g.feTab)?g.feTab:"overview";
+  const tabs=[["overview","Overview"],["stats","Stats"],["lineups","Lineups"],["standings","Standings"],["comments","Comments"]];
+  const nav='<div class="fe-tabs" role="tablist" aria-label="Match analysis">'+tabs.map(([id,label])=>
+    '<button type="button" role="tab" aria-selected="'+(id===active)+'" class="'+(id===active?"active":"")+'" data-fe-tab="'+id+'">'+label+'</button>').join("")+'</div>';
+  const head='<section class="fe-panel fe-picks"><div class="fe-panelHeading"><h3><span class="fe-star">★</span> TOP '+Math.min(3,(viewCandidates(g)||[]).length)+' PICKS</h3>'+
+    '<span>'+viewCandidates(g).length+' researched picks</span></div>'+ranked+'</section>';
+  let content;
+  if(active==="overview")content=head+matchH2HHtml(g)+feLastFive(g)+feNewsPanel(g,newsHtml)+noteHtml+dcHtml+modelApproach;
+  else if(active==="stats")content=feStatsTab(g)+matchH2HHtml(g);
+  else if(active==="lineups")content='<section class="fe-panel"><h3>LINEUPS & AVAILABILITY</h3><p class="fe-panelNote">Confirmed starting lineups will only appear when supported by a verified match source. Projected lineups are not treated as confirmed.</p></section>'+feNewsPanel(g,newsHtml);
+  else if(active==="standings")content=feTableTab(g);
+  else content='<section class="fe-panel"><h3>COMMENTS</h3><p class="fe-panelNote">Community comments are not enabled yet. Predictions and match records remain available under Overview.</p></section>';
+  return '<div class="fe-dialogHero">'+feMatchHero(g)+'</div>'+nav+'<div class="fe-tabPanel" role="tabpanel">'+content+
+    '<p class="fe-disclaimer">FootyEdge confidence is a research rating from historical evidence, not an independently calibrated probability or guarantee.</p></div>';
 }
-
 function extractVerifiedH2H(g,payloads){
   const out=[],seen=new Set();
   for(const payload of payloads){
@@ -1388,7 +1464,14 @@ function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
   const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p>'+'</section>'};
-  const ranked=top3.length?top3.map((x,i)=>{const xp=observedPrice(g,x);return `<section class="modalPick"><div class="modalPickHead"><span>#${i+1} · ${esc(x.displayOnly?"MODEL LEAN · "+x.category:x.category).toUpperCase()}</span><strong>${pickScoreValue(x)}${x.stars?' · '+x.stars:''}</strong></div><h4>${esc(displayPickLabel(g,x))}</h4>${i===0?whyHtml(x):'<p class="candidateCommentary">'+esc(plainFootballReason(g,x))+'</p>'}</section>`}).join(""):(g.archiveUnavailable||g.recoveryStatus?'<div class="pass">Original published picks were not saved.</div>':'<div class="pass">PASS — no market cleared the model threshold.</div>');
+  const ranked=top3.length?top3.map((x,i)=>{
+    const badge=i===0?"★ Top Pick":"#"+(i+1)+" Pick";
+    return '<article class="modalPick fe-selection">'+
+      '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">'+esc(badge)+'</div>'+
+      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4><p>'+esc(plainFootballReason(g,x))+'</p></div>'+
+      '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
+    '</article>';
+  }).join(""):'<div class="fe-empty">No selection has enough verified support for this fixture.</div>';
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
@@ -1442,16 +1525,21 @@ function renderModal(g){
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
-  const btn=event?.target?.closest?.("[data-h2h-toggle]");if(!btn)return;
+  const action=event?.target?.closest?.("[data-fe-tab],[data-h2h-toggle],[data-last5-toggle]");
+  if(!action)return;
   const g=S.games.find(x=>x.id===String(S.openGameId));if(!g)return;
-  g.h2hExpanded=!g.h2hExpanded;
+  if(action.hasAttribute("data-fe-tab"))g.feTab=action.getAttribute("data-fe-tab");
+  else if(action.hasAttribute("data-h2h-toggle"))g.h2hExpanded=!g.h2hExpanded;
+  else if(action.hasAttribute("data-last5-toggle"))g.last5Expanded=!g.last5Expanded;
   renderModal(g);
-  document.querySelector("[data-h2h-toggle]")?.focus();
+  if(action.hasAttribute("data-fe-tab")){
+    document.querySelector('[data-fe-tab="'+g.feTab+'"]')?.focus({preventScroll:true});
+  }
 };
-
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
   S.openGameId=String(id);
+  g.feTab="overview";
   renderModal(g);document.getElementById("drawer").classList.add("on");
   loadVerifiedMatchDetails(g);
   if(!g.availabilityLoaded&&!GITHUB_STATIC){
