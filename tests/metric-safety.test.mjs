@@ -13,12 +13,12 @@ const context=()=>{
   vm.runInContext(fs.readFileSync('assets/board-availability.js','utf8'),ctx);vm.runInContext(code,ctx);return ctx;
 };
 
-test('renderer suppresses ungrounded EV and confidence regression values',()=>{
+test('renderer suppresses ungrounded EV while showing the confidence-only ranking grade',()=>{
   const c=context();
   for(const ev of [5.4,16.2,40.4,null,NaN]){
     c.pick={score:85,ev,modelProb:.85,priceDecimal:7.53,verifiedPrice:true,bookExact:true,probabilityCalibrated:false};
     assert.equal(vm.runInContext('priceInfo(pick).ev',c),'N/A');
-    assert.equal(vm.runInContext('pickScoreValue(pick)',c),'N/A');
+    assert.equal(vm.runInContext('pickScoreValue(pick)',c),'85%');
   }
 });
 
