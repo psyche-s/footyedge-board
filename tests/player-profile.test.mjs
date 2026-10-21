@@ -44,7 +44,7 @@ test("Only numeric statistics actually supplied can appear",()=>{
  assert.equal(parseRecent({entries:[{date:"2026-10-17",opponent:{name:"Opposition"},
   statistics:{stats:[{name:"goals",value:2}]}}]})[0]?.goals,2);
 });
-test("Headshot enrichment preserves matched player id and uses player-ID image with client error fallback",()=>{
+test("Headshot enrichment preserves matched player IDs without guessing missing image URLs",()=>{
  const summary={rosters:[{team:{id:"101"},roster:Array.from({length:11},(_,i)=>({
   starter:true,athlete:{id:500+i,displayName:"Player "+i,headshot:{href:"https://a.espncdn.com/"+i+".png"}}
  }))}]};
@@ -53,7 +53,8 @@ test("Headshot enrichment preserves matched player id and uses player-ID image w
  assert.equal(starters[0].players[0].id,"500");
  const photos=rosterPhotos(sample);
  assert.equal(photos[0].id,"99812");
- assert.equal(photos[1].photoUrl,"https://a.espncdn.com/i/headshots/soccer/players/full/99813.png");
+ assert.equal(photos[0].photoUrl,"https://a.espncdn.com/i/headshots/soccer/players/full/99812.png");
+ assert.equal(photos[1].photoUrl,null); // A missing photo is not a verified CDN image
 });
 test("Player opens from XI as an accessible button, API fetches on click, and lineup WDL pills are squares",()=>{
  const ui=fs.readFileSync("ui/part2.html","utf8");
