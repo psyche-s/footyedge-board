@@ -66,7 +66,14 @@ const LEAGUE_LOGOS={
 function teamImage(t){
   const code=flagCode(t&&t.name);
   if(code)return "https://flagcdn.com/w160/"+code+".png";
-  const local=window.FOOTYEDGE_LOGOS?.teams?.[normName(t&&t.name)];
+  // Reuse the transparent club crest registry across cards, results and news.
+  const key=normName(t&&t.name);
+  const aliases={"feyenoord rotterdam":"feyenoord","internazionale":"inter","inter milan":"inter",
+    "galatasaray sk":"galatasaray","athletic bilbao":"athletic club","como 1907":"como",
+    "lille osc":"lille","lask linz":"lask","viking fk":"viking fk",
+    "shimizu s pulse":"shimizu s-pulse","yokohama f marinos":"yokohama f. marinos"};
+  const logos=window.FOOTYEDGE_LOGOS?.teams||{};
+  const local=logos[key]||logos[aliases[key]];
   return local||(t&&t.logo)||"";
 }
 function teamImgTag(t,cls){
@@ -1356,7 +1363,7 @@ function matchH2HHtml(g){
 function feRecentForm(g){
  const lists=[{team:g.home,rows:g.baseResearch?.last5?.home||g.baseResearch?.last10?.home?.slice(0,5)||[]},
               {team:g.away,rows:g.baseResearch?.last5?.away||g.baseResearch?.last10?.away?.slice(0,5)||[]}];
- const makeLogo=(id)=>/^\d+$/.test(String(id||""))?'<img class="fe-recentLogo" loading="lazy" alt="" src="https://a.espncdn.com/i/teamlogos/soccer/500/'+esc(id)+'.png" onerror="this.style.display=\'none\'">':'';
+ const makeLogo=(id,name)=>teamImgTag({id:String(id||""),name:String(name||"Opponent"),logo:/^[0-9]+$/.test(String(id||""))?"https://a.espncdn.com/i/teamlogos/soccer/500/"+id+".png":null},"fe-recentLogo");
  const chunks=lists.map(({team,rows})=>{
   const valid=rows.filter(row=>Number.isFinite(Number(row.gf))&&Number.isFinite(Number(row.ga))).slice(0,5);
   const form=valid.map(row=>Number(row.gf)>Number(row.ga)?'W':Number(row.gf)<Number(row.ga)?'L':'D');
@@ -1368,7 +1375,7 @@ function feRecentForm(g){
    const own=teamDisplayName(g,team),op=String(row.oppName||row.opponentName||"Opponent");
    const homeName=home?own:op,awayName=home?op:own;
    const homeGoals=home?Number(row.gf):Number(row.ga),awayGoals=home?Number(row.ga):Number(row.gf);
-   const teamLogo=teamImgTag(team,"fe-recentLogo"),opLogo=makeLogo(row.oppId);
+   const teamLogo=teamImgTag(team,"fe-recentLogo"),opLogo=makeLogo(row.oppId,op);
    const day=Number.isFinite(Date.parse(row.date||""))?new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"America/Toronto",weekday:"short"}).format(new Date(row.date)):"Date not verified";
    const outcome=row.gf>row.ga?'W':row.gf<row.ga?'L':'D';
    return '<div class="fe-recentMatch"><time>'+esc(day)+'</time><div class="fe-recentTeams">'+
