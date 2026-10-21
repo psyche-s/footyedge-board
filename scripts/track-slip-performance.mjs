@@ -97,6 +97,63 @@ async function finalResultsFor(date){
   }
   return [...events.values()].filter(x=>x.completed&&x.hs!==null&&x.as!==null);
 }
+
+const profileCache=new Map();
+let profileRequests=0;
+export function playerStatResult(leg,recent,opponent,date){
+  const match=String(leg.label||"").match(/^\s*(.+?)\s+[—–-]\s*(\d+)\+\s+(Shots on Target|Shots|Fouls Committed|Fouls Won)\s*$/i);
+  if(!match||!Array.isArray(recent))return null;
+  const field=({"shots on target":"shotsOnTarget","shots":"shots",
+    "fouls committed":"foulsCommitted","fouls won":"foulsWon"})[match[3].toLowerCase()];
+  const opp=norm(opponent);
+  const matches=recent.filter(x=>{
+    const other=norm(x.opponent),day=String(x.date||"").slice(0,10);
+    const sameOpponent=other.length>=4&&opp.length>=4&&(opp===other||opp.includes(other)||other.includes(opp));
+    return sameOpponent&&(day===date||day===dayOffset(date,1))&&Number.isFinite(x[field])&&x[field]>=0;
+  });
+  if(matches.length!==1)return null;
+  return {result:matches[0][field]>=Number(match[2])?"hit":"miss",observed:matches[0][field],market:match[3]};
+}
+async function playerOutcome(leg,date,game,research,news){
+  const label=String(leg.label||"");
+  const name=label.match(/^\s*(.+?)\s+[—–-]\s*\d+\+\s+(?:Shots on Target|Shots|Fouls Committed|Fouls Won)\s*$/i)?.[1];
+  if(!name||!game||!research)return null;
+  const fixture=(research.fixtures||[]).find(x=>String(x.id)===leg.gameId);
+  if(!fixture||!fixture.home?.id||!fixture.away?.id||!fixture.league)return null;
+  const intel=(news?.fixtures||[]).find(x=>String(x.fixtureId)===leg.gameId);
+  const hasPlayer=(side)=>(intel?.[side]?.predictedXI||[]).some(x=>{
+    const a=norm(x),b=norm(name);
+    return a===b||(a.length>=5&&b.endsWith(" "+a))||(b.length>=5&&a.endsWith(" "+b));
+  });
+  let teams=[fixture.home,fixture.away];
+  const inHome=hasPlayer("home"),inAway=hasPlayer("away");
+  if(inHome&&!inAway)teams=[fixture.home];
+  if(inAway&&!inHome)teams=[fixture.away];
+  for(const team of teams){
+    const opponent=String(team.id)===String(fixture.home.id)?fixture.away.name:fixture.home.name;
+    const cacheKey=fixture.league+"|"+team.id+"|"+norm(name);
+    if(!profileCache.has(cacheKey)){
+      if(profileRequests>=24)continue;
+      profileRequests++;
+      const url="https://footyedge-board.vercel.app/api/player-profile?league="+encodeURIComponent(fixture.league)+
+        "&teamId="+encodeURIComponent(team.id)+"&name="+encodeURIComponent(name);
+      const promise=(async()=>{
+        try{const response=await fetch(url,{signal:AbortSignal.timeout(12000),headers:{Accept:"application/json"}});
+          if(!response.ok)return null;
+          const profile=await response.json();
+          if(profile?.schema!=="footyedge-player-profile-v1"||profile.status!=="verified")return null;
+          return {profile,url};
+        }catch{return null;}
+      })();
+      profileCache.set(cacheKey,promise);
+    }
+    const loaded=await profileCache.get(cacheKey);if(!loaded)continue;
+    const graded=playerStatResult(leg,loaded.profile.recent,opponent,date);
+    if(graded)return {...graded,source:loaded.url};
+  }
+  return null;
+}
+
 function reviewedLegResults(date){
   const p=path.join(ROOT,"data","verified-leg-results",date+".json");
   if(!exists(p))return new Map();
@@ -135,6 +192,9 @@ async function run(){
     if(!snapshot.tickets.some(t=>t.result==="pending")){if(!exists(file))write(file,snapshot);continue;}
     const games=await finalResultsFor(day),byId=new Map(games.map(x=>[x.id,x])),byTeams=new Map(games.map(x=>[matchKey(x.home,x.away),x]));
     const verified=reviewedLegResults(day);
+    const researchPath=path.join(ROOT,"data","research-base-"+day+".json");
+    const newsPath=path.join(ROOT,"data","team-intelligence",day+".json");
+    const research=exists(researchPath)?read(researchPath):null,news=exists(newsPath)?read(newsPath):null;
     for(const ticket of snapshot.tickets){
       if(ticket.result!=="pending")continue;
       for(const leg of ticket.legs){
@@ -145,7 +205,13 @@ async function run(){
         if(!game&&leg.fixture.includes(" vs ")){
           const sides=leg.fixture.split(" vs ");if(sides.length===2)game=byTeams.get(matchKey(sides[0],sides[1]));
         }
-        if(game)leg.result=scoreLeg(leg,game);
+        if(game){
+          leg.result=scoreLeg(leg,game);
+          if(leg.result==="pending"){
+            const prop=await playerOutcome(leg,day,game,research,news);
+            if(prop){leg.result=prop.result;leg.verifiedSource=prop.source;leg.observedStat=prop.observed;}
+          }
+        }
       }
       ticket.result=settleTicket(ticket.legs);
       if(ticket.result!=="pending")ticket.settledAt=new Date().toISOString();
