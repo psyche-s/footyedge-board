@@ -565,3 +565,29 @@
  .fe-h2hScore{font-size:12px}
  .fe-h2hSummary strong{font-size:11px}
 }
+
+/* v10 — paint sourced kit palette ABOVE the dark card ground, fading to centre */
+.fe-matchCard .fe-hero{isolation:isolate!important;background:radial-gradient(ellipse at 50% 50%,#020e0a 0%,#03150e 61%,#04170f 100%)!important}
+.fe-matchCard .fe-hero::before,.fe-matchCard .fe-hero::after{z-index:0!important;opacity:1!important;position:absolute!important;pointer-events:none!important;top:0!important;bottom:0!important;width:54%!important}
+.fe-matchCard .fe-hero::before{left:0!important;right:auto!important;background:
+ repeating-linear-gradient(129deg,rgba(255,255,255,.065) 0 2px,transparent 2px 24px,rgba(0,0,0,.10) 24px 29px,transparent 29px 49px),
+ repeating-linear-gradient(90deg,transparent 0 42px,color-mix(in srgb,var(--fe-home-accent,#111) 19%,transparent) 42px 55px,transparent 55px 96px),
+ linear-gradient(90deg,color-mix(in srgb,var(--fe-home,#a52233) 88%,#050b0b) 0%,color-mix(in srgb,var(--fe-home,#a52233) 69%,#04130e) 48%,color-mix(in srgb,var(--fe-home,#a52233) 16%,#04130e) 80%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 39%,rgba(0,0,0,.65) 70%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 39%,rgba(0,0,0,.65) 70%,transparent 100%)!important}
+.fe-matchCard .fe-hero::after{right:0!important;left:auto!important;background:
+ repeating-linear-gradient(50deg,rgba(255,255,255,.064) 0 2px,transparent 2px 24px,rgba(0,0,0,.10) 24px 29px,transparent 29px 49px),
+ repeating-linear-gradient(90deg,transparent 0 40px,color-mix(in srgb,var(--fe-away-accent,#111) 19%,transparent) 40px 53px,transparent 53px 93px),
+ linear-gradient(270deg,color-mix(in srgb,var(--fe-away,#183a66) 88%,#050b0b) 0%,color-mix(in srgb,var(--fe-away,#183a66) 69%,#04130e) 48%,color-mix(in srgb,var(--fe-away,#183a66) 16%,#04130e) 80%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 39%,rgba(0,0,0,.65) 70%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 39%,rgba(0,0,0,.65) 70%,transparent 100%)!important}
+.fe-matchCard .fe-hero>.fe-heroHead,.fe-matchCard .fe-hero>.fe-heroTeams{position:relative!important;z-index:2!important}
+.fe-matchCard .fe-scoreLine{display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;align-items:center!important;gap:6px!important}
+.fe-matchCard .fe-scoreLine>strong{font-size:clamp(30px,7.5vw,52px)!important;color:#fff!important;line-height:1!important;text-align:center!important;font-variant-numeric:tabular-nums}
+.fe-matchCard .fe-scoreStatus{font-size:12px!important;white-space:nowrap!important}
+.fe-matchCard .fe-kickoff>strong{font-size:clamp(22px,4vw,34px)!important;color:#fff!important;white-space:nowrap!important}
+.fe-matchCard .fe-kickoff>span{order:1!important}
+.fe-matchCard .fe-heroStatus.is-live{background:rgba(81,10,26,.76)!important;color:#ff8fa5!important;border-color:rgba(255,104,126,.6)!important}
+.fe-matchCard .fe-heroStatus.is-final{background:rgba(23,40,32,.75)!important}
+.fe-matchCard:after,.fe-matchCard .fe-cardArrow,.fe-matchCard .fe-cardBottom{display:none!important;content:none!important}
+@media(max-width:480px){.fe-matchCard .fe-scoreLine>strong{font-size:30px!important}.fe-matchCard .fe-scoreStatus{font-size:10px!important}.fe-matchCard .fe-scoreLine{gap:2px!important}}
