@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
-import {rosterPlayers,targetTeams} from "../scripts/sync-player-photo-refs.mjs";
+import {rosterPlayers,targetTeams,parseLeagueTeams} from "../scripts/sync-player-photo-refs.mjs";
 
 test("Player roster extraction preserves provider identity and explicit links only",()=>{
  const p=rosterPlayers({athletes:[
@@ -47,4 +47,27 @@ test("Original Picks loads player image refs, without changing V2 or frozen boar
  assert.match(registry,/window\.FE_PLAYER_PHOTOS=/);
  assert.doesNotMatch(api,/i\/headshots\/soccer\/players\/full\/["']?\+/);
  assert.ok(typeof targetTeams==="function");
+});
+
+test("Full league directory can discover clubs without any matchday fixture",()=>{
+ const data={sports:[{leagues:[{teams:[
+  {team:{id:"349",displayName:"Bournemouth",isActive:true}},
+  {team:{id:"359",displayName:"Arsenal",isActive:true}},
+  {team:{id:"0",displayName:"Unknown"}},
+  {team:{id:"222",displayName:"Inactive",isActive:false}}
+ ]}]}]};
+ const result=parseLeagueTeams(data,"eng.1");
+ assert.equal(result.length,2);
+ assert.ok(result.some(t=>t.key==="eng.1:359"&&t.teamName==="Arsenal"));
+ assert.equal(new Set(result.map(t=>t.key)).size,2);
+});
+test("Photo catalog covers every original tracked competition",()=>{
+ const code=fs.readFileSync("scripts/sync-player-photo-refs.mjs","utf8");
+ for(const league of ["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1",
+ "ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf",
+ "usa.1","jpn.1","kor.1","ksa.1","cze.1","uefa.nations"])
+  assert.ok(code.includes('"'+league+'"'),league+" missing from collection");
+ assert.match(code,/\/teams\?limit=1000/);
+ assert.match(code,/allDiscoveredTeams/);
+ assert.match(code,/byLeague\.values\(\)/);
 });

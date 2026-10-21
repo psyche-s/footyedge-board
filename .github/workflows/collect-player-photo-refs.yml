@@ -1,9 +1,12 @@
 name: Collect original FootyEdge player photo references
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '17 10 * * *'
   push:
     branches:
-      - fix/original-player-photo-refs-20261021
+      - feat/original-all-league-player-photos-20261021
+      - main
     paths:
       - scripts/sync-player-photo-refs.mjs
       - tests/player-photo-refs.test.mjs
@@ -18,7 +21,7 @@ concurrency:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,18 +35,26 @@ jobs:
           node --test tests/player-photo-refs.test.mjs
       - name: Collect available source-matched player portraits
         env:
-          PHOTO_DAYS: "2"
-          PHOTO_MAX_TEAMS: "55"
+          PHOTO_DAYS: "5"
+          PHOTO_MAX_TEAMS: "${{ github.event_name == 'schedule' && '100' || '500' }}"
         run: node scripts/sync-player-photo-refs.mjs
       - name: Validate saved references and original UI regression tests
         run: |
           node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
           node scripts/validate-public-metrics.mjs
-      - name: Commit checked source references to collector branch
-        if: startsWith(github.ref, 'refs/heads/fix/original-player-photo-refs-20261021')
+      - name: Commit checked source references to current original FootyEdge branch
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
+          # The branch can advance while CDN checks run. Re-run against its
+          # latest contents instead of rebasing generated JSON and losing data.
+          git fetch origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/$GITHUB_REF_NAME")" ]; then
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node scripts/sync-player-photo-refs.mjs
+            node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+          fi
           git add -- data/player-photo-refs.json assets/player-photo-registry.js
           if git diff --cached --quiet; then
             echo "No new source references"; exit 0
@@ -51,4 +62,4 @@ jobs:
           git config user.name "FootyEdge Photo References"
           git config user.email "actions@users.noreply.github.com"
           git commit -m "data(original): store checked player portrait source references"
-          git push origin HEAD:fix/original-player-photo-refs-20261021
+          git push origin HEAD:"$GITHUB_REF_NAME"
