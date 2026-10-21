@@ -52,7 +52,7 @@ export function settleTicket(legs){
   if(grades.some(x=>x==="pending"))return "pending";
   if(grades.length===0)return "pending";
   if(grades.every(x=>x==="hit"))return "hit";
-  if(grades.every(x=>["hit","push"].includes(x)))return "push";
+  if(grades.every(x=>["hit","push"].includes(x)))return grades.includes("hit")?"hit":"push";
   return "pending";
 }
 const ticketsOf=d=>{

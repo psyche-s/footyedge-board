@@ -16,7 +16,8 @@ test("a slip settles as a whole, not as a count of winning legs",()=>{
   assert.equal(settleTicket([{result:"hit"},{result:"hit"},{result:"hit"}]),"hit");
   assert.equal(settleTicket([{result:"hit"},{result:"miss"},{result:"pending"}]),"miss");
   assert.equal(settleTicket([{result:"hit"},{result:"pending"}]),"pending");
-  assert.equal(settleTicket([{result:"hit"},{result:"push"}]),"push");
+  assert.equal(settleTicket([{result:"hit"},{result:"push"}]),"hit");
+  assert.equal(settleTicket([{result:"push"},{result:"push"}]),"push");
   assert.equal(settleTicket([]),"pending");
 });
 test("duplicate tickets never inflate the whole-slip hit rate",()=>{
