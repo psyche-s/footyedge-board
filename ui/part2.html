@@ -1340,15 +1340,37 @@ function feOfficialNewsHTML(g){
    '<p class="fe-sourceLine fe-sourceSpan">As reported '+esc(intel.source.publishedOn||S.date)+' · <a href="'+esc(intel.source.url)+
    '" target="_blank" rel="noopener noreferrer">View source and recheck before kickoff ↗</a></p>';
 }
+function fePlayerPitch(x,t,g){
+ const confirmed=Array.isArray(x?.confirmedXI)&&x.confirmedXI.length===11;
+ const players=confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[];
+ const name=p=>typeof p==="string"?p:String(p?.name||"");
+ if(players.length!==11)return '<section class="fe-xiCard"><h4>'+teamImgTag(t,"fe-historyLogo")+esc(teamDisplayName(g,t))+'</h4>'+
+   '<p class="fe-panelNote">An independently sourced starting XI is not available for this team.</p></section>';
+ const image=p=>{
+   const url=typeof p==="object"?String(p.photoUrl||""):"";
+   return /^https:\/\/[a-z0-9._/?=&%-]+$/i.test(url)?'<img loading="lazy" src="'+esc(url)+'" alt="">':
+     '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(y=>y[0]||"").join("").toUpperCase())+'</span>';
+ };
+ const badge=p=>'<div class="fe-fieldPlayer"><div class="fe-fieldAvatar">'+image(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div></div>';
+ // The XI source lists players by typical line order but not exact positions;
+ // display a clearly labelled illustrative 4-2-3-1, never a claimed formation.
+ const bands=[players.slice(10,11),players.slice(7,10),players.slice(5,7),players.slice(1,5),players.slice(0,1)];
+ return '<section class="fe-xiCard"><div class="fe-fieldHead"><h4>'+teamImgTag(t,"fe-historyLogo")+
+   esc(teamDisplayName(g,t))+'</h4><span class="fe-xiBadge">'+(confirmed?'CONFIRMED':'PREDICTED')+'</span></div>'+
+   '<div class="fe-pitch" role="group" aria-label="Source-listed players for '+esc(teamDisplayName(g,t))+' in an illustrative layout">'+
+   '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
+   bands.map(band=>'<div class="fe-pitchRow">'+band.map(badge).join("")+'</div>').join("")+'</div>'+
+   '<p class="fe-lineupCaution">'+(confirmed?'Verified starters.':'Predicted XI, not confirmed. Illustrative 4–2–3–1 layout; exact positions may differ.')+
+   ' Portraits appear only when a verified player photo is available.</p></section>';
+}
 function feLineupsPanel(g){
- const intel=g.teamIntel;
+ const intel=g.liveIntel||g.teamIntel;
  if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return '<section class="fe-panel"><h3>LINEUPS</h3>'+
-   '<p class="fe-panelNote">A reliable, date-matched predicted XI has not been verified for this fixture. We will not substitute last match’s starters or invented names.</p></section>';
- const side=(x,t)=>'<section class="fe-xiCard"><h4>'+teamImgTag(t,"fe-historyLogo")+' '+esc(teamDisplayName(g,t))+'</h4>'+
-    '<span class="fe-xiBadge">PREDICTED · NOT CONFIRMED</span><ol class="fe-xiList">'+(x.predictedXI||[]).slice(0,11).map(name=>'<li>'+esc(name)+'</li>').join('')+'</ol></section>';
- return '<section class="fe-panel"><h3>PREDICTED STARTING XIs</h3><div class="fe-xiGrid">'+side(intel.home,g.home)+side(intel.away,g.away)+'</div>'+
+   '<p class="fe-panelNote">A reliable, date-matched starting XI has not been verified for this fixture.</p></section>';
+ return '<section class="fe-panel fe-lineupPanel"><div class="fe-panelHeading"><h3>LINEUPS</h3><span class="fe-sourceTag">SOURCE-DATED</span></div>'+
+   '<div class="fe-xiGrid">'+fePlayerPitch(intel.home,g.home,g)+fePlayerPitch(intel.away,g.away,g)+'</div>'+
    '<p class="fe-sourceLine">Predictions and availability from <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
-   esc(intel.source.label||"match preview")+'</a>. Verify official lineups near kickoff.</p></section>';
+   esc(intel.source.label||"match preview")+'</a>. Confirm official XI before kickoff.</p></section>';
 }
 function feNewsPanel(g,newsHtml){
   return '<section class="fe-newsSection"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3><div class="modalTeamNews">'+newsHtml+'</div></section>';
