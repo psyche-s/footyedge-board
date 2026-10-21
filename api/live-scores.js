@@ -39,11 +39,15 @@ export default async function handler(req,res){
   if(age>8*86400000)return res.status(400).json({error:'Outside live scoreboard window'});
   try{
     const url=ESPN+'?dates='+day.replaceAll('-','')+'&limit=1000';
-    const r=await fetch(url,{signal:AbortSignal.timeout(9500),headers:{accept:'application/json','user-agent':'FootyEdge Live Score/1.0'}});
-    if(!r.ok)throw new Error('Score provider unavailable');
-    const data=await r.json();
-    if(!Array.isArray(data.events))throw new Error('Incomplete score response');
-    const events=data.events.filter(e=>torontoDay(e.date)===day).map(normalizeEvent).filter(Boolean);
+    let aggregate=[];
+    try{
+      const r=await fetch(url,{signal:AbortSignal.timeout(7200),headers:{accept:'application/json','user-agent':'FootyEdge Live Score/1.0'}});
+      if(r.ok){
+        const data=await r.json();
+        if(Array.isArray(data.events))aggregate=data.events;
+      }
+    }catch{}
+    const events=aggregate.filter(e=>torontoDay(e.date)===day).map(normalizeEvent).filter(Boolean);
     // ESPN's aggregate feed can omit J1 and K League 1. Supplement with
     // verified league events rather than mirroring static fixture scores.
     const seen=new Set(events.map(e=>e.id)),supplemented=[];
@@ -62,6 +66,7 @@ export default async function handler(req,res){
         else if(item.live||item.done){const index=events.findIndex(x=>x.id===item.id);if(index>=0)events[index]=item;}
       }
     }
+    if(!aggregate.length&&!events.length)throw new Error('No verified live score provider currently available');
     res.setHeader('Cache-Control','public, s-maxage=25, stale-while-revalidate=20');
     return res.status(200).json({date:day,fetchedAt:new Date().toISOString(),liveSource:true,events,
       supplementedLeagues:[...new Set(supplemented)],
