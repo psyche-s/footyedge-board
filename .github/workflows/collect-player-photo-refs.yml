@@ -36,7 +36,7 @@ jobs:
       - name: Collect available source-matched player portraits
         env:
           PHOTO_DAYS: "5"
-          PHOTO_MAX_TEAMS: "120"
+          PHOTO_MAX_TEAMS: "${{ github.event_name == 'schedule' && '100' || '500' }}"
         run: node scripts/sync-player-photo-refs.mjs
       - name: Validate saved references and original UI regression tests
         run: |
