@@ -121,6 +121,12 @@ const MAJOR_SLIP_LEAGUES=new Set([
  "uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"
 ]);
 function isMajor(league){return MAJOR_SLIP_LEAGUES.has(String(league||""));}
+function overallRating(legs,isSameGame=false){
+ if(!legs.length)return null;
+ const minimum=Math.min(...legs.map(x=>Number(x.rating)||0));
+ // Ranking heuristic, deliberately NOT a multi-leg winning probability.
+ return Math.max(0,Math.min(95,Math.round(minimum-3*Math.max(0,legs.length-1)-(isSameGame?2:0))));
+}
 function sgp(all){
  const groups=new Map();
  for(const x of all.filter(v=>isMajor(v.league))){if(!groups.has(x.gameId))groups.set(x.gameId,[]);groups.get(x.gameId).push(x);}
@@ -140,7 +146,7 @@ function sgp(all){
  }
  choices.sort((a,b)=>b.fitness-a.fitness||a.id.localeCompare(b.id));
  const best=choices[0];
- return best?{status:"qualified",format:"Best same-game parlay",legs:best.legs.sort((a,b)=>b.rating-a.rating),
+ return best?{status:"qualified",format:"Best same-game parlay",overallResearchRating:overallRating(best.legs,true),legs:best.legs.sort((a,b)=>b.rating-a.rating),
   caution:best.legs.length===2?"Two strong, compatible legs qualified. A third leg was not forced; recheck starting XIs and exact market availability.":best.overlap>5?"Some legs positively overlap; avoid treating the selection grades as an independent combination probability.":"Check confirmed lineups and availability of exact markets before placement."}:
  {status:"pass",format:"Same-game parlay",legs:[],caution:"No fixture has two compatible, sufficiently supported selections. Passing rather than forcing a slip."};
 }
@@ -158,7 +164,7 @@ function acca(all){
   legs.push(choice);used.add(choice.gameId);categories.set(choice.family,(categories.get(choice.family)||0)+1);
   leagues.set(choice.league,(leagues.get(choice.league)||0)+1);
  }
- return legs.length>=4?{status:"qualified",format:"Cross-game accumulator",legs,
+ return legs.length>=4?{status:"qualified",format:"Cross-game accumulator",overallResearchRating:overallRating(legs),legs,
   caution:"One leg per match; market types diversified. Weakest evidence rating "+Math.min(...legs.map(x=>x.rating))+"%. Accumulator risk compounds."}:
  {status:"pass",format:"Cross-game accumulator",legs:[],caution:"Fewer than four strong, diverse fixtures qualify."};
 }
@@ -198,7 +204,7 @@ function build({date,board,research,h2h,intel}){
     "SGP and ACCA exclude Japan J1, Korea K1, Saudi Pro League, Czech and international friendlies."
    ]};
 }
-export{market,trend,compatible,sgp,acca,build};
+export{market,trend,compatible,sgp,acca,build,overallRating};
 const read=async file=>fs.readFile(file,"utf8").then(JSON.parse).catch(e=>{if(e.code==="ENOENT")return null;throw e});
 async function main(){
  const date=process.env.SLIP_DATE||dt();
