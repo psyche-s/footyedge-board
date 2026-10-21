@@ -323,14 +323,15 @@ async function refresh(){
  document.getElementById("todayBtn").classList.toggle("active",selected===0);
  document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
  document.getElementById("refreshStatus").textContent="";
- const desk=await data("data/editorial-desk/"+date+".json")||await data("data/slips/"+date+".json");
+ const reviewed=await data("data/editorial-desk/"+date+".json");
+ const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
  renderDesk(desk,date);
 }
 async function refreshLive(){
  const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
  const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
- if(displayedDesk?.schema==="footyedge-editorial-desk-v1"){
-  note.textContent="Reviewed picks remain unchanged. No new verified sportsbook prices are available; check the bookmaker before placing.";
+ if(date>=localDate()){
+  note.textContent="Today's and upcoming picks use the dated editorial review only. No model-generated slip or unverified live odds will replace the published research.";
   return;
  }
  if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for updated match information.";return;}
