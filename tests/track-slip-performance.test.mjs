@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {scoreLeg,settleTicket,summaryOf} from "../scripts/track-slip-performance.mjs";
+import {scoreLeg,settleTicket,summaryOf,playerStatResult} from "../scripts/track-slip-performance.mjs";
 
 const final={id:"401",home:"Sporting CP",away:"LASK Linz",hs:3,as:1,completed:true};
 test("grade only outcome-verifiable score/result markets",()=>{
@@ -25,4 +25,13 @@ test("duplicate tickets never inflate the whole-slip hit rate",()=>{
 test("unfinished games are not automatically graded",()=>{
   assert.equal(scoreLeg({label:"Sporting CP ML"}, {...final,completed:false}),"pending");
   assert.equal(scoreLeg({label:"Sporting CP ML"}, {...final,hs:null}),"pending");
+});
+test("player markets settle only from matching dated verified match-log values",()=>{
+  const leg={label:"Ivan Fresneda — 1+ Fouls Committed"};
+  const matches=[{date:"2026-10-21",opponent:"LASK Linz",foulsCommitted:1},
+    {date:"2026-10-14",opponent:"Porto",foulsCommitted:0}];
+  assert.equal(playerStatResult(leg,matches,"LASK Linz","2026-10-21").result,"hit");
+  assert.equal(playerStatResult({label:"Geny Catamo — 2+ Shots"},[{date:"2026-10-21",opponent:"LASK Linz",shots:1}],"LASK Linz","2026-10-21").result,"miss");
+  assert.equal(playerStatResult(leg,matches,"Porto","2026-10-21"),null);
+  assert.equal(playerStatResult(leg,[{date:"2026-10-21",opponent:"LASK Linz",foulsCommitted:null}],"LASK Linz","2026-10-21"),null);
 });
