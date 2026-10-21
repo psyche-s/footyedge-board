@@ -1,0 +1,27 @@
+name: Sync original player photo references
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node scripts/sync-player-photo-references.mjs
+      - run: node --test tests/player-photo-reference.test.mjs tests/ten-appearance-squad.test.mjs
+      - name: Save verified roster references, not photographs
+        run: |
+          git config user.name "FootyEdge Roster Sync"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/player-photo-registry.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "data(players): refresh photo references [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
