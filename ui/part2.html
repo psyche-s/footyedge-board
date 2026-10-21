@@ -906,18 +906,29 @@ function feSide(g,which){
   return '<div class="fe-side fe-'+which+'">'+
     '<div class="fe-logoWrap">'+teamImgTag(t,"fe-crest")+'</div>'+
     '<div class="fe-sideName">'+esc(teamDisplayName(g,t))+'</div>'+
-    (Number.isInteger(pos)&&pos>0&&pos<=40?'<span class="fe-standing">'+pos+(pos%100>=11&&pos%100<=13?'th':pos%10===1?'st':pos%10===2?'nd':pos%10===3?'rd':'th')+'</span>':'')+
+    (Number.isInteger(pos)&&pos>0&&pos<=40?'<span class="fe-standing">'+pos+(pos%100>=11&&pos%100<=13?'th':pos%10===1?'st':pos%10===2?'nd':pos%10===3?'rd':'th')+'</span>':'<span class="fe-standing fe-standingPending" title="League position not verified">—</span>')+
     '<div class="fe-form" aria-label="'+(which==="home"?"Home":"Away")+' last five match form">'+formHTML(m.form)+'</div>'+
   '</div>';
 }
+const FE_KIT_COLORS={
+"arsenal":"#b51d39","bayern munich":"#b8202e","real madrid":"#bcbcc4","rb leipzig":"#cc1329","manchester united":"#c01632","como":"#1b77b0","lille":"#bc2238","galatasaray":"#eb4d21","aston villa":"#873049","viking fk":"#0d3b85","club brugge":"#103b96","lens":"#bb1334","internazionale":"#1b4fa9","shakhtar donetsk":"#ec7b18","real betis":"#147e5b","feyenoord rotterdam":"#d83a38","sporting cp":"#168958","lask linz":"#2b3037","avispa fukuoka":"#217db5","gamba osaka":"#2167b1","fagiano okayama":"#be2548","mito hollyhock":"#25679a","fc tokyo":"#173e9b","kashiwa reysol":"#d4b21b","kawasaki frontale":"#1a83b7","vissel kobe":"#a62e3a","kyoto sanga":"#9a306b","kashima antlers":"#b51c36","nagoya grampus":"#c34624","cerezo osaka":"#e75693","shimizu s-pulse":"#f07822","machida zelvia":"#1d3d8b","v-varen nagasaki":"#f1832c","sanfrecce hiroshima":"#7041ab","yokohama f. marinos":"#245caf","tokyo verdy 1969":"#28774c","urawa red diamonds":"#c52337","jef united ichihara-chiba":"#d7b91b","levante":"#922e55","athletic club":"#c12738","fc cincinnati":"#dd6b25","d.c. united":"#26282d"};
+function feColor(t){return FE_KIT_COLORS[String(t?.name||"").toLowerCase()]||"#25583c";}
+function feUpcoming(g){return Date.parse(g.date)>Date.now()-120000;}
+function feActualLive(g){return !feUpcoming(g)&&g.liveStatusVerified===true&&g.live===true&&!g.done;}
+function feActualFinal(g){return !feUpcoming(g)&&g.liveStatusVerified===true&&g.done===true;}
+function feIcon(kind){
+ const paths={history:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/>',form:'<path d="M4 20V11M10 20V4M16 20v-8M22 20V7"/>',news:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h5M7 16h7M15 12h2v4h-2"/>'};
+ return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[kind]||paths.history)+'</svg>';
+}
 function feMatchHero(g){
-  const scored=feVerifiedScore(g),label=g.live?'LIVE':g.done?'FINAL':'UPCOMING';
+  const live=feActualLive(g),final=feActualFinal(g);
+  const scored=feVerifiedScore(g)&&!feUpcoming(g),label=live?'LIVE':final?'FINAL':'UPCOMING';
   const core=scored
-     ?'<div class="fe-scoreLine"><strong>'+g.home.score+'</strong><span class="fe-scoreStatus '+(g.live?'fe-status-live':'')+'">'+(g.live?'<i class="fe-liveDot"></i>':'')+esc(label)+(g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+g.away.score+'</strong></div>'
+     ?'<div class="fe-scoreLine"><strong>'+g.home.score+'</strong><span class="fe-scoreStatus '+(g.live?'fe-status-live':'')+'">'+(live?'<i class="fe-liveDot"></i>':'')+esc(label)+(g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+g.away.score+'</strong></div>'
      :'<div class="fe-kickoff"><span>'+esc(feDay(g.date))+'</span><strong>'+esc(timeET(g.date))+'</strong><small>ET</small></div>';
-  return '<div class="fe-hero">'+
+  return '<div class="fe-hero" style="--fe-home:'+feColor(g.home)+';--fe-away:'+feColor(g.away)+'">'+
     '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span>'+
-    '<span class="fe-heroStatus '+(g.live?'is-live':g.done?'is-final':'')+'">'+(g.live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
+    '<span class="fe-heroStatus '+(live?'is-live':final?'is-final':'is-upcoming')+'">'+(g.live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
     '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div>'+
     '</div>';
 }
@@ -930,11 +941,10 @@ function renderGames(){
   el.innerHTML=list.map(g=>{
     const selections=viewCandidates(g),first=viewPick(g);
     const label=selections.length+" pick"+(selections.length===1?"":"s");
-    const strongest=first?pickScoreValue(first)+" highest confidence":"Match research pending";
     return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
       'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       feMatchHero(g)+
-      '<div class="fe-cardBottom"><span>'+esc(label)+' <i>·</i> '+esc(strongest)+'</span><span class="fe-cardArrow" aria-hidden="true">›</span></div>'+
+      '<div class="fe-cardBottom"><span class="fe-cardBottomText">Open match details</span><span class="fe-cardArrow" aria-hidden="true">›</span></div>'+
     '</article>';
   }).join("");
 }
@@ -965,7 +975,10 @@ function renderLeagues(){
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
   row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":filterLeagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
-  row.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{S.league=b.dataset.league;renderLeagues();renderBest();renderGames()})
+  row.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{S.league=b.dataset.league;renderLeagues();renderBest();renderGames()});
+  const selection=document.getElementById("feLeagueSelect");
+  if(selection){selection.innerHTML=defs.map(([id,n])=>'<option value="'+esc(id)+'">'+esc(n)+'</option>').join("");
+   selection.value=S.league;selection.onchange=()=>{S.league=selection.value;renderLeagues();renderGames()}}
 }
 function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
 
