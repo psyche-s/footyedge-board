@@ -87,7 +87,7 @@ test("Oct 10 static board provides validated historical form and match H2H rathe
   assert.ok(withH2H.length>=50,"do not claim unavailable H2H is populated");
   assert.ok(withH2H.every(g=>g.h2h.every(x=>x.date&&Number.isInteger(x.homeScore)&&Number.isInteger(x.awayScore))),"H2H must have verified scored meetings");
   assert.match(html,/g\.matchH2H=g\.h2h\.filter\(/,"archive H2H must initialize before modal opens");
-  assert.match(html,/formHTML\(g\.model\?\.\[side\]\?\.form/,"form chips must use saved model form");
+  assert.match(html,/formHTML\(m\.form\)/,"form chips must use saved model form");
 });
 
 test("Oct 10 published recommendations never oppose each other or cite nonexistent form",()=>{

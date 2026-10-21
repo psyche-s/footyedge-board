@@ -1468,7 +1468,7 @@ function renderModal(g){
     const badge=i===0?"★ Top Pick":"#"+(i+1)+" Pick";
     return '<article class="modalPick fe-selection">'+
       '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">'+esc(badge)+'</div>'+
-      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4><p>'+esc(plainFootballReason(g,x))+'</p></div>'+
+      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(plainFootballReason(g,x))+'</p></div>'+
       '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
     '</article>';
   }).join(""):'<div class="fe-empty">No selection has enough verified support for this fixture.</div>';

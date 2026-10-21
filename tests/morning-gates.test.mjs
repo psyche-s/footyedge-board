@@ -21,7 +21,7 @@ test("league map includes Serie A Bundesliga and Ligue 1",()=>{
   for(const k of ["ita.1","ger.1","fra.1"])assert.ok(p2.includes('"'+k+'":'))
 });
 test("Why this pick is embedded under Pick 1",()=>{
-  assert.match(p2,/i===0\?whyHtml\(x\)/);
+  assert.match(p2,/i===0\?'<span class="fe-whyLabel">WHY THIS PICK<\/span>'/);
   assert.doesNotMatch(p2,/WHY THIS PICK FITS/)
 });
 test("player props and team news use explicit evidence gates",()=>{
@@ -403,7 +403,7 @@ test("Premier League and MLS logos fit fully inside the existing competition ico
 
 test("October 10 owner-approved modal removes GF/GA cards and renders verified H2H accordion",()=>{
   assert.doesNotMatch(p1,/<b id="modalTitle">Match Breakdown<\/b>/);
-  assert.match(p2,/Head-to-Head · Last 5 available/);
+  assert.match(p2,/fe-accordionLabel"><strong>H2H<\/strong>/);
   assert.match(p2,/data-h2h-toggle aria-expanded/);
   assert.match(p2,/function extractVerifiedH2H/);
   assert.match(p2,/event\?\.status\?\.type\?\.completed/);
