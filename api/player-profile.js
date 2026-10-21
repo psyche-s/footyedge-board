@@ -20,7 +20,13 @@ function matchRosterPlayer(payload,name,id){
  const rows=rosterRows(payload),input=escName(name),want=String(id||"");
  if(want){
   const matched=rows.filter(a=>String(a.id)===want);
-  return matched.length===1&&(!input||escName(matched[0].displayName||matched[0].fullName||matched[0].name)===input)?matched[0]:null;
+  if(matched.length!==1)return null;
+  const full=escName(matched[0].displayName||matched[0].fullName||matched[0].name);
+  // Sourced lineups often print just a surname. Require that surname to be
+  // an unambiguous match *within this club* even when ESPN supplied an ID.
+  const suffix=input.length>=4&&full.endsWith(" "+input);
+  const unique=rows.filter(a=>escName(a.displayName||a.fullName||a.name).endsWith(" "+input));
+  return !input||full===input||(suffix&&unique.length===1)?matched[0]:null;
  }
  if(input.length<3)return null;
  const exact=rows.filter(a=>escName(a.displayName||a.fullName||a.name)===input);
