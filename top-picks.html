@@ -146,12 +146,19 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .fe-leagueReceipt footer{border-top:1px dashed #cbc6ba;margin-top:11px;padding-top:10px;font-size:10px;color:#656e64}
 .fe-sgpEmpty{grid-column:1/-1;border:1px dashed #346a4f;border-radius:13px;padding:17px;color:#a3c2ac;font-size:12px;line-height:1.6}
 @media(max-width:720px){.fe-competitionSlips{grid-template-columns:1fr}.fe-leagueReceipt{padding:17px}}
+
+.fe-sgpPicker{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:10px 0 15px;border:1px solid #2a6645;border-radius:14px;background:#071f15;padding:11px 14px}
+.fe-sgpPicker label{font-size:10px;color:#9de9b9;font-weight:900;letter-spacing:.13em;white-space:nowrap}
+.fe-sgpPicker select{flex:0 1 240px;min-width:170px;max-width:100%;min-height:40px;border-radius:10px;background:#113321;border:1px solid #4b8965;padding:0 12px;color:#effff3;font-size:13px;font-weight:750}
+.fe-sgpPicker span{flex:1;min-width:190px;font-size:11px;line-height:1.5;color:#a7c5b1}
+@media(max-width:540px){.fe-sgpPicker{padding:11px;gap:6px}.fe-sgpPicker label{flex-basis:100%}.fe-sgpPicker select{flex:1;min-width:0}.fe-sgpPicker span{flex-basis:100%}}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
   <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. SGP and ACCA layouts are indicative research slips, not sportsbook-confirmed bet builders.</p></div>
   <div class="fe-slipActions"><div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh latest data</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
+  <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">BEST SGP FROM</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Only compatible, independently supported legs qualify.</span></section>
   <section class="grid" aria-label="FootyEdge research slips">
   <article class="slip ticketPaper" aria-labelledby="sgpTitle">
     <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="sgpMeta">SGP · MATCHDAY</span><span class="slipBadge" id="sgpLegBadge">RESEARCH</span></div>
@@ -260,6 +267,19 @@ let selected=0;
 const chosenDate=()=>selected?nextDay(localDate()):localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
 const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
+let selectedSgpLeague="all";
+function sgpForLeague(desk){
+ if(selectedSgpLeague==="all")return desk.sgp;
+ return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
+   {status:"pass",legs:[],caution:"No supported, nonredundant same-game parlay qualifies for "+(FE_MAJOR_NAMES[selectedSgpLeague]||selectedSgpLeague)+". A weak or duplicated leg will not be forced."};
+}
+function fillSgpSelect(){
+ const select=document.getElementById("sgpCompetitionSelect");
+ const names=Object.entries(FE_MAJOR_NAMES).sort((a,b)=>a[1].localeCompare(b[1]));
+ select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
+ select.value=selectedSgpLeague;
+}
+let displayedDesk=null;
 function renderCompetitionSlips(list){
  const target=document.getElementById("sgpLeagueList");
  const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=2&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
@@ -276,6 +296,7 @@ function renderDesk(desk,date,live=false){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
   printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
+  displayedDesk=null;
   printProps([]);renderCompetitionSlips([]);
   for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
   return;
@@ -289,7 +310,8 @@ function renderDesk(desk,date,live=false){
   const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
  }
- drawSlip(desk.sgp,"sgpSlip","No same-game combination qualifies from major leagues.");
+ displayedDesk=desk;
+ drawSlip(sgpForLeague(desk),"sgpSlip","No independent same-game combination qualifies for this league.");
  drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
  renderCompetitionSlips(desk.sgpsByLeague);
  printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
@@ -319,6 +341,11 @@ async function refreshLive(){
  finally{button.disabled=false;button.classList.remove("busy");}
 }
 
+fillSgpSelect();
+document.getElementById("sgpCompetitionSelect").onchange=e=>{
+ selectedSgpLeague=e.target.value;
+ if(displayedDesk)renderDesk(displayedDesk,chosenDate(),displayedDesk.schema==="footyedge-live-slip-check-v1");
+};
 document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
 document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
 document.getElementById("refreshBtn").onclick=refreshLive;
