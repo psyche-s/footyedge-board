@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/archive-board.yml"
+      - "scripts/build-evidence-only-board.mjs"
+      - "scripts/sync-asia-research.mjs"
   schedule:
     # 00:30 Toronto: 04:30 UTC during EDT, 05:30 UTC during EST.
     - cron: "30,50 4,5 * * *"
@@ -57,39 +59,7 @@ jobs:
           node scripts/track-performance.mjs
           node scripts/postmatch-learning.mjs
 
-      - name: Install browser
-        if: steps.gate.outputs.run == 'true'
-        run: |
-          npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
-
-      - name: Verify shadow model arrived before morning publication (advisory only)
-        if: steps.gate.outputs.run == 'true'
-        shell: bash
-        run: |
-          # Refresh origin/main without changing the current checkout or official boards.
-          git fetch --quiet origin main || echo "Shadow source ref refresh unavailable; publishing remains independent."
-          node scripts/audit-shadow-refresh.mjs --ref origin/main
-
-      - name: Capture verified native sportsbook odds once (GitHub secret, capped)
-        if: steps.gate.outputs.run == 'true'
-        env:
-          THEODDSAPI: ${{ secrets.THEODDSAPI }}
-          FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          ODDS_MAX_PAID_CALLS: "8"
-          ODDS_MAX_CREDITS: "20"
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --check scripts/capture-github-odds.mjs
-          if [[ -n "$THEODDSAPI" ]]; then
-            node scripts/capture-github-odds.mjs
-          else
-            echo "::warning::GitHub THEODDSAPI secret unavailable; using existing Vercel capture fallback."
-            node scripts/capture-native-odds.mjs
-          fi
-
-      - name: Evidence-only recovery when sportsbook quota is exhausted
+      - name: Generate daily Top 3 and Top 5 from source-verified confidence only
         if: steps.gate.outputs.run == 'true'
         env:
           OWNER_RESEARCH_PICKS: "1"
@@ -98,29 +68,6 @@ jobs:
       # Missing leagues are restored from independently verified dated research.
       # If native bookmaker quota is exhausted, publish evidence-only leans with
       # null odds and null EV rather than backfilling stale sportsbook prices.
-      - name: Build today's complete board only
-        if: steps.gate.outputs.run == 'true'
-        env:
-          FOOTYEDGE_URL: https://footyedge-board.vercel.app
-          PREVIEW_DAYS: "0"
-          FORCE_TODAY_CAPTURE: "1"
-          FAST_CAPTURE: "1"
-        shell: bash
-        run: |
-          TODAY="$(TZ=America/Toronto date +%F)"
-          if timeout 145s node scripts/publish-board-previews.mjs; then
-            echo "Refreshed same-day candidate draft."
-          else
-            echo "::warning::Browser capture failed. Retain current Top 5."
-            FORCE_FALLBACK=1 node scripts/build-evidence-only-board.mjs
-          fi
-
-      - name: Restore last-five form and three market-diverse picks before freeze
-        if: steps.gate.outputs.run == 'true'
-        run: |
-          node --check scripts/ensure-daily-research-picks.mjs
-          node scripts/ensure-daily-research-picks.mjs
-
       - name: Compare licensed editorial research, rank three per game and daily five
         if: steps.gate.outputs.run == 'true'
         env:
@@ -135,12 +82,9 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
-      - name: Apply loss-risk-adjusted confidence before official commit
+      - name: Check non-priced percentage integrity
         if: steps.gate.outputs.run == 'true'
-        run: |
-          node --check scripts/apply-loss-risk.mjs
-          node scripts/apply-loss-risk.mjs
-          node scripts/validate-public-metrics.mjs
+        run: node scripts/validate-public-metrics.mjs
 
       - name: Audit published board editorial quality
         if: steps.gate.outputs.run == 'true'

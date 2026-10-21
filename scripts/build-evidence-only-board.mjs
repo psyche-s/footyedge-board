@@ -15,7 +15,7 @@ const INSIGHTS=path.join('data','daily-insights-'+DATE+'.json');
 const OWNER_RESEARCH_PICKS=process.env.OWNER_RESEARCH_PICKS==='1';
 const read=async f=>JSON.parse(await fs.readFile(f,'utf8'));
 const exists=async f=>fs.access(f).then(()=>true).catch(()=>false);
-const LEAGUES={'eng.1':'Premier League','eng.2':'EFL Championship','tur.1':'Turkish Süper Lig','ksa.1':'Saudi Pro League','cze.1':'Czech First League','esp.1':'LaLiga','ita.1':'Serie A','ger.1':'Bundesliga','fra.1':'Ligue 1','ned.1':'Eredivisie','por.1':'Liga Portugal','uefa.champions':'UEFA Champions League','uefa.europa':'UEFA Europa League','uefa.europa.conf':'UEFA Conference League','usa.1':'MLS','fifa.friendly':'International Friendly','uefa.nations':'UEFA Nations League'};
+const LEAGUES={'eng.1':'Premier League','eng.2':'EFL Championship','tur.1':'Turkish Süper Lig','ksa.1':'Saudi Pro League','cze.1':'Czech First League','jpn.1':'J1 League','kor.1':'K League 1','esp.1':'LaLiga','ita.1':'Serie A','ger.1':'Bundesliga','fra.1':'Ligue 1','ned.1':'Eredivisie','por.1':'Liga Portugal','uefa.champions':'UEFA Champions League','uefa.europa':'UEFA Europa League','uefa.europa.conf':'UEFA Conference League','usa.1':'MLS','fifa.friendly':'International Friendly','uefa.nations':'UEFA Nations League'};
 const rates=hist=>{
   const n=hist.length;
   const rate=fn=>n?hist.filter(fn).length/n:null;
@@ -28,8 +28,15 @@ const star=s=>s>=92?'★★★★★':s>=88?'★★★★½':s>=83?'★★★★
 function generate(g){
   const H=(g.last10?.home||[]).filter(x=>Number.isFinite(x.gf)&&Number.isFinite(x.ga)&&Date.parse(x.date)<Date.parse(g.date)).slice(0,10);
   const A=(g.last10?.away||[]).filter(x=>Number.isFinite(x.gf)&&Number.isFinite(x.ga)&&Date.parse(x.date)<Date.parse(g.date)).slice(0,10);
-  if(H.length<5||A.length<5)throw new Error('Fewer than five verified historical games for '+g.home.name+' vs '+g.away.name);
-  const team=(t)=>({id:String(t.id),name:t.name,logo:/^\d+$/.test(String(t.id))?'https://a.espncdn.com/i/teamlogos/soccer/500/'+t.id+'.png':null,score:null});
+  if(H.length<5||A.length<5){
+    const home={id:String(g.home.id),name:g.home.name,logo:g.home.logo||null,score:null};
+    const away={id:String(g.away.id),name:g.away.name,logo:g.away.logo||null,score:null};
+    return{id:String(g.id),date:g.date,year:g.season||Number(DATE.slice(0,4)),league:g.league,leagueName:LEAGUES[g.league]||g.league,
+      home:home.name,away:away.name,teams:{home,away},teamNews:g.teamNews||[],h2h:g.h2h||[],top:null,top3:[],
+      model:{top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]},
+      staticDetails:true,recoveryStatus:'pass-insufficient-verified-match-history'};
+  }
+  const team=(t)=>({id:String(t.id),name:t.name,logo:t.logo||(!['jpn.1','kor.1'].includes(g.league)&&/^\d+$/.test(String(t.id))?'https://a.espncdn.com/i/teamlogos/soccer/500/'+t.id+'.png':null),score:null});
   const home=team(g.home),away=team(g.away);
   const candidates=[];
   function angle(label,category,fH,fA,family){
@@ -53,7 +60,7 @@ function generate(g){
     }else{
       description=label+' fits '+h+' of '+H.length+' recent games for '+g.home.name+' and '+a+' of '+A.length+' for '+g.away.name+'.';
     }
-    const reason=description+' These figures describe recent results, not a guaranteed outcome. No verified sportsbook line is available.';
+    const reason=description+' These figures describe recent results, not a guaranteed outcome.';
     candidates.push({label,category,family,score:observed,modelScore:null,baseScore:null,modelProb:null,marketProb:null,ev:null,
       odds:null,displayOdds:null,provider:null,bookKey:null,bookExact:false,verifiedPrice:false,priceEligible:false,
       confidenceType:'historical_trend_hit_rate',researchOnly:true,archivedCommentary:reason,
@@ -83,26 +90,22 @@ function generate(g){
     mode:'observed-history-only',note:'Percentages are observed historical rates, not statistically calibrated match probabilities.'};
   return{id:String(g.id),date:g.date,year:g.season||Number(DATE.slice(0,4)),league:g.league,leagueName:LEAGUES[g.league]||g.league,
     leagueLogo:null,home:home.name,away:away.name,teams:{home,away},
-    teamNews:[],top:top3[0]||null,top3,model,
-    h2h:[],staticDetails:true,recoveryStatus:'research-only-no-verified-native-odds'};
+    teamNews:g.teamNews||[],top:top3[0]||null,top3,model,
+    h2h:g.h2h||[],teamMetrics:g.teamMetrics||null,staticDetails:true,recoveryStatus:'confidence-only-history-research'};
 }
 function topRefs(rows){
   return rows.map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
 }
 async function main(){
   const existing=await read(LOCK).catch(()=>null);
-  if(existing?.date===DATE&&existing.top5?.length){console.log('Preserve published Top picks');return;}
-  const odds=await read(ODDS).catch(()=>null);
-  if(odds?.events?.length && odds.status!=='blocked' && process.env.FORCE_FALLBACK!=='1'){
-    console.log('Native prices exist: defer to full original browser publication.');return;
-  }
+  if(existing?.date===DATE&&existing.immutable===true){console.log('Preserve immutable published board');return;}
+  // No pricing lookup: confidence-only publication does not depend on any sportsbook.
   const research=await read(R);
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
-  if(research.fixtures.some(g=>(g.last10?.home||[]).length<5||(g.last10?.away||[]).length<5)){console.log('Incomplete team histories; skip unsupported recovery');return;}
   const games=research.fixtures.map(generate);
   // Owner-authorized same-day recovery may publish clearly labelled research
   // angles while calibrated confidence, EV and unavailable prices remain N/A.
-  if(!odds?.events?.length&&OWNER_RESEARCH_PICKS){
+  if(OWNER_RESEARCH_PICKS){
     for(const game of games){
       const source=research.fixtures.find(f=>String(f.id)===String(game.id));
       if(Number(source?.history?.home)<10||Number(source?.history?.away)<10||game.top3.length<3){
@@ -121,16 +124,17 @@ async function main(){
       pick.confidenceRatingMethod='Independent research-strength grade: 65% combined observed trend + 35% weaker-team support. NOT predicted probability of winning.';
       pick.score=null;pick.modelScore=null;pick.baseScore=null;pick.modelProb=null;pick.calibratedProbability=null;
       pick.probabilityCalibrated=false;pick.ev=null;pick.confidenceType='historical_trend_only_not_calibrated_probability';
-      pick.priceStatus='no_line_available';pick.quoteDisclaimer='No independently verified line; confidence and EV unavailable without calibration.';
+      pick.priceStatus='confidence_only';pick.quoteDisclaimer=null;
       }
     }
     for(const game of games){
       if(!game.top3.length)continue;
+      game.top3.sort((a,b)=>Number(b.confidenceRating)-Number(a.confidenceRating));
       game.top=game.top3[0]||null;
       game.model={...game.model,top:game.top,top3:game.top3,candidates:game.top3,rankedCandidates:game.top3,researchCandidates:game.top3};
       game.recoveryStatus='owner-directed-research-picks-no-verified-native-odds';
     }
-  }else if(!odds?.events?.length){
+  }else{
     for(const game of games){
       game.top=null;game.top3=[];
       game.model={...game.model,top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
@@ -149,8 +153,8 @@ async function main(){
     mutableUntil:DATE+' 00:30 America/Toronto',coverage:'full-board',source:'Audited research-only recovery from dated pre-match historical stats',
     top5:topRefs(ranked(games)),leagueTop5,games,
     scope:'mens-only-tracked-competitions',
-    publicationNotes:OWNER_RESEARCH_PICKS?'Owner-authorized same-day recovery: historical research angles are published with a separately labelled evidence-strength rating. Exact prices, calibrated confidence and EV remain N/A.':'Exact native sportsbook prices were unavailable. Every fixture is an explicit PASS; no odds, confidence, EV, Top 3 or Top 5 recommendation was published.',
-    dataSources:{researchBase:R,odds:'unavailable: provider usage quota exhausted'}};
+    publicationNotes:'Confidence-ranked evidence-based research from verified pre-match samples. Percentages are uncalibrated estimates; PASS when history is insufficient.',
+    dataSources:{researchBase:R,asianData:'data/asia/'+DATE+'.json',pricing:'not used'}};
   // Validate the exact same top-to-Top3 and reference invariants enforced for
   // official boards, without mutating any existing lock.
   const locked={...board,immutable:true,state:'locked',frozenAt:new Date().toISOString()};

@@ -868,7 +868,7 @@ function renderBest(){
   document.getElementById("topSub").textContent="Confidence-ranked match predictions · source-backed evidence";
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
-    const p=g.archiveTopPick||g.model.top,px=observedPrice(g,p);
+    const p=g.archiveTopPick||g.model.top,px=null;
 
     return '<article class="bestRow" data-game-id="'+esc(g.id)+'" onclick="openGame(\''+g.id+'\')">'+
       '<div class="rankBadge">'+(i+1)+'</div>'+
@@ -896,7 +896,7 @@ function renderGames(){
   document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
-    const top3=viewCandidates(g),p=viewPick(g),px=observedPrice(g,p),h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
+    const top3=viewCandidates(g),p=viewPick(g),px=null,h=g.model?.home,a=g.model?.away,dh=g.model?.displayHome||h,da=g.model?.displayAway||a,btts=avg([h?.btts,a?.btts]),o25=avg([h?.o25,a?.o25]);
     let html='<article class="game" role="button" tabindex="0" onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       '<div class="gameTop"><span class="leagueBrand">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span><span class="'+(g.live?'matchStatusLive':g.done?'matchStatusFinal':'')+'">'+esc(status(g))+'</span></div>'+
       '<div class="gameBody"><div class="teamStack">'+
@@ -1026,7 +1026,7 @@ async function load(date=S.date){
     let games=(p?.events||[]).filter(e=>!FootyEdgeAvailability.excludedTaggedEvent?.(e)).map(e=>{
       const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
       const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
-      const base=marketOdds(c.odds?.[0]||{}),extra=oddsFromFootball(oddsEntries.get(apiFixtureId)||oddsEntries.get(String(e.id)),homeName,awayName);
+      const base=marketOdds({}),extra=null; // Confidence-only: sportsbook inputs never enter the prediction model.
       const apiPrimary=Boolean(apiFixture)&&!fixturesPayload?._footyedgeFallback,apiStatus=apiFixture?.fixture?.status||{},apiShort=String(apiStatus.short||"");
       const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null,baseResearch:researchBaseMap.get(fixtureMatchKey(homeName,awayName))||null}
@@ -1087,7 +1087,14 @@ async function load(date=S.date){
 
     // Independent pre-match match-level research is display-only until the
     // new predictive model has passed chronological calibration tests.
-    for(const g of games)g.advancedResearch=advancedById.get(String(g.id))||null;
+    for(const g of games){
+      g.advancedResearch=advancedById.get(String(g.id))||null;
+      if(["jpn.1","kor.1"].includes(g.league)&&g.baseResearch){
+        g.matchH2H=(g.baseResearch.h2h||[]).slice(0,5);
+        g.h2h=(g.baseResearch.h2h||[]).slice(0,5);
+        g.teamMetrics=g.baseResearch.teamMetrics||null;
+      }
+    }
     if(displayArchive?.date===S.date){
       // The archived ESPN snapshot can omit European fixtures even when the
       // owner-approved correction has their verified fixture IDs. Restore
@@ -1208,7 +1215,10 @@ function matchH2HHtml(g){
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
   const team=(side)=>{const t=g[side];return `<div class="modalTeam">${teamImgTag(t)}${verifiedPositionBadge(g,side)}<b>${esc(teamDisplayName(g,t))}</b><div class="modalForm" aria-label="${side==="home"?"Home":"Away"} last five results">${formHTML(g.model?.[side]?.form||g.model?.[side==="home"?"displayHome":"displayAway"]?.form)}</div></div>`};
   const first=g.liveStatusVerified&&(g.live||g.done)?status(g)+" · "+(Number.isInteger(g.home.score)?g.home.score:"–")+"–"+(Number.isInteger(g.away.score)?g.away.score:"–"):`${timeET(g.date)} ET${g.done?" · FT":g.live?" · LIVE":""}`;
-  return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Odds may change. FootyEdge confidence is a research rating that includes loss risk, not a guarantee or calibrated win probability.</p>`;
+  const regional=g.teamMetrics;
+  const metricsHtml=regional?'<section class="researchBox"><div class="researchTitle">SEASON STATISTICS · LICENSED FEED</div><div class="researchFacts">'+
+    Object.keys({...regional.home,...regional.away}).map(key=>'<div class="researchFact"><span class="researchDot"></span><span>'+esc(key.replaceAll("_"," ").toUpperCase())+': '+esc(regional.home?.[key]??"—")+' / '+esc(regional.away?.[key]??"—")+' (home / away)</span></div>').join("")+'</div></section>':'';
+  return `<div class="modalTeams">${team("home")}<div class="vs">VS</div>${team("away")}</div><div class="modalLeague">${leagueIconHtml(g.league,g.leagueLogo)}<span class="modalLeagueDetails"><strong>${esc(first)}</strong><span>${esc(displayLeagueName(g.league,g.leagueName))}</span></span></div>${ranked}${matchH2HHtml(g)}${metricsHtml}<div class="modalTeamNews">${newsHtml}</div>${noteHtml}${dcHtml}${modelApproach}<p class="modelFootnote">Confidence is a model-derived estimate from historical evidence, not a guaranteed result or independently calibrated win probability.</p>`;
 }
 
 function extractVerifiedH2H(g,payloads){
