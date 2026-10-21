@@ -1,10 +1,11 @@
-name: FootyEdge independent daily slip desk
+name: FootyEdge licensed daily editorial slip desk
 on:
   workflow_dispatch:
   push:
     branches: [main]
     paths:
       - ".github/workflows/daily-slip-desk.yml"
+      - "scripts/build-editorial-desk.mjs"
   schedule:
     # 00:45 Toronto in EDT / EST, after the published board and research files.
     - cron: "45 4,5 * * *"
@@ -34,16 +35,18 @@ jobs:
           else
             echo "run=true" >> "$GITHUB_OUTPUT"
           fi
-      - name: Validate model-built parlay research
+      - name: Validate the reviewed SGP and cross-game rules
         if: steps.window.outputs.run == 'true'
         run: |
-          node --check scripts/build-daily-slips.mjs
-          node --test tests/daily-slips.test.mjs
-      - name: Generate real-data-only daily SGP and cross-game selections
+          node --check scripts/build-editorial-desk.mjs
+          node --test tests/editorial-refresh.test.mjs tests/daily-slips.test.mjs
+      - name: Prepare source-reviewed editorial desk if midnight publication missed it
         if: steps.window.outputs.run == 'true'
         env:
-          REBUILD_DAILY_SLIPS: ${{ github.event_name == 'push' && '1' || '0' }}
-        run: node scripts/build-daily-slips.mjs
+          FOOTYEDGE_RESEARCH_FEED_URL: ${{ secrets.FOOTYEDGE_RESEARCH_FEED_URL }}
+          FOOTYEDGE_RESEARCH_FEED_TOKEN: ${{ secrets.FOOTYEDGE_RESEARCH_FEED_TOKEN }}
+          FOOTYEDGE_RESEARCH_FEED_APPROVED: ${{ vars.FOOTYEDGE_RESEARCH_FEED_APPROVED }}
+        run: node scripts/build-editorial-desk.mjs
       - name: Publish dated slips without rewriting match picks
         if: steps.window.outputs.run == 'true'
         shell: bash
@@ -51,11 +54,11 @@ jobs:
           set -euo pipefail
           git config user.name "FootyEdge Data Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add data/slips/
+          git add -A data/editorial-desk/
           if git diff --cached --quiet; then
-            echo "Slip data unchanged"
+            echo "Editorial desk unchanged"
             exit 0
           fi
-          git commit -m "data(slips): publish independent matchup research [skip ci]"
+          git commit -m "data(editorial): publish reviewed daily Top 3 and parlays [skip ci]"
           git pull --rebase origin main
           git push origin HEAD:main
