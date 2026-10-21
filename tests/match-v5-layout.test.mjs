@@ -39,7 +39,7 @@ test("Fixture card has no old details footer row and uses team-color gradients",
 });
 test("Receipt refresh conserves deployment limits and uses major-league-only source",()=>{
  assert.match(slips,/id="refreshBtn"/);
- assert.match(slips,/items.length+" LEGS"/);
+ assert.match(slips,/items\.length\+" LEGS"/);
  assert.match(slips,/\/api\/refresh-slips\?date=/);
  assert.match(slips,/Recently checked/);
  assert.match(engine,/MAJOR_SLIP_LEAGUES/);
