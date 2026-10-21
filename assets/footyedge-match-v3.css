@@ -796,3 +796,69 @@
 .fe-kitHero[data-away-kit="tonal"]::after,.fe-kitHero[data-away-kit="plain"]::after{
  background-image:linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 64%,#06150e),transparent)!important;
 }
+
+/* Oct 21 final mockup fidelity. Identical silhouette on each fixture;
+   only kit colors differ. Draw shirt texture lightly, but don't dim the base
+   team-color fabric into the nearly black appearance of old releases. */
+.fe-matchCard .fe-hero.fe-kitHero,.fe-dialogHero .fe-hero.fe-kitHero {
+ background:radial-gradient(ellipse at 50% 52%,#001009 0%,#00130b 30%,#04170e 68%,#041c12 100%)!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::before,.fe-dialogHero .fe-hero.fe-kitHero::before{
+ width:58%!important;opacity:1!important;
+ background-image:
+   repeating-linear-gradient(133deg,transparent 0 23px,rgba(255,255,255,.065) 24px 26px,transparent 27px 53px,rgba(0,0,0,.07) 54px 59px,transparent 60px 85px),
+   repeating-linear-gradient(96deg,transparent 0 68px,color-mix(in srgb,var(--fe-home-accent) 13%,transparent) 68px 85px,transparent 85px 136px),
+   linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 91%,#07190f) 0%,color-mix(in srgb,var(--fe-home) 81%,#051a11) 42%,color-mix(in srgb,var(--fe-home) 16%,#02170e) 82%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 42%,rgba(0,0,0,.75) 70%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 42%,rgba(0,0,0,.75) 70%,transparent 100%)!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::after,.fe-dialogHero .fe-hero.fe-kitHero::after{
+ width:58%!important;opacity:1!important;
+ background-image:
+   repeating-linear-gradient(47deg,transparent 0 23px,rgba(255,255,255,.065) 24px 26px,transparent 27px 53px,rgba(0,0,0,.07) 54px 59px,transparent 60px 85px),
+   repeating-linear-gradient(84deg,transparent 0 68px,color-mix(in srgb,var(--fe-away-accent) 13%,transparent) 68px 85px,transparent 85px 136px),
+   linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 91%,#07190f) 0%,color-mix(in srgb,var(--fe-away) 81%,#051a11) 42%,color-mix(in srgb,var(--fe-away) 16%,#02170e) 82%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 42%,rgba(0,0,0,.75) 70%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 42%,rgba(0,0,0,.75) 70%,transparent 100%)!important;
+}
+/* Team colors must still be visible for the plain/unknown-kit fallback. */
+.fe-matchCard .fe-kitHero[data-home-kit="tonal"]::before,
+.fe-matchCard .fe-kitHero[data-home-kit="plain"]::before,
+.fe-dialogHero .fe-kitHero[data-home-kit="tonal"]::before,
+.fe-dialogHero .fe-kitHero[data-home-kit="plain"]::before{
+ background-image:repeating-linear-gradient(133deg,transparent 0 28px,rgba(255,255,255,.045) 29px 31px,transparent 32px 62px),
+ linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 90%,#06170f),color-mix(in srgb,var(--fe-home) 13%,#04170e) 80%,transparent)!important;
+}
+.fe-matchCard .fe-kitHero[data-away-kit="tonal"]::after,
+.fe-matchCard .fe-kitHero[data-away-kit="plain"]::after,
+.fe-dialogHero .fe-kitHero[data-away-kit="tonal"]::after,
+.fe-dialogHero .fe-kitHero[data-away-kit="plain"]::after{
+ background-image:repeating-linear-gradient(47deg,transparent 0 28px,rgba(255,255,255,.045) 29px 31px,transparent 32px 62px),
+ linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 90%,#06170f),color-mix(in srgb,var(--fe-away) 13%,#04170e) 80%,transparent)!important;
+}
+/* LIVE status: dot is INLINE before LIVE; clock is the separate second line. */
+.fe-matchCard .fe-scoreStatus,.fe-dialogHero .fe-scoreStatus{
+ display:flex!important;flex-direction:column!important;justify-content:center!important;
+ align-items:center!important;gap:4px!important;white-space:nowrap!important;
+}
+.fe-matchCard .fe-liveLabel,.fe-dialogHero .fe-liveLabel,
+.fe-matchCard .fe-scorePending .fe-liveLabel,.fe-dialogHero .fe-scorePending .fe-liveLabel{
+ display:inline-flex!important;flex-direction:row!important;align-items:center!important;
+ justify-content:center!important;gap:7px!important;color:#ff4d61!important;
+ font-weight:900!important;line-height:1.15!important;letter-spacing:.035em!important;white-space:nowrap!important;
+}
+.fe-matchCard .fe-liveLabel .fe-liveDot,.fe-dialogHero .fe-liveLabel .fe-liveDot{
+ display:inline-block!important;position:relative!important;flex:none!important;
+ width:10px!important;height:10px!important;margin:0!important;border-radius:50%!important;
+ background:#ff2947!important;box-shadow:0 0 0 3px rgba(255,41,71,.12),0 0 12px rgba(255,41,71,.5)!important;
+ animation:fe-live-pulse 1.2s ease-in-out infinite!important;
+}
+@keyframes fe-live-pulse{
+ 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 2px rgba(255,41,71,.16),0 0 8px rgba(255,41,71,.6)}
+ 50%{opacity:.32;transform:scale(.80);box-shadow:0 0 0 5px rgba(255,41,71,.03)}
+}
+@media(prefers-reduced-motion:reduce){
+ .fe-matchCard .fe-liveLabel .fe-liveDot,.fe-dialogHero .fe-liveLabel .fe-liveDot{
+   animation:none!important;opacity:1!important;
+ }
+}
