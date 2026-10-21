@@ -182,6 +182,12 @@ jobs:
           # The authorised editorial desk was frozen above. No model-built
           # slip overwrites it or the immutable official board.
 
+      - name: Audit match, lineup and league-SGP completeness without changing the UI
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          node --check scripts/audit-daily-refresh.mjs
+          node scripts/audit-daily-refresh.mjs
+
       - name: Check non-priced percentage integrity
         if: steps.gate.outputs.run == 'true'
         run: node scripts/validate-public-metrics.mjs
@@ -203,6 +209,7 @@ jobs:
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
           files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews)
+          if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
           done
