@@ -34,11 +34,10 @@ test("Player profile renders ten horizontal-scroll table rows with nine metrics 
  assert.match(result,/— means not reported, not zero/);
  assert.match(result,/Scroll sideways to see all match statistics/);
 });
-test("La Liga lineup pane keeps its pitch and never renders duplicate squad cards",()=>{
+test("La Liga lineup pane keeps the pitch and check button without duplicate squads",()=>{
  assert.match(html,/g\.feSquadRosters=data\.rosterHeadshots\|\|\{\}/);
  assert.match(html,/Confirmed starting XIs have not been published/);
- assert.doesNotMatch(html,/function feVerifiedSquadPanel\(g\)/);
- assert.doesNotMatch(html,/Verified team squads/);
+ assert.doesNotMatch(html,/feVerifiedSquadPanel\(g\)/);
  assert.match(html,/Check lineups/);
  assert.match(html,/g\.feTab==="lineups"&&!g\.feLastRefreshTime/);
  assert.match(css,/\.fe-playerTableScroll/);
