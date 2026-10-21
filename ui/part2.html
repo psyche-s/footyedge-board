@@ -785,18 +785,38 @@ function resultMarketCandidates(g){
   return [...candidates].sort((a,b)=>Number(b.confidenceRating??b.score??-1)-Number(a.confidenceRating??a.score??-1));
 }
 function moneylineCandidates(g){return resultMarketCandidates(g).filter(p=>p.category==="Match Result");}
+function feThesisKind(p){
+  const c=String(p?.category||"").toLowerCase(),l=String(p?.label||"").toLowerCase();
+  if(["goals","team goals","btts"].includes(c)||/^(over|under)\\s+\\d/.test(l)||/\\d\\+\\s+goals?/.test(l)||l.includes("both teams to score"))return "scoring";
+  if(["match result","double chance","handicap","win to nil"].includes(c)||/(\\bml$| or draw$)/.test(l))return "result";
+  if(["player","shots","shots on target","assists"].includes(c))return "player:"+l;
+  if(c==="cards"||c==="corners"||c==="fouls")return c;
+  return c||"other";
+}
+function feDistinctView(ordered){
+  const seen=new Set(),out=[];
+  for(const p of ordered||[]){
+    if(!p?.label)continue;
+    const family=feThesisKind(p);
+    if(!family||family==="other"||seen.has(family))continue;
+    seen.add(family);out.push(p);
+    if(out.length>=3)break;
+  }
+  return out;
+}
 function viewCandidates(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
   if(S.filter==="ml")return moneylineCandidates(g).slice(0,3);
-  return g.model?.top3||[]
+  // Read-only presentation screen. Never rewrite the published freeze.
+  // Only one goal-scoring thesis (total/team/BTTS) and one result thesis.
+  return feDistinctView(g.model?.top3||[])
 }
 function viewPick(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
   if(S.filter==="result")return resultMarketCandidates(g)[0]||null;
   if(S.filter==="ml")return moneylineCandidates(g)[0]||null;
-  const top3=g.model?.top3||[];
-  return g.model?.top||top3[0]||null
+  return viewCandidates(g)[0]||null;
 }
 function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}

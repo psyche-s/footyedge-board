@@ -395,3 +395,48 @@
  .fe-sharedRows .fe-fieldPlayerName{font-size:8.5px!important}
  .fe-sharedClub b{font-size:11px}
 }
+
+/* v6: shared grid-row sizing keeps league and search controls on the same baseline */
+#filters{display:grid!important;grid-template-columns:minmax(132px,.82fr) minmax(0,1.6fr)!important;grid-template-rows:auto auto!important;row-gap:10px!important;column-gap:12px!important;align-items:stretch!important;padding:0!important}
+#filters .fe-statusGroup{grid-column:1 / -1!important;grid-row:1!important}
+#filters .fe-leagueGroup{grid-column:1!important;grid-row:2!important;display:flex!important;flex-direction:column!important;min-width:0!important;align-self:stretch!important}
+#filters .fe-searchGroup{grid-column:2!important;grid-row:2!important;display:flex!important;flex-direction:column!important;min-width:0!important;align-self:stretch!important}
+#filters .fe-leagueGroup .filterTitle,#filters .fe-searchGroup .filterTitle{position:static!important;display:block!important;margin:0 0 7px!important;min-height:14px!important;font-size:10px!important;font-weight:800!important;letter-spacing:.14em!important;line-height:14px!important;color:#a6cdb5!important}
+#filters #feLeagueSelect,#filters .fe-searchGroup #searchBar,#filters .fe-searchGroup #searchBar input{box-sizing:border-box!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:0!important}
+#filters .fe-searchGroup #searchBar{display:flex!important;position:relative!important;grid-column:auto!important;grid-row:auto!important;align-items:center!important;flex:0 0 48px!important}
+#filters .fe-searchGroup #searchBar input{width:100%!important;border-radius:13px!important;font-size:13px!important;padding-left:38px!important;text-overflow:ellipsis}
+#filters #feLeagueSelect{display:block!important;width:100%!important;font-size:13px!important;line-height:normal!important;padding-left:12px!important;border-radius:13px!important}
+#filters .fe-searchGroup .fe-searchGlyph{position:absolute!important;left:12px!important;top:50%!important;transform:translateY(-50%)!important;line-height:1!important}
+#filters .fe-searchLabel{display:none!important}
+@media(max-width:420px){
+ #filters{grid-template-columns:minmax(120px,.88fr) minmax(0,1.55fr)!important;column-gap:8px!important}
+ #filters #feLeagueSelect{font-size:11px!important;padding-left:10px!important}
+ #filters .fe-searchGroup #searchBar input{font-size:11px!important;padding-left:31px!important}
+ #filters .fe-searchGroup .fe-searchGlyph{left:9px!important;font-size:20px!important}
+}
+/* Layered club-color stadium panels inspired by the reference, without copying club kit photos.
+   Left = home primary, right = away primary; both dissolve into the black centre. */
+.fe-matchCard .fe-hero{
+ background:radial-gradient(ellipse at 50% 75%,#0a2619 0%,#02120c 60%,#02100a 100%)!important;
+ isolation:isolate;
+}
+.fe-matchCard .fe-hero:before,.fe-matchCard .fe-hero:after{
+ top:0!important;bottom:0!important;width:57%!important;opacity:1!important;z-index:-1!important;
+ pointer-events:none;
+}
+.fe-matchCard .fe-hero:before{
+ left:0!important;right:auto!important;
+ background:
+ linear-gradient(90deg,color-mix(in srgb,var(--fe-home,#143e52) 66%,#030b0a) 0%,color-mix(in srgb,var(--fe-home,#143e52) 39%,#030b0a) 43%,transparent 98%),
+ repeating-linear-gradient(133deg,rgba(255,255,255,.034) 0 2px,transparent 2px 22px,rgba(0,0,0,.038) 22px 24px,transparent 24px 44px)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 48%,transparent 100%)!important;
+}
+.fe-matchCard .fe-hero:after{
+ right:0!important;left:auto!important;
+ background:
+ linear-gradient(270deg,color-mix(in srgb,var(--fe-away,#143e52) 66%,#030b0a) 0%,color-mix(in srgb,var(--fe-away,#143e52) 39%,#030b0a) 43%,transparent 98%),
+ repeating-linear-gradient(48deg,rgba(255,255,255,.034) 0 2px,transparent 2px 22px,rgba(0,0,0,.038) 22px 24px,transparent 24px 44px)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 48%,transparent 100%)!important;
+}
+.fe-matchCard .fe-heroTeams,.fe-matchCard .fe-heroHead{position:relative;z-index:1}
+.fe-matchCard:after{content:none!important;display:none!important}
