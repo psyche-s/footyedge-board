@@ -231,7 +231,7 @@ function viewLeg(x){
 function legHTML(x,i){
  const p=x.p,g=x.g;
  return '<div class="leg"><div class="legTop"><div class="legTitle">'+esc(p.label)+'</div>'+
-  '<span class="legRating" title="Source-backed evidence grade">'+x.rating+'%<small>CONF.</small></span></div>'+
+  '<span class="legRating" title="Research strength grade">'+x.rating+'%<small>CONF.</small></span></div>'+
   '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+
   '<details class="legWhy"><summary>Why this leg</summary><p>'+esc(p.reason||"See the full researched match analysis.")+'</p>'+
   (x.evidence?'<span class="legEvidence">'+esc(x.evidence)+'</span>':'')+
@@ -261,7 +261,7 @@ function printSlip(id,items,empty){
 function printProps(items){
  document.getElementById("props").innerHTML=items.length?items.map((x,i)=>'<article class="marketItem"><div class="marketRank">'+(i+1)+'</div><div class="marketInfo"><h3>'+esc(x.p.label)+'</h3>'+
  '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(x.p.reason||"Statistically supported market selection.")+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
- '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without sourced player/event statistics.</div>';
+ '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without verified player/event statistics.</div>';
 }
 let selected=0;
 const chosenDate=()=>selected?nextDay(localDate()):localDate();
@@ -326,7 +326,7 @@ async function refresh(){
 async function refreshLive(){
  const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
  const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
- if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for refreshed source data.";return;}
+ if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for updated match information.";return;}
  button.disabled=true;button.classList.add("busy");
  note.textContent="Checking latest match status; excluding started or finished fixtures and rebuilding slip selections…";
  try{
