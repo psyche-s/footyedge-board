@@ -976,13 +976,408 @@ function renderGames(){
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" fixture"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
-  el.innerHTML=list.map(g=>'<article class="game fe-matchCard" role="button" tabindex="0" data-game-id="'+esc(g.id)+'">'+feMatchHero(g)+'</article>').join("");
-  el.querySelectorAll('[data-game-id]').forEach(node=>{
-    node.addEventListener('click',()=>openGame(node.dataset.gameId));
-    node.addEventListener('keydown',event=>{
-      if(event.key==='Enter'||event.key===' '){event.preventDefault();openGame(node.dataset.gameId);}
-    });
-  });
+  el.innerHTML=list.map(g=>{
+    return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
+      'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
+      feMatchHero(g)+
+    '</article>';
+  }).join("");
+}
+const FILTER_LEAGUE_LOGOS={
+  "eng.1":"assets/logos/competitions/eng.1.png",
+  "eng.2":"https://assets.football-logos.cc/logos/england/512x512/efl-championship.2766b536.png",
+  "tur.1":"https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png",
+  "ksa.1":"https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png",
+  "cze.1":"https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png",
+  "esp.1":"assets/logos/competitions/esp.1.png",
+  "ita.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/730.png",
+  "ger.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/720.png",
+  "fra.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/710.png",
+  "ned.1":"https://a.espncdn.com/i/leaguelogos/soccer/500/725.png",
+  "por.1":"https://assets.football-logos.cc/logos/portugal/512x512/primeira-liga--white.c5c27520.png",
+  "usa.1":"assets/logos/competitions/usa.1.png",
+  "jpn.1":"", "kor.1":""
+};
+function filterLeagueIconHtml(id){
+  const src=FILTER_LEAGUE_LOGOS[id]||"";
+  if(!src)return leagueIconHtml(id);
+  const safeId=String(id||"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+  const extra=id==="ita.1"?" leagueLogoSerieA":id==="ger.1"?" leagueLogoBundesliga":"";
+  return '<span class="leagueIcon league-'+safeId+'" aria-hidden="true"><img class="leagueLogoImg'+extra+'" src="'+esc(src)+'" alt="" loading="eager" decoding="async" onerror="this.parentElement.outerHTML=leagueFallbackHtml()"></span>'
+}
+function renderLeagues(){
+  const row=document.getElementById("leagueRow"),available=[...new Set([...S.games.map(g=>g.league).filter(Boolean),"jpn.1","kor.1"])],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","cze.1","jpn.1","kor.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
+  available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
+  const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
+  row.innerHTML=defs.map(([id,n])=>'<button class="filterPill '+(S.league===id?"active":"")+'" data-league="'+id+'">'+(id==="all"?"":filterLeagueIconHtml(id))+'<span>'+esc(n)+'</span></button>').join("");
+  row.querySelectorAll("[data-league]").forEach(b=>b.onclick=()=>{S.league=b.dataset.league;renderLeagues();renderBest();renderGames()});
+  const selection=document.getElementById("feLeagueSelect");
+  if(selection){selection.innerHTML=defs.map(([id,n])=>'<option value="'+esc(id)+'">'+esc(n)+'</option>').join("");
+   selection.value=S.league;selection.onchange=()=>{S.league=selection.value;renderLeagues();renderGames()}}
+}
+function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)+"%":"—"}
+
+const GITHUB_STATIC=typeof location!=="undefined"&&location.hostname.endsWith(".github.io");
+async function repoData(path){
+  const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
+  try{return await json(raw)}catch{return await json(path+"?v="+Date.now())}
+}
+function renderMeta(){
+  const today=etDate();
+  document.getElementById("dayTitle").textContent=S.date===today?"Today":new Date(S.date+"T12:00:00Z").toLocaleDateString("en-US",{weekday:"long",timeZone:"UTC"});
+  document.getElementById("dateTitle").textContent=niceDate(S.date)+" (ET)";
+  document.getElementById("gamesTitle").textContent=S.date===today?"Today’s Fixtures":"Fixtures · "+niceDate(S.date);
+  document.getElementById("stamp").textContent="";
+  document.getElementById("source").textContent="";
+}
+function renderLanding(){
+  const p=S.performance||{},month=p.month||{},week=p.week||{};
+  const rate=typeof month.hitRate==="number"&&Number.isFinite(month.hitRate)?Math.round(month.hitRate):null;
+  const hit=document.getElementById("landingHitRate"),record=document.getElementById("landingRecord"),weekEl=document.getElementById("landingWeekRate"),ring=document.getElementById("landingHitRing");
+  if(hit)hit.textContent=rate==null?"—":rate+"%";
+  if(record)record.textContent=(month.hits||0)+"–"+(month.misses||0);
+  if(weekEl)weekEl.textContent=typeof week.hitRate==="number"&&Number.isFinite(week.hitRate)?Math.round(week.hitRate)+"%":"—";
+  if(ring)ring.style.setProperty("--hit-angle",((rate||0)*3.6)+"deg");
+  const el=document.getElementById("landingTopPicks");if(!el)return;
+  const picks=topPicks();
+  if(!picks.length){el.innerHTML='<div class="landingEmpty">No pick has cleared today’s strict Top Pick rules yet.</div>';return}
+  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top;return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+pickScoreLabel(p)+'</small></div></div>'}).join("")
+}
+
+function render(){
+  renderMeta();renderLeagues();renderBest();renderGames();renderLanding();
+  if(!GITHUB_STATIC&&!ARCHIVE_CAPTURE){const firstByLeague=new Map();for(const game of S.games)if(!firstByLeague.has(game.league))firstByLeague.set(game.league,game);for(const game of firstByLeague.values())feEnsureTable(game).catch(()=>{});}
+  if(S.openGameId&&document.getElementById("drawer").classList.contains("on")){
+    const open=S.games.find(x=>x.id===String(S.openGameId));
+    if(open)renderModal(open)
+  }
+}
+async function load(date=S.date){
+  S.date=date||etDate();
+  S.boardReady=false;S.availability={kind:"loading",date:S.date};
+  defaultStatusForDate(S.date);
+  document.getElementById("best").innerHTML='<div class="loading"><div class="spin"></div>Ranking today’s best plays…</div>';
+  document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
+  try{
+    const utcNext=addDate(S.date,1);
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload]=await Promise.all([
+      (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
+      (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
+      (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
+      Promise.resolve(null),
+      Promise.resolve(null),
+      repoData("data/performance/summary.json").catch(()=>null),
+      repoData('data/daily-insights-'+S.date+'.json').catch(()=>null),
+      repoData('data/research-base-'+S.date+'.json').catch(()=>null),
+      CAPTURE_FAST?Promise.resolve(null):repoData('data/boards/'+S.date+'.json').catch(()=>null),
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/board-drafts/'+S.date+'.json').catch(()=>null),
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null))),
+      repoData('data/market-reviews/'+S.date+'.json').catch(()=>null),
+      repoData('data/h2h/'+S.date+'.json').catch(()=>null),
+      repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null),
+      repoData('data/league-tables/'+S.date+'.json').catch(()=>null),
+      repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null)
+    ]);
+    if(S.date!==date)return;
+    S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
+    // Supplemental 1X2 trend review is never a substitute for immutable picks.
+    S.resultMarketReview=marketReviewPayload?.schema==="footyedge-fulltime-market-review-v1"
+      &&marketReviewPayload.date===S.date&&marketReviewPayload.officialBoardUnchanged===true
+      &&marketReviewPayload.oddsVerified===false?marketReviewPayload:null;
+    // Owner-approved, versioned research correction is a display overlay only.
+    // Original immutable data/boards archive remains untouched.
+    const approvedCorrection=S.date==="2026-10-15"?await repoData("data/corrections/2026-10-15-v7.json").catch(()=>null):null;
+    const validCorrection=approvedCorrection?.schema==="footyedge-owner-approved-research-correction-v1"&&approvedCorrection.date===S.date&&approvedCorrection.ownerApproved===true&&approvedCorrection.immutableOriginalPreserved===true&&archivePayload?.immutable===true;
+    const displayArchive=validCorrection?{...archivePayload,top5:approvedCorrection.top5,leagueTop5:Object.fromEntries([...new Set(approvedCorrection.games.map(g=>g.league))].map(l=>[l,approvedCorrection.top5.filter(x=>approvedCorrection.games.some(g=>g.id===x.gameId&&g.league===l)).map((x,i)=>({...x,rank:i+1}))])),games:approvedCorrection.games.map(correction=>{const g=archivePayload.games.find(x=>String(x.id)===String(correction.id))||correction;return {...g,...correction,top:correction.top,top3:correction.top3,model:{...(g.model||{}),...(correction.model||{}),top:correction.top,top3:correction.top3}}}),displayCorrection:"v1-unpriced-research-only"}:archivePayload;
+    S.archive=displayArchive;S.draft=draftPayload;
+    const analyticsOverlay=await repoData('data/analytics/'+S.date+'.json').catch(()=>null);
+    if(S.date!==date)return;
+    const advancedById=new Map(analyticsOverlay?.date===S.date?(analyticsOverlay.matches||[]).filter(x=>x.verifiedJoin===true).map(x=>[String(x.fixtureId),x]):[]);
+    const fixturesPayload=mergeFootballPayloads(fixturesDay,fixturesNext),oddsPayload=mergeFootballPayloads(oddsDay,oddsNext);
+    const fixtureMap=buildFixtureMap(fixturesPayload),oddsEntries=buildOddsMap(oddsPayload);
+    const insightMap=new Map((insightsPayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home,x.away),x]));
+    const researchBaseMap=new Map((researchBasePayload?.fixtures||[]).map(x=>[fixtureMatchKey(x.home?.name||x.home,x.away?.name||x.away),x]));
+    // H2H is a separate historical-data overlay, NOT part of frozen predictions.
+    const h2hCache=new Map((h2hPayload?.schema==='footyedge-h2h-history-v1'&&h2hPayload.date===S.date
+      ?h2hPayload.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
+    const previewMap=new Map((editorialPayload?.schema==="footyedge-editorial-crosscheck-v1"&&editorialPayload.date===S.date?
+      editorialPayload.matches||[]:[]).filter(x=>Array.isArray(x.sources)&&x.sources.some(s=>/^https:\/\//.test(s.url)))
+       .map(x=>[String(x.fixtureId),x]));
+    const verifiedIntel=new Map((teamIntelPayload?.schema==="footyedge-sourced-team-intelligence-v1"&&teamIntelPayload.date===S.date
+      ?teamIntelPayload.fixtures||[]:[]).filter(x=>x.source?.url?.startsWith("https://")&&x.date===S.date)
+      .map(x=>[String(x.fixtureId),x]));
+    const attachSavedH2H=items=>{
+      for(const game of items){
+        game.teamIntel=verifiedIntel.get(String(game.id))||null;
+        game.editorialPreview=previewMap.get(String(game.id))||null;
+        const snapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
+        if(snapshot?.season===Number(game.year||S.date.slice(0,4))&&Array.isArray(snapshot.table)){
+          game.feTable={...snapshot,status:'verified',source:leagueTablePayload.source?.label,sourceUrl:leagueTablePayload.source?.url,asOf:leagueTablePayload.asOf};
+          const hs=snapshot.table.find(t=>String(t.id)===String(game.home?.id))||snapshot.table.find(t=>normName(t.name)===normName(game.home?.name));
+          const as=snapshot.table.find(t=>String(t.id)===String(game.away?.id))||snapshot.table.find(t=>normName(t.name)===normName(game.away?.name));
+          if(hs||as)game.verifiedRanks={home:hs?.rank||null,away:as?.rank||null};
+        }
+        // Restored frozen previews retain their immutable picks; attach
+        // verified last-five form and news only as a read-only display overlay.
+        game.baseResearch=game.baseResearch||researchBaseMap.get(fixtureMatchKey(game.home?.name,game.away?.name))||null;
+        const row=h2hCache.get(String(game.id));
+        if(!row||String(row.homeId)!==String(game.home?.id)||String(row.awayId)!==String(game.away?.id))continue;
+        const before=(row.h2h||[]).filter(m=>Number.isFinite(Date.parse(m.date))&&Date.parse(m.date)<Date.parse(game.date)&&
+          Number.isInteger(Number(m.homeScore))&&Number.isInteger(Number(m.awayScore)));
+        if(!before.length){
+          game.h2hSummary={...game.h2hSummary,matches:0,
+            note:row.checkedSeasons?.length
+              ?'No verified previous meetings in the '+row.checkedSeasons.length+' checked seasons.'
+              :'Historical H2H source currently unavailable.'};
+          continue;
+        }
+        const merged=mergeVerifiedH2H(game.matchH2H||game.h2h||[],before);
+        game.h2h=merged;game.matchH2H=merged;
+        game.h2hSummary={...game.h2hSummary,matches:merged.length,note:'Source-verified previous results, most recent first.'};
+      }
+    };
+    let games=(p?.events||[]).filter(e=>!FootyEdgeAvailability.excludedTaggedEvent?.(e)).map(e=>{
+      const c=e.competitions?.[0]||{},cs=c.competitors||[],h=cs.find(x=>x.homeAway==="home")||cs[0],a=cs.find(x=>x.homeAway==="away")||cs[1],l=leagueOf(e),st=e.status?.type||{};
+      const homeName=h?.team?.displayName||"Home",awayName=a?.team?.displayName||"Away",apiFixture=fixtureMap.get(fixtureMatchKey(homeName,awayName))||null,apiFixtureId=String(apiFixture?.fixture?.id||e.id);
+      const base=marketOdds({}),extra=null; // Confidence-only: sportsbook inputs never enter the prediction model.
+      const apiPrimary=Boolean(apiFixture)&&!fixturesPayload?._footyedgeFallback,apiStatus=apiFixture?.fixture?.status||{},apiShort=String(apiStatus.short||"");
+      const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
+      return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null,baseResearch:researchBaseMap.get(fixtureMatchKey(homeName,awayName))||null}
+    }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
+
+    // Recover dated men's fixtures that the ESPN scoreboard did not include.
+    // Fixture-only cards never manufacture odds, confidence or betting picks.
+    const eligibleFixtureLeagues={
+      "Premier League":"eng.1","La Liga":"esp.1","Serie A":"ita.1",
+      "Bundesliga":"ger.1","Ligue 1":"fra.1","Eredivisie":"ned.1",
+      "eng.2":"eng.2","tur.1":"tur.1","ksa.1":"ksa.1",
+      "sco.1":"sco.1","esp.2":"esp.2","ger.2":"ger.2","ita.2":"ita.2",
+      "fra.2":"fra.2","por.1":"por.1","cze.1":"cze.1","jpn.1":"jpn.1","J1 League":"jpn.1","kor.1":"kor.1","K League 1":"kor.1"
+    };
+    const knownFixtureIds=new Set(games.map(g=>String(g.apiFixtureId||g.id)));
+    const knownFixtureKeys=new Set(games.map(g=>fixtureMatchKey(g.home.name,g.away.name)));
+    for(const item of fixturesPayload?.response||[]){
+      const fid=String(item?.fixture?.id||""),date=item?.fixture?.date;
+      const homeName=item?.teams?.home?.name,awayName=item?.teams?.away?.name;
+      const rawLeague=String(item?.league?.name||"");
+      const league=eligibleFixtureLeagues[rawLeague];
+      if(!league||!fid||!date||!homeName||!awayName)continue;
+      if(FootyEdgeAvailability.eventDay({date})!==S.date)continue;
+      if(/women|female|\\.w\\.|nwsl/i.test(rawLeague+" "+homeName+" "+awayName))continue;
+      const key=fixtureMatchKey(homeName,awayName);
+      if(knownFixtureIds.has(fid)||knownFixtureKeys.has(key))continue;
+      const st=String(item?.fixture?.status?.short||"");
+      const done=/^(FT|AET|PEN)$/i.test(st),live=/^(1H|2H|HT|ET|P|LIVE)$/i.test(st);
+      games.push({
+        id:fid,apiFixtureId:fid,date,year:Number(item.league?.season||S.date.slice(0,4)),
+        league,leagueName:displayLeagueName(league,rawLeague),
+        leagueLogo:item.league?.logo||LEAGUE_LOGOS[league]||null,
+        home:{id:String(item.teams.home.id||""),name:homeName,logo:item.teams.home.logo||null,score:done||live?scoreVal(item.goals?.home):null},
+        away:{id:String(item.teams.away.id||""),name:awayName,logo:item.teams.away.logo||null,score:done||live?scoreVal(item.goals?.away):null},
+        odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
+        live,done,detail:item.fixture.status?.long||"",model:null,context:null,
+        apiPrediction:null,availability:null,availabilityLoaded:false,
+        dailyInsight:insightMap.get(key)||null,baseResearch:researchBaseMap.get(key)||null
+      });
+      knownFixtureIds.add(fid);knownFixtureKeys.add(key);
+    }
+
+    // ESPN's saved scoreboard omits the Czech top flight. The independently
+    // retrieved Czech season feed is already preserved in our dated research base.
+    // Recover ONLY those verified fixtures; never invent games from odds listings.
+    for(const row of researchBasePayload?.fixtures||[]){
+      if(!["cze.1","jpn.1","kor.1"].includes(row.league)||!row.id||!row.date||!row.home?.name||!row.away?.name)continue;
+      if(FootyEdgeAvailability.eventDay({date:row.date})!==S.date)continue;
+      if(games.some(g=>String(g.id)===String(row.id)||fixtureMatchKey(g.home.name,g.away.name)===fixtureMatchKey(row.home.name,row.away.name)))continue;
+      const home={id:String(row.home.id||""),name:row.home.name,logo:row.home.logo||null,score:null};
+      const away={id:String(row.away.id||""),name:row.away.name,logo:row.away.logo||null,score:null};
+      games.push({id:String(row.id),apiFixtureId:String(row.id),date:row.date,year:Number(row.season||S.date.slice(0,4)),
+        league:row.league,leagueName:displayLeagueName(row.league),leagueLogo:LEAGUE_LOGOS[row.league]||null,
+        home,away,odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
+        live:false,done:false,detail:"Source-verified dated fixture",model:null,context:null,apiPrediction:null,availability:null,
+        availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(home.name,away.name))||(row.teamNews?.length?{teamNews:row.teamNews}:null),baseResearch:row});
+    }
+
+    // Independent pre-match match-level research is display-only until the
+    // new predictive model has passed chronological calibration tests.
+    for(const g of games){
+      g.advancedResearch=advancedById.get(String(g.id))||null;
+      if(["jpn.1","kor.1"].includes(g.league)&&g.baseResearch){
+        g.matchH2H=(g.baseResearch.h2h||[]).slice(0,5);
+        g.h2h=(g.baseResearch.h2h||[]).slice(0,5);
+        g.teamMetrics=g.baseResearch.teamMetrics||null;
+      }
+    }
+    if(displayArchive?.date===S.date){
+      // The archived ESPN snapshot can omit European fixtures even when the
+      // owner-approved correction has their verified fixture IDs. Restore
+      // correction-only fixtures before attaching published picks.
+      if(validCorrection){
+        const existing=new Set(games.map(g=>String(g.id)));
+        for(const c of approvedCorrection.games){
+          if(existing.has(String(c.id)))continue;
+          if(!/^uefa\\.europa(?:\\.conf)?$/.test(c.league)||!c.id||!c.date||!c.home||!c.away)continue;
+          games.push({id:String(c.id),apiFixtureId:String(c.id),date:c.date,year:Number(S.date.slice(0,4)),
+            league:c.league,leagueName:c.leagueName||displayLeagueName(c.league),leagueLogo:LEAGUE_LOGOS[c.league]||null,
+            home:{id:String(c.teams?.home?.id||""),name:c.home,logo:c.teams?.home?.logo||null,score:null},
+            away:{id:String(c.teams?.away?.id||""),name:c.away,logo:c.teams?.away?.logo||null,score:null},
+            odds:{provider:null,homeML:null,drawML:null,awayML:null,markets:{},marketBooks:{},spreads:[],probs:{}},
+            live:false,done:false,detail:"Verified dated European fixture",model:null,context:null,apiPrediction:null,
+            availability:null,availabilityLoaded:false,dailyInsight:null,baseResearch:null});
+          existing.add(String(c.id));
+        }
+      }
+      S.games=applyBoardArchive(games,displayArchive);attachSavedH2H(S.games);
+      const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
+      for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
+      S.boardReady=true;S.dataSource=archivePayload.immutable===false?"Published today · refreshable":"Historical board";
+      if(!S.games.length){
+        S.availability=archivePayload.nextGameDate
+          ?{kind:"empty",date,count:0,nextGameDate:archivePayload.nextGameDate,searchComplete:true}
+          :await FootyEdgeAvailability.loadNext(date,json).catch(()=>({kind:"empty",date,count:0,nextGameDate:null,searchComplete:false}));
+        if(S.date!==date)return;
+      }
+      render();planRefresh();return;
+    }
+    if(!ARCHIVE_CAPTURE&&draftPayload?.date===S.date){
+      S.games=applyBoardArchive(games,draftPayload);attachSavedH2H(S.games);S.boardReady=true;S.dataSource="Same-day preview · refreshable";render();planRefresh();return;
+    }
+    if(!ARCHIVE_CAPTURE){
+      // A missing overnight lock must not hide today's verified last-10 stats.
+      // These are research-only leans, not published or priced betting selections.
+      for(const g of games){
+        const home=g.baseResearch?.last10?.home,away=g.baseResearch?.last10?.away;
+        g.odds={provider:null,homeML:null,drawML:null,awayML:null,over25:null,under25:null,markets:{},marketBooks:{},spreads:[],totalProbs:{},probs:{home:null,draw:null,away:null,over25:null,under25:null}};
+        if(Array.isArray(home)&&home.length>=5&&Array.isArray(away)&&away.length>=5){
+          g.model=model(g,home.map(x=>({...x,opp:x.opp??x.oppId})),away.map(x=>({...x,opp:x.opp??x.oppId})));
+          g.model.top=null;
+        }else g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
+      }
+      S.games=games;attachSavedH2H(S.games);S.dataSource="Verified historical research · waiting for official board";render();
+      if(!games.length){
+        const info=await FootyEdgeAvailability.load(date,json,p);
+        if(S.date!==date)return;
+        S.availability=info;render();
+      }
+      planRefresh();return;
+    }
+    let liveOddsPayload=null,dailyOddsPayload=null;
+    if(games.length){
+      dailyOddsPayload=await repoData('data/daily-odds-'+S.date+'.json').catch(()=>null);
+      // A fallback schedule/ESPN price is never an authorized sportsbook quote.
+      // Clear it for every fixture, even if native prices cover only part of the slate.
+      for(const g of games)g.odds={provider:null,homeML:null,drawML:null,awayML:null,over25:null,under25:null,markets:{},marketBooks:{},probs:{home:null,draw:null,away:null,over25:null,under25:null}};
+      if(dailyOddsPayload?.verifiedNativeOnly===true&&String(dailyOddsPayload?.fetchedAt||"").startsWith(S.date)&&dailyOddsPayload?.events?.length){
+        const dailyMap=buildDailyOddsMap(dailyOddsPayload);
+        for(const g of games){
+          const entry=dailyMap.get(fixtureMatchKey(g.home.name,g.away.name));
+          const posted=oddsFromDaily(entry,g.home.name,g.away.name);
+          if(posted)g.odds=posted;
+        }
+      }
+    }
+
+    await Promise.all(games.filter(g=>g.league&&g.home.id&&g.away.id).map(async g=>{
+      try{
+        const baseHome=Array.isArray(g.baseResearch?.last10?.home)?g.baseResearch.last10.home.map(x=>({...x,opp:x.opp??x.oppId})):null;
+        const baseAway=Array.isArray(g.baseResearch?.last10?.away)?g.baseResearch.last10.away.map(x=>({...x,opp:x.opp??x.oppId})):null;
+        if(baseHome&&baseAway&&(baseHome.length||baseAway.length)){
+          g.model=model(g,baseHome,baseAway);
+        }else if(CAPTURE_FAST){
+          g.model={top:null,top3:[],rankedCandidates:[],candidates:[],researchCandidates:[],home:stats([]),away:stats([]),displayHome:stats([]),displayAway:stats([]),expectedGoals:{home:0,away:0,total:0},sample:{home:0,away:0,h2:0},trendFacts:[]};
+          g.researchError="No verified rebuilt history available; fast repair leaves this fixture as a pass.";
+        }else{
+          const[hs,as]=await Promise.all([schedule(g.league,g.home.id,g.year),schedule(g.league,g.away.id,g.year)]);
+          g.model=model(g,history(hs,g.home.id,g.date),history(as,g.away.id,g.date));
+        }
+      }catch(error){
+        g.researchError=String(error?.message||error||"schedule unavailable");
+        g.model={top:null,top3:[],rankedCandidates:[],candidates:[],researchCandidates:[],home:stats([]),away:stats([]),displayHome:stats([]),displayAway:stats([]),expectedGoals:{home:0,away:0,total:0},sample:{home:0,away:0,h2:0},trendFacts:[]}
+      }
+    }));
+    const angleScore=g=>g.model?.top3?.[0]?.score||g.model?.candidates?.[0]?.score||0;
+    if(!CAPTURE_FAST){
+      const crossPool=games.filter(g=>angleScore(g)>=70).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,18);
+      await Promise.all(crossPool.map(async g=>{const[context,prediction]=await Promise.all([matchContext(g),matchApiPrediction(g)]);g.context=context;g.apiPrediction=prediction;applyContextCrossCheck(g)}));
+      const newsPool=games.filter(g=>angleScore(g)>=74).sort((a,b)=>angleScore(b)-angleScore(a)).slice(0,10);
+      await Promise.all(newsPool.map(async g=>{g.availability=await matchAvailability(g);applyLineupImpact(g)}));
+    }
+    for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
+    S.boardReady=true;
+    S.games=games;attachSavedH2H(S.games);S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
+  }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
+}
+
+function verifiedPositionBadge(g,side){
+  const rank=g.verifiedRanks?.[side];
+  return Number.isInteger(rank)&&rank>=1&&rank<=40?`<span class="modalStanding" aria-label="League position ${rank}">#${rank}</span>`:"";
+}
+
+function feArrow(open){
+ return '<svg class="fe-arrowIcon'+(open?' open':'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+}
+function matchH2HHtml(g){
+ const rows=Array.isArray(g.matchH2H)?g.matchH2H.slice(0,5):[],summary=g.h2hSummary||{},expanded=Boolean(g.h2hExpanded);
+ const key=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const homeKey=key(g.home.name),awayKey=key(g.away.name),homeColor=fePalette(g.home).primary,awayColor=fePalette(g.away).primary;
+ let hw=0,aw=0,dr=0;
+ for(const m of rows){
+  const left=key(m.home)===homeKey,right=key(m.away)===homeKey;
+  const x=Number(m.homeScore),y=Number(m.awayScore);
+  if(!Number.isInteger(x)||!Number.isInteger(y)||!left&&!right)continue;
+  if(x===y)dr++;else if((left&&x>y)||(right&&y>x))hw++;else aw++;
+ }
+ const matched=hw+aw+dr,total=matched||1;
+ const counts='<div class="fe-h2hSummary"><div><strong>'+esc(g.home.name)+'</strong><span>'+hw+' win'+(hw===1?'':'s')+'</span></div>'+
+   '<div><strong>Draws</strong><span>'+dr+'</span></div><div><strong>'+esc(g.away.name)+'</strong><span>'+aw+' win'+(aw===1?'':'s')+'</span></div></div>'+
+   '<div class="fe-h2hBars" role="img" aria-label="'+hw+' '+esc(g.home.name)+' wins, '+dr+' draws, '+aw+' '+esc(g.away.name)+' wins">'+
+   '<span style="width:'+(hw/total*100)+'%;background:'+homeColor+'"></span>'+
+   '<span style="width:'+(dr/total*100)+'%;background:#66726f"></span>'+
+   '<span style="width:'+(aw/total*100)+'%;background:'+awayColor+'"></span></div>';
+ const body=rows.length?rows.map(m=>{
+  const exact=Boolean(m.date&&Number.isFinite(Date.parse(m.date)));
+  const date=exact?new Intl.DateTimeFormat("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"}).format(new Date(m.date)):(m.dateLabel||"Date not verified");
+  const leftHome=key(m.home)===homeKey,leftAway=key(m.home)===awayKey;
+  const rightHome=key(m.away)===homeKey,rightAway=key(m.away)===awayKey;
+  const img=(name,validHome,validAway)=>(validHome?teamImgTag(g.home,"fe-h2hLogo"):validAway?teamImgTag(g.away,"fe-h2hLogo"):"");
+  const leftLogo=img(m.home,leftHome,leftAway),rightLogo=img(m.away,rightHome,rightAway);
+  return '<div class="fe-h2hRow"><div class="fe-h2hDate">'+esc(date)+(m.leagueName?' · '+esc(m.leagueName):'')+'</div>'+
+   '<div class="fe-h2hFixture"><span class="fe-h2hTeam">'+leftLogo+esc(m.home)+'</span>'+
+   '<strong class="fe-h2hScore">'+esc(m.homeScore)+' – '+esc(m.awayScore)+'</strong>'+
+   '<span class="fe-h2hTeam fe-h2hTeamRight">'+esc(m.away)+rightLogo+'</span></div></div>';
+ }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking previous meetings…</p>':
+ '<p class="h2hEmpty">'+esc(summary.note||"No verified previous meetings available in accessible historical records.")+'</p>');
+ const bodyHtml=rows.length?'<p class="fe-h2hCount">'+matched+' verified previous meeting'+(matched===1?'':'s')+'</p>'+counts+'<div class="fe-h2hList">'+body+'</div>':body;
+ return '<section class="h2hSection fe-accordion"><button type="button" class="h2hToggle fe-accordionButton" data-h2h-toggle aria-expanded="'+expanded+'">'+
+  '<span class="fe-accordionGlyph">'+feIcon("history")+'</span><span class="fe-accordionLabel"><strong>HEAD-TO-HEAD RECORD</strong><small>'+rows.length+' verified meeting'+(rows.length===1?'':'s')+' · Tap to '+(expanded?'collapse':'expand')+'</small></span>'+
+  '<span class="fe-down">'+feArrow(expanded)+'</span></button>'+
+  '<div class="h2hResults fe-accordionBody" '+(expanded?'':'hidden')+'>'+bodyHtml+'</div></section>';
+}
+function feRecentForm(g){
+ const lists=[{team:g.home,rows:g.baseResearch?.last5?.home||g.baseResearch?.last10?.home?.slice(0,5)||[]},
+              {team:g.away,rows:g.baseResearch?.last5?.away||g.baseResearch?.last10?.away?.slice(0,5)||[]}];
+ const makeLogo=(id)=>/^\d+$/.test(String(id||""))?'<img class="fe-recentLogo" loading="lazy" alt="" src="https://a.espncdn.com/i/teamlogos/soccer/500/'+esc(id)+'.png" onerror="this.style.display=\'none\'">':'';
+ const chunks=lists.map(({team,rows})=>{
+  const valid=rows.filter(row=>Number.isFinite(Number(row.gf))&&Number.isFinite(Number(row.ga))).slice(0,5);
+  const form=valid.map(row=>Number(row.gf)>Number(row.ga)?'W':Number(row.gf)<Number(row.ga)?'L':'D');
+  const head='<div class="fe-recentHead"><div>'+teamImgTag(team,"fe-historyLogo")+'<strong>'+esc(teamDisplayName(g,team))+'</strong></div>'+
+   '<span class="fe-recentForm">'+form.map(v=>'<i class="fe-miniResult '+v+'">'+v+'</i>').join("")+'</span></div>';
+  const items=valid.length?valid.map(row=>{
+   const venue=String(row.venue||"").toLowerCase();
+   const home=venue==="home";
+   const own=teamDisplayName(g,team),op=String(row.oppName||row.opponentName||"Opponent");
+   const homeName=home?own:op,awayName=home?op:own;
+   const homeGoals=home?Number(row.gf):Number(row.ga),awayGoals=home?Number(row.ga):Number(row.gf);
+   const teamLogo=teamImgTag(team,"fe-recentLogo"),opLogo=makeLogo(row.oppId);
+   const day=Number.isFinite(Date.parse(row.date||""))?new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"America/Toronto",weekday:"short"}).format(new Date(row.date)):"Date not verified";
+   const outcome=row.gf>row.ga?'W':row.gf<row.ga?'L':'D';
+   return '<div class="fe-recentMatch"><time>'+esc(day)+'</time><div class="fe-recentTeams">'+
+      '<span class="fe-recentTeam">'+(home?teamLogo:opLogo)+'<b>'+esc(homeName)+'</b></span>'+
+      '<span class="fe-recentScore '+outcome+'">'+homeGoals+' – '+awayGoals+'</span>'+
+      '<span class="fe-recentTeam fe-recentTeamAway"><b>'+esc(awayName)+'</b>'+(home?opLogo:teamLogo)+'</span></div></div>';
+  }).join(""):'<p class="fe-empty">Recent verified results are unavailable.</p>';
+  return '<div class="fe-recentClub">'+head+items+'</div>';
+ }).join("");
  const exp=Boolean(g.last5Expanded);
  return '<section class="fe-accordion fe-recentSection"><button type="button" class="fe-accordionButton" data-last5-toggle aria-expanded="'+exp+'">'+
   '<span class="fe-accordionGlyph">'+feIcon("form")+'</span><span class="fe-accordionLabel"><strong>RECENT FORM</strong><small>Last 5 matches · Tap to '+(exp?'collapse':'expand')+'</small></span>'+
