@@ -43,9 +43,10 @@ test("a single valid previous meeting stays one, even if the heading says last f
  const newer=[{date:"2025-01-21T20:00:00Z",home:"Slovan Bratislava",away:"VfB Stuttgart",homeScore:1,awayScore:3}];
  assert.equal(mergeVerifiedH2H(saved,newer).length,1);
 });
-test("archived match pages may refresh partial H2H for current date only",()=>{
+test("archived and next-day match details load real H2H without touching frozen picks",()=>{
  const part1=fs.readFileSync("ui/part1.html","utf8");
- assert.match(part1,/g\.matchDetailsRequested=Boolean\(a\.staticDetails\)&&S\.date!==etDate\(\)/);
- assert.match(src,/g\.matchH2H\.length===5/);
+ assert.match(part1,/g\.matchDetailsRequested=false/);
+ assert.doesNotMatch(src,/g\.matchH2H\.length===5\|\|S\.date!==etDate\(\)/);
+ assert.match(src,/data\/h2h\//);
  assert.match(src,/Checking previous meetings/);
 });
