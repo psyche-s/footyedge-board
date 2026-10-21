@@ -6,6 +6,8 @@ on:
       - "ui/part0.html"
       - "ui/part1.html"
       - "ui/part2.html"
+      - "tests/footyedge-top3-ui.test.mjs"
+      - "data/editorial-previews/**"
       - ".github/workflows/check-ui-syntax.yml"
   push:
     branches: [main]
@@ -38,3 +40,5 @@ jobs:
           for(let i=0;i<blocks.length;i++)new vm.Script(blocks[i][2],{filename:"FootyEdge-inline-"+i+".js"});
           console.log("Valid HTML source: "+blocks.length+" inline JavaScript blocks compile");
           JS
+      - name: Validate published pick presentation and source cross-checks
+        run: node --test tests/footyedge-top3-ui.test.mjs
