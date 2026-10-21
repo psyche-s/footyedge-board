@@ -18,6 +18,7 @@ const R=path.join('data','research-base-'+DATE+'.json');
 const ODDS=path.join('data','daily-odds-'+DATE+'.json');
 const INSIGHTS=path.join('data','daily-insights-'+DATE+'.json');
 const OWNER_RESEARCH_PICKS=process.env.OWNER_RESEARCH_PICKS==='1';
+let editorialById=new Map();
 const read=async f=>JSON.parse(await fs.readFile(f,'utf8'));
 const exists=async f=>fs.access(f).then(()=>true).catch(()=>false);
 const LEAGUES={'eng.1':'Premier League','eng.2':'EFL Championship','tur.1':'Turkish Süper Lig','ksa.1':'Saudi Pro League','cze.1':'Czech First League','jpn.1':'J1 League','kor.1':'K League 1','esp.1':'LaLiga','ita.1':'Serie A','ger.1':'Bundesliga','fra.1':'Ligue 1','ned.1':'Eredivisie','por.1':'Liga Portugal','uefa.champions':'UEFA Champions League','uefa.europa':'UEFA Europa League','uefa.europa.conf':'UEFA Conference League','usa.1':'MLS','fifa.friendly':'International Friendly','uefa.nations':'UEFA Nations League'};
@@ -83,6 +84,27 @@ function generate(g){
   angle(away.name+' or Draw','Double Chance',x=>x.result!=='W',x=>x.result!=='L','away-result');
   angle(home.name+' ML','Match Result',x=>x.result==='W',x=>x.result==='L','home-result');
   angle(away.name+' ML','Match Result',x=>x.result==='L',x=>x.result==='W','away-result');
+  // Source comparisons only annotate independently supported statistical angles.
+  // A single preview is not a forecast probability, nor a reason to force a pick.
+  const sourceReview=editorialById.get(String(g.id));
+  if(sourceReview&&Array.isArray(sourceReview.sources)){
+    for(const candidate of candidates){
+      const note=sourceReview.marketNotes?.[candidate.label]||"";
+      const sources=sourceReview.sources.filter(s=>(s.supports||[]).some(x=>x.toLowerCase()===candidate.label.toLowerCase()));
+      const disagreement=(sourceReview.disputedMarkets||[]).some(x=>x.toLowerCase()===candidate.label.toLowerCase());
+      if(disagreement){candidate.score=Math.max(60,candidate.score-4);candidate.editorialDisagreement=true;}
+      if(note){
+        candidate.reason=candidate.reason.replace(/ These figures describe recent results, not a guaranteed outcome\.$/,"")+" "+
+          (disagreement?"Independent previews disagree on this result. ":"")+note;
+        candidate.archivedCommentary=candidate.reason;
+        candidate.sourceBackedReason=true;
+        candidate.editorialSources=sourceReview.sources.map(x=>({url:x.url,publishedOn:x.publishedOn}));
+      }
+      // Modest ranking signal only if two independently attributed previews agree.
+      if(sources.length>=2&&!disagreement)candidate.score=Math.min(96,candidate.score+1);
+      candidate.researchStrength=candidate.score;
+    }
+  }
   candidates.sort((a,b)=>b.score-a.score||Math.min(b.homeHits/b.homeSample,b.awayHits/b.awaySample)-Math.min(a.homeHits/a.homeSample,a.awayHits/a.awaySample));
   // Distinct football theses only: do not pair team 1+ with a total O1.5,
   // adjacent totals, BTTS with duplicate scoring legs, or ML with DC.
@@ -107,6 +129,9 @@ async function main(){
   const existing=await read(LOCK).catch(()=>null);
   if(existing?.date===DATE&&existing.immutable===true){console.log('Preserve immutable published board');return;}
   // No pricing lookup: confidence-only publication does not depend on any sportsbook.
+  const editorial=await read(path.join('data','editorial-previews',DATE+'.json')).catch(()=>null);
+  editorialById=new Map(editorial?.schema==='footyedge-editorial-crosscheck-v1'&&editorial.date===DATE?
+    (editorial.matches||[]).filter(x=>Array.isArray(x.sources)&&x.sources.every(s=>/^https:\/\//.test(s.url))).map(x=>[String(x.fixtureId),x]):[]);
   const research=await read(R);
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
   const games=research.fixtures.map(generate);

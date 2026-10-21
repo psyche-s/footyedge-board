@@ -787,8 +787,8 @@ function resultMarketCandidates(g){
 function moneylineCandidates(g){return resultMarketCandidates(g).filter(p=>p.category==="Match Result");}
 function feThesisKind(p){
   const c=String(p?.category||"").toLowerCase(),l=String(p?.label||"").toLowerCase();
-  if(["goals","team goals","btts"].includes(c)||/^(over|under)\\s+\\d/.test(l)||/\\d\\+\\s+goals?/.test(l)||l.includes("both teams to score"))return "scoring";
-  if(["match result","double chance","handicap","win to nil"].includes(c)||/(\\bml$| or draw$)/.test(l))return "result";
+  if(["goals","team goals","btts"].includes(c)||/^(over|under)\s+\d/.test(l)||/\d\+\s+goals?/.test(l)||l.includes("both teams to score"))return "scoring";
+  if(["match result","double chance","handicap","win to nil"].includes(c)||/(\bml$| or draw$)/.test(l))return "result";
   if(["player","shots","shots on target","assists"].includes(c))return "player:"+l;
   if(c==="cards"||c==="corners"||c==="fouls")return c;
   return c||"other";
@@ -1044,7 +1044,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1059,7 +1059,8 @@ async function load(date=S.date){
       repoData('data/market-reviews/'+S.date+'.json').catch(()=>null),
       repoData('data/h2h/'+S.date+'.json').catch(()=>null),
       repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null),
-      repoData('data/league-tables/'+S.date+'.json').catch(()=>null)
+      repoData('data/league-tables/'+S.date+'.json').catch(()=>null),
+      repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
@@ -1083,12 +1084,16 @@ async function load(date=S.date){
     // H2H is a separate historical-data overlay, NOT part of frozen predictions.
     const h2hCache=new Map((h2hPayload?.schema==='footyedge-h2h-history-v1'&&h2hPayload.date===S.date
       ?h2hPayload.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
+    const previewMap=new Map((editorialPayload?.schema==="footyedge-editorial-crosscheck-v1"&&editorialPayload.date===S.date?
+      editorialPayload.matches||[]:[]).filter(x=>Array.isArray(x.sources)&&x.sources.some(s=>/^https:\/\//.test(s.url)))
+       .map(x=>[String(x.fixtureId),x]));
     const verifiedIntel=new Map((teamIntelPayload?.schema==="footyedge-sourced-team-intelligence-v1"&&teamIntelPayload.date===S.date
       ?teamIntelPayload.fixtures||[]:[]).filter(x=>x.source?.url?.startsWith("https://")&&x.date===S.date)
       .map(x=>[String(x.fixtureId),x]));
     const attachSavedH2H=items=>{
       for(const game of items){
         game.teamIntel=verifiedIntel.get(String(game.id))||null;
+        game.editorialPreview=previewMap.get(String(game.id))||null;
         const snapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
         if(snapshot?.season===Number(game.year||S.date.slice(0,4))&&Array.isArray(snapshot.table)){
           game.feTable={...snapshot,status:'verified',source:leagueTablePayload.source?.label,sourceUrl:leagueTablePayload.source?.url,asOf:leagueTablePayload.asOf};
@@ -1726,6 +1731,28 @@ function plainFootballReason(g,p){
   }
   return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
+function feReviewedReason(g,p){
+ const base=plainFootballReason(g,p);
+ const preview=g.editorialPreview;
+ if(!preview||!Array.isArray(preview.sources)||!preview.sources.some(s=>/^https:\/\//.test(s.url)))return base;
+ const note=preview.marketNotes?.[p?.label]||"";
+ const isDisputed=(preview.disputedMarkets||[]).some(x=>String(x).toLowerCase()===String(p?.label||"").toLowerCase());
+ const clean=String(base||"").replace(/\s*These figures describe recent results, not a guaranteed outcome\.\s*$/i,"").trim();
+ const matching=preview.sources.filter(s=>(s.supports||[]).some(x=>String(x).toLowerCase()===String(p.label||"").toLowerCase())).length;
+ const extra=note?note:(isDisputed?preview.context:"");
+ if(!extra)return clean;
+ const context=isDisputed?"Independent match previews disagree about this market, so the evidence is less decisive. ":
+   matching>=2?"Multiple independently published match previews align on this angle. ":
+   matching===1?"One dated match preview supports this angle; other previews and team news still matter. ":"";
+ return [clean,context+extra].filter(Boolean).join(" ");
+}
+function fePreviewLinks(g,p){
+ const preview=g.editorialPreview;
+ if(!preview?.sources?.length)return "";
+ const links=preview.sources.filter(s=>/^https:\/\//.test(String(s.url||""))).slice(0,3).map((s,i)=>
+  '<a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">Preview '+(i+1)+' ↗</a>').join(" · ");
+ return links?'<div class="fe-whySources"><span>Cross-checked with dated match previews</span> '+links+'</div>':"";
+}
 function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
@@ -1733,7 +1760,7 @@ function renderModal(g){
   const ranked=top3.length?top3.map((x,i)=>{
     return '<article class="modalPick fe-selection">'+
       '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">#'+(i+1)+'</div>'+
-      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(plainFootballReason(g,x))+'</p></div>'+
+      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+fePreviewLinks(g,x)+'</div>'+
       '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
     '</article>';
   }).join(""):'<div class="fe-empty">No selection has enough verified support for this fixture.</div>';
@@ -1794,7 +1821,14 @@ document.getElementById("modalBody").onclick=event=>{
   if(!action)return;
   const g=S.games.find(x=>x.id===String(S.openGameId));if(!g)return;
   if(action.hasAttribute("data-refresh-match")){feRefreshMatch(g);return;}
-  if(action.hasAttribute("data-fe-tab"))g.feTab=action.getAttribute("data-fe-tab");
+  if(action.hasAttribute("data-fe-tab")){
+    g.feTab=action.getAttribute("data-fe-tab");
+    // Source-backed player pictures and confirmed XI are requested lazily,
+    // only for the specific game the user opens, with 4-minute caching.
+    if(g.feTab==="lineups"&&!g.feLastRefreshTime&&!GITHUB_STATIC&&!ARCHIVE_CAPTURE){
+      feRefreshMatch(g);return;
+    }
+  }
   else if(action.hasAttribute("data-h2h-toggle"))g.h2hExpanded=!g.h2hExpanded;
   else if(action.hasAttribute("data-last5-toggle"))g.last5Expanded=!g.last5Expanded;
   renderModal(g);
