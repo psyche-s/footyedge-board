@@ -50,3 +50,10 @@ test("archived and next-day match details load real H2H without touching frozen 
  assert.match(src,/data\/h2h\//);
  assert.match(src,/Checking previous meetings/);
 });
+
+test("tomorrow's sourced H2H overlay is attached after draft and archive restore",()=>{
+ assert.match(src,/attachSavedH2H\(S\.games\)/);
+ assert.match(src,/data\/h2h\//);
+ assert.match(src,/No verified previous meetings in the/);
+ assert.match(src,/mergeVerifiedH2H\(game\.matchH2H\|\|game\.h2h\|\|\[\],before\)/);
+});

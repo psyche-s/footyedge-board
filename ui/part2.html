@@ -1033,7 +1033,13 @@ async function load(date=S.date){
         if(!row||String(row.homeId)!==String(game.home?.id)||String(row.awayId)!==String(game.away?.id))continue;
         const before=(row.h2h||[]).filter(m=>Number.isFinite(Date.parse(m.date))&&Date.parse(m.date)<Date.parse(game.date)&&
           Number.isInteger(Number(m.homeScore))&&Number.isInteger(Number(m.awayScore)));
-        if(!before.length)continue;
+        if(!before.length){
+          game.h2hSummary={...game.h2hSummary,matches:0,
+            note:row.checkedSeasons?.length
+              ?'No verified previous meetings in the '+row.checkedSeasons.length+' checked seasons.'
+              :'Historical H2H source currently unavailable.'};
+          continue;
+        }
         const merged=mergeVerifiedH2H(game.matchH2H||game.h2h||[],before);
         game.h2h=merged;game.matchH2H=merged;
         game.h2hSummary={...game.h2hSummary,matches:merged.length,note:'Source-verified previous results, most recent first.'};
