@@ -8,9 +8,9 @@ on:
       - "scripts/build-evidence-only-board.mjs"
       - "scripts/sync-asia-research.mjs"
   schedule:
-    # Start at 00:05 Toronto: 04:05 UTC in EDT / 05:05 UTC in EST.
-    # The local-time gate below rejects the UTC alternative that lands at 23:05.
-    - cron: "5 4,5 * * *"
+    # GitHub timezone-aware schedule keeps 00:05 Toronto through DST.
+    - cron: "5 0 * * *"
+      timezone: "America/Toronto"
   workflow_dispatch:
 
 permissions:
