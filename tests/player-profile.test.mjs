@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent,parseOverviewSeason,parseESPNLastFive} from "../api/player-profile.js";
+import {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent,parseOverviewSeason,parseESPNLastFive,parseESPNLastTen} from "../api/player-profile.js";
 import {extractStarters,rosterPhotos} from "../api/match-updates.js";
 
 const sample={team:{name:"Verified FC"},athletes:[{position:"Forward",items:[
@@ -107,11 +107,11 @@ test("Profile loading is compact and unverified fields are filtered instead of o
  const ui=fs.readFileSync("ui/part2.html","utf8"),
    css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
  assert.match(ui,/fe-profileShimmer/);
- assert.match(ui,/const numericStats=/);
- assert.match(ui,/priority=\["Appearances","Starts","Goals","Assists","Shots","Shots on target","Minutes"\]/);
- assert.match(ui,/--fe-player-stat-count/);
+ assert.match(ui,/const number=new Map/);
+ assert.match(ui,/priority=\["Appearances","Starts","Minutes played","Goals","Assists","Shots on target","Shots"/);
+ assert.match(ui,/fe-playerStatsGridFull/);
  assert.doesNotMatch(ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("function feOpenPlayerProfile(")),/Not available<\/strong>/);
- assert.match(ui,/Missing values are omitted, not estimated/);
+ assert.match(ui,/not provided, not zero/);
  assert.match(ui,/\.filter\(x=>x\[1\]!=null&&String\(x\[1\]\)\.trim\(\)\)/);
  assert.match(css,/\.fe-playerPhotoStage/);
  assert.match(css,/background:none!important;border:0!important;box-shadow:none!important/);
@@ -126,6 +126,48 @@ test("Complete fixture script parses and player profile displays only real stat 
  for(const script of scripts)assert.doesNotThrow(()=>new Function(script[1]));
  const ui=fs.readFileSync("ui/part2.html","utf8");
  assert.match(ui,/const numericStats=/);
- assert.match(ui,/--fe-player-stat-count/);
+ assert.match(ui,/fe-playerStatsGridFull/);
  assert.doesNotMatch(ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("function feOpenPlayerProfile(")),/Not available<\/strong>/);
+});
+
+test("Last ten verified club appearances merge cross-competition game logs, not international games",()=>{
+ const events={},domestic=[],europe=[];
+ for(let i=0;i<13;i++){
+  const id="match"+i;
+  events[id]={gameDate:"2026-10-"+String(i+1).padStart(2,"0")+"T12:00:00Z",
+   team:{id:i===12?"455":"2572"},opponent:{displayName:"Opponent "+i}};
+  const row={eventId:id,stats:["1","0","3","2","1","2","0","0","0"]};
+  (i%3===0?europe:domestic).push(row);
+ }
+ const domesticLog={names:["totalGoals","goalAssists","totalShots","shotsOnTarget",
+  "foulsCommitted","foulsSuffered","offsides","yellowCards","redCards"],events,
+  seasonTypes:[{displayName:"2026-27 Italian Serie A",categories:[{events:domestic}]}]};
+ const uclLog={...domesticLog,seasonTypes:[{displayName:"2026-27 Champions League",
+  categories:[{events:europe}]}]};
+ const overview={gameLog:{displayName:"2026-27 Italian Serie A",events,
+  statistics:[{names:["appearances","totalGoals"],events:[{eventId:"match11",stats:["Started","1"]}]}]}};
+ const out=parseESPNLastTen(overview,[domesticLog,uclLog],"2572",Date.parse("2026-10-25"));
+ assert.equal(out.length,10);
+ assert.equal(out[0].opponent,"Opponent 11");
+ assert.equal(out[0].appearance,"Started");
+ assert.equal(out[0].shotsOnTarget,2);
+ assert.equal(out[0].foulsCommitted,1);
+ assert.equal(out[0].foulsWon,2);
+ assert.equal(out[0].yellowCards,0);
+ assert.equal(out[0].minutes,null);
+ assert.ok(!out.some(x=>x.opponent==="Opponent 12"));
+});
+test("Player profile displays requested ten-game columns, app-start distinction and simple position",()=>{
+ const ui=fs.readFileSync("ui/part2.html","utf8");
+ const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
+ assert.match(ui,/Appearances = all games played, including substitutions/);
+ assert.match(ui,/Starts = games in the starting XI/);
+ assert.match(ui,/slice\(0,10\)/);
+ for(const key of ["minutes","goals","assists","shotsOnTarget","shots","foulsCommitted","foulsWon","yellowCards","redCards"])
+  assert.ok(ui.includes('"'+key+'"'),"Missing requested recent stat "+key);
+ assert.match(ui,/function fePlayerRole\(position\)/);
+ assert.doesNotMatch(ui,/Goal protection and distribution/);
+ assert.match(css,/fe-playerStatsGridFull/);
+ assert.match(css,/fe-playerMatchStats/);
+ assert.match(css,/scale\(1\.90\)/);
 });
