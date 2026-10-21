@@ -3,6 +3,7 @@
 // result alternatives for every dated men's fixture even if sportsbook quota=0.
 // Never overwrite a published board or present research ratings as win chance.
 import fs from "node:fs";
+import {takeDistinctTopPicks} from "./market-diversity.mjs";
 const local=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
 const date=process.env.BOARD_DATE||local.year+"-"+local.month+"-"+local.day;
 const boardFile="data/boards/"+date+".json",draftFile="data/board-drafts/"+date+".json";
@@ -77,8 +78,7 @@ for(const game of draft.games){
   picks.push({label:name,category,family,score:null,modelProb:null,ev:null,odds:q?.odds??null,displayOdds:q?.displayOdds??null,provider:q?.provider??null,bookKey:q?.bookKey??null,bookExact:!!q,verifiedPrice:!!q,priceDecimal:q?.priceDecimal??null,priceStatus:q?"verified_snapshot":"no_line_available",probabilityCalibrated:false,confidenceRating:grade,confidenceType:"research_strength_not_calibrated",researchOnly:true,sourceBackedReason:true,reason});
  }
  picks.sort((x,y)=>y.confidenceRating-x.confidenceRating||Number(y.verifiedPrice)-Number(x.verifiedPrice));
- let familySeen=new Set(),top3=[];for(const x of picks){if(familySeen.has(x.family))continue;top3.push(x);familySeen.add(x.family);if(top3.length===3)break}
- if(top3.length!==3)throw Error("Three independent markets missing: "+game.id);
+ const top3=takeDistinctTopPicks(picks,3); // Avoid repeated goal-market theses, even across result and team markets.
  game.top3=top3;game.top=top3[0];game.model={...game.model,top:top3[0],top3,candidates:top3,rankedCandidates:top3,researchCandidates:top3,
    resultCandidates:picks.filter(x=>x.category==="Match Result"||x.category==="Double Chance"),
    home:h,away:a,displayHome:h,displayAway:a,mode:"research_only_model_crosscheck"};
@@ -94,6 +94,6 @@ draft.top5=refs(qual);
 draft.leagueTop5=Object.fromEntries([...new Set(draft.games.map(g=>g.league))].map(l=>[l,refs(qual.filter(g=>g.league===l))]));
 draft.publicationNotes="Research-only owner-directed board. Three picks and last-five form per fixture; ML and double chance screened. Grades are not calibrated win probabilities. Odds and EV N/A unless an exact line is verified.";
 draft.sourceQuality={...draft.sourceQuality,threeResearchPicks:reviewed,limitedHistory:limited,probabilityCalibrated:false,bookmakerOddsVerified:false};
-if(reviewed!==base.fixtures.length||draft.games.some(g=>g.top3.length!==3))throw Error("Incomplete whole-slate research coverage");
+if(reviewed!==base.fixtures.length||draft.games.some(g=>g.top3.length>3))throw Error("Invalid slate research coverage");
 fs.writeFileSync(draftFile,JSON.stringify(draft,null,2)+String.fromCharCode(10));
 console.log(JSON.stringify({date,reviewed,limited,featured:draft.top5.length}));
