@@ -1843,7 +1843,7 @@ function feVerifiedSquadPanel(g){
     esc(teamDisplayName(g,team))+'</h4><div class="fe-squadPlayers">'+
     rows.map(player=>{
       const id=/^[0-9]{1,12}$/.test(String(player.id||""))?String(player.id):"";
-      const photo=/^https:\/\/a\.espncdn\.com\/[a-z0-9._~!function feLineupsPanel(g){'()*+,;=:@/%?-]+$/i.test(String(player.photoUrl||""))?player.photoUrl:"";
+      const photo=/^https:\/\/a\.espncdn\.com\//i.test(String(player.photoUrl||""))?String(player.photoUrl):"";
       const avatar=photo?'<img alt="" loading="lazy" src="'+esc(photo)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
         '<span hidden>'+esc(String(player.name).slice(0,2).toUpperCase())+'</span>':
         '<span>'+esc(String(player.name).slice(0,2).toUpperCase())+'</span>';
