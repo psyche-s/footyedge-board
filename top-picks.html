@@ -243,36 +243,59 @@ function printProps(items){
  '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(x.p.reason||"Statistically supported market selection.")+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
  '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without sourced player/event statistics.</div>';
 }
-let selected=0;async function refresh(){
- const date=selected?nextDay(localDate()):localDate();
- const d=new Date(date+"T17:00:00Z");
- const label=new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(d);
- document.getElementById("boardStatus").textContent="Checking "+label+"…";
- document.getElementById("todayBtn").classList.toggle("active",selected===0);
- document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
- const desk=await data("data/slips/"+date+".json");
- if(desk?.schema!=="footyedge-daily-slips-v1"||desk.date!==date){
-  document.getElementById("boardStatus").textContent=label+" · Slip research is not published yet";
-  printSlip("sgpSlip",[],"No source-verified slip has been published for this date.");
-  printSlip("accaSlip",[],"No source-verified slip has been published for this date.");
+let selected=0;
+const chosenDate=()=>selected?nextDay(localDate()):localDate();
+const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
+function renderDesk(desk,date,live=false){
+ const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ if(!valid){
+  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
+  printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
+  printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
   printProps([]);
   for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
   return;
  }
- document.getElementById("boardStatus").textContent=label+" · "+desk.sample.fixtures+" fixtures reviewed · "+
-   (desk.state==="frozen"?"Frozen research snapshot":"Pre-match research preview");
- const display=(result,id,empty)=>{
-  const picks=result?.status==="qualified"?(result.legs||[]).map(viewLeg):[];
-  printSlip(id,picks,result?.caution||empty);
-  const tag=id==="sgpSlip"?"sgpCaution":"accaCaution",el=document.getElementById(tag);
-  el.hidden=!picks.length;el.textContent=result?.caution||"";
- };
- display(desk.sgp,"sgpSlip","No compatible same-game multi-market package passes the research screen.");
- display(desk.acca,"accaSlip","At least four independent fixtures need strong, distinct markets.");
+ document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
+ (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
+  (desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+ function drawSlip(result,id,empty){
+  const legs=result?.status==="qualified"?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
+  printSlip(id,legs,result?.caution||empty);
+  const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
+  caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
+ }
+ drawSlip(desk.sgp,"sgpSlip","No same-game combination qualifies from major leagues.");
+ drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
  printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
+}
+async function refresh(){
+ const date=chosenDate();document.getElementById("boardStatus").textContent="Checking "+chosenLabel(date)+"…";
+ document.getElementById("todayBtn").classList.toggle("active",selected===0);
+ document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
+ document.getElementById("refreshStatus").textContent="";
+ renderDesk(await data("data/slips/"+date+".json"),date);
+}
+async function refreshLive(){
+ const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
+ const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
+ if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for refreshed source data.";return;}
+ button.disabled=true;button.classList.add("busy");
+ note.textContent="Checking latest match status; excluding started or finished fixtures and rebuilding slip selections…";
+ try{
+  const r=await fetch("/api/refresh-slips?date="+encodeURIComponent(date),{cache:"default"});
+  const result=await r.json();
+  if(!r.ok||result.schema!=="footyedge-live-slip-check-v1"||result.date!==date)throw Error(result.error||"Refresh unavailable");
+  sessionStorage.setItem(key,String(Date.now()));
+  renderDesk(result,date,true);
+  note.textContent="Checked "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"}).format(new Date(result.checkedAt))+
+   " ET. "+result.dataCoverage+" Check official lineups in Fixtures. Historical boards unchanged.";
+ }catch(e){note.textContent=String(e?.message||e)+". Published research slips remain available.";}
+ finally{button.disabled=false;button.classList.remove("busy");}
 }
 
 document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
 document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
+document.getElementById("refreshBtn").onclick=refreshLive;
 refresh();
 </script></body></html>
