@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent} from "../api/player-profile.js";
+import {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent,parseOverviewSeason,parseESPNLastFive} from "../api/player-profile.js";
 import {extractStarters,rosterPhotos} from "../api/match-updates.js";
 
 const sample={team:{name:"Verified FC"},athletes:[{position:"Forward",items:[
@@ -67,4 +67,47 @@ test("Player opens from XI as an accessible button, API fetches on click, and li
  assert.match(css,/\.fe-playerOverlay/);
  assert.match(css,/\.fe-playerStatsGrid/);
  assert.match(css,/\.fe-playerPortrait/);
+});
+
+test("ESPN competition overview returns actual starts goals assists and shots, never zeros for missing fields",()=>{
+ const overview={statistics:{names:["starts","totalGoals","goalAssists","totalShots","shotsOnTarget"],
+  splits:[{leagueSlug:"ita.1",teamId:"2572",displayName:"2026-27 Italian Serie A",
+    stats:["6","3","0","19","10"]},{leagueSlug:"uefa.champions",teamId:"2572",
+    displayName:"2026-27 Champions League",stats:["1","2","0","3","2"]},
+    {leagueSlug:"uefa.nations",teamId:"455",displayName:"2026-27 UEFA Nations League",stats:["0","1","0","3","1"]}]}};
+ const gamelog={seasonTypes:[{displayName:"2026-27 Italian Serie A",
+    categories:[{events:Array.from({length:7},(_,i)=>({eventId:"event"+i}))}]}]};
+ const selected=parseOverviewSeason(overview,"ita.1","2572",gamelog);
+ assert.equal(selected.competition,"2026-27 Italian Serie A");
+ assert.equal(selected.stats.find(x=>x.label==="Goals")?.value,3);
+ assert.equal(selected.stats.find(x=>x.label==="Assists")?.value,0);
+ assert.equal(selected.stats.find(x=>x.label==="Shots")?.value,19);
+ assert.equal(selected.stats.find(x=>x.label==="Appearances")?.value,7);
+ const european=parseOverviewSeason(overview,"uefa.champions","2572",gamelog);
+ assert.equal(european.stats.find(x=>x.label==="Goals")?.value,2);
+ assert.ok(!european.stats.some(x=>x.label==="Appearances"));
+ assert.equal(parseOverviewSeason(null,"ita.1","2572",null).stats.length,0);
+});
+test("ESPN last five game logs resolve dated opponents, goals assists and shots",()=>{
+ const summary={gameLog:{statistics:[{names:["appearances","totalGoals","goalAssists","totalShots"],
+  events:[{eventId:"x1",stats:["Started","2","1","5"]},{eventId:"x2",stats:["Sub","0","0","1"]}]}],
+  events:{x1:{gameDate:"2026-09-04T18:45:00Z",opponent:{displayName:"Genoa"}},
+    x2:{gameDate:"2026-09-11T18:45:00Z",opponent:{displayName:"Udinese"}}}}};
+ const out=parseESPNLastFive(summary,null,"2026-27 Italian Serie A");
+ assert.equal(out.length,2);
+ assert.equal(out[0].opponent,"Udinese");
+ assert.equal(out[1].goals,2);
+ assert.equal(out[1].shots,5);
+ assert.equal(out[1].appearance,"Started");
+});
+test("Profile loading is compact and unverified fields are filtered instead of oversized placeholders",()=>{
+ const ui=fs.readFileSync("ui/part2.html","utf8"),
+   css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
+ assert.match(ui,/fe-profileShimmer/);
+ assert.match(ui,/fe-playerStatEmpty/);
+ assert.match(ui,/Missing values are omitted, not estimated/);
+ assert.match(ui,/\.filter\(x=>x\[1\]!=null&&String\(x\[1\]\)\.trim\(\)\)/);
+ assert.match(css,/\.fe-playerPhotoStage/);
+ assert.match(css,/background:none!important;border:0!important;box-shadow:none!important/);
+ assert.match(css,/object-fit:cover!important/);
 });
