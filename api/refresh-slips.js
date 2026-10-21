@@ -111,9 +111,19 @@ function qualifies(leg,now,statuses){
  const s=statuses.get(String(leg.gameId));
  return !(s?.done||s?.live||s?.cancelled);
 }
+function sgpsByLeague(items){
+ const groups=new Map();
+ for(const leg of items||[])if(isMajor(leg.league)){
+  if(!groups.has(leg.league))groups.set(leg.league,[]);
+  groups.get(leg.league).push(leg);
+ }
+ return [...groups].map(([league,picks])=>({league,...sgp(picks)}))
+  .filter(x=>x.status==="qualified")
+  .sort((a,b)=>(b.overallResearchRating||0)-(a.overallResearchRating||0)||a.league.localeCompare(b.league));
+}
 function rebuild(desk,now,statuses){
  const safe=(desk.eligibleSlipLegs||[]).filter(x=>qualifies(x,now,statuses));
- return{sgp:sgp(safe),acca:acca(safe),
+ return{sgp:sgp(safe),acca:acca(safe),sgpsByLeague:sgpsByLeague(safe),
   props:(desk.props||[]).filter(x=>Number.isFinite(Date.parse(x.kickoff))&&Date.parse(x.kickoff)>now+5*60000),
   eligible:safe.length,fixtures:new Set(safe.map(x=>x.gameId)).size};
 }
@@ -140,7 +150,7 @@ export default async function handler(req,res){
    verifiedScoreboards:check.verified,attemptedScoreboards:check.attempted,
    dataCoverage:check.verified.length?"Partial live status verified; unsourced fixtures screened by kickoff.":"Scoreboards unavailable; conservative kickoff cutoff applied.",
    refreshWindowMinutes:4,immutableBoardsPreserved:true,noNewDeployment:true,
-   sgp:result.sgp,acca:result.acca,props:result.props,candidatesRemaining:result.eligible,fixturesRemaining:result.fixtures});
+   sgp:result.sgp,acca:result.acca,sgpsByLeague:result.sgpsByLeague,props:result.props,candidatesRemaining:result.eligible,fixturesRemaining:result.fixtures});
  }catch{return res.status(503).json({error:"Refresh source temporarily unavailable; previously published slips remain unchanged."});}
 }
 export{qualifies,eventStatus,rebuild};

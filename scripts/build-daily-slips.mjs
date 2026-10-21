@@ -168,6 +168,16 @@ function acca(all){
   caution:"One leg per match; market types diversified. Weakest evidence rating "+Math.min(...legs.map(x=>x.rating))+"%. Accumulator risk compounds."}:
  {status:"pass",format:"Cross-game accumulator",legs:[],caution:"Fewer than four strong, diverse fixtures qualify."};
 }
+function sgpsByLeague(items){
+ const groups=new Map();
+ for(const leg of items||[])if(isMajor(leg.league)){
+  if(!groups.has(leg.league))groups.set(leg.league,[]);
+  groups.get(leg.league).push(leg);
+ }
+ return [...groups].map(([league,picks])=>({league,...sgp(picks)}))
+  .filter(x=>x.status==="qualified")
+  .sort((a,b)=>(b.overallResearchRating||0)-(a.overallResearchRating||0)||a.league.localeCompare(b.league));
+}
 function build({date,board,research,h2h,intel}){
  if(board?.date!==date||research?.date!==date)throw Error("Matching dated match board and research required");
  const map=new Map((research.fixtures||[]).map(f=>[String(f.id),f]));
@@ -195,7 +205,7 @@ function build({date,board,research,h2h,intel}){
    method:"10-match base plus weighted last-five, home/away checks, source-backed H2H, known availability, compatible markets",
    eligibleSlipLegs:all.filter(x=>isMajor(x.league)).sort((a,b)=>b.rating-a.rating),
    excludedSlipLeagues:["jpn.1","kor.1","ksa.1"],majorLeagueRule:true,
-   sgp:sgp(all),acca:acca(all),props,notes:[
+   sgp:sgp(all),acca:acca(all),sgpsByLeague:sgpsByLeague(all),props,notes:[
     "Selection percentages are evidence grades, not calibrated probabilities or a combined parlay chance.",
     "No sportsbook odds, payout, implied probabilities or EV. Market availability must be checked separately.",
     "No invented cards, corners, shots, fouls, player starts or other unsupported props.",
@@ -204,7 +214,7 @@ function build({date,board,research,h2h,intel}){
     "SGP and ACCA exclude Japan J1, Korea K1, Saudi Pro League, Czech and international friendlies."
    ]};
 }
-export{market,trend,compatible,sgp,acca,build,overallRating};
+export{market,trend,compatible,sgp,acca,build,overallRating,sgpsByLeague};
 const read=async file=>fs.readFile(file,"utf8").then(JSON.parse).catch(e=>{if(e.code==="ENOENT")return null;throw e});
 async function main(){
  const date=process.env.SLIP_DATE||dt();
