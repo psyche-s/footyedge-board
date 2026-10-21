@@ -174,23 +174,24 @@ test("Player profile displays requested ten-game columns, app-start distinction 
 });
 
 
-test("Last-ten UI keeps stacked opponent cards and a nine-stat legend without horizontal scrolling",()=>{
+test("Last-ten UI keeps the opponent sticky while nine metrics scroll horizontally",()=>{
  const ui=fs.readFileSync("ui/part2.html","utf8");
  const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
- const profile=ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("async function feOpenPlayerProfile("));
- assert.match(profile,/fe-playerAppearances/);
- assert.match(profile,/fe-playerAppearanceRow/);
- assert.match(profile,/fe-playerMetricGrid/);
- assert.match(profile,/fe-playerStatLegend/);
- assert.match(profile,/slice\(0,10\)/);
- assert.match(profile,/Last 10 appearances/);
- assert.doesNotMatch(profile,/fe-playerTableScroll/);
+ const markup=ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("async function feOpenPlayerProfile("));
+ assert.match(markup,/fe-playerTableScroll/);
+ assert.match(markup,/fe-playerLastTenTable/);
+ assert.match(markup,/fe-playerOpponent/);
+ assert.match(markup,/fe-playerStatLegend/);
+ assert.match(markup,/slice\(0,10\)/);
+ assert.match(markup,/Last 10 appearances/);
+ assert.doesNotMatch(markup,/fe-playerAppearanceRow/);
  for(const token of ["MIN","SH","SOT","FC","FW","YC","RC","G","A"])
-   assert.ok(profile.includes('"'+token+'"'),"Missing abbreviation "+token);
- assert.match(css,/\.fe-playerAppearanceRow/);
- assert.match(css,/\.fe-playerMetricGrid/);
- assert.match(css,/\.fe-playerStatLegend/);
- assert.match(css,/\.fe-playerPhotoStage/);
+   assert.ok(markup.includes('"'+token+'"'),"Missing abbreviation "+token);
+ assert.match(css,/\.fe-playerTableScroll\{/);
+ assert.match(css,/overflow-x:auto/);
+ assert.match(css,/\.fe-playerLastTenTable th:first-child\{/);
+ assert.match(css,/position:sticky;left:0/);
+ assert.match(css,/\.fe-playerPhotoStage\{/);
 });
 test("Club matches show ESPN's actual competition, not a generic Last 5 Matches label",()=>{
  const overview={gameLog:{displayName:"Last 5 Matches",
