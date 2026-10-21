@@ -17,7 +17,7 @@ const makeFixture=()=>({id:"123",last10:{home:Array.from({length:10},(_,i)=>({re
  away:Array.from({length:10},(_,i)=>({result:i%2?"L":"W",gf:1,ga:2}))}});
 const evidence=(source,market,stance)=>({fixture_date:"2026-10-21",match_id:"123",source,
  source_url:"https://"+({forebet:"forebet.com",sports_mole:"sportsmole.co.uk",
- football_whispers:"footballwhispers.com",sportskeeda:"sportskeeda.com"})[source]+"/sample",
+ football_whispers:"footballwhispers.com",sportskeeda:"sportskeeda.com",forza_football:"forzafootball.com"})[source]+"/sample",
  market_key:market,stance,captured_at:"2026-10-21T00:11:00Z",
  permission:"authorized",permission_reference:"signed-licence-123"});
 test("rights, domains, and exact fixture are required",()=>{
@@ -26,6 +26,7 @@ test("rights, domains, and exact fixture are required",()=>{
  assert.equal(authorised({...e,permission:"unknown"},"2026-10-21",known),false);
  assert.equal(authorised({...e,source_url:"https://fakeforebet.com"},"2026-10-21",known),false);
  assert.equal(authorised({...e,match_id:"99"},"2026-10-21",known),false);
+ assert.equal(authorised(evidence("forza_football","over_1_5","support"),"2026-10-21",known),true);
 });
 test("match selection is diverse, ordered, statistical and not calibrated",()=>{
  const g=game(),board={date:"2026-10-21",games:[g],top5:[],leagueTop5:{}};
@@ -33,7 +34,8 @@ test("match selection is diverse, ordered, statistical and not calibrated",()=>{
  const e=[evidence("forebet","home_goal","support"),evidence("forebet","home_goal","support"),
   evidence("sports_mole","home_goal","oppose"),evidence("sportskeeda","over_1_5","support")];
  const out=compareDraft(board,base,e);
- assert.equal(out.games[0].top3.length,3);
+ assert.ok(out.games[0].top3.length>=1&&out.games[0].top3.length<=2);
+ assert.equal(out.games[0].top3.filter(p=>["Goals","Team Goals","BTTS"].includes(p.category)).length<=1,true);
  assert.equal(out.games[0].top3.filter(p=>p.family==="totals").length,1);
  assert.equal(out.games[0].top3[0].label,out.games[0].top.label);
  assert.deepEqual(out.games[0].top3.map(p=>p.confidenceRating),out.games[0].top3.map(p=>p.confidenceRating).sort((a,b)=>b-a));

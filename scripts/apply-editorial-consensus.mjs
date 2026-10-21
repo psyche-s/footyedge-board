@@ -5,12 +5,14 @@
 import fs from "node:fs";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {takeDistinctTopPicks} from "./market-diversity.mjs";
 
 export const SOURCES = Object.freeze({
   forebet: "forebet.com",
   football_whispers: "footballwhispers.com",
   sportskeeda: "sportskeeda.com",
   sports_mole: "sportsmole.co.uk",
+  forza_football: "forzafootball.com",
 });
 const dayET=()=>Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
 export const normalizeKey=(label,g)=>{
@@ -121,13 +123,11 @@ export function compareDraft(board,research,evidence=[]){
   if(!options.length){insufficient++;continue}
   options.sort((a,b)=>(b.confidenceRating??-1)-(a.confidenceRating??-1)||
      b.editorialSupport-a.editorialSupport||a.label.localeCompare(b.label));
-  const used=new Set(),top=[];
-  for(const pick of options){
-   if(used.has(pick.family))continue;
-   used.add(pick.family);top.push(pick);
-   if(top.length===3)break;
-  }
-  if(top.length<3){insufficient++;continue} // don't drop a previously complete board
+  // Compare only independent football theses. A match-total + team-1+
+  // + BTTS cluster does not become three separate recommendations.
+  const top=takeDistinctTopPicks(options,3);
+  if(!top.length){insufficient++;continue}
+  if(top.length<3)insufficient++; // Shortlist may legitimately contain 1 or 2.
   g.top3=top;g.top=top[0];g.model={...(g.model||{}),top:top[0],top3:top,
     rankedCandidates:options,candidates:options};
   g.editorialConsensus={checkedSources:[...new Set(accepted.filter(x=>String(x.match_id)===String(g.id)).map(x=>x.source))],

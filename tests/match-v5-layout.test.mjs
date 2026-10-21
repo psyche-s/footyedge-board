@@ -8,14 +8,14 @@ const engine=fs.readFileSync("scripts/build-daily-slips.mjs","utf8");
 test("H2H and last five use the identical rotating SVG disclosure",()=>{
  assert.match(js,/function feArrow\(open\)/);
  assert.match(js,/feArrow\(expanded\)/);
- assert.match(js,/feArrow\(Boolean\(g.last5Expanded\)\)/);
+ assert.match(js,/feArrow\(exp\)/);
  assert.match(css,/\.fe-arrowIcon\.open\{transform:rotate\(180deg\)\}/);
  assert.match(css,/\.fe-down\{[^}]*border:0!important/);
 });
 test("Last five results have fixed and aligned score columns",()=>{
- assert.match(js,/class="fe-historyScore"/);
- assert.match(css,/\.fe-historyRow\{[^}]*grid-template-columns:/);
- assert.match(css,/\.fe-historyRow \.fe-historyScore\{/);
+ assert.match(js,/class="fe-recentScore/);
+ assert.match(css,/\.fe-recentTeams\{[^}]*grid-template-columns:/);
+ assert.match(css,/\.fe-recentScore\{/);
 });
 test("Team news lists each reported player separately",()=>{
  assert.match(js,/class="fe-newsPlayers"/);

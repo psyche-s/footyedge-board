@@ -48,7 +48,7 @@ test("archived and next-day match details load real H2H without touching frozen 
  assert.match(part1,/g\.matchDetailsRequested=false/);
  assert.doesNotMatch(src,/g\.matchH2H\.length===5\|\|S\.date!==etDate\(\)/);
  assert.match(src,/data\/h2h\//);
- assert.match(src,/Checking recorded previous meetings/);
+ assert.match(src,/Checking previous meetings/);
 });
 
 test("tomorrow's sourced H2H overlay is attached after draft and archive restore",()=>{
