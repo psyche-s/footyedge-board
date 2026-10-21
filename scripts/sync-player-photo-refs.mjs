@@ -21,7 +21,7 @@ const MAX_TEAMS=Math.max(1,Math.min(300,Number(process.env.PHOTO_MAX_TEAMS||120)
 const POOL_SIZE=8;
 const n=x=>String(x??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-const numeric=x=>/^\d{1,12}$/.test(String(x??""));
+const numeric=x=>/^[1-9]\d{0,11}$/.test(String(x??""));
 function day(offset){
  const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",
   year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
