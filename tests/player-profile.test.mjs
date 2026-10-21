@@ -174,24 +174,22 @@ test("Player profile displays requested ten-game columns, app-start distinction 
 });
 
 
-test("Last-ten UI includes a compact scrollable stats table and an abbreviation legend",()=>{
+test("Last-ten UI keeps stacked opponent cards and a nine-stat legend without horizontal scrolling",()=>{
  const ui=fs.readFileSync("ui/part2.html","utf8");
  const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
  const profile=ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("async function feOpenPlayerProfile("));
- assert.match(profile,/fe-playerLastTenTable/);
- assert.match(profile,/fe-playerTableScroll/);
+ assert.match(profile,/fe-playerAppearances/);
+ assert.match(profile,/fe-playerAppearanceRow/);
+ assert.match(profile,/fe-playerMetricGrid/);
  assert.match(profile,/fe-playerStatLegend/);
- assert.match(profile,/\[\["goals","G"\],\["assists","A"\],\["shotsOnTarget","SOT"\]/);
- assert.match(profile,/fe-playerAppearance/);
- assert.match(profile,/tableRows=last\.map\(r=>/);
- assert.doesNotMatch(profile,/fe-playerMatchMetric/);
- assert.match(css,/\.fe-playerAppearance/);
  assert.match(profile,/slice\(0,10\)/);
+ assert.match(profile,/Last 10 appearances/);
+ assert.doesNotMatch(profile,/fe-playerTableScroll/);
  for(const token of ["MIN","SH","SOT","FC","FW","YC","RC","G","A"])
-  assert.ok(profile.includes('"'+token+'"'),"Missing legend/table abbreviation "+token);
- assert.match(css,/\.fe-playerLastTenTable/);
+   assert.ok(profile.includes('"'+token+'"'),"Missing abbreviation "+token);
+ assert.match(css,/\.fe-playerAppearanceRow/);
+ assert.match(css,/\.fe-playerMetricGrid/);
  assert.match(css,/\.fe-playerStatLegend/);
- assert.match(css,/position:sticky/);
  assert.match(css,/\.fe-playerPhotoStage/);
 });
 test("Club matches show ESPN's actual competition, not a generic Last 5 Matches label",()=>{
