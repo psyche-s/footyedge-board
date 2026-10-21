@@ -940,3 +940,14 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Model/data impact: no model coefficients changed; experimental shadow output was unavailable and remained separate from official picks. UI impact: none. Tracking/history impact: all earlier frozen boards remain unchanged.
 - Deployment result: GitHub board commit `abf19c0` completed the archive and metric validations. Vercel production deployment `dpl_H6YEXb6yGzvXTbrKqazWksdpMrSi` reached `READY`, serves the locked October 20 archive from the public alias, and reported no alias or Hobby-limit error.
 
+
+## 2026-10-21 — Supported partial-set validation before the daily freeze
+**Status:** 🟡 Code/data ready · publication verification pending
+
+- Corrected the content audit and daily validator so a match may publish one or two independently supported selections when a third distinct market is not justified. The research output now labels that state `ready-partial-supported`; unsupported or redundant slots remain PASS instead of being filled to satisfy a count.
+- Updated the audit contract to recognize the owner-approved confidence-only renderer: finite research-strength grades may display as percentages, while a missing grade/probability must remain N/A. Odds, calibrated probability and EV stay separate and unavailable unless independently supported.
+- Model/data impact: no coefficient, weighting or calibration change. This is a fail-closed publication-quality correction and does not promote any unsupported market.
+- UI impact: none. No layout, styling, navigation, card, filter, logo, modal, page structure, component or visual-design file changed.
+- Tracking/history impact: no frozen board or historical selection was edited. The October 21 board remains pending its first write-once publication lock.
+- Deployment result: pending GitHub main commit, publication workflow, immutable archive verification and exact-commit Vercel production verification.
+

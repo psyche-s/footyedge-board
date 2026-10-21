@@ -10,7 +10,7 @@ const b=JSON.parse(fs.readFileSync(file,"utf8"));let errors=[],warnings=[],quote
 const badWords=/according to|football whispers|sports mole|sportskeeda|statz|espn|https?:/i;
 for(const g of b.games||[]){
  const t=g.top3||[];
- if(t.length!==0&&t.length!==3)errors.push(g.id+": expected three picks or explicit PASS");
+ if(t.length>3)errors.push(g.id+": more than three picks published");
  if(t.length===3){
   if(t.some((p,i)=>i>0&&Number.isFinite(p.score)&&Number.isFinite(t[i-1].score)&&p.score>t[i-1].score))
     errors.push(g.id+": Top 3 not sorted by descending confidence");
@@ -69,7 +69,9 @@ if(fs.existsSync("ui/part1.html")){
 }
 if(fs.existsSync("ui/part2.html")){
  const renderer=fs.readFileSync("ui/part2.html","utf8");
- if(!renderer.includes('if(probability==null)return "N/A";'))errors.push("UI must suppress uncalibrated confidence");
+ const showsResearchGrade=renderer.includes('Number.isFinite(Number(p.confidenceRating))&&!p.probabilityCalibrated')&&renderer.includes('Math.round(Number(p.confidenceRating))+"%"');
+ const suppressesMissing=renderer.includes('probability==null?"N/A"');
+ if(!showsResearchGrade||!suppressesMissing)errors.push("UI confidence-only rendering contract is incomplete");
 }
 for(const w of warnings)warn(w);
 console.log(JSON.stringify({date:boardDate,matches:b.games?.length||0,withNews,quotedPicks:quoted,warnings:warnings.length,errors},null,2));

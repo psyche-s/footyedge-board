@@ -157,7 +157,7 @@ async function main(){
     mutableUntil:DATE+' 00:30 America/Toronto',coverage:'full-board',source:'Audited research-only recovery from dated pre-match historical stats',
     top5:topRefs(ranked(games)),leagueTop5,games,
     scope:'mens-only-tracked-competitions',
-    publicationNotes:'Confidence-ranked evidence-based research from verified pre-match samples. Percentages are uncalibrated estimates; PASS when history is insufficient.',
+    publicationNotes:'Up to three confidence-ranked selections per match from verified pre-match samples. Percentages are uncalibrated research-strength estimates; unsupported or redundant slots remain PASS rather than being forced.',
     dataSources:{researchBase:R,asianData:'data/asia/'+DATE+'.json',pricing:'not used'}};
   // Validate the exact same top-to-Top3 and reference invariants enforced for
   // official boards, without mutating any existing lock.
@@ -169,7 +169,7 @@ async function main(){
     const checkedAt=new Date().toISOString();
     const insights={date:DATE,generatedAt:checkedAt,status:'ready-with-passes',fixtures:games.map(game=>({
       home:game.home,away:game.away,
-      reviewStatus:game.top3.length?'ready':'pass-insufficient-data',
+      reviewStatus:game.top3.length===3?'ready':game.top3.length?'ready-partial-supported':'pass-insufficient-data',
       facts:[],supportedMarkets:[],markets:[],teamNews:[],
       teamNewsReview:{status:'reviewed',checkedAt,conclusion:'No material verified late team-news claim was published; no player prop or availability adjustment was made.'},
       sources:[]

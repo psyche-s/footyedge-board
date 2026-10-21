@@ -78,10 +78,10 @@ async function main(){
       if(words(text)>30)fail("Fact too long (>30 words): "+item.home+" vs "+item.away+" :: "+text);
       const nk=norm(text);if(seen.has(nk))fail("Duplicate fact: "+text);seen.add(nk);
     }
-    if(item.reviewStatus&&!['ready','pass-insufficient-data'].includes(item.reviewStatus))fail("Fixture review is not ready: "+item.home+" vs "+item.away);
+    if(item.reviewStatus&&!['ready','ready-partial-supported','pass-insufficient-data'].includes(item.reviewStatus))fail("Fixture review is not ready: "+item.home+" vs "+item.away);
     if(item.reviewStatus==='pass-insufficient-data'&&((item.supportedMarkets||[]).length||(item.markets||[]).length))fail("PASS fixture cannot publish a supported market: "+item.home+" vs "+item.away);
     if(!['reviewed','blocked-provider-failure'].includes(item.teamNewsReview?.status))fail("Team-news review is incomplete: "+item.home+" vs "+item.away);
-    if(item.reviewStatus==='ready'&&item.teamNewsReview?.status!=="reviewed")fail("Published fixture lacks a completed team-news review: "+item.home+" vs "+item.away);
+    if(['ready','ready-partial-supported'].includes(item.reviewStatus)&&item.teamNewsReview?.status!=="reviewed")fail("Published fixture lacks a completed team-news review: "+item.home+" vs "+item.away);
     const sources=item.sources||[];
     for(const s of sources){
       if(!/^https:\/\//i.test(String(s.url||"")))fail("Invalid source URL for "+item.home+" vs "+item.away);

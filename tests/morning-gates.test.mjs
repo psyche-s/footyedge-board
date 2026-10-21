@@ -41,6 +41,13 @@ test("publication validator enforces history price and player-news gates",()=>{
   assert.match(validator,/Player prop lacks credible expected-start\/minutes evidence/)
 });
 
+test("publication validator permits an explicitly labelled partial supported set",()=>{
+  assert.match(validator,/ready-partial-supported/);
+  const evidenceBuilder=fs.readFileSync("scripts/build-evidence-only-board.mjs","utf8");
+  assert.match(evidenceBuilder,/ready-partial-supported/);
+  assert.match(evidenceBuilder,/unsupported or redundant slots remain PASS rather than being forced/)
+});
+
 test("mobile date bar keeps all five controls on one row",()=>{
   assert.match(p1,/grid-template-columns:36px minmax\(0,1fr\) auto 36px 36px!important/)
 });
