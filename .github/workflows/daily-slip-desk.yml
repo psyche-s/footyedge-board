@@ -25,12 +25,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Require the local midnight slot on scheduled runs
+      - name: Run editorial publication only during the local midnight slot, never on a code push
         id: window
         shell: bash
         run: |
           NOW="$(TZ=America/Toronto date +%H)"
-          if [[ "${{ github.event_name }}" == "schedule" && "$NOW" != "00" ]]; then
+          if [[ "${{ github.event_name }}" == "push" || "$NOW" != "00" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
           else
             echo "run=true" >> "$GITHUB_OUTPUT"
