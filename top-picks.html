@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#031008"><title>FootyEdge — Top Picks & Slip Builder</title>
+<style>
+:root{--bg:#031008;--green:#39eba0;--line:#1f583d;--muted:#a4c4b1;--text:#eafaf0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 25% 0,#0d3925,#031008 44%);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+.nav{max-width:1060px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px 20px 15px;border-bottom:1px solid #17442b}
+.logo{font-size:23px;font-weight:950;letter-spacing:-.9px}.logo span{color:var(--green)}
+.links{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.links a{font-weight:800;font-size:12px;color:#a0c0ad}.links a.active{color:var(--green)}
+.container{max-width:1060px;margin:auto;padding:24px 20px 50px}
+.headline{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.eyebrow{color:var(--green);font-weight:850;letter-spacing:.16em;text-transform:uppercase;font-size:10px}
+h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spacing:-1.5px}
+.subtitle{color:var(--muted);font-size:13px;line-height:1.65;max-width:620px;margin:0}
+.dateControl{display:inline-flex;align-items:center;gap:8px;background:#0a281a;border:1px solid #255b3f;border-radius:13px;padding:5px}
+.dateControl button{border:0;background:transparent;color:#cbead7;padding:10px 12px;border-radius:9px;font-weight:850;font-size:12px}
+.dateControl button.active{background:#21d991;color:#022219}
+.statusLine{min-height:30px;color:#9fbca8;font-size:12px;padding-top:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px}
+.slip{min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:19px;background:linear-gradient(155deg,rgba(8,40,24,.95),rgba(3,19,11,.96));box-shadow:0 10px 40px rgba(0,0,0,.22)}
+.slipHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:17px 18px;border-bottom:1px solid var(--line)}
+.slipEyebrow{display:block;font-size:10px;letter-spacing:.1em;color:#80bf99;font-weight:800}
+.slipHead h2{font-size:20px;margin:4px 0 0;font-weight:950;letter-spacing:-.4px}
+.slipBadge{border:1px solid #267456;background:#103f2a;color:#74ffc0;border-radius:100px;font-weight:900;padding:7px 9px;font-size:11px;white-space:nowrap}
+.slipBody{padding:9px 15px 13px;display:grid;gap:0}
+.leg{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 0;border-bottom:1px solid rgba(108,179,129,.15)}
+.leg:last-child{border-bottom:0}
+.legIndex{display:grid;place-items:center;width:27px;height:27px;background:#0f5335;border:1px solid #2d9160;color:#8affbd;border-radius:8px;font-size:11px;font-weight:900}
+.legCore{min-width:0}.legTitle{font-size:14px;line-height:1.35;font-weight:900;color:#f1fbf5;overflow-wrap:anywhere}
+.legMatch{font-size:11px;color:#9fbba6;line-height:1.4;margin-top:4px}
+.legReason{color:#719c80;font-size:10px;line-height:1.45;margin-top:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.legRating{font-size:14px;font-weight:900;color:#7affb1;border:1px solid #2b7950;background:#0b3824;padding:8px 6px;border-radius:10px}
+.slipFooter{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#08261a;border-top:1px solid #27593d;padding:14px 17px;font-size:12px;color:#afceb8}
+.slipFooter strong{color:#96fac0}
+.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:35px 0 13px}
+.sectionTitle h2{font-size:21px;margin:0}.sectionTitle span{font-size:11px;color:#9abda9}
+.marketList{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.marketItem{display:flex;gap:13px;border:1px solid #235338;border-radius:15px;padding:15px;background:#062218;min-width:0}
+.marketRank{color:#6ff5a7;border:1px solid #226342;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;flex:none;font-weight:900;font-size:12px}
+.marketInfo{flex:1;min-width:0}.marketInfo h3{font-size:14px;margin:1px 0 5px}.marketInfo .fixture{font-size:11px;color:#9abfad}.marketInfo p{font-size:11px;color:#87a995;line-height:1.5;margin:6px 0 0}
+.marketConfidence{color:#6df2a4;white-space:nowrap;font-size:15px;font-weight:900}
+.empty{border:1px dashed #285e3b;border-radius:13px;padding:22px;color:#a0b4a4;font-size:13px;line-height:1.65}
+.notice{border-top:1px solid #1b4d31;margin-top:26px;padding-top:14px;font-size:11px;color:#8baf97;line-height:1.7}
+.btnLink{color:#57e4a0;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:800px){.grid,.marketList{grid-template-columns:1fr}}
+@media(max-width:550px){.nav{padding:15px 13px}.links{gap:9px}.links a{font-size:10px}.logo{font-size:18px}.container{padding:21px 12px 42px}.headline{gap:12px}.dateControl{width:100%;justify-content:center}.dateControl button{flex:1}.slipHead{padding:14px}.slipHead h2{font-size:17px}.legTitle{font-size:13px}.slipBody{padding:8px 13px 11px}.marketItem{padding:12px}}
+</style></head><body>
+<nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
+<main class="container">
+  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. SGP and ACCA layouts are indicative research slips, not sportsbook-confirmed bet builders.</p></div>
+  <div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div></div>
+  <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div>
+  <section class="grid"><article class="slip" aria-labelledby="sgpTitle"><header class="slipHead"><div><span class="slipEyebrow">SAME GAME COMBINATION</span><h2 id="sgpTitle">Best SGP Research Slip</h2></div><span class="slipBadge">SAME MATCH</span></header><div class="slipBody" id="sgpSlip"><div class="empty">Loading selections…</div></div><div class="slipFooter"><span id="sgpCount">Verifying available markets</span><strong>No odds · Confidence only</strong></div></article>
+  <article class="slip" aria-labelledby="accaTitle"><header class="slipHead"><div><span class="slipEyebrow">CROSS-GAME COMBINATION</span><h2 id="accaTitle">Best ACCA Research Slip</h2></div><span class="slipBadge">MULTI-MATCH</span></header><div class="slipBody" id="accaSlip"><div class="empty">Loading selections…</div></div><div class="slipFooter"><span id="accaCount">Verifying available markets</span><strong>No odds · Confidence only</strong></div></article></section>
+  <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
+  <p class="notice">Confidence percentages describe the relative strength of research evidence, not calibrated hit probabilities. Legs can be correlated, and the ability to combine them is not verified against a sportsbook. Player shots, shots on target, fouls, cards and corners are shown only when individually supported by a dated data source and a real selection; otherwise they are omitted. <a class="btnLink" href="picks.html">See all fixture analysis ↗</a></p>
+</main>
+<script>
+const GH="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/";
+const localDate=()=>{const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return p.year+"-"+p.month+"-"+p.day};
+const nextDay=s=>{const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10)};
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+async function data(path){for(const url of [GH+path+"?t="+Date.now(),"/"+path+"?t="+Date.now()])try{const r=await fetch(url,{cache:"no-store"});if(r.ok)return await r.json()}catch{}return null}
+function conf(p){const n=Number(p?.confidenceRating??p?.score);return Number.isFinite(n)&&n>0&&n<=100?Math.round(n):null}
+function gamePicks(g){return(g.top3||g.model?.top3||[]).filter(p=>p?.label&&conf(p)!=null).sort((a,b)=>conf(b)-conf(a))}
+function eligible(g){return g&&g.league&&!/women|female/i.test(g.leagueName||"")&&g.home&&g.away}
+function matches(g){return String(g.home)+" vs "+String(g.away)}
+function kinds(p){return String(p.category||"").toLowerCase()}
+function isTotal(p){return /^(over|under) [0-9]+(?:\.[0-9]+)? goals$/i.test(p.label||"")}
+function differentMarkets(a,b){
+ if(a.label===b.label||a.category===b.category)return false;
+ if(isTotal(a)&&isTotal(b))return false;
+ if(a.category==="Match Result"&&b.category==="Match Result")return false;
+ return true;
+}
+function pick(g,p){return{g,p,rating:conf(p)}}
+function sgp(games){
+ const possible=[];
+ for(const g of games){
+   const all=gamePicks(g).filter(p=>conf(p)>=65),selections=[];
+   for(const p of all)if(selections.every(other=>differentMarkets(other,p)))selections.push(p);
+   if(selections.length>=2){
+     const legs=selections.slice(0,3).map(p=>pick(g,p));
+     possible.push({legs,score:Math.min(...legs.map(x=>x.rating))*3+legs.reduce((n,x)=>n+x.rating,0)/legs.length});
+   }
+ }
+ return possible.sort((a,b)=>b.score-a.score)[0]?.legs||[];
+}
+function acca(games){return games.map(g=>({g,p:gamePicks(g)[0]})).filter(x=>x.p&&conf(x.p)>=75).sort((a,b)=>conf(b.p)-conf(a.p)).slice(0,5).map(x=>pick(x.g,x.p))}
+function validProp(p){const category=kinds(p);return ["goals","team goals","btts","player","cards","corners","shots","fouls","shots on target","assists"].includes(category)}
+function props(games){
+ return games.flatMap(g=>gamePicks(g).filter(validProp).map(p=>pick(g,p))).sort((a,b)=>b.rating-a.rating).slice(0,10);
+}
+function legHTML(x,i){
+ const p=x.p,g=x.g;
+ return '<div class="leg"><div class="legIndex">'+(i+1)+'</div><div class="legCore"><div class="legTitle">'+esc(p.label)+'</div><div class="legMatch">'+esc(matches(g))+'</div>'+
+   '<div class="legReason">'+esc(p.reason||"Dated model evidence is available in the match details.")+'</div></div><span class="legRating">'+x.rating+'%</span></div>';
+}
+function printSlip(id,items,empty){
+ document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
+ document.getElementById(id==="sgpSlip"?"sgpCount":"accaCount").textContent=items.length?items.length+" researched legs":"PASS · Insufficient supported legs";
+}
+function printProps(items){
+ document.getElementById("props").innerHTML=items.length?items.map((x,i)=>'<article class="marketItem"><div class="marketRank">'+(i+1)+'</div><div class="marketInfo"><h3>'+esc(x.p.label)+'</h3>'+
+ '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(x.p.reason||"Statistically supported market selection.")+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
+ '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without sourced player/event statistics.</div>';
+}
+let selected=0;async function refresh(){
+ const date=selected?nextDay(localDate()):localDate();
+ const label=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(date+"T17:00:00Z"));
+ document.getElementById("boardStatus").textContent="Checking "+label+"…";
+ const archive=await data("data/boards/"+date+".json"),draft=archive?.date===date?null:await data("data/board-drafts/"+date+".json");
+ const board=archive?.date===date?archive:draft?.date===date?draft:null;
+ document.getElementById("todayBtn").classList.toggle("active",selected===0);
+ document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
+ const games=(board?.games||[]).filter(eligible);
+ document.getElementById("boardStatus").textContent=board?label+" · "+games.length+" matches · "+(board.immutable?"Frozen selections":"Pre-match preview"):"No published board for "+label;
+ printSlip("sgpSlip",sgp(games),"No fixture currently has two independent, confidence-qualified selections. PASS instead of forcing an SGP.");
+ printSlip("accaSlip",acca(games),"Too few supported matches to build a cross-game combination.");
+ printProps(props(games));
+}
+document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
+document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
+refresh();
+</script></body></html>
