@@ -9,7 +9,7 @@ import {pathToFileURL} from "node:url";
 const ROOT=process.cwd();
 const TORONTO="America/Toronto";
 const DIR=path.join(ROOT,"data","performance","slips");
-const today=()=>new Intl.DateTimeFormat("en-CA",{timeZone:TORONTO,year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date()).replaceAll("/","-");
+const today=()=>{const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:TORONTO,year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return p.year+"-"+p.month+"-"+p.day;};
 const read=p=>JSON.parse(fs.readFileSync(p,"utf8"));
 const exists=p=>fs.existsSync(p);
 const write=(p,value)=>{fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(value,null,2)+"\n")};
@@ -19,7 +19,7 @@ function dayOffset(date,n){const d=new Date(date+"T12:00:00Z");d.setUTCDate(d.ge
 function eventInfo(e){
   const cs=e?.competitions?.[0]?.competitors||[];
   const h=cs.find(x=>x.homeAway==="home"),a=cs.find(x=>x.homeAway==="away");
-  const number=v=>{const n=Number(typeof v==="object"&&v!==null?v.value??v.displayValue:v);return Number.isInteger(n)&&n>=0?n:null};
+  const number=v=>{const raw=typeof v==="object"&&v!==null?v.value??v.displayValue:v;if(raw===undefined||raw===null||raw==="")return null;const n=Number(raw);return Number.isInteger(n)&&n>=0?n:null};
   return {id:String(e.id||""),home:h?.team?.displayName||"",away:a?.team?.displayName||"",
     hs:number(h?.score),as:number(a?.score),
     completed:Boolean(e?.status?.type?.completed)||String(e?.status?.type?.state||"").toLowerCase()==="post"};
