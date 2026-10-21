@@ -193,7 +193,7 @@ function slipDate(legs){if(!legs.length)return "MATCHDAY";
  return new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"short",month:"short",day:"numeric"}).format(values[0]).toUpperCase();}
 function viewLeg(x){
  const parts=String(x.fixture||"").split(" vs ");
- return {p:{label:x.label,reason:x.why,evidence:x.evidence},g:{home:parts[0]||"Club",away:parts.slice(1).join(" vs ")||"Club",date:x.kickoff||null},
+ return {p:{label:x.label,reason:x.why,evidence:x.evidence},g:{home:parts[0]||"Club",away:parts.slice(1).join(" vs ")||"Club",date:x.kickoff||null,league:x.league},
    rating:Number(x.rating),risk:x.risk||[],evidence:x.evidence||""};
 }
 function legHTML(x,i){
@@ -206,11 +206,21 @@ function legHTML(x,i){
   (x.risk?.length?'<span class="legEvidence">Watch: '+esc(x.risk.join("; "))+'</span>':'')+'</details></div>';
 }
 
+function kickoffCountdown(items){
+ if(!items.length)return "PASS";
+ const times=items.map(x=>Date.parse(x.g.date||"")).filter(Number.isFinite);
+ if(!times.length)return "DATE TBC";
+ const delta=Math.min(...times)-Date.now();
+ if(delta<=0)return "KICKOFF PASSED";
+ const mins=Math.ceil(delta/60000);
+ return mins<60?"IN "+mins+"M":"IN "+Math.floor(mins/60)+"H "+String(mins%60).padStart(2,"0")+"M";
+}
 function printSlip(id,items,empty){
  document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
  const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
  document.getElementById(prefix+"Count").textContent=items.length?items.length+" RESEARCHED LEG"+(items.length===1?"":"S"):"PASS · NO QUALIFIED TICKET";
- document.getElementById(prefix+"LegBadge").textContent=items.length?items.length+" LEGS":"PASS";
+ document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
+ if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="jpn.1"?"THE J1 GOALS FLYER":items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
  document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
  document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
 }
