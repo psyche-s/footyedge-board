@@ -23,10 +23,11 @@ test("Team news lists each reported player separately",()=>{
  assert.match(css,/\.fe-newsPlayers li\{/);
 });
 test("Lineups use a pitch and sourced portraits, never a random athlete photo",()=>{
- assert.match(js,/function fePlayerPitch/);
- assert.match(js,/class="fe-pitch"/);
- assert.match(js,/p\.photoUrl/);
- assert.match(js,/Predicted XI, not confirmed/);
+ assert.match(js,/function feTeamPitchRows/);
+ assert.match(js,/class="fe-sharedPitch"/);
+ assert.match(js,/class="fe-sharedHalf fe-half-/);
+ assert.match(js,/p\?\.photoUrl/);
+ assert.match(js,/PREDICTED · NOT CONFIRMED/);
  assert.match(js,/data-refresh-match/);
  assert.match(css,/\.fe-fieldAvatar\{/);
 });

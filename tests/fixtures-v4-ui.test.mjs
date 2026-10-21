@@ -49,7 +49,7 @@ test("Top picks separate page has research SGP, ACCA and top 10 evidence-gated m
 });
 test("Lineups and projections respect source and uncertainty restrictions",()=>{
  assert.match(logic,/data\/team-intelligence\//);
- assert.match(logic,/confirmed\?'CONFIRMED':'PREDICTED'/);
+ assert.match(logic,/PREDICTED · NOT CONFIRMED/);
  assert.match(logic,/function feExperimentalProjection/);
  assert.match(logic,/function feProjectionsPanel/);
  assert.match(logic,/from both teams’ last 10 completed matches/);

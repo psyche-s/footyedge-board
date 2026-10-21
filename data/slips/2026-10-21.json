@@ -638,57 +638,10 @@
   ],
   "majorLeagueRule": true,
   "sgp": {
-    "status": "qualified",
-    "format": "Best same-game parlay",
-    "legs": [
-      {
-        "gameId": "401915391",
-        "fixture": "Sporting CP vs LASK Linz",
-        "league": "uefa.champions",
-        "kickoff": "2026-10-21T19:00Z",
-        "label": "Over 1.5 Goals",
-        "category": "Goals",
-        "family": "total",
-        "rating": 93,
-        "why": "Sporting CP have finished with at least two total goals in 10 of their last 10 matches, while LASK Linz have done so in 9 of 10.",
-        "evidence": "10/10 of Sporting CP's matches and 9/10 of LASK Linz's matches matched the researched angle. In 3/3 verified H2H results it occurred.",
-        "source": "Published FootyEdge match pick · dated last-10 results",
-        "sample": {
-          "home": 10,
-          "away": 10
-        },
-        "h2h": {
-          "checked": 3,
-          "supported": 3
-        },
-        "lineupStatus": "predicted-not-confirmed",
-        "risk": []
-      },
-      {
-        "gameId": "401915391",
-        "fixture": "Sporting CP vs LASK Linz",
-        "league": "uefa.champions",
-        "kickoff": "2026-10-21T19:00Z",
-        "label": "Sporting CP 1+ Goal",
-        "category": "Team Goals",
-        "family": "team-goal",
-        "rating": 87,
-        "why": "Sporting CP have scored in 10 of their last 10 matches, and LASK Linz have conceded in 8 of 10.",
-        "evidence": "10/10 of Sporting CP's matches and 8/10 of LASK Linz's matches matched the researched angle. In 2/3 verified H2H results it occurred.",
-        "source": "Published FootyEdge match pick · dated last-10 results",
-        "sample": {
-          "home": 10,
-          "away": 10
-        },
-        "h2h": {
-          "checked": 3,
-          "supported": 2
-        },
-        "lineupStatus": "predicted-not-confirmed",
-        "risk": []
-      }
-    ],
-    "caution": "Two strong, compatible legs qualified. A third leg was not forced; recheck starting XIs and exact market availability."
+    "status": "pass",
+    "format": "Same-game parlay",
+    "legs": [],
+    "caution": "No statistically distinct same-game market pairing qualifies for the October 21 major-league slate. Team 1+ goals plus Over 1.5 total goals (and mirrored BTTS legs) are not eligible."
   },
   "acca": {
     "status": "qualified",
@@ -1034,5 +987,11 @@
     "Fewer supported legs are better than artificially lengthening a ticket.",
     "Review official XI, suspensions and late injury news before using a selection.",
     "SGP and ACCA exclude Japan J1, Korea K1, Saudi Pro League, Czech and international friendlies."
-  ]
+  ],
+  "sgpsByLeague": [],
+  "slipRevision": {
+    "at": "2026-10-21T05:15:00Z",
+    "reason": "Explicit owner-requested SGP re-screen; original frozen fixture predictions and settlement not changed.",
+    "method": "Reject duplicate goal/BTTS exposure and any combined goal total + team 1+ leg."
+  }
 }
