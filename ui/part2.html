@@ -1338,6 +1338,49 @@ function feLineupsPanel(g){
 function feNewsPanel(g,newsHtml){
   return '<section class="fe-newsSection"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3><div class="modalTeamNews">'+newsHtml+'</div></section>';
 }
+
+function feExperimentalProjection(g){
+ const h=g.baseResearch?.last10?.home||[],a=g.baseResearch?.last10?.away||[];
+ const valid=x=>Number.isInteger(Number(x.gf))&&Number.isInteger(Number(x.ga))&&Number(x.gf)>=0&&Number(x.ga)>=0;
+ if(h.filter(valid).length<8||a.filter(valid).length<8)return null;
+ const mean=(arr,key)=>arr.slice(0,10).reduce((n,x)=>n+Number(x[key]),0)/Math.min(10,arr.length);
+ const cap=x=>Math.max(.25,Math.min(4.2,x));
+ const x=cap(.53*mean(h,'gf')+.47*mean(a,'ga'));
+ const y=cap(.53*mean(a,'gf')+.47*mean(h,'ga'));
+ const factorial=n=>{let r=1;for(let i=2;i<=n;i++)r*=i;return r};
+ const pmf=(lambda,n)=>Math.exp(-lambda)*lambda**n/factorial(n);
+ const rows=[];let home=0,draw=0,away=0,btts=0,over15=0,over25=0,over35=0,homeshut=0,awayshut=0;
+ for(let i=0;i<=12;i++)for(let j=0;j<=12;j++){
+   const p=pmf(x,i)*pmf(y,j);rows.push({i,j,p});
+   if(i>j)home+=p;else if(i<j)away+=p;else draw+=p;
+   if(i&&j)btts+=p;
+   if(i+j>=2)over15+=p;if(i+j>=3)over25+=p;if(i+j>=4)over35+=p;
+   if(j===0)homeshut+=p;if(i===0)awayshut+=p;
+ }
+ const total=home+draw+away;
+ rows.sort((a,b)=>b.p-a.p);
+ const pct=v=>Math.max(0,Math.min(100,Math.round(100*v/total)));
+ const chances=[pct(home),pct(draw),pct(away)],diff=100-chances.reduce((a,b)=>a+b,0);chances[1]+=diff;
+ return {x,y,chances,score:rows[0],btts:pct(btts),over15:pct(over15),over25:pct(over25),over35:pct(over35),
+   homeShut:pct(homeshut),awayShut:pct(awayshut),last10:true};
+}
+function feProjectionsPanel(g){
+ const z=feExperimentalProjection(g);
+ if(!z)return '<section class="fe-panel"><h3>PROJECTIONS</h3><p class="fe-panelNote">Not enough verified match history for an experimental projection. The confidence-ranked picks above are not replaced by fabricated percentages.</p></section>';
+ const [a,d,b]=z.chances;
+ const tile=(score,label)=>'<div class="fe-projTile"><strong>'+score+'%</strong><span>'+label+'</span></div>';
+ return '<section class="fe-panel fe-projections">'+
+   '<div class="fe-panelHeading"><h3>PROJECTIONS</h3><span class="fe-xiBadge">EXPERIMENTAL MODEL</span></div>'+
+   '<div class="fe-projGoals"><strong>'+z.x.toFixed(2)+' – '+z.y.toFixed(2)+'</strong><span>Projected goals · '+esc(g.home.name)+' / '+esc(g.away.name)+'</span></div>'+
+   '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+a+'%</div><div style="width:'+d+'%">'+d+'%</div><div style="width:'+b+'%">'+b+'%</div></div>'+
+   '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
+   '<div class="fe-scoreMode"><span>MOST LIKELY SCORE</span><strong>'+z.score.i+' – '+z.score.j+'</strong><span>'+Math.round(z.score.p*100)+'% estimated</span></div>'+
+   '<div class="fe-projGrid">'+tile(z.btts,'Both teams score')+tile(z.over15,'Over 1.5 goals')+
+      tile(z.over25,'Over 2.5 goals')+tile(z.over35,'Over 3.5 goals')+
+      tile(z.homeShut,esc(g.home.name)+' clean sheet')+tile(z.awayShut,esc(g.away.name)+' clean sheet')+'</div>'+
+   '<p class="fe-projDisclaimer">Independent Poisson projections from both teams’ last 10 completed matches, using attack and defensive goal averages. These are uncalibrated estimates, may not account for starting XI or injuries, and are separate from FootyEdge confidence ratings.</p></section>';
+}
+
 function feTableTab(g){
   const positions=["home","away"].map(side=>{
     const rank=Number(g.verifiedRanks?.[side]);
