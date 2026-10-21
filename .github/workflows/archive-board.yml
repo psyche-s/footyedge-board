@@ -8,8 +8,9 @@ on:
       - "scripts/build-evidence-only-board.mjs"
       - "scripts/sync-asia-research.mjs"
   schedule:
-    # 00:30 Toronto: 04:30 UTC during EDT, 05:30 UTC during EST.
-    - cron: "30,50 4,5 * * *"
+    # Start at 00:05 Toronto: 04:05 UTC in EDT / 05:05 UTC in EST.
+    # The local-time gate below rejects the UTC alternative that lands at 23:05.
+    - cron: "5 4,5 * * *"
   workflow_dispatch:
 
 permissions:
@@ -22,13 +23,13 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 16
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Toronto 00:30 publication window (tolerates GitHub scheduler delay)
+      - name: Toronto 00:05 publication window (tolerates GitHub scheduler delay)
         id: gate
         shell: bash
         run: |
@@ -38,19 +39,47 @@ jobs:
           MINUTES_SINCE_MIDNIGHT=$((10#$HOUR * 60 + 10#$MINUTE))
           RUN=false
           # GitHub scheduled runs may arrive hours late. Permit a delayed same-day
-          # recovery after 00:30 and before noon only while today's write-once
+          # recovery after 00:05 and before noon only while today's write-once
           # archive is absent. DST duplicate UTC runs at 23:30 local must NEVER
           # publish a previous-day board before its scheduled midnight freeze.
           # The EDT/EST retries therefore cannot create a duplicate official board.
-          if (( MINUTES_SINCE_MIDNIGHT >= 30 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
+          if (( MINUTES_SINCE_MIDNIGHT >= 5 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
             RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
-          echo "Official 00:30 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE; board=data/boards/$TODAY.json"
+          echo "Official 00:05 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE; board=data/boards/$TODAY.json"
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.run == 'true'
         with:
           node-version: "22"
+
+      - name: Validate whole-slip grading and ensure dated research exists
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FOOTYEDGE_ASIA_FEED_URL: ${{ secrets.FOOTYEDGE_ASIA_FEED_URL }}
+          FOOTYEDGE_ASIA_FEED_TOKEN: ${{ secrets.FOOTYEDGE_ASIA_FEED_TOKEN }}
+          FOOTYEDGE_ASIA_FEED_APPROVED: ${{ vars.FOOTYEDGE_ASIA_FEED_APPROVED }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/track-slip-performance.test.mjs
+          TODAY="$(TZ=America/Toronto date +%F)"
+          node scripts/sync-asia-research.mjs
+          if [[ ! -s "data/research-base-$TODAY.json" ]]; then
+            echo "No current-date research baseline; generating from real fixtures before picks."
+            FORCE_RESEARCH=1 RESEARCH_DATE="$TODAY" node scripts/build-research-base.mjs
+          fi
+          if [[ ! -s "data/research-base-$TODAY.json" ]]; then
+            echo "::error::Exact-date research missing. Cannot publish guesses."
+            exit 1
+          fi
+          if [[ -s "data/team-intelligence/$TODAY.json" ]]; then
+            jq -e --arg day "$TODAY" '.date==$day and (.fixtures|type=="array")' "data/team-intelligence/$TODAY.json" >/dev/null
+            echo "Dated predicted-lineup/news file available; predictions are not confirmed starting XIs."
+          else
+            echo "::warning::No verified dated team news/predicted XI file; player-dependent picks must PASS."
+          fi
 
       - name: Settle prior boards and ingest post-match learning before picks
         if: steps.gate.outputs.run == 'true'
@@ -59,6 +88,7 @@ jobs:
           FORCE_TRACK: '1'
         run: |
           node scripts/track-performance.mjs
+          node scripts/track-slip-performance.mjs
           node scripts/postmatch-learning.mjs
 
       - name: Generate daily Top 3 and Top 5 from source-verified confidence only
@@ -122,6 +152,8 @@ jobs:
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
           files=(data/performance data/postmortems)
+          if [[ -f "data/research-base-$TODAY.json" ]]; then files+=("data/research-base-$TODAY.json"); fi
+          if [[ -d data/asia ]]; then files+=("data/asia"); fi
           for file in "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json" "data/editorial-desk/$TODAY.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
           done
