@@ -944,7 +944,6 @@ function renderGames(){
     return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
       'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       feMatchHero(g)+
-      '<div class="fe-cardBottom"><span class="fe-cardBottomText">Open match details</span><span class="fe-cardArrow" aria-hidden="true">›</span></div>'+
     '</article>';
   }).join("");
 }
@@ -1273,6 +1272,9 @@ function verifiedPositionBadge(g,side){
   return Number.isInteger(rank)&&rank>=1&&rank<=40?`<span class="modalStanding" aria-label="League position ${rank}">#${rank}</span>`:"";
 }
 
+function feArrow(open){
+ return '<svg class="fe-arrowIcon'+(open?' open':'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+}
 function matchH2HHtml(g){
   const rows=Array.isArray(g.matchH2H)?g.matchH2H.slice(0,5):[],info=g.h2hSummary||{};
   const body=rows.length?rows.map(m=>{
@@ -1282,7 +1284,7 @@ function matchH2HHtml(g){
   }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking recorded previous meetings…</p>':'<p class="h2hEmpty">'+esc(info.note||"No verified previous meetings in the available historical records.")+'</p>');
   const count=rows.length,expanded=Boolean(g.h2hExpanded);
   return '<section class="h2hSection fe-accordion"><button type="button" class="h2hToggle fe-accordionButton" data-h2h-toggle aria-expanded="'+expanded+'">'+
-    '<span class="fe-accordionGlyph">'+feIcon("history")+'</span><span class="fe-accordionLabel"><strong>H2H</strong><small>Last '+(count||"5")+' meeting'+(count===1?"":"s")+(count?' recorded':' checked')+' · Tap to expand</small></span><span class="fe-down">'+(expanded?"⌃":"⌄")+'</span></button>'+
+    '<span class="fe-accordionGlyph">'+feIcon("history")+'</span><span class="fe-accordionLabel"><strong>H2H</strong><small>Last '+(count||"5")+' meeting'+(count===1?"":"s")+(count?' recorded':' checked')+' · Tap to expand</small></span><span class="fe-down">'+feArrow(expanded)+'</span></button>'+
     '<div class="h2hResults fe-accordionBody" '+(expanded?"":"hidden")+'>'+body+'</div></section>';
 }
 function feLastFive(g){
@@ -1296,12 +1298,12 @@ function feLastFive(g){
       const opponent=row.oppName||row.opponentName||"Opponent";
       const date=Number.isFinite(Date.parse(row.date||""))?feDay(row.date):"Date unavailable";
       return '<div class="fe-historyRow"><span class="fe-miniResult '+result+'">'+result+'</span>'+
-        '<span class="fe-historyOpp">'+esc(opponent)+'</span><strong>'+gf+'–'+ga+'</strong><time>'+esc(date)+'</time></div>';
+        '<span class="fe-historyOpp">'+esc(opponent)+'</span><strong class="fe-historyScore">'+gf+'–'+ga+'</strong><time>'+esc(date)+'</time></div>';
     }).join(""):'<p class="fe-empty">Last-five dated results are not available from the verified research feed.</p>';
     return '<div class="fe-historyTeam"><h4>'+teamImgTag(x.team,"fe-historyLogo")+esc(teamDisplayName(g,x.team))+'</h4>'+html+'</div>';
   }).join("");
   return '<section class="fe-accordion"><button type="button" class="fe-accordionButton" data-last5-toggle aria-expanded="'+Boolean(g.last5Expanded)+'">'+
-    '<span class="fe-accordionGlyph">'+feIcon("form")+'</span><span class="fe-accordionLabel"><strong>LAST 5 GAMES</strong><small>Recent verified form for both teams · Tap to expand</small></span><span class="fe-down">'+(g.last5Expanded?'⌃':'⌄')+'</span></button>'+
+    '<span class="fe-accordionGlyph">'+feIcon("form")+'</span><span class="fe-accordionLabel"><strong>LAST 5 GAMES</strong><small>Recent verified form for both teams · Tap to expand</small></span><span class="fe-down">'+feArrow(Boolean(g.last5Expanded))+'</span></button>'+
     '<div class="fe-accordionBody" '+(g.last5Expanded?'':'hidden')+'><div class="fe-historyGrid">'+grouped+'</div></div></section>';
 }
 function feStatsTab(g){
@@ -1325,7 +1327,7 @@ function feOfficialNewsHTML(g){
  if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return null;
  const side=(x,t)=>{
    const out=Array.isArray(x?.out)?x.out.slice(0,8):[],doubt=Array.isArray(x?.doubtful)?x.doubtful.slice(0,6):[],reports=Array.isArray(x?.injuryReports)?x.injuryReports.slice(0,6):[];
-   const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><p class="fe-availabilityText">'+arr.map(esc).join(' · ')+'</p>':'';
+   const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><ul class="fe-newsPlayers">'+arr.map(person=>'<li>'+esc(person)+'</li>').join('')+'</ul>':'';
    return '<section class="teamNewsCard fe-sourceNews"><div class="teamNewsHead">'+teamImgTag(t,"newsTeamLogo")+
      '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+
      (out.length+doubt.length+reports.length?item(out,'REPORTED OUT / SUSPENDED','out')+
@@ -1384,10 +1386,10 @@ function feProjectionsPanel(g){
  const tile=(score,label)=>'<div class="fe-projTile"><strong>'+score+'%</strong><span>'+label+'</span></div>';
  return '<section class="fe-panel fe-projections">'+
    '<div class="fe-panelHeading"><h3>PROJECTIONS</h3><span class="fe-xiBadge">EXPERIMENTAL MODEL</span></div>'+
-   '<div class="fe-projGoals"><strong>'+z.x.toFixed(2)+' – '+z.y.toFixed(2)+'</strong><span>Projected goals · '+esc(g.home.name)+' / '+esc(g.away.name)+'</span></div>'+
+   '<div class="fe-projGoals"><span>PROJECTED GOALS</span><strong>'+z.x.toFixed(2)+' <small>–</small> '+z.y.toFixed(2)+'</strong><div class="fe-goalTeams">'+esc(g.home.name)+' <span>/</span> '+esc(g.away.name)+'</div></div>'+
    '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+a+'%</div><div style="width:'+d+'%">'+d+'%</div><div style="width:'+b+'%">'+b+'%</div></div>'+
    '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
-   '<div class="fe-scoreMode"><span>MOST LIKELY SCORE</span><strong>'+z.score.i+' – '+z.score.j+'</strong><span>'+Math.round(z.score.p*100)+'% estimated</span></div>'+
+   '<div class="fe-scoreMode"><span>MOST LIKELY SCORE</span><strong>'+z.score.i+' – '+z.score.j+'</strong><em>'+Math.round(z.score.p*100)+'% estimated</em></div>'+
    '<div class="fe-projGrid">'+tile(z.btts,'Both teams score')+tile(z.over15,'Over 1.5 goals')+
       tile(z.over25,'Over 2.5 goals')+tile(z.over35,'Over 3.5 goals')+
       tile(z.homeShut,esc(g.home.name)+' clean sheet')+tile(z.awayShut,esc(g.away.name)+' clean sheet')+'</div>'+
