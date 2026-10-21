@@ -6,7 +6,11 @@ import {validateBoard} from './validate-published-boards.mjs';
 // sportsbook quota outage. No sportsbook odds, EV, or forward win probability
 // is estimated here. Historical trend percentages are not forecast probabilities.
 const timeParts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
-const DATE=timeParts.year+'-'+timeParts.month+'-'+timeParts.day;
+const TODAY=timeParts.year+'-'+timeParts.month+'-'+timeParts.day;
+const DATE=process.env.PREVIEW_DATE||TODAY;
+const next=new Date(TODAY+'T12:00:00Z');next.setUTCDate(next.getUTCDate()+1);
+if(DATE!==TODAY&&DATE!==next.toISOString().slice(0,10))throw Error('Can only preview tomorrow or prepare today');
+
 const OUT=path.join('data','board-drafts',DATE+'.json');
 const LOCK=path.join('data','boards',DATE+'.json');
 const R=path.join('data','research-base-'+DATE+'.json');
@@ -161,7 +165,7 @@ async function main(){
   validateBoard(locked,{requireFull:true});
   await fs.mkdir(path.dirname(OUT),{recursive:true});
   await fs.writeFile(OUT,JSON.stringify(board,null,2)+'\n');
-  if(OWNER_RESEARCH_PICKS){
+  if(OWNER_RESEARCH_PICKS&&DATE===TODAY){
     const checkedAt=new Date().toISOString();
     const insights={date:DATE,generatedAt:checkedAt,status:'ready-with-passes',fixtures:games.map(game=>({
       home:game.home,away:game.away,

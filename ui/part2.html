@@ -811,7 +811,7 @@ function topPicks(){
       return g?{...g,archiveTopPick:restoreArchivedPick(x.pick)}:null;
     }).filter(g=>g&&(S.league==="all"||g.league===S.league)&&statusOK(g));
   }
-  return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&g.model.top.score>=80&&statusOK(g)).sort((a,b)=>Number(b.model.top.confidenceRating??b.model.top.score)-Number(a.model.top.confidenceRating??a.model.top.score)).slice(0,5)
+  return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&g.model?.top&&Number(g.model.top.confidenceRating??g.model.top.score)>=80&&statusOK(g)).sort((a,b)=>Number(b.model.top.confidenceRating??b.model.top.score)-Number(a.model.top.confidenceRating??a.model.top.score)).slice(0,5)
 }
 function emptyBoardMessage(){
   return FootyEdgeAvailability.message(S.games.length?{kind:"games",date:S.date,count:S.games.length}:S.availability,S.date===etDate(),!!S.archive);
