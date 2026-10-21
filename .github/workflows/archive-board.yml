@@ -61,6 +61,16 @@ jobs:
         shell: bash
         run: |
           node scripts/refresh-fixture-horizon.mjs || echo "::warning::Fixture horizon source unavailable; retained last good."
+          TODAY="$(TZ=America/Toronto date +%F)"
+          KEY="${TODAY//-/}"
+          mkdir -p "data/$TODAY"
+          if curl --fail --silent --show-error --max-time 16 --retry 1               "https://footyedge-board.vercel.app/api/espn-scoreboard?dates=$KEY&limit=1000"               -o "/tmp/original-scoreboard-$KEY.json" &&
+             jq -e '.events | type=="array"' "/tmp/original-scoreboard-$KEY.json" >/dev/null; then
+            cp "/tmp/original-scoreboard-$KEY.json" "data/$TODAY/scoreboard.json"
+            echo "Captured dated scoreboard. Scheduled events are not treated as completed."
+          else
+            echo "::warning::Scoreboard unavailable; preserve last good snapshot and grade only verified finals."
+          fi
           node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs tests/source-registry.test.mjs
           node scripts/sync-football-data-hub.mjs || echo "::warning::CC0 history unavailable; preserving existing verified archive."
           node scripts/audit-data-sources.mjs || echo "::warning::Source freshness audit unavailable."
@@ -255,7 +265,15 @@ jobs:
           TODAY="$(TZ=America/Toronto date +%F)"
           TOMORROW="$(TZ=America/Toronto date -d "$TODAY +1 day" +%F)"
           node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
-          node scripts/sync-player-photo-refs.mjs || echo "::warning::No new player portrait refs; retained old verified references."
+          if node scripts/sync-player-photo-refs.mjs; then
+            if ! node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs; then
+              echo "::warning::Photo validation failed; restore checked references."
+              git restore -- data/player-photo-refs.json assets/player-photo-registry.js
+            fi
+          else
+            echo "::warning::Photo source unavailable; preserve previously checked references."
+            git restore -- data/player-photo-refs.json assets/player-photo-registry.js
+          fi
           # Dated forward research remains a preview; cannot publish tomorrow's locked board.
           if [[ ! -e "data/boards/$TOMORROW.json" ]]; then
             FORCE_RESEARCH=1 RESEARCH_DATE="$TOMORROW" node scripts/build-research-base.mjs || echo "::warning::Tomorrow's research unavailable."
