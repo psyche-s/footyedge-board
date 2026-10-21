@@ -28,12 +28,11 @@
       const link=add(box,"a","feBetLink","Add to Your Bet Slip ↗");
       link.href=offer.url;link.target="_blank";link.rel="noopener noreferrer nofollow";
     }
-    add(box,"p","feBetNote","Odds from the "+offer.observedAtToronto+" screenshot; not live. "+offer.disclaimer+" Overall confidence is a simple independence-based estimate, not a calibrated probability.");
     document.getElementById("sgpTitle").textContent="SPORTING × LASK SGP";
     document.getElementById("sgpMeta").textContent="BET365 · UCL · WED OCT 21";
     document.getElementById("sgpLegBadge").textContent="4 LEGS";
     document.getElementById("sgpIntro").textContent="Sporting CP vs LASK Linz · Wed Oct 21 · 3:00 PM ET";
     document.getElementById("sgpCount").textContent="4 LEGS · "+s.combinedConfidencePercent+"% INDICATIVE CONFIDENCE";
-    const caution=document.getElementById("sgpCaution");caution.hidden=false;caution.textContent=s.caution;
+    const caution=document.getElementById("sgpCaution");caution.textContent="";caution.hidden=true;
   };
 })();
