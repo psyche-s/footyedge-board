@@ -152,10 +152,21 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .fe-sgpPicker select{flex:0 1 240px;min-width:170px;max-width:100%;min-height:40px;border-radius:10px;background:#113321;border:1px solid #4b8965;padding:0 12px;color:#effff3;font-size:13px;font-weight:750}
 .fe-sgpPicker span{flex:1;min-width:190px;font-size:11px;line-height:1.5;color:#a7c5b1}
 @media(max-width:540px){.fe-sgpPicker{padding:11px;gap:6px}.fe-sgpPicker label{flex-basis:100%}.fe-sgpPicker select{flex:1;min-width:0}.fe-sgpPicker span{flex-basis:100%}}
+
+.ticketPaper .fe365-odds{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#e2f1e4;border-radius:12px;padding:12px;margin-bottom:12px;border:1px solid #b9d3c2}
+.ticketPaper .fe365-odds small{display:block;color:#52745b;font-size:10px;font-weight:850}
+.ticketPaper .fe365-odds strong{display:block;font-size:27px;font-weight:950;color:#107747}
+.ticketPaper .fe365-example{grid-column:1/-1;border-top:1px solid #c2d9c2;padding-top:8px;font-size:11px;color:#4c6551;line-height:1.5}
+.ticketPaper .fe365-leg{padding:15px 0;border-bottom:1px solid #d7d0c4}
+.ticketPaper .fe365-leg h3{font-size:16px;color:#171e18;margin:0;line-height:1.4}
+.ticketPaper .fe365-leg small{font-size:10px;color:#888078}
+.ticketPaper .fe365-leg p{font-size:11px;color:#556157;line-height:1.6;margin:7px 0 0}
+.ticketPaper .fe365-link{display:flex;justify-content:center;align-items:center;text-align:center;background:#138352;color:#fff;border-radius:10px;padding:12px;min-height:45px;font-size:12px;font-weight:900;margin-top:13px;text-decoration:none}
+.ticketPaper .fe365-note{font-size:10px;color:#817b70;line-height:1.55;margin:11px 0 0}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
-  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. SGP and ACCA layouts are indicative research slips, not sportsbook-confirmed bet builders.</p></div>
+  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. Featured SGP uses a dated bet365 slip; other combinations are research-only.</p></div>
   <div class="fe-slipActions"><div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh latest data</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
   <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">BEST SGP FROM</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Only compatible, independently supported legs qualify.</span></section>
@@ -236,6 +247,382 @@ function legHTML(x,i){
   '<details class="legWhy"><summary>Why this leg</summary><p>'+esc(p.reason||"See the full researched match analysis.")+'</p>'+
   (x.evidence?'<span class="legEvidence">'+esc(x.evidence)+'</span>':'')+
   (x.risk?.length?'<span class="legEvidence">Watch: '+esc(x.risk.join("; "))+'</span>':'')+'</details></div>';
+}
+
+
+function renderBet365(result){
+ const b=result.bookmakerOffer||{},legs=result.legs||[];
+ const odds='<div class="fe365-odds"><div><small>BET365 REGULAR</small><strong>'+esc(b.displayOdds)+'</strong></div><div><small>'+esc(b.profitBoostPercent)+'% PROFIT BOOST</small><strong>'+esc(b.boostedOdds)+'</strong></div><div class="fe365-example">
+ if(!items.length)return "PASS";
+ const times=items.map(x=>Date.parse(x.g.date||"")).filter(Number.isFinite);
+ if(!times.length)return "DATE TBC";
+ const delta=Math.min(...times)-Date.now();
+ if(delta<=0)return "KICKOFF PASSED";
+ const mins=Math.ceil(delta/60000);
+ return mins<60?"IN "+mins+"M":"IN "+Math.floor(mins/60)+"H "+String(mins%60).padStart(2,"0")+"M";
+}
+function printSlip(id,items,empty){
+ document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
+ const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
+ const researchScore=items.length?Math.max(0,Math.round(Math.min(...items.map(x=>x.rating))-3*(items.length-1)-(isSgp?2:0))):null;
+ document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":items.length+" LEGS · ODDS UNVERIFIED";
+ document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
+ if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
+ document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
+ document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
+}
+
+function printProps(items){
+ document.getElementById("props").innerHTML=items.length?items.map((x,i)=>'<article class="marketItem"><div class="marketRank">'+(i+1)+'</div><div class="marketInfo"><h3>'+esc(x.p.label)+'</h3>'+
+ '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(x.p.reason||"Statistically supported market selection.")+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
+ '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without verified player/event statistics.</div>';
+}
+let selected=0;
+const chosenDate=()=>selected?nextDay(localDate()):localDate();
+const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
+const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
+let selectedSgpLeague="all";
+function sgpForLeague(desk){
+ if(selectedSgpLeague==="all")return desk.sgp;
+ return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
+   {status:"pass",legs:[],caution:"No supported, nonredundant same-game parlay qualifies for "+(FE_MAJOR_NAMES[selectedSgpLeague]||selectedSgpLeague)+". A weak or duplicated leg will not be forced."};
+}
+function fillSgpSelect(){
+ const select=document.getElementById("sgpCompetitionSelect");
+ const names=Object.entries(FE_MAJOR_NAMES).sort((a,b)=>a[1].localeCompare(b[1]));
+ select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
+ select.value=selectedSgpLeague;
+}
+let displayedDesk=null;
+function renderCompetitionSlips(list){
+ const target=document.getElementById("sgpLeagueList");
+ const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
+ target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
+  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+x.legs.length+' LEGS</strong></div>'+
+  '<h3>'+esc(FE_MAJOR_NAMES[x.league]||x.league)+' FLYER</h3>'+
+  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.fixture)+'</small></div><span>'+l.rating+'%</span></div>').join("")+
+  '<footer>Overall research rating · '+esc(x.overallResearchRating??"—")+'% · Not a combined win probability</footer></article>').join(""):
+  '<div class="fe-sgpEmpty">No additional league-specific SGP currently clears the multi-market research screen. Press Refresh for the latest active-fixture shortlist.</div>';
+}
+function renderDesk(desk,date,live=false){
+ const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ if(!valid){
+  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
+  printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
+  printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
+  displayedDesk=null;
+  printProps([]);renderCompetitionSlips([]);
+  for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
+  return;
+ }
+ document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
+ (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
+  (desk.schema==="footyedge-editorial-desk-v1"?"Independently reviewed match picks · odds unverified":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+ function drawSlip(result,id,empty){
+  if(id==='sgpSlip'&&result?.status==='qualified'&&result.bookmakerOffer){renderBet365(result);return;}
+  const isSgp=id==="sgpSlip";
+  const eligible=result?.status==="qualified"&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
+  const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
+  printSlip(id,legs,result?.caution||empty);
+  const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
+  caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
+ }
+ displayedDesk=desk;
+ drawSlip(sgpForLeague(desk),"sgpSlip","No independent same-game combination qualifies for this league.");
+ drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
+ renderCompetitionSlips(desk.sgpsByLeague);
+ printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
+}
+async function refresh(){
+ const date=chosenDate();document.getElementById("boardStatus").textContent="Checking "+chosenLabel(date)+"…";
+ document.getElementById("todayBtn").classList.toggle("active",selected===0);
+ document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
+ document.getElementById("refreshStatus").textContent="";
+ const reviewed=await data("data/editorial-desk/"+date+".json");
+ const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
+ renderDesk(desk,date);
+}
+async function refreshLive(){
+ const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
+ const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
+ if(date>=localDate()){
+  note.textContent="Today's and upcoming picks use the dated editorial review only. No model-generated slip or unverified live odds will replace the published research.";
+  return;
+ }
+ if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for updated match information.";return;}
+ button.disabled=true;button.classList.add("busy");
+ note.textContent="Checking latest match status; excluding started or finished fixtures and rebuilding slip selections…";
+ try{
+  const r=await fetch("/api/refresh-slips?date="+encodeURIComponent(date),{cache:"default"});
+  const result=await r.json();
+  if(!r.ok||result.schema!=="footyedge-live-slip-check-v1"||result.date!==date)throw Error(result.error||"Refresh unavailable");
+  sessionStorage.setItem(key,String(Date.now()));
+  renderDesk(result,date,true);
+  note.textContent="Checked "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"}).format(new Date(result.checkedAt))+
+   " ET. "+result.dataCoverage+" Check official lineups in Fixtures. Historical boards unchanged.";
+ }catch(e){note.textContent=String(e?.message||e)+". Published research slips remain available.";}
+ finally{button.disabled=false;button.classList.remove("busy");}
+}
+
+fillSgpSelect();
+document.getElementById("sgpCompetitionSelect").onchange=e=>{
+ selectedSgpLeague=e.target.value;
+ if(displayedDesk)renderDesk(displayedDesk,chosenDate(),displayedDesk.schema==="footyedge-live-slip-check-v1");
+};
+document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
+document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
+document.getElementById("refreshBtn").onclick=refreshLive;
+refresh();
+</script></body></html>+esc(Number(b.stakeExampleCAD).toFixed(2))+' CAD stake → <b>
+ if(!items.length)return "PASS";
+ const times=items.map(x=>Date.parse(x.g.date||"")).filter(Number.isFinite);
+ if(!times.length)return "DATE TBC";
+ const delta=Math.min(...times)-Date.now();
+ if(delta<=0)return "KICKOFF PASSED";
+ const mins=Math.ceil(delta/60000);
+ return mins<60?"IN "+mins+"M":"IN "+Math.floor(mins/60)+"H "+String(mins%60).padStart(2,"0")+"M";
+}
+function printSlip(id,items,empty){
+ document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
+ const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
+ const researchScore=items.length?Math.max(0,Math.round(Math.min(...items.map(x=>x.rating))-3*(items.length-1)-(isSgp?2:0))):null;
+ document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":items.length+" LEGS · ODDS UNVERIFIED";
+ document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
+ if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
+ document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
+ document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
+}
+
+function printProps(items){
+ document.getElementById("props").innerHTML=items.length?items.map((x,i)=>'<article class="marketItem"><div class="marketRank">'+(i+1)+'</div><div class="marketInfo"><h3>'+esc(x.p.label)+'</h3>'+
+ '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(x.p.reason||"Statistically supported market selection.")+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
+ '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without verified player/event statistics.</div>';
+}
+let selected=0;
+const chosenDate=()=>selected?nextDay(localDate()):localDate();
+const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
+const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
+let selectedSgpLeague="all";
+function sgpForLeague(desk){
+ if(selectedSgpLeague==="all")return desk.sgp;
+ return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
+   {status:"pass",legs:[],caution:"No supported, nonredundant same-game parlay qualifies for "+(FE_MAJOR_NAMES[selectedSgpLeague]||selectedSgpLeague)+". A weak or duplicated leg will not be forced."};
+}
+function fillSgpSelect(){
+ const select=document.getElementById("sgpCompetitionSelect");
+ const names=Object.entries(FE_MAJOR_NAMES).sort((a,b)=>a[1].localeCompare(b[1]));
+ select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
+ select.value=selectedSgpLeague;
+}
+let displayedDesk=null;
+function renderCompetitionSlips(list){
+ const target=document.getElementById("sgpLeagueList");
+ const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
+ target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
+  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+x.legs.length+' LEGS</strong></div>'+
+  '<h3>'+esc(FE_MAJOR_NAMES[x.league]||x.league)+' FLYER</h3>'+
+  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.fixture)+'</small></div><span>'+l.rating+'%</span></div>').join("")+
+  '<footer>Overall research rating · '+esc(x.overallResearchRating??"—")+'% · Not a combined win probability</footer></article>').join(""):
+  '<div class="fe-sgpEmpty">No additional league-specific SGP currently clears the multi-market research screen. Press Refresh for the latest active-fixture shortlist.</div>';
+}
+function renderDesk(desk,date,live=false){
+ const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ if(!valid){
+  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
+  printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
+  printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
+  displayedDesk=null;
+  printProps([]);renderCompetitionSlips([]);
+  for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
+  return;
+ }
+ document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
+ (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
+  (desk.schema==="footyedge-editorial-desk-v1"?"Independently reviewed match picks · odds unverified":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+ function drawSlip(result,id,empty){
+  const isSgp=id==="sgpSlip";
+  const eligible=result?.status==="qualified"&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
+  const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
+  printSlip(id,legs,result?.caution||empty);
+  const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
+  caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
+ }
+ displayedDesk=desk;
+ drawSlip(sgpForLeague(desk),"sgpSlip","No independent same-game combination qualifies for this league.");
+ drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
+ renderCompetitionSlips(desk.sgpsByLeague);
+ printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
+}
+async function refresh(){
+ const date=chosenDate();document.getElementById("boardStatus").textContent="Checking "+chosenLabel(date)+"…";
+ document.getElementById("todayBtn").classList.toggle("active",selected===0);
+ document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
+ document.getElementById("refreshStatus").textContent="";
+ const reviewed=await data("data/editorial-desk/"+date+".json");
+ const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
+ renderDesk(desk,date);
+}
+async function refreshLive(){
+ const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
+ const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
+ if(date>=localDate()){
+  note.textContent="Today's and upcoming picks use the dated editorial review only. No model-generated slip or unverified live odds will replace the published research.";
+  return;
+ }
+ if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for updated match information.";return;}
+ button.disabled=true;button.classList.add("busy");
+ note.textContent="Checking latest match status; excluding started or finished fixtures and rebuilding slip selections…";
+ try{
+  const r=await fetch("/api/refresh-slips?date="+encodeURIComponent(date),{cache:"default"});
+  const result=await r.json();
+  if(!r.ok||result.schema!=="footyedge-live-slip-check-v1"||result.date!==date)throw Error(result.error||"Refresh unavailable");
+  sessionStorage.setItem(key,String(Date.now()));
+  renderDesk(result,date,true);
+  note.textContent="Checked "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"}).format(new Date(result.checkedAt))+
+   " ET. "+result.dataCoverage+" Check official lineups in Fixtures. Historical boards unchanged.";
+ }catch(e){note.textContent=String(e?.message||e)+". Published research slips remain available.";}
+ finally{button.disabled=false;button.classList.remove("busy");}
+}
+
+fillSgpSelect();
+document.getElementById("sgpCompetitionSelect").onchange=e=>{
+ selectedSgpLeague=e.target.value;
+ if(displayedDesk)renderDesk(displayedDesk,chosenDate(),displayedDesk.schema==="footyedge-live-slip-check-v1");
+};
+document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
+document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
+document.getElementById("refreshBtn").onclick=refreshLive;
+refresh();
+</script></body></html>+esc(Number(b.returnExampleCAD).toFixed(2))+' potential return</b> (including 
+ if(!items.length)return "PASS";
+ const times=items.map(x=>Date.parse(x.g.date||"")).filter(Number.isFinite);
+ if(!times.length)return "DATE TBC";
+ const delta=Math.min(...times)-Date.now();
+ if(delta<=0)return "KICKOFF PASSED";
+ const mins=Math.ceil(delta/60000);
+ return mins<60?"IN "+mins+"M":"IN "+Math.floor(mins/60)+"H "+String(mins%60).padStart(2,"0")+"M";
+}
+function printSlip(id,items,empty){
+ document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
+ const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
+ const researchScore=items.length?Math.max(0,Math.round(Math.min(...items.map(x=>x.rating))-3*(items.length-1)-(isSgp?2:0))):null;
+ document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":items.length+" LEGS · ODDS UNVERIFIED";
+ document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
+ if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
+ document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
+ document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
+}
+
+function printProps(items){
+ document.getElementById("props").innerHTML=items.length?items.map((x,i)=>'<article class="marketItem"><div class="marketRank">'+(i+1)+'</div><div class="marketInfo"><h3>'+esc(x.p.label)+'</h3>'+
+ '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(x.p.reason||"Statistically supported market selection.")+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
+ '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without verified player/event statistics.</div>';
+}
+let selected=0;
+const chosenDate=()=>selected?nextDay(localDate()):localDate();
+const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
+const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
+let selectedSgpLeague="all";
+function sgpForLeague(desk){
+ if(selectedSgpLeague==="all")return desk.sgp;
+ return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
+   {status:"pass",legs:[],caution:"No supported, nonredundant same-game parlay qualifies for "+(FE_MAJOR_NAMES[selectedSgpLeague]||selectedSgpLeague)+". A weak or duplicated leg will not be forced."};
+}
+function fillSgpSelect(){
+ const select=document.getElementById("sgpCompetitionSelect");
+ const names=Object.entries(FE_MAJOR_NAMES).sort((a,b)=>a[1].localeCompare(b[1]));
+ select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
+ select.value=selectedSgpLeague;
+}
+let displayedDesk=null;
+function renderCompetitionSlips(list){
+ const target=document.getElementById("sgpLeagueList");
+ const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
+ target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
+  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+x.legs.length+' LEGS</strong></div>'+
+  '<h3>'+esc(FE_MAJOR_NAMES[x.league]||x.league)+' FLYER</h3>'+
+  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.fixture)+'</small></div><span>'+l.rating+'%</span></div>').join("")+
+  '<footer>Overall research rating · '+esc(x.overallResearchRating??"—")+'% · Not a combined win probability</footer></article>').join(""):
+  '<div class="fe-sgpEmpty">No additional league-specific SGP currently clears the multi-market research screen. Press Refresh for the latest active-fixture shortlist.</div>';
+}
+function renderDesk(desk,date,live=false){
+ const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ if(!valid){
+  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
+  printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
+  printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
+  displayedDesk=null;
+  printProps([]);renderCompetitionSlips([]);
+  for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
+  return;
+ }
+ document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
+ (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
+  (desk.schema==="footyedge-editorial-desk-v1"?"Independently reviewed match picks · odds unverified":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+ function drawSlip(result,id,empty){
+  const isSgp=id==="sgpSlip";
+  const eligible=result?.status==="qualified"&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
+  const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
+  printSlip(id,legs,result?.caution||empty);
+  const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
+  caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
+ }
+ displayedDesk=desk;
+ drawSlip(sgpForLeague(desk),"sgpSlip","No independent same-game combination qualifies for this league.");
+ drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
+ renderCompetitionSlips(desk.sgpsByLeague);
+ printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
+}
+async function refresh(){
+ const date=chosenDate();document.getElementById("boardStatus").textContent="Checking "+chosenLabel(date)+"…";
+ document.getElementById("todayBtn").classList.toggle("active",selected===0);
+ document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
+ document.getElementById("refreshStatus").textContent="";
+ const reviewed=await data("data/editorial-desk/"+date+".json");
+ const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
+ renderDesk(desk,date);
+}
+async function refreshLive(){
+ const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
+ const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
+ if(date>=localDate()){
+  note.textContent="Today's and upcoming picks use the dated editorial review only. No model-generated slip or unverified live odds will replace the published research.";
+  return;
+ }
+ if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for updated match information.";return;}
+ button.disabled=true;button.classList.add("busy");
+ note.textContent="Checking latest match status; excluding started or finished fixtures and rebuilding slip selections…";
+ try{
+  const r=await fetch("/api/refresh-slips?date="+encodeURIComponent(date),{cache:"default"});
+  const result=await r.json();
+  if(!r.ok||result.schema!=="footyedge-live-slip-check-v1"||result.date!==date)throw Error(result.error||"Refresh unavailable");
+  sessionStorage.setItem(key,String(Date.now()));
+  renderDesk(result,date,true);
+  note.textContent="Checked "+new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",hour:"numeric",minute:"2-digit"}).format(new Date(result.checkedAt))+
+   " ET. "+result.dataCoverage+" Check official lineups in Fixtures. Historical boards unchanged.";
+ }catch(e){note.textContent=String(e?.message||e)+". Published research slips remain available.";}
+ finally{button.disabled=false;button.classList.remove("busy");}
+}
+
+fillSgpSelect();
+document.getElementById("sgpCompetitionSelect").onchange=e=>{
+ selectedSgpLeague=e.target.value;
+ if(displayedDesk)renderDesk(displayedDesk,chosenDate(),displayedDesk.schema==="footyedge-live-slip-check-v1");
+};
+document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
+document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
+document.getElementById("refreshBtn").onclick=refreshLive;
+refresh();
+</script></body></html>+esc(Number(b.boostExampleCAD).toFixed(2))+' profit boost).</div></div>';
+ const selections=legs.map((l,i)=>'<div class="fe365-leg"><h3>'+(i+1)+'. '+esc(l.label)+'</h3><small>'+esc(l.category)+'</small><p>'+esc(l.why)+'</p></div>').join('');
+ const link=b.url==="https://www.on.bet365.ca/s/r/gFzcf"?'<a class="fe365-link" href="'+esc(b.url)+'" target="_blank" rel="noopener noreferrer nofollow">Add to Your Bet Slip ↗</a>':'';
+ document.getElementById('sgpSlip').innerHTML=odds+selections+link+'<p class="fe365-note">Screenshot: '+esc(b.observedAtToronto)+'. '+esc(b.disclaimer)+'</p>';
+ document.getElementById('sgpTitle').textContent='SPORTING × LASK SGP';
+ document.getElementById('sgpMeta').textContent='BET365 · UCL · WED OCT 21';
+ document.getElementById('sgpLegBadge').textContent=legs.length+' LEGS';
+ document.getElementById('sgpIntro').textContent='Sporting CP vs LASK Linz · Wed Oct 21 · 3:00 PM ET';
+ document.getElementById('sgpCount').textContent='BET365 · '+b.displayOdds+' REGULAR / '+b.boostedOdds+' BOOSTED';
+ const caution=document.getElementById('sgpCaution');caution.hidden=false;caution.textContent=result.caution;
 }
 
 function kickoffCountdown(items){
