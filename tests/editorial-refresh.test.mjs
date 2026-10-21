@@ -81,7 +81,9 @@ test("Wrong fixture, stale or unapproved evidence cannot create public picks",()
 test("The official scheduled refresh locks source-only picks and avoids model-built slip overwrite",()=>{
  const freeze=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
  const slip=fs.readFileSync(".github/workflows/daily-slip-desk.yml","utf8");
- assert.match(freeze,/00:30 Toronto/);
+ assert.match(freeze,/00:05 Toronto/);
+  assert.match(freeze,/timezone: "America\/Toronto"/);
+  assert.match(freeze,/node scripts\/track-slip-performance\.mjs/);
  assert.match(freeze,/node scripts\/build-editorial-desk\.mjs/);
  assert.ok(freeze.indexOf("node scripts/build-editorial-desk.mjs")<freeze.indexOf("node scripts/archive-board.mjs"));
  assert.doesNotMatch(freeze,/SLIP_DATE="\$TODAY" node scripts\/build-daily-slips\.mjs/);
