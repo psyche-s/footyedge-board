@@ -1722,12 +1722,14 @@ function fePlayerProfileMarkup(result,fallback){
  const last=(result?.recent||[]).slice(0,10);
  // All nine columns are available on every player; a dash means ESPN did not
  // provide that number. It is never silently turned into zero.
- const columns=[["minutes","MIN"],["shots","SH"],["shotsOnTarget","SOT"],
-  ["foulsCommitted","FC"],["foulsWon","FW"],["yellowCards","YC"],["redCards","RC"],
-  ["goals","G"],["assists","A"]];
+ // Show the most useful stats without swiping on a narrow phone.
+ const columns=[["goals","G"],["assists","A"],["shotsOnTarget","SOT"],["shots","SH"],
+  ["foulsWon","FW"],["foulsCommitted","FC"],["yellowCards","YC"],["redCards","RC"],
+  ["minutes","MIN"]];
  const tableRows=last.map(r=>
   '<tr><th scope="row" class="fe-playerOpponent"><strong>'+display(r.opponent)+'</strong>'+
-   '<small>'+display(r.date)+(r.competition?' · '+display(r.competition):'')+'</small></th>'+
+   '<small>'+display(r.date)+(r.competition?' · '+display(r.competition):'')+'</small>'+
+   (r.appearance?'<span class="fe-playerAppearance">'+display(r.appearance)+'</span>':'')+'</th>'+
   columns.map(([key])=>'<td>'+plain(r[key])+'</td>').join('')+'</tr>').join('');
  const lastMarkup=last.length?
   '<div class="fe-playerTableScroll" tabindex="0" role="region" aria-label="Last ten player performances, swipe horizontally for more statistics">'+
@@ -1755,7 +1757,7 @@ function fePlayerProfileMarkup(result,fallback){
   '<section class="fe-playerPanel"><h3>Player details</h3><div class="fe-playerDetails">'+details+'</div></section>'+
   (role?'<section class="fe-playerPanel"><h3>On-field role</h3><p>'+display(role)+'</p></section>':'')+
   '<section class="fe-playerPanel"><h3>Last '+last.length+' appearances <span class="fe-playerPanelHint">of up to 10 available</span></h3>'+
-   (last.length?'<p class="fe-playerSwipeHint">Swipe horizontally to view minutes, shots, fouls and cards →</p>':'')+
+   (last.length?'<p class="fe-playerSwipeHint">Goals, assists and shots show first. Swipe for fouls, cards and minutes →</p>':'')+
    lastMarkup+'</section>'+
   (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
   '<p class="fe-playerHint">'+esc(note)+'</p></div>';
