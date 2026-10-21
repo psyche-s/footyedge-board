@@ -1340,38 +1340,52 @@ function feOfficialNewsHTML(g){
    '<p class="fe-sourceLine fe-sourceSpan">As reported '+esc(intel.source.publishedOn||S.date)+' · <a href="'+esc(intel.source.url)+
    '" target="_blank" rel="noopener noreferrer">View source and recheck before kickoff ↗</a></p>';
 }
-function fePlayerPitch(x,t,g){
+function feTeamPitchRows(x,t,g,position){
  const confirmed=Array.isArray(x?.confirmedXI)&&x.confirmedXI.length===11;
- const players=confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[];
+ const roster=confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[];
+ const sourceShape=String((confirmed?x?.confirmedFormation:x?.predictedFormation)||x?.formation||"").trim();
+ const values=sourceShape.split("-").map(Number);
+ const validated=values.length>=3&&values.length<=5&&values.every(y=>Number.isInteger(y)&&y>=1&&y<=5)&&values.reduce((a,b)=>a+b,0)===10;
+ const formation=validated?sourceShape:"4-2-3-1",shape=validated?values:[4,2,3,1];
  const name=p=>typeof p==="string"?p:String(p?.name||"");
- if(players.length!==11)return '<section class="fe-xiCard"><h4>'+teamImgTag(t,"fe-historyLogo")+esc(teamDisplayName(g,t))+'</h4>'+
-   '<p class="fe-panelNote">An independently sourced starting XI is not available for this team.</p></section>';
- const image=p=>{
-   const url=typeof p==="object"?String(p.photoUrl||""):"";
-   return /^https:\/\/[a-z0-9._/?=&%-]+$/i.test(url)?'<img loading="lazy" src="'+esc(url)+'" alt="">':
-     '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(y=>y[0]||"").join("").toUpperCase())+'</span>';
+ const safeImage=p=>{
+  const photo=typeof p==="object"?String(p?.photoUrl||""):"";
+  return /^https:\/\/[a-z0-9._/?=&%-]+$/i.test(photo)?
+    '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+esc(photo)+'" alt="">':
+    '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>';
  };
- const badge=p=>'<div class="fe-fieldPlayer"><div class="fe-fieldAvatar">'+image(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div></div>';
- // The XI source lists players by typical line order but not exact positions;
- // display a clearly labelled illustrative 4-2-3-1, never a claimed formation.
- const bands=[players.slice(10,11),players.slice(7,10),players.slice(5,7),players.slice(1,5),players.slice(0,1)];
- return '<section class="fe-xiCard"><div class="fe-fieldHead"><h4>'+teamImgTag(t,"fe-historyLogo")+
-   esc(teamDisplayName(g,t))+'</h4><span class="fe-xiBadge">'+(confirmed?'CONFIRMED':'PREDICTED')+'</span></div>'+
-   '<div class="fe-pitch" role="group" aria-label="Source-listed players for '+esc(teamDisplayName(g,t))+' in an illustrative layout">'+
-   '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
-   bands.map(band=>'<div class="fe-pitchRow">'+band.map(badge).join("")+'</div>').join("")+'</div>'+
-   '<p class="fe-lineupCaution">'+(confirmed?'Verified starters.':'Predicted XI, not confirmed. Illustrative 4–2–3–1 layout; exact positions may differ.')+
-   ' Portraits appear only when a verified player photo is available.</p></section>';
+ const person=p=>'<div class="fe-fieldPlayer"><div class="fe-fieldAvatar">'+safeImage(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div></div>';
+ const formTag=validated?formation:'Shape not verified';
+ const header='<div class="fe-sharedClub">'+teamImgTag(t,"fe-historyLogo")+'<b>'+esc(teamDisplayName(g,t))+'</b>'+
+   '<small>'+esc(formTag)+'</small></div>';
+ if(roster.length!==11)return '<div class="fe-sharedHalf fe-half-'+position+'">'+header+
+  '<p class="fe-noXi">No verified full starting XI is available. Players are not invented.</p></div>';
+ const rows=[],groups=[1,...shape];let cursor=0;
+ for(const count of groups){rows.push(roster.slice(cursor,cursor+count));cursor+=count;}
+ // Top team points toward center: keeper first. Bottom team points toward
+ // center from the other direction: striker(s) first, keeper near bottom.
+ const plot=position==="top"?rows:rows.reverse();
+ return '<div class="fe-sharedHalf fe-half-'+position+'">'+header+
+  '<div class="fe-sharedRows">'+plot.map(row=>'<div class="fe-pitchRow">'+row.map(person).join("")+'</div>').join("")+'</div>'+
+  (!validated?'<span class="fe-xiUnverified">Illustrative formation only</span>':'')+'</div>';
 }
 function feLineupsPanel(g){
  const intel=g.liveIntel||g.teamIntel;
  if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return '<section class="fe-panel"><h3>LINEUPS</h3>'+
-   '<p class="fe-panelNote">A reliable, date-matched starting XI has not been verified for this fixture.</p></section>';
- return '<section class="fe-panel fe-lineupPanel"><div class="fe-panelHeading"><h3>LINEUPS</h3><span class="fe-sourceTag">SOURCE-DATED</span></div>'+
-   '<button type="button" class="fe-matchRefresh fe-refreshXi" data-refresh-match>↻ Refresh XI & news</button>'+
-   '<div class="fe-xiGrid">'+fePlayerPitch(intel.home,g.home,g)+fePlayerPitch(intel.away,g.away,g)+'</div>'+
-   '<p class="fe-sourceLine">Predictions and availability from <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
-   esc(intel.source.label||"match preview")+'</a>. Confirm official XI before kickoff.</p>'+feMatchSourceStatus(g)+'</section>';
+   '<p class="fe-panelNote">No sourced, date-matched XI is available yet. We will not invent positions or player portraits.</p></section>';
+ const hasHome=(intel.home?.confirmedXI||intel.home?.predictedXI||[]).length===11;
+ const hasAway=(intel.away?.confirmedXI||intel.away?.predictedXI||[]).length===11;
+ return '<section class="fe-panel fe-lineupPanel">'+
+   '<div class="fe-panelHeading"><h3>STARTING XIs</h3><span class="fe-sourceTag">'+
+   (intel.home?.confirmedXI?.length===11&&intel.away?.confirmedXI?.length===11?'OFFICIAL':'PREDICTED · NOT CONFIRMED')+'</span></div>'+
+   '<div class="fe-lineupToolbar"><span>Both teams · source-backed players</span><button type="button" class="fe-matchRefresh" data-refresh-match>↻ Update XIs</button></div>'+
+   '<div class="fe-sharedPitch" role="group" aria-label="Illustrative football pitch showing both '+esc(g.home.name)+' and '+esc(g.away.name)+' starting elevens">'+
+   '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
+   feTeamPitchRows(intel.away,g.away,g,"top")+feTeamPitchRows(intel.home,g.home,g,"bottom")+'</div>'+
+   '<p class="fe-lineupCaution">'+((hasHome&&hasAway)?'Both teams’ predicted player lists shown.':'One or both predicted XIs are missing.')+
+   ' A 4–2–3–1 arrangement is illustrative unless the source provides a verified formation. Player photos are used only when matched to sourced profiles.</p>'+
+   '<p class="fe-sourceLine">Source: <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
+   esc(intel.source.label||"match preview")+'</a>. Recheck confirmed lineups close to kickoff.</p>'+feMatchSourceStatus(g)+'</section>';
 }
 function feMatchSourceStatus(g){
  const state=g.feMatchCheck;
