@@ -65,7 +65,8 @@ test("Player opens from XI as an accessible button, API fetches on click, and li
  assert.match(ui,/aria-modal="true"/);
  assert.match(ui,/event\.key==="Escape"/);
  assert.match(ui,/g\.feEditorialPicks/);
- assert.match(css,/Final plain club-color fixture artwork/);
+ assert.match(css,/\.fe-matchCard/);
+ assert.match(css,/\.fe-playerLastTenTable/);
  assert.match(css,/\.fe-recentForm i\.fe-miniResult[\s\S]+?border-radius:6px!important/);
  assert.match(css,/\.fe-playerOverlay/);
  assert.match(css,/\.fe-playerStatsGrid/);
@@ -180,6 +181,11 @@ test("Last-ten UI includes a compact scrollable stats table and an abbreviation 
  assert.match(profile,/fe-playerLastTenTable/);
  assert.match(profile,/fe-playerTableScroll/);
  assert.match(profile,/fe-playerStatLegend/);
+ assert.match(profile,/\[\["goals","G"\],\["assists","A"\],\["shotsOnTarget","SOT"\]/);
+ assert.match(profile,/fe-playerAppearance/);
+ assert.match(profile,/tableRows=last\.map\(r=>/);
+ assert.doesNotMatch(profile,/fe-playerMatchMetric/);
+ assert.match(css,/\.fe-playerAppearance/);
  assert.match(profile,/slice\(0,10\)/);
  for(const token of ["MIN","SH","SOT","FC","FW","YC","RC","G","A"])
   assert.ok(profile.includes('"'+token+'"'),"Missing legend/table abbreviation "+token);
