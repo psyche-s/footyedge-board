@@ -6,9 +6,9 @@ on:
     paths:
       - ".github/workflows/track-performance.yml"
   schedule:
-    # 00:05 Toronto EDT/EST alternatives; script gates on local hour 00.
-    - cron: "5 4 * * *"
-    - cron: "5 5 * * *"
+    # 00:55 Toronto settlement recovery, after the new 00:05 board refresh.
+    - cron: "55 4 * * *"
+    - cron: "55 5 * * *"
     # Afternoon result settlement catches scores unavailable at midnight.
     - cron: "10 22 * * *"
     - cron: "10 23 * * *"
@@ -37,7 +37,7 @@ jobs:
           node-version: "22"
 
       - name: Verify settlement grading rules
-        run: node --test tests/track-performance.test.mjs
+        run: node --test tests/track-performance.test.mjs tests/track-slip-performance.test.mjs
 
       - name: Track official Top 5 and run postmatch learning
         env:
@@ -47,6 +47,7 @@ jobs:
           HOUR="$(TZ=America/Toronto date +%H)"
           if [[ "$GITHUB_EVENT_NAME" == "schedule" && "$HOUR" != "00" && "$HOUR" != "18" ]]; then echo "Outside Toronto settlement window"; exit 0; fi
           FORCE_TRACK=1 node scripts/track-performance.mjs
+          node scripts/track-slip-performance.mjs
           node scripts/postmatch-learning.mjs
 
       - name: Commit performance and learning data
