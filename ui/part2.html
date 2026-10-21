@@ -1718,18 +1718,33 @@ function fePlayerProfileMarkup(result,fallback){
  const details=personal.length?personal.map(([label,value])=>
   '<div class="fe-playerDetail"><span>'+esc(label)+'</span><strong>'+display(value)+'</strong></div>').join(""):
   '<p class="fe-playerUnavailable">No verified player details are available.</p>';
+
  const last=(result?.recent||[]).slice(0,10);
- const columns=[["minutes","Minutes"],["goals","Goals"],["assists","Assists"],
-  ["shotsOnTarget","SOT"],["shots","Shots"],["foulsCommitted","Fouls committed"],
-  ["foulsWon","Fouls won"],["yellowCards","Yellow"],["redCards","Red"]];
- const lastMarkup=last.length?last.map(r=>
-  '<article class="fe-playerLastGame"><div class="fe-playerGameTitle">'+
-   '<div><strong>'+display(r.opponent)+'</strong><span>'+display(r.date)+
-   (r.competition?' · '+display(r.competition):'')+'</span></div>'+
-   (r.appearance?'<span class="fe-playerStartBadge">'+display(r.appearance)+'</span>':'')+'</div>'+
-  '<div class="fe-playerMatchStats">'+columns.map(([key,label])=>
-   '<div class="fe-playerMatchMetric"><span>'+esc(label)+'</span><b>'+plain(r[key])+'</b></div>').join("")+
-  '</div></article>').join(""):
+ // All nine columns are available on every player; a dash means ESPN did not
+ // provide that number. It is never silently turned into zero.
+ const columns=[["minutes","MIN"],["shots","SH"],["shotsOnTarget","SOT"],
+  ["foulsCommitted","FC"],["foulsWon","FW"],["yellowCards","YC"],["redCards","RC"],
+  ["goals","G"],["assists","A"]];
+ const tableRows=last.map(r=>
+  '<tr><th scope="row" class="fe-playerOpponent"><strong>'+display(r.opponent)+'</strong>'+
+   '<small>'+display(r.date)+(r.competition?' · '+display(r.competition):'')+'</small></th>'+
+  columns.map(([key])=>'<td>'+plain(r[key])+'</td>').join('')+'</tr>').join('');
+ const lastMarkup=last.length?
+  '<div class="fe-playerTableScroll" tabindex="0" role="region" aria-label="Last ten player performances, swipe horizontally for more statistics">'+
+  '<table class="fe-playerLastTenTable"><thead><tr><th scope="col">Match</th>'+
+  columns.map(([,abbr])=>'<th scope="col">'+abbr+'</th>').join('')+'</tr></thead>'+
+  '<tbody>'+tableRows+'</tbody></table></div>'+
+  '<div class="fe-playerStatLegend"><b>Abbreviations</b><div>'+
+   '<span><strong>MIN</strong> Minutes played</span>'+
+   '<span><strong>SH</strong> Shots</span>'+
+   '<span><strong>SOT</strong> Shots on target</span>'+
+   '<span><strong>FC</strong> Fouls committed</span>'+
+   '<span><strong>FW</strong> Fouls won</span>'+
+   '<span><strong>YC</strong> Yellow card</span>'+
+   '<span><strong>RC</strong> Red card</span>'+
+   '<span><strong>G</strong> Goals</span>'+
+   '<span><strong>A</strong> Assists</span></div>'+
+   '<p>— means the statistic was not supplied, not zero. Swipe the table to view all columns.</p></div>':
   '<p class="fe-playerUnavailable">No verified recent match-by-match data is available.</p>';
  const career=player.career||[];
  const careerMarkup=career.map(c=>'<div class="fe-playerCareer"><strong>'+display(c.club)+'</strong>'+
@@ -1740,6 +1755,7 @@ function fePlayerProfileMarkup(result,fallback){
   '<section class="fe-playerPanel"><h3>Player details</h3><div class="fe-playerDetails">'+details+'</div></section>'+
   (role?'<section class="fe-playerPanel"><h3>On-field role</h3><p>'+display(role)+'</p></section>':'')+
   '<section class="fe-playerPanel"><h3>Last '+last.length+' appearances <span class="fe-playerPanelHint">of up to 10 available</span></h3>'+
+   (last.length?'<p class="fe-playerSwipeHint">Swipe horizontally to view minutes, shots, fouls and cards →</p>':'')+
    lastMarkup+'</section>'+
   (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
   '<p class="fe-playerHint">'+esc(note)+'</p></div>';
