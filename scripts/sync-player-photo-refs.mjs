@@ -17,7 +17,7 @@ const GOOD_LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1",
  "ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf",
  "usa.1","jpn.1","kor.1","ksa.1","cze.1","uefa.nations"]);
 const SCOPE_DAYS=Math.max(1,Math.min(7,Number(process.env.PHOTO_DAYS||5)));
-const MAX_TEAMS=Math.max(1,Math.min(300,Number(process.env.PHOTO_MAX_TEAMS||120)));
+const MAX_TEAMS=Math.max(1,Math.min(550,Number(process.env.PHOTO_MAX_TEAMS||120)));
 const POOL_SIZE=8;
 const n=x=>String(x??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
