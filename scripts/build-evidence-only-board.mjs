@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import {validateBoard} from './validate-published-boards.mjs';
+import {takeDistinctTopPicks} from './market-diversity.mjs';
 
 // Audited last-resort delivery of evidence-only research after an upstream
 // sportsbook quota outage. No sportsbook odds, EV, or forward win probability
@@ -83,8 +84,10 @@ function generate(g){
   angle(home.name+' ML','Match Result',x=>x.result==='W',x=>x.result==='L','home-result');
   angle(away.name+' ML','Match Result',x=>x.result==='L',x=>x.result==='W','away-result');
   candidates.sort((a,b)=>b.score-a.score||Math.min(b.homeHits/b.homeSample,b.awayHits/b.awaySample)-Math.min(a.homeHits/a.homeSample,a.awayHits/a.awaySample));
-  const used=new Set(),top3=[];
-  for(const p of candidates){if(used.has(p.family))continue;used.add(p.family);top3.push(p);if(top3.length===3)break;}
+  // Distinct football theses only: do not pair team 1+ with a total O1.5,
+  // adjacent totals, BTTS with duplicate scoring legs, or ML with DC.
+  // Display fewer than three when the available evidence is too redundant.
+  const top3=takeDistinctTopPicks(candidates,3);
   for(const p of candidates)delete p.family;
   const recentHome=rates(H),recentAway=rates(A);
   const model={top:top3[0]||null,top3,candidates,rankedCandidates:[],researchCandidates:[],
