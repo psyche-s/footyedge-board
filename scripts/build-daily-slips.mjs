@@ -134,7 +134,7 @@ function sgp(all){
  choices.sort((a,b)=>b.fitness-a.fitness||a.id.localeCompare(b.id));
  const best=choices[0];
  return best?{status:"qualified",format:"Best same-game parlay",legs:best.legs.sort((a,b)=>b.rating-a.rating),
-  caution:best.overlap>5?"Some legs positively overlap; avoid treating the selection grades as an independent combination probability.":"Check confirmed lineups and availability of exact markets before placement."}:
+  caution:best.legs.length===2?"Two strong, compatible legs qualified. A third leg was not forced; recheck starting XIs and exact market availability.":best.overlap>5?"Some legs positively overlap; avoid treating the selection grades as an independent combination probability.":"Check confirmed lineups and availability of exact markets before placement."}:
  {status:"pass",format:"Same-game parlay",legs:[],caution:"No fixture has two compatible, sufficiently supported selections. Passing rather than forcing a slip."};
 }
 function acca(all){

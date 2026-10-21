@@ -1,0 +1,20 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import vm from "node:vm";
+const html=fs.readFileSync("top-picks.html","utf8");
+const js=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join("\n");
+test("Top Picks receipt page embeds valid executable JavaScript",()=>{assert.ok(js.length>500);assert.doesNotThrow(()=>new vm.Script(js,{filename:"top-picks-inline.js"}));});
+test("Paper SGP and ACCA tickets are grounded in published daily research, not client guesses",()=>{
+ assert.match(html,/ticketPaper/);
+ assert.match(html,/ticketTear/);
+ assert.match(html,/THE MATCHDAY SGP/);
+ assert.match(html,/THE MATCHDAY ACCA/);
+ assert.match(js,/data\("data\/slips\/"\+date\+"\.json"\)/);
+ assert.match(js,/desk\.sgp/);
+ assert.match(js,/desk\.acca/);
+ assert.match(js,/desk\.props/);
+ assert.match(js,/Why this leg/);
+ assert.match(js,/kickoffCountdown/);
+ assert.doesNotMatch(html,/payout projection|odds payout|guaranteed win/ig);
+});
