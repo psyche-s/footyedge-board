@@ -44,9 +44,28 @@ export default async function handler(req,res){
     const data=await r.json();
     if(!Array.isArray(data.events))throw new Error('Incomplete score response');
     const events=data.events.filter(e=>torontoDay(e.date)===day).map(normalizeEvent).filter(Boolean);
+    // ESPN's aggregate feed can omit J1 and K League 1. Supplement with
+    // verified league events rather than mirroring static fixture scores.
+    const seen=new Set(events.map(e=>e.id)),supplemented=[];
+    const leagueResults=await Promise.allSettled(["jpn.1","kor.1"].map(async league=>{
+      const endpoint="https://site.api.espn.com/apis/site/v2/sports/soccer/"+league+
+        "/scoreboard?dates="+day.replaceAll("-","")+"&limit=100";
+      const source=await fetch(endpoint,{signal:AbortSignal.timeout(4000),headers:{accept:"application/json"}});
+      if(!source.ok)throw Error("No confirmed league scoreboard");
+      const body=await source.json();
+      return{league,items:(body.events||[]).filter(e=>torontoDay(e.date)===day).map(normalizeEvent).filter(Boolean)};
+    }));
+    for(const checked of leagueResults){
+      if(checked.status!=="fulfilled")continue;
+      for(const item of checked.value.items){
+        if(!seen.has(item.id)){events.push(item);seen.add(item.id);supplemented.push(checked.value.league);}
+        else if(item.live||item.done){const index=events.findIndex(x=>x.id===item.id);if(index>=0)events[index]=item;}
+      }
+    }
     res.setHeader('Cache-Control','public, s-maxage=25, stale-while-revalidate=20');
     return res.status(200).json({date:day,fetchedAt:new Date().toISOString(),liveSource:true,events,
-      coverage:'ESPN scoreboard competitions only; other leagues may not have live score coverage'});
+      supplementedLeagues:[...new Set(supplemented)],
+      coverage:'Source-verified ESPN aggregate plus J1/K League feeds when accessible; unsupported leagues never receive invented scores'});
   }catch{
     res.setHeader('Cache-Control','no-store');
     return res.status(503).json({date:day,liveSource:false,events:[],error:'Live score feed unavailable'});
