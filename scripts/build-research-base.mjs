@@ -295,6 +295,19 @@ async function main(){
   for(let i=0;i<games.length;i+=4){
     fixtures.push(...await Promise.all(games.slice(i,i+4).map(buildFixture)));
   }
+  // Merge ONLY authorized, date-matched regional rows into upcoming research.
+  // Never synthesize Asian fixtures from FotMob website data or amend frozen boards.
+  try{
+    const doc=JSON.parse(await fs.readFile(path.join("data","asia",DATE+".json"),"utf8"));
+    if(doc.schema==="footyedge-authorized-asia-research-v1"&&doc.date===DATE&&doc.license&&doc.permissionReference&&Array.isArray(doc.fixtures)){
+      const ids=new Set(fixtures.map(x=>String(x.id)));
+      for(const row of doc.fixtures){
+        if(!["jpn.1","kor.1"].includes(row.league)||!row.id||!row.date||!row.home?.name||!row.away?.name)continue;
+        if(ids.has(String(row.id)))continue;
+        fixtures.push(row);ids.add(String(row.id));
+      }
+    }
+  }catch(e){if(e.code!=="ENOENT")throw e}
   let learningIngested=null;try{const x=JSON.parse(await fs.readFile(path.join("data","postmortems","diagnostics.json"),"utf8"));learningIngested={generatedAt:x.generatedAt,decision:x.decision,modelChange:x.modelChange}}catch(e){if(e.code!=="ENOENT")throw e}
   // Player props require their own sourced event-level goals/assists and confirmed starters.
   // The domestic scores hub has neither, so no player is inferred from team trends.
