@@ -6,6 +6,7 @@ export function marketConcept(p){
  if(category==="goals"||/^(over|under)\s+\d+(?:\.\d+)?\s+goals/.test(label))return"total";
  if(category==="team goals"||/\b\d+\+\s+goals?\b/.test(label))return"team-goal";
  if(category==="btts"||label.includes("both teams to score"))return"btts";
+ if(category==="handicap"||/\+1\.5\s+goals\s*\(handicap\)/i.test(label))return"result";
  if(category==="double chance"||label.includes(" or draw"))return"result";
  if(category==="match result"||/\bml$/.test(label))return"result";
  if(category==="corners")return"corners";
