@@ -34,7 +34,7 @@ test("Only dated, attributable external research enriches writing",()=>{
   }
  }
  assert.match(code,/feReviewedReason\(g,x\)/);
- assert.match(code,/fePreviewLinks\(g,x\)/);
+ assert.match(code,/function fePreviewLinks\(g,p\)/);
 });
 test("Predicted formation is never misrepresented as confirmed",()=>{
  const data=JSON.parse(fs.readFileSync("data/team-intelligence/2026-10-21.json","utf8"));
