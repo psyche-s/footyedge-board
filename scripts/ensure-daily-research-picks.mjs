@@ -24,9 +24,10 @@ const pct=(a,f)=>a.filter(f).length/a.length;
 function probs(H,A){
  const h=clip(.8*(.55*avg(H,"gf")+.45*avg(A,"ga"))*1.06+.26,.3,3.8),a=clip(.8*(.55*avg(A,"gf")+.45*avg(H,"ga"))*.96+.26,.3,3.8);
  const pm=(n,l)=>{let v=Math.exp(-l);for(let i=1;i<=n;i++)v*=l/i;return v};
- const p={home_win:0,away_win:0,draw:0,over_1_5:0,over_2_5:0,under_2_5:0,under_3_5:0,under_4_5:0,btts_yes:0,home_goal:0,away_goal:0};
+ const p={home_win:0,away_win:0,draw:0,over_1_5:0,over_2_5:0,under_2_5:0,under_3_5:0,under_4_5:0,btts_yes:0,home_goal:0,away_goal:0,home_plus_1_5:0,away_plus_1_5:0};
  for(let i=0;i<=12;i++)for(let j=0;j<=12;j++){
   let v=pm(i,h)*pm(j,a);p[i>j?"home_win":i===j?"draw":"away_win"]+=v;
+  if(i+1>=j)p.home_plus_1_5+=v;if(j+1>=i)p.away_plus_1_5+=v;
   if(i+j>=2)p.over_1_5+=v;if(i+j>=3)p.over_2_5+=v;if(i+j<=2)p.under_2_5+=v;
   if(i+j<=3)p.under_3_5+=v;if(i+j<=4)p.under_4_5+=v;
   if(i&&j)p.btts_yes+=v;if(i)p.home_goal+=v;if(j)p.away_goal+=v;
@@ -38,6 +39,8 @@ function metrics(x){const n=x.length;return{n,form:x.slice(0,5).map(t=>t.result)
 const specs=[
  ["home_win",1,"Match Result","result",(x)=>x.result==="W",(x)=>x.result==="L"],
  ["away_win",2,"Match Result","result",(x)=>x.result==="L",(x)=>x.result==="W"],
+ ["home_plus_1_5",7,"Handicap","result",(x)=>x.gf+1>=x.ga,(x)=>x.gf<=x.ga+1],
+ ["away_plus_1_5",8,"Handicap","result",(x)=>x.gf<=x.ga+1,(x)=>x.gf+1>=x.ga],
  ["home_or_draw",3,"Double Chance","result",(x)=>x.result!=="L",(x)=>x.result!=="W"],
  ["away_or_draw",4,"Double Chance","result",(x)=>x.result!=="W",(x)=>x.result!=="L"],
  ["over_1_5","Over 1.5 Goals","Goals","totals",(x)=>x.gf+x.ga>=2,(x)=>x.gf+x.ga>=2],
@@ -58,18 +61,20 @@ for(const game of draft.games){
  const p={...probs(H,A),...(hasShadow?forecast.probabilities:{})},home=f.home.name,away=f.away.name,h=metrics(H),a=metrics(A);
  if(!full)limited++;
  const prior=new Map((game.top3||[]).filter(x=>x.bookExact&&x.verifiedPrice).map(x=>[x.label.toLowerCase(),x]));
- const label=v=>v===1?home+" ML":v===2?away+" ML":v===3?home+" or Draw":v===4?away+" or Draw":v===5?home+" 1+ Goal":v===6?away+" 1+ Goal":v;
+ const label=v=>v===1?home+" ML":v===2?away+" ML":v===3?home+" or Draw":v===4?away+" or Draw":v===5?home+" 1+ Goal":v===6?away+" 1+ Goal":v===7?home+" +1.5 Goals (Handicap)":v===8?away+" +1.5 Goals (Handicap)":v;
  const picks=[];
  for(const [key,code,category,family,fh,fa] of specs){
   const name=label(code),nH=H.filter(fh).length,nA=A.filter(fa).length;
+  if(category==="Handicap"&&(Math.min(nH/H.length,nA/A.length)<.55||(nH+nA)/(H.length+A.length)<.70))continue;
   let prob=p[key];if(!Number.isFinite(prob))continue;
   const trend=(nH+nA+2)/(H.length+A.length+4),weaker=Math.min((nH+1)/(H.length+2),(nA+1)/(A.length+2));
   let grade=Math.round(100*((hasShadow ? 0.92 : 0.78)*prob+(hasShadow ? 0.06 : 0.18)*trend+(hasShadow ? 0.02 : 0.04)*weaker));
-  if(key==="under_4_5")grade=Math.min(grade,82);if(key==="over_1_5")grade=Math.min(grade,87);
+  if(category==="Handicap")grade=Math.min(grade,86);if(key==="under_4_5")grade=Math.min(grade,82);if(key==="over_1_5")grade=Math.min(grade,87);
   if(key==="home_goal"||key==="away_goal")grade=Math.min(grade,88);if(!full)grade=Math.min(grade,77);
   let reason=name+": recent trend "+nH+"/"+H.length+" "+home+" matches and "+nA+"/"+A.length+" "+away+" matches. "+home+" are "+h.wins+"W-"+h.draws+"D-"+h.losses+"L, scoring "+h.gf.toFixed(1)+" and conceding "+h.ga.toFixed(1)+" per game; "+away+" are "+a.wins+"W-"+a.draws+"D-"+a.losses+"L, scoring "+a.gf.toFixed(1)+" and conceding "+a.ga.toFixed(1)+".";
   if(category==="Match Result")reason+=" Draws count as losses for ML.";
   else if(category==="Double Chance")reason+=" A draw is protected; the opposing win is the losing outcome.";
+  else if(category==="Handicap")reason+=" +1.5 covers a one-goal defeat, draw or win; recent form is not a promised outcome.";
   else if(category==="Team Goals")reason+=" Only a single team goal is needed.";
   else if(category==="Goals")reason+=" Game tempo and finishing are the main uncertainties.";
   else reason+=" Both attack and defence must support this outcome.";
