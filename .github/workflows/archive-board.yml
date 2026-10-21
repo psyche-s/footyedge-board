@@ -60,6 +60,9 @@ jobs:
           FOOTYEDGE_ASIA_FEED_URL: ${{ secrets.FOOTYEDGE_ASIA_FEED_URL }}
           FOOTYEDGE_ASIA_FEED_TOKEN: ${{ secrets.FOOTYEDGE_ASIA_FEED_TOKEN }}
           FOOTYEDGE_ASIA_FEED_APPROVED: ${{ vars.FOOTYEDGE_ASIA_FEED_APPROVED }}
+          FOOTYEDGE_TEAM_NEWS_FEED_URL: ${{ secrets.FOOTYEDGE_TEAM_NEWS_FEED_URL }}
+          FOOTYEDGE_TEAM_NEWS_FEED_TOKEN: ${{ secrets.FOOTYEDGE_TEAM_NEWS_FEED_TOKEN }}
+          FOOTYEDGE_TEAM_NEWS_FEED_APPROVED: ${{ vars.FOOTYEDGE_TEAM_NEWS_FEED_APPROVED }}
         shell: bash
         run: |
           set -euo pipefail
@@ -74,6 +77,8 @@ jobs:
             echo "::error::Exact-date research missing. Cannot publish guesses."
             exit 1
           fi
+          node --test tests/sync-team-news.test.mjs
+          node scripts/sync-team-news.mjs
           if [[ -s "data/team-intelligence/$TODAY.json" ]]; then
             jq -e --arg day "$TODAY" '.date==$day and (.fixtures|type=="array")' "data/team-intelligence/$TODAY.json" >/dev/null
             echo "Dated predicted-lineup/news file available; predictions are not confirmed starting XIs."
@@ -154,6 +159,7 @@ jobs:
           files=(data/performance data/postmortems)
           if [[ -f "data/research-base-$TODAY.json" ]]; then files+=("data/research-base-$TODAY.json"); fi
           if [[ -d data/asia ]]; then files+=("data/asia"); fi
+          if [[ -f "data/team-intelligence/$TODAY.json" ]]; then files+=("data/team-intelligence/$TODAY.json"); fi
           for file in "data/board-drafts/$TODAY.json" "data/boards/$TODAY.json" "data/daily-odds-$TODAY.json" "data/editorial-desk/$TODAY.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
           done
