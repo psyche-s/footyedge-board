@@ -1309,36 +1309,74 @@ function feArrow(open){
  return '<svg class="fe-arrowIcon'+(open?' open':'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 }
 function matchH2HHtml(g){
-  const rows=Array.isArray(g.matchH2H)?g.matchH2H.slice(0,5):[],info=g.h2hSummary||{};
-  const body=rows.length?rows.map(m=>{
-    const exact=Boolean(m.date&&Number.isFinite(Date.parse(m.date)));
-    const date=exact?new Intl.DateTimeFormat("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"}).format(new Date(m.date)):m.dateLabel||"Date unverified";
-    return '<div class="h2hResult"><time'+(exact?' datetime="'+esc(m.date)+'"':'')+'>'+esc(date)+'</time><span class="h2hFixture">'+esc(m.home)+' <b>'+esc(m.homeScore)+'–'+esc(m.awayScore)+'</b> '+esc(m.away)+'</span></div>';
-  }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking recorded previous meetings…</p>':'<p class="h2hEmpty">'+esc(info.note||"No verified previous meetings in the available historical records.")+'</p>');
-  const count=rows.length,expanded=Boolean(g.h2hExpanded);
-  return '<section class="h2hSection fe-accordion"><button type="button" class="h2hToggle fe-accordionButton" data-h2h-toggle aria-expanded="'+expanded+'">'+
-    '<span class="fe-accordionGlyph">'+feIcon("history")+'</span><span class="fe-accordionLabel"><strong>H2H</strong><small>Last '+(count||"5")+' meeting'+(count===1?"":"s")+(count?' recorded':' checked')+' · Tap to expand</small></span><span class="fe-down">'+feArrow(expanded)+'</span></button>'+
-    '<div class="h2hResults fe-accordionBody" '+(expanded?"":"hidden")+'>'+body+'</div></section>';
+ const rows=Array.isArray(g.matchH2H)?g.matchH2H.slice(0,5):[],summary=g.h2hSummary||{},expanded=Boolean(g.h2hExpanded);
+ const key=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const homeKey=key(g.home.name),awayKey=key(g.away.name),homeColor=fePalette(g.home).primary,awayColor=fePalette(g.away).primary;
+ let hw=0,aw=0,dr=0;
+ for(const m of rows){
+  const left=key(m.home)===homeKey,right=key(m.away)===homeKey;
+  const x=Number(m.homeScore),y=Number(m.awayScore);
+  if(!Number.isInteger(x)||!Number.isInteger(y)||!left&&!right)continue;
+  if(x===y)dr++;else if((left&&x>y)||(right&&y>x))hw++;else aw++;
+ }
+ const matched=hw+aw+dr,total=matched||1;
+ const counts='<div class="fe-h2hSummary"><div><strong>'+esc(g.home.name)+'</strong><span>'+hw+' win'+(hw===1?'':'s')+'</span></div>'+
+   '<div><strong>Draws</strong><span>'+dr+'</span></div><div><strong>'+esc(g.away.name)+'</strong><span>'+aw+' win'+(aw===1?'':'s')+'</span></div></div>'+
+   '<div class="fe-h2hBars" role="img" aria-label="'+hw+' '+esc(g.home.name)+' wins, '+dr+' draws, '+aw+' '+esc(g.away.name)+' wins">'+
+   '<span style="width:'+(hw/total*100)+'%;background:'+homeColor+'"></span>'+
+   '<span style="width:'+(dr/total*100)+'%;background:#66726f"></span>'+
+   '<span style="width:'+(aw/total*100)+'%;background:'+awayColor+'"></span></div>';
+ const body=rows.length?rows.map(m=>{
+  const exact=Boolean(m.date&&Number.isFinite(Date.parse(m.date)));
+  const date=exact?new Intl.DateTimeFormat("en-US",{timeZone:"UTC",year:"numeric",month:"short",day:"numeric"}).format(new Date(m.date)):(m.dateLabel||"Date not verified");
+  const leftHome=key(m.home)===homeKey,leftAway=key(m.home)===awayKey;
+  const rightHome=key(m.away)===homeKey,rightAway=key(m.away)===awayKey;
+  const img=(name,validHome,validAway)=>(validHome?teamImgTag(g.home,"fe-h2hLogo"):validAway?teamImgTag(g.away,"fe-h2hLogo"):"");
+  const leftLogo=img(m.home,leftHome,leftAway),rightLogo=img(m.away,rightHome,rightAway);
+  return '<div class="fe-h2hRow"><div class="fe-h2hDate">'+esc(date)+(m.leagueName?' · '+esc(m.leagueName):'')+'</div>'+
+   '<div class="fe-h2hFixture"><span class="fe-h2hTeam">'+leftLogo+esc(m.home)+'</span>'+
+   '<strong class="fe-h2hScore">'+esc(m.homeScore)+' – '+esc(m.awayScore)+'</strong>'+
+   '<span class="fe-h2hTeam fe-h2hTeamRight">'+esc(m.away)+rightLogo+'</span></div></div>';
+ }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking previous meetings…</p>':
+ '<p class="h2hEmpty">'+esc(summary.note||"No verified previous meetings available in accessible historical records.")+'</p>');
+ const bodyHtml=rows.length?'<p class="fe-h2hCount">'+matched+' verified previous meeting'+(matched===1?'':'s')+'</p>'+counts+'<div class="fe-h2hList">'+body+'</div>':body;
+ return '<section class="h2hSection fe-accordion"><button type="button" class="h2hToggle fe-accordionButton" data-h2h-toggle aria-expanded="'+expanded+'">'+
+  '<span class="fe-accordionGlyph">'+feIcon("history")+'</span><span class="fe-accordionLabel"><strong>HEAD-TO-HEAD RECORD</strong><small>'+rows.length+' verified meeting'+(rows.length===1?'':'s')+' · Tap to '+(expanded?'collapse':'expand')+'</small></span>'+
+  '<span class="fe-down">'+feArrow(expanded)+'</span></button>'+
+  '<div class="h2hResults fe-accordionBody" '+(expanded?'':'hidden')+'>'+bodyHtml+'</div></section>';
 }
-function feLastFive(g){
-  const lists=[{side:"home",team:g.home,rows:g.baseResearch?.last5?.home||g.baseResearch?.last10?.home?.slice(0,5)||[]},
-               {side:"away",team:g.away,rows:g.baseResearch?.last5?.away||g.baseResearch?.last10?.away?.slice(0,5)||[]}];
-  const grouped=lists.map(x=>{
-    const html=x.rows.length?x.rows.slice(0,5).map(row=>{
-      const gf=Number(row.gf),ga=Number(row.ga);
-      if(!Number.isFinite(gf)||!Number.isFinite(ga))return"";
-      const result=gf>ga?"W":gf<ga?"L":"D";
-      const opponent=row.oppName||row.opponentName||"Opponent";
-      const date=Number.isFinite(Date.parse(row.date||""))?feDay(row.date):"Date unavailable";
-      return '<div class="fe-historyRow"><span class="fe-miniResult '+result+'">'+result+'</span>'+
-        '<span class="fe-historyOpp">'+esc(opponent)+'</span><strong class="fe-historyScore">'+gf+'–'+ga+'</strong><time>'+esc(date)+'</time></div>';
-    }).join(""):'<p class="fe-empty">Last-five dated results are not available from the verified research feed.</p>';
-    return '<div class="fe-historyTeam"><h4>'+teamImgTag(x.team,"fe-historyLogo")+esc(teamDisplayName(g,x.team))+'</h4>'+html+'</div>';
-  }).join("");
-  return '<section class="fe-accordion"><button type="button" class="fe-accordionButton" data-last5-toggle aria-expanded="'+Boolean(g.last5Expanded)+'">'+
-    '<span class="fe-accordionGlyph">'+feIcon("form")+'</span><span class="fe-accordionLabel"><strong>LAST 5 GAMES</strong><small>Recent verified form for both teams · Tap to expand</small></span><span class="fe-down">'+feArrow(Boolean(g.last5Expanded))+'</span></button>'+
-    '<div class="fe-accordionBody" '+(g.last5Expanded?'':'hidden')+'><div class="fe-historyGrid">'+grouped+'</div></div></section>';
+function feRecentForm(g){
+ const lists=[{team:g.home,rows:g.baseResearch?.last5?.home||g.baseResearch?.last10?.home?.slice(0,5)||[]},
+              {team:g.away,rows:g.baseResearch?.last5?.away||g.baseResearch?.last10?.away?.slice(0,5)||[]}];
+ const makeLogo=(id)=>/^\d+$/.test(String(id||""))?'<img class="fe-recentLogo" loading="lazy" alt="" src="https://a.espncdn.com/i/teamlogos/soccer/500/'+esc(id)+'.png" onerror="this.style.display=\'none\'">':'';
+ const chunks=lists.map(({team,rows})=>{
+  const valid=rows.filter(row=>Number.isFinite(Number(row.gf))&&Number.isFinite(Number(row.ga))).slice(0,5);
+  const form=valid.map(row=>Number(row.gf)>Number(row.ga)?'W':Number(row.gf)<Number(row.ga)?'L':'D');
+  const head='<div class="fe-recentHead"><div>'+teamImgTag(team,"fe-historyLogo")+'<strong>'+esc(teamDisplayName(g,team))+'</strong></div>'+
+   '<span class="fe-recentForm">'+form.map(v=>'<i class="fe-miniResult '+v+'">'+v+'</i>').join("")+'</span></div>';
+  const items=valid.length?valid.map(row=>{
+   const venue=String(row.venue||"").toLowerCase();
+   const home=venue==="home";
+   const own=teamDisplayName(g,team),op=String(row.oppName||row.opponentName||"Opponent");
+   const homeName=home?own:op,awayName=home?op:own;
+   const homeGoals=home?Number(row.gf):Number(row.ga),awayGoals=home?Number(row.ga):Number(row.gf);
+   const teamLogo=teamImgTag(team,"fe-recentLogo"),opLogo=makeLogo(row.oppId);
+   const day=Number.isFinite(Date.parse(row.date||""))?new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",timeZone:"America/Toronto",weekday:"short"}).format(new Date(row.date)):"Date not verified";
+   const outcome=row.gf>row.ga?'W':row.gf<row.ga?'L':'D';
+   return '<div class="fe-recentMatch"><time>'+esc(day)+'</time><div class="fe-recentTeams">'+
+      '<span class="fe-recentTeam">'+(home?teamLogo:opLogo)+'<b>'+esc(homeName)+'</b></span>'+
+      '<span class="fe-recentScore '+outcome+'">'+homeGoals+' – '+awayGoals+'</span>'+
+      '<span class="fe-recentTeam fe-recentTeamAway"><b>'+esc(awayName)+'</b>'+(home?opLogo:teamLogo)+'</span></div></div>';
+  }).join(""):'<p class="fe-empty">Recent verified results are unavailable.</p>';
+  return '<div class="fe-recentClub">'+head+items+'</div>';
+ }).join("");
+ const exp=Boolean(g.last5Expanded);
+ return '<section class="fe-accordion fe-recentSection"><button type="button" class="fe-accordionButton" data-last5-toggle aria-expanded="'+exp+'">'+
+  '<span class="fe-accordionGlyph">'+feIcon("form")+'</span><span class="fe-accordionLabel"><strong>RECENT FORM</strong><small>Last 5 matches · Tap to '+(exp?'collapse':'expand')+'</small></span>'+
+  '<span class="fe-down">'+feArrow(exp)+'</span></button>'+
+  '<div class="fe-accordionBody" '+(exp?'':'hidden')+'><div class="fe-recentGrid">'+chunks+'</div></div></section>';
 }
+function feLastFive(g){return feRecentForm(g);}
 function feStatsTab(g){
   const h=g.model?.home||g.model?.displayHome||{},a=g.model?.away||g.model?.displayAway||{};
   const vals=[["RECENT GAMES",h.n,a.n],["GOALS FOR · AVG",h.gf,a.gf],["GOALS AGAINST · AVG",h.ga,a.ga],

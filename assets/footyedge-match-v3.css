@@ -515,3 +515,53 @@
  .fe-matchCard .fe-kickoff>strong{font-size:22px!important}
  .fe-matchCard .fe-kickoff>span{font-size:9px!important}
 }
+
+
+/* Recent form v9: full fixture orientation, centered scores and dated opponent rows */
+.fe-recentGrid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;padding:7px 4px 12px}
+.fe-recentClub{min-width:0}
+.fe-recentClub+.fe-recentClub{border-top:1px solid rgba(105,172,132,.2);padding-top:18px}
+.fe-recentHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:5px 0 13px}
+.fe-recentHead>div{display:flex;align-items:center;gap:9px;min-width:0}
+.fe-recentHead strong{font-size:14px;color:#f5fff7}
+.fe-recentHead .fe-historyLogo{width:24px;height:24px;object-fit:contain}
+.fe-recentForm{display:flex;gap:4px;justify-content:flex-end}
+.fe-recentForm i{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;font-style:normal;font-size:10px;font-weight:950;color:#fff}
+.fe-recentMatch{padding:9px 2px 12px;border-bottom:1px solid rgba(165,202,180,.18)}
+.fe-recentMatch time{display:block;color:#92b3a1;font-size:10px;margin-bottom:8px}
+.fe-recentTeams{display:grid;grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);align-items:center;gap:8px}
+.fe-recentTeam{display:flex;align-items:center;gap:6px;min-width:0;color:#d4e6d9;font-size:12px;line-height:1.3}
+.fe-recentTeam b{font-weight:600;overflow-wrap:anywhere}
+.fe-recentTeamAway{justify-content:flex-end;text-align:right}
+.fe-recentLogo{width:23px!important;height:23px!important;max-width:23px;flex:0 0 23px;object-fit:contain}
+.fe-recentScore{display:block;text-align:center;padding:8px 1px;border-radius:8px;background:#111f18;color:#fff;font-size:14px;font-weight:850;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fe-recentScore.W{background:#0a3221;color:#b2ffcb}
+.fe-recentScore.L{background:#322021;color:#ffd4db}
+.fe-recentScore.D{background:#25312e;color:#e0e9e1}
+/* H2H: three-way colour breakdown + true fixture rows. */
+.fe-h2hCount{font-size:12px;color:#9cbda9;margin:4px 0 17px}
+.fe-h2hSummary{display:grid;grid-template-columns:minmax(0,1fr) minmax(65px,.6fr) minmax(0,1fr);gap:9px;align-items:start}
+.fe-h2hSummary>div{display:flex;flex-direction:column;gap:5px;color:#c7e6d0}
+.fe-h2hSummary>div:nth-child(2){align-items:center}
+.fe-h2hSummary>div:nth-child(3){align-items:flex-end;text-align:right}
+.fe-h2hSummary strong{font-size:13px;font-weight:850;color:#fff;line-height:1.35}
+.fe-h2hSummary span{font-size:11px;color:#acc6b1}
+.fe-h2hBars{display:flex;overflow:hidden;border-radius:99px;gap:5px;height:9px;margin:16px 0 18px}
+.fe-h2hBars>span{min-width:0;border-radius:99px;opacity:.96}
+.fe-h2hList{border-top:1px solid #2c503f}
+.fe-h2hRow{padding:16px 0;border-bottom:1px solid rgba(115,166,137,.24)}
+.fe-h2hDate{color:#9bb7a6;font-size:11px;margin-bottom:12px}
+.fe-h2hFixture{display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);align-items:center;gap:8px}
+.fe-h2hTeam{display:flex;align-items:center;gap:7px;min-width:0;line-height:1.3;font-size:13px;font-weight:650;color:#e6f0e9;overflow-wrap:anywhere}
+.fe-h2hTeamRight{justify-content:flex-end;text-align:right}
+.fe-h2hLogo{width:23px!important;height:23px!important;object-fit:contain;flex:0 0 23px}
+.fe-h2hScore{display:block;text-align:center;background:#09271b;color:#effff5;border-radius:8px;padding:10px 0;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(max-width:480px){
+ .fe-recentTeams{grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:5px}
+ .fe-recentTeam{font-size:11px;gap:5px}
+ .fe-recentLogo,.fe-h2hLogo{width:20px!important;height:20px!important;flex-basis:20px}
+ .fe-h2hFixture{grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);gap:5px}
+ .fe-h2hTeam{font-size:11px;gap:4px}
+ .fe-h2hScore{font-size:12px}
+ .fe-h2hSummary strong{font-size:11px}
+}
