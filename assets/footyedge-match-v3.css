@@ -1222,3 +1222,54 @@
  .fe-playerLastTenTable th:first-child{width:122px;min-width:122px;max-width:122px}
  .fe-playerLastTenTable tbody .fe-playerOpponent strong{max-width:110px}
 }
+
+/* Keep the stacked match-by-match appearance layout. Nine useful stats per
+   match, arranged in three short rows, never forced into a sideways table. */
+.fe-playerAppearances{display:flex;flex-direction:column;gap:0}
+.fe-playerAppearanceRow{
+ display:grid;grid-template-columns:minmax(0,36%) minmax(0,1fr);
+ column-gap:16px;align-items:center;padding:17px 4px;
+ border-bottom:1px solid rgba(125,202,153,.18);
+}
+.fe-playerMatchIdentity{display:flex;flex-direction:column;gap:7px;min-width:0}
+.fe-playerMatchIdentity time{font-size:11px;color:#9dbbab;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.fe-playerMatchIdentity strong{font-size:13px;color:#f5fff8;line-height:1.25;overflow-wrap:anywhere;font-weight:800}
+.fe-playerMatchIdentity small{color:#8eac9c;font-size:10px;line-height:1.25}
+.fe-playerMetricGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:5px;row-gap:10px}
+.fe-playerMetric{display:flex;flex-direction:column;gap:3px;justify-content:center;align-items:center;min-width:0}
+.fe-playerMetric span{font-size:10px;font-weight:700;color:#9fb9ab;letter-spacing:.02em;white-space:nowrap}
+.fe-playerMetric strong{font-size:16px;font-weight:800;color:#e8fff1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fe-playerStatLegend{margin:16px 0 2px;padding:12px 13px;border:1px solid rgba(80,166,123,.24);
+ border-radius:12px;background:rgba(10,47,30,.55)}
+.fe-playerStatLegend>b{display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:11px}
+.fe-playerStatLegend>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.fe-playerStatLegend span{color:#bed8c7;font-size:10px;line-height:1.3}
+.fe-playerStatLegend span strong{color:#effff4;margin-right:3px}
+.fe-playerStatLegend p{margin:12px 0 0;color:#97bcaa;font-size:10px;line-height:1.4}
+.fe-verifiedSquads{margin-top:18px}
+.fe-squadTitle{display:flex;flex-direction:column;gap:4px;padding:8px 2px 12px}
+.fe-squadTitle strong{font-size:13px;color:#ecfff4}
+.fe-squadTitle span{font-size:11px;color:#a8c8b5}
+.fe-squadTeam{border:1px solid rgba(81,169,117,.27);border-radius:15px;background:rgba(9,52,33,.33);padding:12px;margin:0 0 14px}
+.fe-squadTeam h4{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:850;margin:0 0 12px;color:#f3fff9}
+.fe-squadTeam h4 img{width:23px;height:23px;object-fit:contain;background:transparent}
+.fe-squadPlayers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.fe-squadPlayer{
+ appearance:none;cursor:pointer;display:flex;gap:5px;min-width:0;align-items:center;
+ text-align:left;padding:8px 5px;background:#0b3727;border:1px solid rgba(97,178,128,.22);
+ border-radius:10px;color:#e5f7e9;font:600 10px/1.3 system-ui,-apple-system,sans-serif
+}
+.fe-squadPlayer:hover,.fe-squadPlayer:focus-visible{background:#13503a;border-color:#58d99b;outline:none}
+.fe-squadPlayer>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.fe-squadPlayer small{font-size:9px;color:#95bca8}
+.fe-squadAvatar{height:27px;width:27px;flex:none;border-radius:50%;overflow:hidden;background:#236143;display:grid;place-items:center;font-size:9px;color:#f6fff9}
+.fe-squadAvatar img{height:100%;width:100%;object-fit:cover}
+@media(max-width:420px){
+ .fe-playerAppearanceRow{grid-template-columns:minmax(0,35%) minmax(0,1fr);column-gap:7px;padding:14px 2px}
+ .fe-playerMetricGrid{column-gap:3px;row-gap:8px}
+ .fe-playerMetric span{font-size:9px}
+ .fe-playerMetric strong{font-size:15px}
+ .fe-playerMatchIdentity strong{font-size:12px}
+ .fe-playerStatLegend>div{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .fe-squadPlayers{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
