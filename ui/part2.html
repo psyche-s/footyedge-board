@@ -936,7 +936,7 @@ function renderGames(){
   let list=S.games.filter(filterOK);
   list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.confidenceRating??viewPick(b)?.score??0)-(viewPick(a)?.confidenceRating??viewPick(a)?.score??0):(a,b)=>new Date(a.date)-new Date(b.date));
   const el=document.getElementById("games");
-  document.getElementById("gamesCount").textContent=list.length+" game"+(list.length===1?"":"s");
+  document.getElementById("gamesCount").textContent=list.length+" fixture"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
     const selections=viewCandidates(g),first=viewPick(g);
@@ -990,7 +990,7 @@ function renderMeta(){
   const today=etDate();
   document.getElementById("dayTitle").textContent=S.date===today?"Today":new Date(S.date+"T12:00:00Z").toLocaleDateString("en-US",{weekday:"long",timeZone:"UTC"});
   document.getElementById("dateTitle").textContent=niceDate(S.date)+" (ET)";
-  document.getElementById("gamesTitle").textContent=S.date===today?"Today’s Games":"Games · "+niceDate(S.date);
+  document.getElementById("gamesTitle").textContent=S.date===today?"Today’s Fixtures":"Fixtures · "+niceDate(S.date);
   document.getElementById("stamp").textContent="";
   document.getElementById("source").textContent="";
 }
