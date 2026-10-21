@@ -3,7 +3,7 @@ import {loadCzechSeason,eventsForCzechDate} from "../assets/czech-first-league.m
 
 // A previously captured ESPN-derived fixture snapshot is a labelled FALLBACK,
 // never a fresh/live scoreboard or proof of confirmed lineups, results or odds.
-const VERIFIED_CLUB_LEAGUES=new Map([[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"],[2310,"uefa.europa.conf"]]);
+const VERIFIED_CLUB_LEAGUES=new Map([[750,"jpn.1"],[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"],[2310,"uefa.europa.conf"]]);
 function cachedEvent(row){
   const fid=row?.fixture, league=row?.league, teams=row?.teams;
   if(!fid?.id||!fid.date||!teams?.home?.name||!teams?.away?.name)return null;
@@ -62,6 +62,26 @@ export default async function handler(req,res){
       try{payload=await savedFixtureFallback(day)}
       catch{ return res.status(502).json({error:"Live scoreboard and dated saved fixtures unavailable"}); }
     }
+    // ESPN's aggregate scoreboard can omit J1; append only individually
+    // identifiable, date-matched fixtures in the repository's source snapshot.
+    // Those rows are dated fixtures, NOT live scores or confirmed team news.
+    let j1SnapshotCount=0;
+    try{
+      const archivedUrl="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/data/"+day+"/fixtures.json";
+      const sr=await fetch(archivedUrl,{headers:{accept:"application/json","user-agent":"FootyEdge/1.0"},signal:AbortSignal.timeout(6000)});
+      if(sr.ok){
+        const saved=await sr.json(),existing=new Set(payload.events.map(e=>String(e.id)));
+        for(const row of saved.response||[]){
+          if(Number(row?.league?.id)!==750||!/^(jpn\.1|J1 League|Japanese J1 League)$/i.test(String(row?.league?.name||"")))continue;
+          const event=cachedEvent(row);
+          if(!event||event.date.slice(0,10)!==day||existing.has(String(event.id)))continue;
+          // Source snapshot has no live-result provenance. Suppress any misleading status.
+          event.status={type:{completed:false,name:"STATUS_SCHEDULED",state:"pre",detail:"Dated fixture snapshot"}};
+          for(const team of event.competitions[0].competitors)delete team.score;
+          payload.events.push(event);existing.add(String(event.id));j1SnapshotCount++;
+        }
+      }
+    }catch(e){console.warn("No supplemental dated J1 fixture snapshot",String(e).slice(0,90))}
     let supplemented=0;
     if(czech.status==="fulfilled"){
       const known=new Set(payload.events.map(e=>String(e.id)));
@@ -71,7 +91,7 @@ export default async function handler(req,res){
       }
     }
     payload.footyedgeSources={
-      ...payload.footyedgeSources,czechFirstLeague:{
+      ...payload.footyedgeSources,j1League:{source:"dated ESPN-derived fixture snapshot",addedFixtures:j1SnapshotCount,liveScoresFromSnapshot:false},czechFirstLeague:{
         available:czech.status==="fulfilled",
         addedFixtures:supplemented,
         source:czech.status==="fulfilled"?czech.value.url:null,

@@ -64,9 +64,10 @@ jobs:
             exit 0
           fi
           TODAY="$(TZ=America/Toronto date +%F)"
-          # A repair push rebuilds today only; scheduled midnight research still scouts five days.
+          # A code push checks tomorrow too so upcoming J1/Europe fixtures appear in preview.
+          # Frozen current-day and older boards remain immutable.
           HORIZON=4
-          if [[ "$GITHUB_EVENT_NAME" == "push" || "$(TZ=America/Toronto date +%M)" != "00" ]]; then HORIZON=0; fi
+          if [[ "$GITHUB_EVENT_NAME" == "push" || "$(TZ=America/Toronto date +%M)" != "00" ]]; then HORIZON=1; fi
           for OFFSET in $(seq 0 "$HORIZON"); do
             DATE="$(TZ=America/Toronto date -d "$TODAY +$OFFSET day" +%F)"
             echo "Building research base for $DATE"

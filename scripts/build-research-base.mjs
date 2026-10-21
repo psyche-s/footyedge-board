@@ -9,7 +9,7 @@ const TZ="America/Toronto";
 
 const TRACKED=new Set([
   "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
-  "cze.1","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
+  "cze.1","jpn.1","kor.1","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
   "uefa.euro","uefa.euroq","fifa.world","fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf"
 ]);
 
@@ -235,7 +235,7 @@ async function buildFixture(g){
 }
 // Source-labelled fallback for research continuity only; never treat snapshots as live.
 function datedSnapshotEvents(snapshot){
-  const codes=new Map([[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"]]);
+  const codes=new Map([[750,"jpn.1"],[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"]]);
   return (snapshot?.response||[]).flatMap(row=>{
     const home=row?.teams?.home,away=row?.teams?.away,fixture=row?.fixture;
     const code=codes.get(Number(row?.league?.id));
@@ -276,6 +276,15 @@ async function main(){
       }
     }
   }
+  // ESPN aggregate board may omit Japanese fixtures despite dated snapshots.
+  // Add only verified men's J1 source events; preserve original competition IDs.
+  try{
+    const saved=JSON.parse(await fs.readFile(path.join("data",DATE,"fixtures.json"),"utf8"));
+    const j1=datedSnapshotEvents(saved).filter(e=>e.footyedgeLeague==="jpn.1");
+    const seen=new Set((board.events||[]).map(e=>String(e.id)));
+    if(!Array.isArray(board.events))board.events=[];
+    for(const event of j1)if(!seen.has(event.id)){board.events.push(event);seen.add(event.id)}
+  }catch(e){if(e.code!=="ENOENT")console.warn("Dated J1 snapshot unavailable",String(e).slice(0,120))}
   // The public Czech top-flight source is independent from ESPN.
   // The site may already have these events after a deploy: dedupe by stable ID.
   try{
