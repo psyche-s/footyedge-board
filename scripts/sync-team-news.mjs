@@ -11,7 +11,7 @@ const today=()=>{const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{
  return p.year+"-"+p.month+"-"+p.day;};
 const clean=v=>String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .replace(/[^a-z0-9]+/g," ").trim();
-const validNames=x=>Array.isArray(x)&&x.length<=11&&x.every(a=>typeof a==="string"&&a.trim().length>=2&&a.length<=90);
+const validNames=x=>Array.isArray(x)&&x.length===11&&x.every(a=>typeof a==="string"&&a.trim().length>=2&&a.length<=90);
 const validAbsences=x=>x===undefined||(Array.isArray(x)&&x.length<=35&&x.every(a=>typeof a==="string"&&a.length<=150));
 const safeUrl=x=>typeof x==="string"&&/^https:\/\//i.test(x)&&x.length<=1000;
 export function verifyNews(data,date,fixtures,now=Date.now()){
