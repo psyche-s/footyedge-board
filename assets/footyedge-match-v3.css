@@ -764,3 +764,35 @@
  object-fit:contain!important;
 }
 .fe-recentForm i.fe-miniResult{border-radius:50%!important}
+
+/* Final fixture mockup lock: every match uses the SAME quiet fabric treatment.
+   Only the two kit-side colors vary. The center remains deep green/black. */
+.fe-matchCard .fe-hero.fe-kitHero,.fe-dialogHero .fe-hero.fe-kitHero{
+ background:radial-gradient(ellipse at 50% 55%,#001009 0%,#02160e 47%,#031910 100%)!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::before,.fe-dialogHero .fe-hero.fe-kitHero::before{
+ background-image:
+  repeating-linear-gradient(135deg,transparent 0 19px,rgba(255,255,255,.055) 19px 21px,transparent 21px 45px,rgba(0,0,0,.045) 45px 50px,transparent 50px 76px),
+  repeating-linear-gradient(90deg,transparent 0 65px,color-mix(in srgb,var(--fe-home-accent) 11%,transparent) 65px 79px,transparent 79px 148px),
+  linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 69%,#06130d) 0%,color-mix(in srgb,var(--fe-home) 58%,#07160f) 44%,color-mix(in srgb,var(--fe-home) 14%,#02140d) 78%,transparent 100%)!important;
+ opacity:.92!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0 50%,rgba(0,0,0,.75) 67%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0 50%,rgba(0,0,0,.75) 67%,transparent 100%)!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::after,.fe-dialogHero .fe-hero.fe-kitHero::after{
+ background-image:
+  repeating-linear-gradient(45deg,transparent 0 19px,rgba(255,255,255,.055) 19px 21px,transparent 21px 45px,rgba(0,0,0,.045) 45px 50px,transparent 50px 76px),
+  repeating-linear-gradient(90deg,transparent 0 65px,color-mix(in srgb,var(--fe-away-accent) 11%,transparent) 65px 79px,transparent 79px 148px),
+  linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 69%,#06130d) 0%,color-mix(in srgb,var(--fe-away) 58%,#07160f) 44%,color-mix(in srgb,var(--fe-away) 14%,#02140d) 78%,transparent 100%)!important;
+ opacity:.92!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0 50%,rgba(0,0,0,.75) 67%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0 50%,rgba(0,0,0,.75) 67%,transparent 100%)!important;
+}
+/* Minimal fallback when a given shirt palette is unknown: solid team color;
+   do not invent an elaborate pattern. */
+.fe-kitHero[data-home-kit="tonal"]::before,.fe-kitHero[data-home-kit="plain"]::before{
+ background-image:linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 64%,#06150e),transparent)!important;
+}
+.fe-kitHero[data-away-kit="tonal"]::after,.fe-kitHero[data-away-kit="plain"]::after{
+ background-image:linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 64%,#06150e),transparent)!important;
+}
