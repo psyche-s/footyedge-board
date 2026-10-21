@@ -1800,9 +1800,33 @@ async function feOpenPlayerProfile(g,button){
  }
 }
 
+
+/* Roster identity references are scoped to the verified club and league. */
+function fePhotoMatch(g,t,player){
+ const name=typeof player==="string"?player:String(player?.name||"");
+ if(!name)return player;
+ const key=String(g?.league||"")+":"+String(t?.id||"");
+ const registry=window.FOOTYEDGE_PLAYER_PHOTOS?.teams?.[key];
+ if(!Array.isArray(registry?.players))return player;
+ const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const want=norm(name);
+ const exact=registry.players.filter(x=>norm(x.name)===want);
+ const matches=exact.length===1?exact:(want.length>=5?
+  registry.players.filter(x=>norm(x.name).endsWith(" "+want)):[]);
+ if(matches.length!==1)return player;
+ const found=matches[0];
+ if(!/^\d{1,12}$/.test(String(found.id||"")))return player;
+ const upstream=String(found.photoUrl||"");
+ const photo=/^https:\/\/a\.espncdn\.com\//i.test(upstream)?upstream:
+  "https://a.espncdn.com/i/headshots/soccer/players/full/"+found.id+".png";
+ const base=typeof player==="object"&&player?player:{name};
+ return {...base,id:base.id||found.id,photoUrl:base.photoUrl||photo,
+  jersey:base.jersey||found.jersey||null};
+}
 function feTeamPitchRows(x,t,g,position){
  const confirmed=Array.isArray(x?.confirmedXI)&&x.confirmedXI.length===11;
- const roster=confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[];
+ const roster=(confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[]).map(p=>fePhotoMatch(g,t,p));
  const sourceShape=String((confirmed?x?.confirmedFormation:x?.predictedFormation)||x?.formation||"").trim();
  const values=sourceShape.split("-").map(Number);
  const validated=values.length>=3&&values.length<=5&&values.every(y=>Number.isInteger(y)&&y>=1&&y<=5)&&values.reduce((a,b)=>a+b,0)===10;
@@ -1834,32 +1858,9 @@ function feTeamPitchRows(x,t,g,position){
   '<div class="fe-sharedRows">'+plot.map(row=>'<div class="fe-pitchRow">'+row.map(person).join("")+'</div>').join("")+'</div>'+
   '</div>';
 }
-function feVerifiedSquadPanel(g){
- const squads=g.feSquadRosters||{},teams=[g.home,g.away];
- const available=teams.map(team=>({team,rows:Array.isArray(squads[String(team?.id)])?
-   squads[String(team.id)].filter(r=>r?.name).slice(0,40):[]}))
-   .filter(x=>x.rows.length);
- if(!available.length)return '<p class="fe-panelNote">The match provider has not yet published a verified starting XI or squad for this fixture.</p>';
- return '<div class="fe-verifiedSquads"><div class="fe-squadTitle"><strong>Verified team squads</strong>'+
-   '<span>Players listed for their clubs · not a confirmed XI</span></div>'+
-   available.map(({team,rows})=>'<section class="fe-squadTeam"><h4>'+teamImgTag(team,"fe-historyLogo")+
-    esc(teamDisplayName(g,team))+'</h4><div class="fe-squadPlayers">'+
-    rows.map(player=>{
-      const id=/^[0-9]{1,12}$/.test(String(player.id||""))?String(player.id):"";
-      const photo=/^https:\/\/a\.espncdn\.com\//i.test(String(player.photoUrl||""))?String(player.photoUrl):"";
-      const avatar=photo?'<img alt="" loading="lazy" src="'+esc(photo)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
-        '<span hidden>'+esc(String(player.name).slice(0,2).toUpperCase())+'</span>':
-        '<span>'+esc(String(player.name).slice(0,2).toUpperCase())+'</span>';
-      return '<button type="button" class="fe-squadPlayer" data-fe-player-name="'+esc(player.name)+
-       '" data-fe-player-team="'+esc(team.id)+'" data-fe-player-id="'+esc(id)+'">'+
-       '<div class="fe-squadAvatar">'+avatar+'</div><span>'+esc(player.name)+'</span>'+
-       (player.jersey?'<small>#'+esc(player.jersey)+'</small>':'')+'</button>';
-    }).join('')+'</div></section>').join('')+
-   '<p class="fe-panelNote">Tap a squad member for a player profile. Starting positions will appear only after an XI is supplied.</p></div>';
-}
 function feLineupsPanel(g){
  // Always present the same football pitch for every tracked league. Without
- // a source-backed XI, show the empty team half and verified squads separately;
+ // a source-backed XI, keep the team half empty rather than adding duplicate squads;
  // do not position ordinary roster members as alleged starters.
  const raw=g.liveIntel||g.teamIntel;
  const intel=raw&&/^https:\/\//.test(String(raw.source?.url||""))?raw:{home:{},away:{}};
@@ -1881,7 +1882,6 @@ function feLineupsPanel(g){
    '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
    feTeamPitchRows(intel.away,g.away,g,"top")+feTeamPitchRows(intel.home,g.home,g,"bottom")+'</div>'+
    '<p class="fe-lineupCaution">'+caution+'</p>'+
-   ((!hasHome||!hasAway)?feVerifiedSquadPanel(g):'')+
    feMatchSourceStatus(g)+'</section>';
 }
 function feMatchSourceStatus(g){
