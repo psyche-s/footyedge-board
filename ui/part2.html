@@ -1606,11 +1606,9 @@ function feOfficialNewsHTML(g){
 /* Player details are lazily researched on click. No arbitrary URLs from lineup
    data are fetched; the provider-matched ID is rechecked against its club roster. */
 function fePlayerSafePhoto(src){
- return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!function fePlayerSafePhoto(src){
- return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!function feTeamPitchRows(x,t,g,position){'()*+,;=:@/%?-]+$/i.test(String(src||""))
-    ?'<img class="fe-playerPortrait" alt="" loading="lazy" src="'+esc(src)+'">':'';
-}'()*+,;=:@/%?-]+$/i.test(String(src||""))
-    ?'<img class="fe-playerPortrait" alt="" loading="lazy" src="'+esc(src)+'">':'';
+ const url=String(src||"");
+ return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\//i.test(url)?
+   '<img class="fe-playerPortrait" alt="" loading="lazy" decoding="async" src="'+esc(url)+'">':'';
 }
 function fePlayerRole(position){
  const role=String(position||"").toLowerCase();
