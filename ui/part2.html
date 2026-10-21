@@ -818,9 +818,17 @@ function viewCandidates(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
   if(S.filter==="ml")return moneylineCandidates(g).slice(0,3);
-  // Read-only presentation screen. Never rewrite the published freeze.
-  // Only one goal-scoring thesis (total/team/BTTS) and one result thesis.
-  return feDistinctView(g.model?.top3||[])
+  // Show the three independently supported, pre-published selections in
+  // confidence order. Do not hide valid second/third picks just because two
+  // selections belong to the same broad scoring/result market family.
+  // Duplicate identical labels are still suppressed.
+  const seen=new Set();
+  return (g.model?.top3||[]).filter(p=>{
+    if(!p?.label)return false;
+    const key=String(p.label).toLowerCase().trim().replace(/\\s+/g," ");
+    if(seen.has(key))return false;
+    seen.add(key);return true;
+  }).sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0)).slice(0,3)
 }
 function viewPick(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
