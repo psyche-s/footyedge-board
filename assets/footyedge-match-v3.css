@@ -591,3 +591,47 @@
 .fe-matchCard .fe-heroStatus.is-final{background:rgba(23,40,32,.75)!important}
 .fe-matchCard:after,.fe-matchCard .fe-cardArrow,.fe-matchCard .fe-cardBottom{display:none!important;content:none!important}
 @media(max-width:480px){.fe-matchCard .fe-scoreLine>strong{font-size:30px!important}.fe-matchCard .fe-scoreStatus{font-size:10px!important}.fe-matchCard .fe-scoreLine{gap:2px!important}}
+
+
+/* Owner match-card mockup: two shirt-palette halves, subtle diagonal kit texture,
+   dark central score island and a footer underneath the crests/forms. */
+.fe-matchCard{overflow:hidden!important;border:1px solid rgba(62,133,91,.58)!important;border-radius:19px!important;background:#04160f!important;box-shadow:0 6px 30px rgba(0,0,0,.28)!important}
+.fe-matchCard .fe-hero{isolation:isolate!important;position:relative!important;overflow:hidden!important;min-height:234px!important;padding:16px 15px 17px!important;background:radial-gradient(ellipse at 50% 53%,#021009 0%,#03150e 50%,#061711 100%)!important}
+.fe-matchCard .fe-hero::before,.fe-matchCard .fe-hero::after{content:""!important;position:absolute!important;top:0!important;bottom:0!important;width:57%!important;opacity:1!important;z-index:0!important;pointer-events:none!important}
+.fe-matchCard .fe-hero::before{left:0!important;right:auto!important;background:
+ repeating-linear-gradient(138deg,rgba(255,255,255,.10) 0 2px,transparent 2px 23px,rgba(0,0,0,.13) 23px 26px,transparent 26px 49px),
+ repeating-linear-gradient(90deg,transparent 0 34px,color-mix(in srgb,var(--fe-home-accent) 35%,transparent) 34px 47px,transparent 47px 81px),
+ linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 91%,#080c12) 0%,color-mix(in srgb,var(--fe-home) 72%,#040d09) 44%,color-mix(in srgb,var(--fe-home) 26%,#04130e) 76%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 36%,rgba(0,0,0,.84) 60%,transparent 100%)!important;mask-image:linear-gradient(90deg,#000 0%,#000 36%,rgba(0,0,0,.84) 60%,transparent 100%)!important}
+.fe-matchCard .fe-hero::after{right:0!important;left:auto!important;background:
+ repeating-linear-gradient(42deg,rgba(255,255,255,.09) 0 2px,transparent 2px 24px,rgba(0,0,0,.12) 24px 27px,transparent 27px 50px),
+ repeating-linear-gradient(90deg,transparent 0 35px,color-mix(in srgb,var(--fe-away-accent) 33%,transparent) 35px 48px,transparent 48px 81px),
+ linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 91%,#080c12) 0%,color-mix(in srgb,var(--fe-away) 70%,#040d09) 44%,color-mix(in srgb,var(--fe-away) 24%,#04130e) 76%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 36%,rgba(0,0,0,.84) 60%,transparent 100%)!important;mask-image:linear-gradient(270deg,#000 0%,#000 36%,rgba(0,0,0,.84) 60%,transparent 100%)!important}
+.fe-matchCard .fe-hero>.fe-heroHead,.fe-matchCard .fe-hero>.fe-heroTeams{position:relative!important;z-index:2!important}
+.fe-matchCard .fe-heroHead{justify-content:flex-start!important;padding:0 3px!important;min-height:34px!important}
+.fe-matchCard .fe-heroTeams{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(110px,.92fr) minmax(0,1fr)!important;gap:5px!important;align-items:center!important}
+.fe-matchCard .fe-logoWrap{width:72px!important;height:72px!important;margin:0 auto!important;display:grid!important;place-items:center!important}
+.fe-matchCard .fe-logoWrap img{max-width:100%!important;max-height:100%!important;object-fit:contain!important}
+.fe-matchCard .fe-sideName{font-size:clamp(13px,2.7vw,17px)!important;text-shadow:0 2px 9px #000c!important}
+.fe-matchCard .fe-scoreLine{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;gap:5px!important;align-items:center!important}
+.fe-matchCard .fe-scoreLine>strong{font-size:clamp(31px,6.5vw,49px)!important;color:#fff!important}
+.fe-matchCard .fe-scoreStatus{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-width:45px!important;gap:4px!important;font-weight:850!important;font-size:12px!important;letter-spacing:.035em!important;color:#dce7e2!important;white-space:nowrap!important}
+.fe-matchCard .fe-scoreStatus.fe-status-live{color:#ff5770!important}
+.fe-matchCard .fe-scoreStatus small{font-weight:650!important;color:#d7e2ec!important;font-size:11px!important}
+.fe-matchCard .fe-scorePending{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px}
+.fe-matchCard .fe-scorePending>strong{display:flex;align-items:center;gap:6px;color:#fa5774}
+.fe-matchCard .fe-scorePending>small{font-size:9px;color:#b6c6bc;text-align:center}
+.fe-matchCard .fe-kickoff{justify-content:center!important;gap:7px!important}
+.fe-matchCard .fe-kickoff>span{font-size:10px!important;color:#fff!important;font-weight:800!important}
+.fe-matchCard .fe-kickoff>small{font-size:10px!important;color:#c0d7c9!important}
+.fe-cardTicket{position:relative;z-index:3;display:flex;justify-content:center;align-items:center;gap:14px;padding:9px 14px 11px;border-top:1px solid rgba(136,193,161,.25);background:rgba(2,18,10,.95);color:#bcd5c9;font-size:12px;letter-spacing:.015em}
+.fe-cardTicket .fe-ticketChevron{margin-left:auto;color:#accaba;font-size:27px;line-height:.65}
+@media(max-width:520px){
+ .fe-matchCard .fe-hero{min-height:225px!important;padding:12px 9px 13px!important}
+ .fe-matchCard .fe-heroTeams{grid-template-columns:minmax(0,1fr) minmax(91px,.9fr) minmax(0,1fr)!important;gap:3px!important}
+ .fe-matchCard .fe-logoWrap{width:58px!important;height:58px!important}
+ .fe-matchCard .fe-scoreLine>strong{font-size:clamp(26px,8vw,35px)!important}
+ .fe-matchCard .fe-scoreStatus{font-size:10px!important;min-width:40px!important}
+ .fe-cardTicket{font-size:11px}
+}
