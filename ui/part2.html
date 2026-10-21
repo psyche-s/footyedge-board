@@ -1257,7 +1257,7 @@ function mergeVerifiedH2H(saved,fetched){
     if(!row?.date||!Number.isFinite(Date.parse(row.date)))continue;
     if(!Number.isInteger(Number(row.homeScore))||!Number.isInteger(Number(row.awayScore)))continue;
     const scores=[Number(row.homeScore),Number(row.awayScore)].sort((a,b)=>a-b);
-    const key=String(row.date).slice(0,10)+"|"+scores.join("-");
+    const key=String(row.id||"")||String(row.date).slice(0,10)+"|"+String(row.home||"")+"|"+String(row.away||"")+"|"+scores.join("-");
     if(seen.has(key))continue;
     seen.add(key);out.push(row);
     if(out.length===5)break;
@@ -1273,7 +1273,7 @@ async function loadVerifiedMatchDetails(g){
   // Read only public-domain, completed fixture scores mirrored from the
   // private Football Data Hub into our public, rights-filtered static cache.
   // Never query the private repository or alter published picks/ratings.
-  if(S.date===etDate()&&g.matchH2H.length<5&&window.FootyEdgeHubHistory?.sourceLeague(g.league)){
+  if(g.matchH2H.length<5&&window.FootyEdgeHubHistory?.sourceLeague(g.league)){
     try{
       const archived=await window.FootyEdgeHubHistory.findH2H(g);
       g.matchH2H=mergeVerifiedH2H(g.matchH2H,archived);
@@ -1282,7 +1282,7 @@ async function loadVerifiedMatchDetails(g){
         note:"Showing recorded previous meetings, most recent first."};
     }catch(error){console.warn("FootyEdge historical cache unavailable; preserving existing match evidence.");}
   }
-  if(GITHUB_STATIC||g.matchH2H.length===5||S.date!==etDate()){
+  if(GITHUB_STATIC||g.matchH2H.length===5){
     g.matchDetailsPending=false;return;
   }
   // A single saved meeting is not a reason to skip historical lookup.
