@@ -107,10 +107,14 @@ test("Profile loading is compact and unverified fields are filtered instead of o
  const ui=fs.readFileSync("ui/part2.html","utf8"),
    css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
  assert.match(ui,/fe-profileShimmer/);
- assert.match(ui,/fe-playerStatEmpty/);
+ assert.match(ui,/const numericStats=/);
+ assert.match(ui,/priority=\["Appearances","Starts","Goals","Assists","Shots","Shots on target","Minutes"\]/);
+ assert.match(ui,/--fe-player-stat-count/);
+ assert.doesNotMatch(ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("function feOpenPlayerProfile(")),/Not available<\/strong>/);
  assert.match(ui,/Missing values are omitted, not estimated/);
  assert.match(ui,/\.filter\(x=>x\[1\]!=null&&String\(x\[1\]\)\.trim\(\)\)/);
  assert.match(css,/\.fe-playerPhotoStage/);
  assert.match(css,/background:none!important;border:0!important;box-shadow:none!important/);
- assert.match(css,/object-fit:cover!important/);
+ assert.match(css,/transform:scale\(1\.58\)!important/);
+ assert.match(css,/object-fit:contain!important/);
 });
