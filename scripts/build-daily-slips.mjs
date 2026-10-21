@@ -89,6 +89,33 @@ function candidate(g,f,p,news,h2h){
    evidence:evidence+h2hText,source:"Published FootyEdge match pick · dated last-10 results",sample:{home:H.length,away:A.length},
    h2h:{checked:previous.length,supported:positive},lineupStatus:news?.home?.predictedXI?.length===11&&news?.away?.predictedXI?.length===11?"predicted-not-confirmed":"unverified",risk};
 }
+// Independent FootyEdge statistical shortlisting, separate from previews/top-three cards.
+function researchCandidates(g,f,news,older){
+ const H=form(f,"home"),A=form(f,"away");if(H.length<8||A.length<8)return[];
+ const home=f.home.name,away=f.away.name;
+ const angles=[
+ [home+" ML","Match Result",x=>x.gf>x.ga,x=>x.gf<x.ga],
+ [away+" ML","Match Result",x=>x.gf<x.ga,x=>x.gf>x.ga],
+ [home+" or Draw","Double Chance",x=>x.gf>=x.ga,x=>x.gf<=x.ga],
+ [away+" or Draw","Double Chance",x=>x.gf<=x.ga,x=>x.gf>=x.ga],
+ ["Over 1.5 Goals","Goals",x=>x.gf+x.ga>=2,x=>x.gf+x.ga>=2],
+ ["Over 2.5 Goals","Goals",x=>x.gf+x.ga>=3,x=>x.gf+x.ga>=3],
+ ["Under 3.5 Goals","Goals",x=>x.gf+x.ga<=3,x=>x.gf+x.ga<=3],
+ ["Under 4.5 Goals","Goals",x=>x.gf+x.ga<=4,x=>x.gf+x.ga<=4],
+ ["BTTS Yes","BTTS",x=>x.gf>0&&x.ga>0,x=>x.gf>0&&x.ga>0],
+ ["BTTS No","BTTS",x=>x.gf===0||x.ga===0,x=>x.gf===0||x.ga===0]
+ ];
+ return angles.flatMap(([label,category,fh,fa])=>{
+  const a=hits(H,fh),b=hits(A,fa),fresh=hits(H.slice(0,5),fh)+hits(A.slice(0,5),fa);
+  const strength=(a/H.length+b/A.length)/2,recent=fresh/10;
+  if(strength<.70||Math.min(a/H.length,b/A.length)<.60||recent<.60)return[];
+  const p={label,category,confidenceRating:Math.min(92,grade((.7*strength+.3*recent)*95+2)),
+   reason:"Our "+label+" screen: "+a+"/"+H.length+" supporting "+home+" results and "+b+"/"+A.length+
+   " supporting "+away+" results; "+fresh+"/10 across their most recent five games."};
+  const leg=candidate(g,f,p,news,older);
+  return leg?[{...leg,source:"FootyEdge independent last-10 matchup analysis",modelBuilt:true}]:[];
+ });
+}
 function compatible(a,b){
  if(a.gameId!==b.gameId)return true;
  if(norm(a.label)===norm(b.label))return false;
@@ -196,12 +223,15 @@ function build({date,board,research,h2h,intel}){
   const f=map.get(String(g.id))||named.get([norm(name(g,"home")),norm(name(g,"away"))].join("|"));
   if(!f)continue;
   const older=h2hRows(f,previous.get(String(f.id))||g.h2h||[]);
-  const seen=new Set();
+  const own=researchCandidates(g,f,news.get(String(f.id)),older);
+  const old=[],seen=new Set();
   for(const p of g.top3||[]){
    const label=norm(p?.label);if(!label||seen.has(label))continue;seen.add(label);
    const leg=candidate(g,f,p,news.get(String(f.id)),older);
-   if(leg)all.push(leg);
+   if(leg)old.push(leg);
   }
+  const labels=new Set(own.map(x=>norm(x.label)));
+  all.push(...own,...old.filter(x=>!labels.has(norm(x.label))));
  }
  const props=all.filter(x=>["total","team-goal","btts","player"].includes(x.family)).sort((a,b)=>b.rating-a.rating||a.gameId.localeCompare(b.gameId)).slice(0,10);
  return {schema:"footyedge-daily-slips-v1",date,state:board.immutable===true?"frozen":"preview",generatedAt:new Date().toISOString(),
@@ -217,7 +247,7 @@ function build({date,board,research,h2h,intel}){
     "No invented cards, corners, shots, fouls, player starts or other unsupported props.",
     "Fewer supported legs are better than artificially lengthening a ticket.",
     "Review official XI, suspensions and late injury news before using a selection.",
-    "SGP and ACCA exclude Japan J1, Korea K1, Saudi Pro League, Czech and international friendlies."
+    "Parlay selections require verified historical research; exact market availability and live prices must be checked separately."
    ]};
 }
 export{market,trend,compatible,sgp,acca,build,overallRating,sgpsByLeague};
