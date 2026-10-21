@@ -951,3 +951,15 @@ Do **not** rewrite older entries to make history look cleaner. Corrections must 
 - Tracking/history impact: no frozen board or historical selection was edited. The October 21 board remains pending its first write-once publication lock.
 - Deployment result: pending GitHub main commit, publication workflow, immutable archive verification and exact-commit Vercel production verification.
 
+
+## 2026-10-21 — Same-day men’s board production verification
+**Status:** ✅ Deployed and production verified
+
+- Published and write-once locked the October 21 board at 00:35 Toronto: 21 men’s fixtures across the Champions League, LaLiga, MLS and J1 League, with 20 complete Top 3 sets and one explicitly supported two-pick set. The global Top 5 contains five confidence-ranked research selections.
+- Settled the saved October 20 Top 5 record before selection and refreshed rolling postmatch diagnostics. No repeated verified pattern justified a model coefficient or calibration change.
+- The licensed editorial-consensus step reviewed eight eligible fixtures but received zero approved external editorial records; it therefore made no provider-consensus adjustment and did not invent agreement. Current team-intelligence metadata remains explicitly predicted-not-confirmed.
+- Model/data impact: all 62 published match selections and the global Top 5 use finite research-strength grades from dated last-10 evidence. They are not calibrated win probabilities. Exact odds and EV remain unavailable throughout the board rather than being inferred.
+- UI impact: none. No layout, styling, navigation, card, filter, logo, modal, page structure, component or visual-design file changed in this run.
+- Tracking/history impact: all earlier frozen boards remain unchanged. The October 21 board and slips are immutable; October 20 settlement and postmatch diagnostics were added separately.
+- Deployment result: publication workflow `39544892338` completed successfully and committed board archive `38cae7e9`. The follow-up integrity workflow `39545141892` passed 201 Node tests and 19 Python tests. Vercel production deployment `dpl_CEik8fXiTDwDE8PknD15ESxM24W9` reached `READY` for commit `63e3f562`, has the public alias with no alias error, and serves the board, team-intelligence and slips files byte-for-byte from GitHub.
+
