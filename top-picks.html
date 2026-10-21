@@ -251,10 +251,20 @@ function legHTML(x,i){
 
 
 function renderBet365(result){
- const b=result.bookmakerOffer||{},legs=result.legs||[];
- const odds='<div class="fe365-odds"><div><small>BET365 REGULAR</small><strong>'+esc(b.displayOdds)+'</strong></div><div><small>'+esc(b.profitBoostPercent)+'% PROFIT BOOST</small><strong>'+esc(b.boostedOdds)+'</strong></div><div class="fe365-example">
+ // Only display a live book offer when exact sportsbook verification is
+ // explicitly present. An unverified or stale price is never presented as real.
+ const b=result?.bookmakerOffer||{},legs=result?.legs||[];
+ const mapped=legs.map(viewLeg);
+ printSlip("sgpSlip",mapped,"No supported same-game ticket is available.");
+ if(b.verifiedExact!==true||typeof b.displayOdds!=="string")return;
+ const receipt=document.getElementById("sgpSlip");
+ receipt.insertAdjacentHTML("beforeend",
+  '<div class="fe365-odds"><div><small>VERIFIED BOOKMAKER PRICE</small><strong>'+
+  esc(b.displayOdds)+'</strong></div></div>');
+}
+function kickoffCountdown(items){
  if(!items.length)return "PASS";
- const times=items.map(x=>Date.parse(x.g.date||"")).filter(Number.isFinite);
+ const times=items.map(x=>Date.parse(x.g?.date||"")).filter(Number.isFinite);
  if(!times.length)return "DATE TBC";
  const delta=Math.min(...times)-Date.now();
  if(delta<=0)return "KICKOFF PASSED";
