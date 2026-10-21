@@ -68,8 +68,8 @@ function parseBio(a,roster,teamName){
 }
 const STAT_NAMES=new Map([
  ["appearances","Appearances"],["gamesplayed","Appearances"],["matchesplayed","Appearances"],
- ["starts","Starts"],["gamesstarted","Starts"],["goals","Goals"],["goalscored","Goals"],
- ["assists","Assists"],["shots","Shots"],["shotsontarget","Shots on target"],
+ ["starts","Starts"],["gamesstarted","Starts"],["goals","Goals"],["goalscored","Goals"],["totalgoals","Goals"],
+ ["assists","Assists"],["goalassists","Assists"],["shots","Shots"],["totalshots","Shots"],["shotsontarget","Shots on target"],
  ["minutes","Minutes"],["minutesplayed","Minutes"],["yellowcards","Yellow cards"],
  ["redcards","Red cards"],["cleansheets","Clean sheets"]
 ]);
@@ -113,6 +113,68 @@ function parseRecent(log){
    assists:value("Assists"),minutes:value("Minutes"),shots:value("Shots")};
  }).filter(Boolean).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
 }
+
+/* ESPN's /overview exposes actual per-competition 2026-27 stats. The older
+   core /statistics endpoint often has no usable data for football athletes. */
+function parseOverviewSeason(overview,league,teamId,gameLog){
+ const root=overview?.statistics;
+ if(!root||!Array.isArray(root.splits)||!Array.isArray(root.names))return {stats:[],competition:null};
+ const sameTeam=root.splits.filter(s=>String(s.teamId)===String(teamId));
+ const options=sameTeam.length?sameTeam:root.splits;
+ // Prioritise the match competition, then the player's domestic club league,
+ // never claim national-team records are club stats.
+ const current=options.filter(s=>/2026[-–]27|2026/i.test(String(s.displayName||"")));
+ const choice=current.find(s=>s.leagueSlug===league)||
+  (current.length===1?current[0]:current.find(s=>!String(s.leagueSlug).includes("nations")&&!String(s.leagueSlug).includes("friendly")))||
+  sameTeam.find(s=>s.leagueSlug===league)||sameTeam[0]||null;
+ if(!choice||!Array.isArray(choice.stats))return {stats:[],competition:null};
+ const chosen=new Map();
+ root.names.forEach((raw,i)=>{
+  const label=STAT_NAMES.get(key(raw));
+  const v=num(choice.stats[i]);
+  if(label&&v!=null&&v>=0)chosen.set(label,{label,value:v});
+ });
+ const appearances=Array.isArray(gameLog?.seasonTypes)?gameLog.seasonTypes
+   .filter(g=>String(g.displayName||"")===String(choice.displayName||""))
+   .flatMap(g=>Array.isArray(g.categories)?g.categories:[])
+   .flatMap(g=>Array.isArray(g.events)?g.events:[])
+   .filter(x=>x?.eventId).length:0;
+ if(appearances>0)chosen.set("Appearances",{label:"Appearances",value:appearances});
+ return {stats:[...chosen.values()],competition:String(choice.displayName||"")||null};
+}
+/* Different ESPN pages expose compact per-game stat arrays with separate
+   labels and an eventId->game metadata map, not an entries[] array. */
+function parseESPNLastFive(overview,gameLog,competition){
+ const recent=overview?.gameLog;
+ let names=recent?.statistics?.[0]?.names||[],rows=recent?.statistics?.[0]?.events||[],
+  events=recent?.events||{};
+ if(!Array.isArray(rows)||!rows.length){
+  const collection=(gameLog?.seasonTypes||[]).find(g=>g.displayName===competition)||
+    gameLog?.seasonTypes?.[0];
+  rows=(collection?.categories||[]).flatMap(c=>c.events||[]);
+  events=gameLog?.events||{};names=gameLog?.names||[];
+ }
+ const now=Date.now();
+ return rows.flatMap(row=>{
+  const match=events[String(row.eventId)]||gameLog?.events?.[String(row.eventId)];
+  const date=String(match?.gameDate||"");
+  if(!/^\d{4}-\d{2}-\d{2}/.test(date)||Date.parse(date)>now)return [];
+  const opponent=String(match?.opponent?.displayName||"").trim();
+  if(!opponent||!Array.isArray(row.stats))return [];
+  const keyed=new Map();
+  names.forEach((name,i)=>{
+   const k=STAT_NAMES.get(key(name)),n=num(row.stats[i]);
+   if(k&&n!=null)keyed.set(k,n);
+  });
+  if(!keyed.size)return [];
+  return [{date:date.slice(0,10),opponent,goals:keyed.get("Goals")??null,
+    assists:keyed.get("Assists")??null,shots:keyed.get("Shots")??null,
+    shotsOnTarget:keyed.get("Shots on target")??null,
+    minutes:keyed.get("Minutes")??null,appearance:row.stats?.[0]==="Started"?"Started":
+      row.stats?.[0]==="Sub"?"Sub":null}];
+ }).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+}
+
 async function verifyESPNHeadshot(id){
  if(!/^\d{1,12}$/.test(String(id||"")))return null;
  const url="https://a.espncdn.com/i/headshots/soccer/players/full/"+id+".png";
@@ -144,24 +206,30 @@ export default async function handler(req,res){
     status:"unverified",name,team:txt(team?.team?.displayName||team?.team?.name),
     note:"We could not match this player uniquely to the verified club roster.",stats:[],recent:[]});
   const id=String(player.id),api="https://sports.core.api.espn.com/v2/sports/soccer/leagues/"+league+"/athletes/"+id;
-  const [bio,stats,log]=await Promise.allSettled([
-   getJSON(api,3500),getJSON(api+"/statistics",3400),getJSON(api+"/statisticslog",3400)
+  const v3="https://site.web.api.espn.com/apis/common/v3/sports/soccer/"+league+"/athletes/"+id;
+  const [bio,stats,log,overview,gameLog]=await Promise.allSettled([
+   getJSON(api,3500),getJSON(api+"/statistics",3400),getJSON(api+"/statisticslog",3400),
+   getJSON(v3+"/overview",3800),getJSON(v3+"/gamelog",3600)
   ]);
   const from=x=>x.status==="fulfilled"?x.value:null;
   const profile=parseBio(from(bio),player,team?.team?.displayName||team?.team?.name||"");
   // ESPN often omits roster photo URLs while its player-ID CDN has the
   // portrait. HEAD-verify the URL first; never display a guessed image.
   if(!profile.headshot)profile.headshot=await verifyESPNHeadshot(id);
-  const season=statEntries(from(stats));
-  const recent=parseRecent(from(log));
-  // No data is silently fabricated: each supported stat originates in ESPN.
+  const verified=from(overview),matches=from(gameLog);
+  const summary=parseOverviewSeason(verified,league,teamId,matches);
+  const season=summary.stats.length?summary.stats:statEntries(from(stats));
+  const recent=parseESPNLastFive(verified,matches,summary.competition);
+  const actualRecent=recent.length?recent:parseRecent(from(log));
+  // Every number comes from a dated, independently retrieved provider field.
   return res.status(200).json({schema:"footyedge-player-profile-v1",status:"verified",
-   player:profile,stats:season,recent,statsVerified:season.length>0,
-   recentVerified:recent.length>0,checkedAt:new Date().toISOString()});
+   player:profile,competition:summary.competition,stats:season,recent:actualRecent,
+   statsVerified:season.length>0,recentVerified:actualRecent.length>0,
+   checkedAt:new Date().toISOString()});
  }catch{
   return res.status(200).json({schema:"footyedge-player-profile-v1",
    status:"unavailable",name,team:"",stats:[],recent:[],
    note:"Player details could not be verified right now."});
  }
 }
-export {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent};
+export {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent,parseOverviewSeason,parseESPNLastFive};
