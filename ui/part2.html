@@ -928,7 +928,7 @@ function viewCandidates(g){
   const reviewed=Array.isArray(g.feEditorialPicks)&&g.feEditorialPicks.length===3?g.feEditorialPicks:null;
   // Current-day recommendations must actually be reviewed; archived picks
   // remain stored for historical grading but are not republished as fresh tips.
-  if(!reviewed&&S.date===etDate()&&!ARCHIVE_CAPTURE)return [];
+  if(!reviewed&&S.date>=etDate()&&!ARCHIVE_CAPTURE)return [];
   return (reviewed||g.model?.top3||[]).filter(p=>{
     if(!p?.label)return false;
     const key=String(p.label).toLowerCase().trim().replace(/\s+/g," ");
