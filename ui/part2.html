@@ -903,7 +903,7 @@ async function pollAttributedOdds(){
 }
 function renderBest(){
   const a=[...topPicks()].sort((x,y)=>Number((y.archiveTopPick||y.model?.top)?.confidenceRating??(y.archiveTopPick||y.model?.top)?.score??0)-Number((x.archiveTopPick||x.model?.top)?.confidenceRating??(x.archiveTopPick||x.model?.top)?.score??0)),el=document.getElementById("best");
-  document.getElementById("topSub").textContent="Confidence-ranked match predictions · source-backed evidence";
+  document.getElementById("topSub").textContent="Confidence-ranked match predictions · statistical analysis";
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.archiveTopPick||g.model.top,px=null;
@@ -1406,18 +1406,15 @@ function feOfficialNewsHTML(g){
  if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return null;
  const side=(x,t)=>{
    const out=Array.isArray(x?.out)?x.out.slice(0,8):[],doubt=Array.isArray(x?.doubtful)?x.doubtful.slice(0,6):[],reports=Array.isArray(x?.injuryReports)?x.injuryReports.slice(0,6):[];
+   // Keep reportUrls as private research metadata; do not expose article links.
    const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><ul class="fe-newsPlayers">'+arr.map(person=>'<li>'+esc(person)+'</li>').join('')+'</ul>':'';
    return '<section class="teamNewsCard fe-sourceNews"><div class="teamNewsHead">'+teamImgTag(t,"newsTeamLogo")+
      '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+
      (out.length+doubt.length+reports.length?item(out,'REPORTED OUT / SUSPENDED','out')+
        item(doubt,'DOUBTFUL','doubt')+item(reports,'INJURY REPORT · AVAILABILITY NOT CONFIRMED','doubt'):
-       '<p class="fe-newsClear">No absence reported in the cited pre-match preview.</p>')+
-     (Array.isArray(x.reportUrls)&&x.reportUrls.length?'<p class="fe-sourceLine">'+x.reportUrls.filter(u=>/^https:\/\//.test(u)).slice(0,2).map((u,i)=>
-       '<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Official club report '+(i+1)+' ↗</a>').join(' · ')+'</p>':'')+'</section>';
+       '<p class="fe-newsClear">No confirmed absence listed for this fixture.</p>')+'</section>';
  };
- return side(intel.home,g.home)+side(intel.away,g.away)+
-   '<p class="fe-sourceLine fe-sourceSpan">As reported '+esc(intel.source.publishedOn||S.date)+' · <a href="'+esc(intel.source.url)+
-   '" target="_blank" rel="noopener noreferrer">View source and recheck before kickoff ↗</a></p>';
+ return side(intel.home,g.home)+side(intel.away,g.away);
 }
 function feTeamPitchRows(x,t,g,position){
  const confirmed=Array.isArray(x?.confirmedXI)&&x.confirmedXI.length===11;
@@ -1457,13 +1454,12 @@ function feLineupsPanel(g){
  return '<section class="fe-panel fe-lineupPanel">'+
    '<div class="fe-panelHeading"><h3>STARTING XIs</h3><span class="fe-sourceTag">'+
    (intel.home?.confirmedXI?.length===11&&intel.away?.confirmedXI?.length===11?'OFFICIAL':'PREDICTED · NOT CONFIRMED')+'</span></div>'+
-   '<div class="fe-lineupToolbar"><span>Both teams · source-backed players</span><button type="button" class="fe-matchRefresh" data-refresh-match>↻ Update XIs</button></div>'+
+   '<div class="fe-lineupToolbar"><span>Both teams · matchday lineup information</span><button type="button" class="fe-matchRefresh" data-refresh-match>↻ Update XIs</button></div>'+
    '<div class="fe-sharedPitch" role="group" aria-label="Illustrative football pitch showing both '+esc(g.home.name)+' and '+esc(g.away.name)+' starting elevens">'+
    '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
    feTeamPitchRows(intel.away,g.away,g,"top")+feTeamPitchRows(intel.home,g.home,g,"bottom")+'</div>'+
    '<p class="fe-lineupCaution">'+((hasHome&&hasAway)?'Predicted XI — official lineups may differ.':'Predicted lineups incomplete for this fixture.')+'</p>'+
-   '<p class="fe-sourceLine">Source: <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
-   esc(intel.source.label||"match preview")+'</a>. Recheck confirmed lineups close to kickoff.</p>'+
+   ''+
    feMatchSourceStatus(g)+'</section>';
 }
 function feMatchSourceStatus(g){
@@ -1602,9 +1598,7 @@ async function feEnsureTable(g){
 function feTableTab(g){
  const table=g.feTable?.status==="verified"&&Array.isArray(g.feTable.table)?g.feTable.table:[];
  const display=x=>Number.isFinite(Number(x))&&x!==null&&x!==""?String(x):"—";
- if(!table.length)return '<section class="fe-panel"><h3>LEAGUE TABLE</h3><p class="fe-panelNote">Verified season standings are being checked. No league position will be estimated from a different season.</p>'+
-    '<a class="fe-sourceLine" href="https://www.google.com/search?q='+encodeURIComponent(displayLeagueName(g.league)+" "+g.year+" standings")+
-    '" target="_blank" rel="noopener noreferrer">Search current league standings ↗</a></section>';
+ if(!table.length)return '<section class="fe-panel"><h3>LEAGUE TABLE</h3><p class="fe-panelNote">Current season standings are being checked.</p></section>';
  const names=new Set([String(g.home?.id),String(g.away?.id)]);
  const rows=table.slice().sort((a,b)=>Number(a.rank)-Number(b.rank));
  const body=rows.map(row=>{
@@ -1614,9 +1608,7 @@ function feTableTab(g){
      '<td>'+display(row.played)+'</td><td>'+display(row.won)+'</td><td>'+display(row.drawn)+'</td><td>'+display(row.lost)+'</td>'+
      '<td>'+display(row.gd)+'</td><td><b>'+display(row.points)+'</b></td></tr>';
  }).join('');
- const provenance=g.feTable.sourceUrl&&/^https:\/\//.test(g.feTable.sourceUrl)?'<p class="fe-sourceLine">Source: <a href="'+esc(g.feTable.sourceUrl)+
-   '" target="_blank" rel="noopener noreferrer">'+esc(g.feTable.source||'ESPN competition standings')+'</a>'+
-   (g.feTable.asOf?' · As of '+esc(g.feTable.asOf.slice(0,10)):'')+'</p>':'';
+ const provenance='';
  return '<section class="fe-panel"><h3>LEAGUE TABLE · '+esc(displayLeagueName(g.league))+'</h3><div class="fe-tableWrap">'+
    '<table class="fe-leagueTable"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead>'+
    '<tbody>'+body+'</tbody></table></div>'+provenance+'</section>';
@@ -1779,28 +1771,15 @@ function plainFootballReason(g,p){
   return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
 function feReviewedReason(g,p){
- const base=plainFootballReason(g,p);
+ const base=String(plainFootballReason(g,p)||"").replace(/\s*These figures describe recent results, not a guaranteed outcome\.\s*$/i,"").trim();
  const preview=g.editorialPreview;
- if(!preview||!Array.isArray(preview.sources)||!preview.sources.some(s=>/^https:\/\//.test(s.url)))return base;
- const note=preview.marketNotes?.[p?.label]||"";
- const isDisputed=(preview.disputedMarkets||[]).some(x=>String(x).toLowerCase()===String(p?.label||"").toLowerCase());
- const clean=String(base||"").replace(/\s*These figures describe recent results, not a guaranteed outcome\.\s*$/i,"").trim();
- const matching=preview.sources.filter(s=>(s.supports||[]).some(x=>String(x).toLowerCase()===String(p.label||"").toLowerCase())).length;
- const extra=note?note:(isDisputed?preview.context:"");
- if(!extra)return clean;
- const context=isDisputed?"Published previews conflict on this market; be cautious. ":
-   matching>=2?"Independent previews also support this angle. ":
-   matching===1?"One published preview supports this angle. ":"";
- return [clean,context+extra].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+ // Match-specific cross-check stays internal. Write the rationale in FootyEdge's voice.
+ const note=String(preview?.marketNotes?.[p?.label]||"").trim();
+ const disputed=Array.isArray(preview?.disputedMarkets)&&preview.disputedMarkets.some(x=>String(x).toLowerCase()===String(p?.label||"").toLowerCase());
+ return [base,disputed?"This market carries conflicting match evidence.":"",note].filter(Boolean).join(" ");
 }
-function fePreviewLinks(g,p){
- return "";
- const preview=g.editorialPreview;
- if(!preview?.sources?.length)return "";
- const links=preview.sources.filter(s=>/^https:\/\//.test(String(s.url||""))).slice(0,3).map((s,i)=>
-  '<a href="'+esc(s.url)+'" target="_blank" rel="noopener noreferrer">Preview '+(i+1)+' ↗</a>').join(" · ");
- return links?'<div class="fe-whySources"><span>Cross-checked with dated match previews</span> '+links+'</div>':"";
-}
+function fePreviewLinks(){return "";}
+
 function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
