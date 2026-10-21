@@ -863,44 +863,44 @@
  }
 }
 
-/* Final plain club-color fixture artwork. No diagonals, patterns or stripes. */
+/* Owner-approved October 21 fixture treatment: continuous team-color gradients
+   only, with NO diagonal, vertical, kit-texture, or stripe overlays. */
 .fe-matchCard .fe-hero.fe-kitHero,
-.fe-dialogHero .fe-hero.fe-kitHero {
+.fe-dialogHero .fe-hero.fe-kitHero{
   background:radial-gradient(ellipse at 50% 52%,#001109 0%,#00150c 46%,#061b12 100%)!important;
 }
 .fe-matchCard .fe-hero.fe-kitHero::before,
-.fe-dialogHero .fe-hero.fe-kitHero::before {
+.fe-dialogHero .fe-hero.fe-kitHero::before{
   background:linear-gradient(90deg,
     color-mix(in srgb,var(--fe-home) 82%,#06180e) 0%,
     color-mix(in srgb,var(--fe-home) 67%,#06180e) 46%,
     color-mix(in srgb,var(--fe-home) 11%,#02150d) 86%,transparent 100%)!important;
-  background-image:linear-gradient(90deg,
-    color-mix(in srgb,var(--fe-home) 82%,#06180e) 0%,
-    color-mix(in srgb,var(--fe-home) 67%,#06180e) 46%,
-    color-mix(in srgb,var(--fe-home) 11%,#02150d) 86%,transparent 100%)!important;
+  background-repeat:no-repeat!important;
 }
 .fe-matchCard .fe-hero.fe-kitHero::after,
-.fe-dialogHero .fe-hero.fe-kitHero::after {
+.fe-dialogHero .fe-hero.fe-kitHero::after{
   background:linear-gradient(270deg,
     color-mix(in srgb,var(--fe-away) 82%,#06180e) 0%,
     color-mix(in srgb,var(--fe-away) 67%,#06180e) 46%,
     color-mix(in srgb,var(--fe-away) 11%,#02150d) 86%,transparent 100%)!important;
-  background-image:linear-gradient(270deg,
-    color-mix(in srgb,var(--fe-away) 82%,#06180e) 0%,
-    color-mix(in srgb,var(--fe-away) 67%,#06180e) 46%,
-    color-mix(in srgb,var(--fe-away) 11%,#02150d) 86%,transparent 100%)!important;
+  background-repeat:no-repeat!important;
 }
+/* Expanded last-five form uses the identical outlined rounded-square design
+   as fixture-card form (W green / D slate / L red), never circular pills. */
 .fe-recentForm .fe-miniResult,
-.fe-recentForm i.fe-miniResult {
+.fe-recentForm i.fe-miniResult{
   display:grid!important;place-items:center!important;
+  box-sizing:border-box!important;
   width:23px!important;height:23px!important;min-width:23px!important;
-  border-radius:6px!important;font:800 11px/1 system-ui,-apple-system,sans-serif!important;
+  flex:0 0 23px!important;border:1px solid transparent!important;
+  border-radius:6px!important;
+  font:800 11px/1 system-ui,-apple-system,sans-serif!important;
   font-style:normal!important;color:#f5faf7!important;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)!important;
+  box-shadow:none!important;
 }
-.fe-recentForm .fe-miniResult.W{background:#068d60!important}
-.fe-recentForm .fe-miniResult.D{background:#53616c!important}
-.fe-recentForm .fe-miniResult.L{background:#c82341!important}
+.fe-recentForm .fe-miniResult.W{background:#068d60!important;border-color:#0bd995!important}
+.fe-recentForm .fe-miniResult.D{background:#53616c!important;border-color:#8e9da1!important}
+.fe-recentForm .fe-miniResult.L{background:#c82341!important;border-color:#fa526c!important}
 
 /* Lineup portraits open an accessible, data-verified player intelligence sheet. */
 .fe-fieldPlayer.fe-playerOpen {
