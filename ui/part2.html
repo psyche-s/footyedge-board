@@ -1656,6 +1656,28 @@ function feOfficialNewsHTML(g){
 
 /* Player details are lazily researched on click. No arbitrary URLs from lineup
    data are fetched; the provider-matched ID is rechecked against its club roster. */
+/* Player photo sources are matched to ESPN club-roster identities only.
+   There is no cross-club/player-name global guessing or image-search fallback. */
+function feCachedPlayerPhoto(g,team,player){
+ const src=window.FE_PLAYER_PHOTOS||{},teamId=String(team?.id||"");
+ const league=String(g?.league||"");
+ const name=typeof player==="string"?player:String(player?.name||"");
+ const id=typeof player==="object"?String(player?.id||""):"";
+ const norm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+   .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const keys=[league+":"+teamId,...Object.keys(src).filter(k=>
+   k!==league+":"+teamId&&k.endsWith(":"+teamId))];
+ const records=keys.flatMap(k=>Array.isArray(src[k])?src[k]:[]);
+ const candidates=records.filter(row=>{
+  const fullname=norm(row[1]),asked=norm(name);
+  return asked.length>=3&&(fullname===asked||
+   (asked.length>=4&&fullname.endsWith(" "+asked)));
+ });
+ const unique=[...new Map(candidates.map(r=>[String(r[0]),r])).values()];
+ const match=id?unique.find(r=>String(r[0])===id):unique.length===1?unique[0]:null;
+ const url=String(match?.[2]||"");
+ return /^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(url)?url:"";
+}
 function fePlayerSafePhoto(src){
  const url=String(src||"");
  return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\//i.test(url)?
@@ -1763,7 +1785,9 @@ async function feOpenPlayerProfile(g,button){
  if(!name||!g)return;
  document.querySelector(".fe-playerOverlay")?.remove();
  const focusBack=button,team=[g.home,g.away].find(x=>String(x.id)===side);
- const fallback={name,teamName:team?.name||"Club not confirmed",photoUrl:button.querySelector(".fe-fieldAvatar img")?.src||"",
+ const fallback={name,teamName:team?.name||"Club not confirmed",
+   photoUrl:feCachedPlayerPhoto(g,team,{name,id:button.dataset.fePlayerId||""})||
+    button.querySelector(".fe-fieldAvatar img,.fe-squadAvatar img")?.src||"",
    position:"",jersey:""};
  const root=document.createElement("div");
  root.className="fe-playerOverlay";
@@ -1809,9 +1833,8 @@ function feTeamPitchRows(x,t,g,position){
  const formation=validated?sourceShape:"4-2-3-1",shape=validated?values:[4,2,3,1];
  const name=p=>typeof p==="string"?p:String(p?.name||"");
  const safeImage=p=>{
-  const id=typeof p==="object"?String(p?.id||""):"";
-  const photo=typeof p==="object"?String(p?.photoUrl||(/^\d{1,12}$/.test(id)?"https://a.espncdn.com/i/headshots/soccer/players/full/"+id+".png":"")):"";
-  return /^https:\/\/[a-z0-9._/?=&%-]+$/i.test(photo)?
+  const photo=feCachedPlayerPhoto(g,t,p)||(typeof p==="object"?String(p?.photoUrl||""):"");
+  return /^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(photo)?
     '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+esc(photo)+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
      '<span hidden>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>':
     '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>';
@@ -1846,7 +1869,7 @@ function feVerifiedSquadPanel(g){
     esc(teamDisplayName(g,team))+'</h4><div class="fe-squadPlayers">'+
     rows.map(player=>{
       const id=/^[0-9]{1,12}$/.test(String(player.id||""))?String(player.id):"";
-      const photo=/^https:\/\/a\.espncdn\.com\//i.test(String(player.photoUrl||""))?String(player.photoUrl):"";
+      const photo=feCachedPlayerPhoto(g,team,player)||(/^https:\/\/a\.espncdn\.com\//i.test(String(player.photoUrl||""))?String(player.photoUrl):"");
       const avatar=photo?'<img alt="" loading="lazy" src="'+esc(photo)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
         '<span hidden>'+esc(String(player.name).slice(0,2).toUpperCase())+'</span>':
         '<span>'+esc(String(player.name).slice(0,2).toUpperCase())+'</span>';
