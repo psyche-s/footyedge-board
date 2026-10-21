@@ -1199,8 +1199,13 @@ function pctRate(v){return typeof v==="number"&&Number.isFinite(v)?Math.round(v)
 
 const GITHUB_STATIC=typeof location!=="undefined"&&location.hostname.endsWith(".github.io");
 async function repoData(path){
-  const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
-  try{return await json(raw)}catch{return await json(path+"?v="+Date.now())}
+  // Prefer the version deployed with FootyEdge; no external GitHub round-trip
+  // during startup. Raw GitHub is only a bounded fallback for missing assets.
+  try{return await json("/"+path+"?v="+Date.now())}
+  catch(error){
+    const raw="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/"+path+"?v="+Date.now();
+    return await json(raw);
+  }
 }
 function renderMeta(){
   const today=etDate();
@@ -1234,6 +1239,16 @@ function render(){
 }
 async function load(date=S.date){
   S.date=date||etDate();
+  // A late provider must not leave an indefinite spinner. Keep date-scoped
+  // loading state so switching days never paints another day's data.
+  const loadingDate=S.date;
+  const loadingWatchdog=setTimeout(()=>{
+    if(S.date!==loadingDate)return;
+    const board=document.getElementById("games");
+    if(board?.querySelector(".loading")){
+      board.innerHTML='<div class="empty">Live data is taking longer than expected. Showing stored match information as soon as it is available. <button type="button" onclick="load(S.date)">Retry</button></div>';
+    }
+  },13500);
   S.boardReady=false;S.availability={kind:"loading",date:S.date};
   defaultStatusForDate(S.date);
   document.getElementById("best").innerHTML='<div class="loading"><div class="spin"></div>Ranking today’s best plays…</div>';
@@ -1491,7 +1506,8 @@ async function load(date=S.date){
     for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
     S.boardReady=true;
     S.games=games;attachSavedH2H(S.games);S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
-  }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)}</div>`}
+  }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)} <button type="button" onclick="load(S.date)">Retry</button></div>`}
+  finally{clearTimeout(loadingWatchdog)}
 }
 
 function verifiedPositionBadge(g,side){
