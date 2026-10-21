@@ -204,7 +204,7 @@ test("rolling previews never freeze converted or otherwise unverified prices",()
 
 test("expanded analysis uses uppercase WHY THIS PICK and preserves existing Team News rendering",()=>{
   assert.match(p2,/WHY THIS PICK/);
-  assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
+  assert.match(p2,/const newsHtml=feOfficialNewsHTML\(g\)\|\|teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
 test("EV requires calibrated probability and unavailable exact markets are explicit",()=>{
   assert.match(p1,/function groundedPickEv/);
@@ -217,7 +217,7 @@ test("EV requires calibrated probability and unavailable exact markets are expli
 test("expanded Team News keeps the original team-card layout",()=>{
   assert.match(p2,/Team news has not yet been independently verified for this fixture/);
   assert.match(p2,/teamNewsCard/);
-  assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
+  assert.match(p2,/const newsHtml=feOfficialNewsHTML\(g\)\|\|teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
 test("form chips support archived verified W D L strings",()=>{
   assert.match(p2,/function formHTML/);
@@ -226,7 +226,7 @@ test("form chips support archived verified W D L strings",()=>{
 
 test("collapsed match cards do not render Team News; expanded drawer keeps team cards",()=>{
   assert.doesNotMatch(p2,/const news=teamNewsSummary\(g,p\);\s*if\(news\)html\+=/);
-  assert.match(p2,/const newsHtml=teamCard\(g\.home\)\+teamCard\(g\.away\)/);
+  assert.match(p2,/const newsHtml=feOfficialNewsHTML\(g\)\|\|teamCard\(g\.home\)\+teamCard\(g\.away\)/);
   assert.match(p2,/modalTeamNews/);
 });
 test("verified prices render in American format from exact decimal price",()=>{
