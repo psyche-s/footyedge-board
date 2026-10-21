@@ -169,7 +169,8 @@ function parseESPNLastTen(overview,gameLogs,teamId,now=Date.now()){
    const status=tag==="started"?"Started":tag==="sub"||tag==="substitute"?"Sub":null;
    const prev=events.get(id);
    events.set(id,{eventId:id,date:date.slice(0,10),opponent,
-    competition:competition||prev?.competition||m.leagueName||null,
+    competition:txt(m.leagueShortName||m.leagueName||m.leagueAbbreviation)||
+      (competition==="Last 5 Matches"?prev?.competition:competition)||null,
     appearance:status||prev?.appearance||null,values:{...(prev?.values||{}),...vals},
     rank:Math.max(prev?.rank||0,rank)});
   }
