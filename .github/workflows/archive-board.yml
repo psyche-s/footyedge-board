@@ -38,9 +38,11 @@ jobs:
           MINUTES_SINCE_MIDNIGHT=$((10#$HOUR * 60 + 10#$MINUTE))
           RUN=false
           # GitHub scheduled runs may arrive hours late. Permit a delayed same-day
-          # recovery after 00:30 only while today's write-once archive is absent.
+          # recovery after 00:30 and before noon only while today's write-once
+          # archive is absent. DST duplicate UTC runs at 23:30 local must NEVER
+          # publish a previous-day board before its scheduled midnight freeze.
           # The EDT/EST retries therefore cannot create a duplicate official board.
-          if (( MINUTES_SINCE_MIDNIGHT >= 30 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
+          if (( MINUTES_SINCE_MIDNIGHT >= 30 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
             RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
