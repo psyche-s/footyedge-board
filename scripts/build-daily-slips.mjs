@@ -125,8 +125,11 @@ function compatible(a,b){
  // Two "team 1+" picks just restate BTTS Yes, rather than two distinct markets.
  if(A.family==="team-goal"&&B.family==="team-goal")return false;
  if(A.family==="btts"||B.family==="btts"){
-   const other=A.family==="btts"?B:A;
-   return !["total","team-goal","btts"].includes(other.family);
+   const btts=A.family==="btts"?A:B,other=A.family==="btts"?B:A;
+   if(other.family==="btts"||other.family==="team-goal")return false;
+   // BTTS Yes implies over 1.5 goals but does not imply under 4.5.
+   if(other.family==="total"&&btts.yes&&other.dir==="over"&&other.line<=1.5)return false;
+   return true;
  }
  if(A.family==="winner"&&B.family==="winner")return false;
  if(A.family==="double-chance"&&B.family==="double-chance")return false;
