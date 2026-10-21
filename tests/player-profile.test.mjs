@@ -118,3 +118,14 @@ test("Profile loading is compact and unverified fields are filtered instead of o
  assert.match(css,/transform:scale\(1\.58\)!important/);
  assert.match(css,/object-fit:contain!important/);
 });
+
+test("Complete fixture script parses and player profile displays only real stat values",()=>{
+ const combined=fs.readFileSync("ui/part1.html","utf8")+fs.readFileSync("ui/part2.html","utf8");
+ const scripts=[...combined.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
+ assert.ok(scripts.length>=1,"combined fixture page must contain executable script");
+ for(const script of scripts)assert.doesNotThrow(()=>new Function(script[1]));
+ const ui=fs.readFileSync("ui/part2.html","utf8");
+ assert.match(ui,/const numericStats=/);
+ assert.match(ui,/--fe-player-stat-count/);
+ assert.doesNotMatch(ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("function feOpenPlayerProfile(")),/Not available<\/strong>/);
+});
