@@ -13,7 +13,7 @@ function extractStarters(summary){
   const starters=rows.filter(p=>p?.starter===true||p?.isStarter===true||p?.starting===true).map(p=>{
    const athlete=p.athlete||p.player||p;
    const name=String(athlete?.displayName||athlete?.fullName||athlete?.name||"").trim();
-   const link=String(athlete?.headshot?.href||athlete?.headshot||"");
+   const link=String(athlete?.headshot?.href||athlete?.headshot||(/^[0-9]{1,12}$/.test(String(athlete?.id||""))?"https://a.espncdn.com/i/headshots/soccer/players/full/"+athlete.id+".png":""));
    return {id:/^\d{1,12}$/.test(String(athlete.id||""))?String(athlete.id):null,
     name,photoUrl:/^https:\/\/a\.espncdn\.com\//.test(link)?link:null,
     jersey:athlete.jersey||athlete.jerseyNumber||null,
@@ -44,7 +44,7 @@ function rosterPhotos(payload){
  return rows.map(entry=>{
   const a=entry.athlete||entry;
   const name=String(a.displayName||a.fullName||a.name||"").trim();
-  const href=String(a.headshot?.href||a.headshot||"");
+  const href=String(a.headshot?.href||a.headshot||(/^[0-9]{1,12}$/.test(String(a.id||""))?"https://a.espncdn.com/i/headshots/soccer/players/full/"+a.id+".png":""));
   return name?{id:/^\d{1,12}$/.test(String(a.id||""))?String(a.id):null,
     name,photoUrl:/^https:\/\/a\.espncdn\.com\//.test(href)?href:null,
     jersey:a.jersey||a.jerseyNumber||null,position:a.position?.displayName||null}:null;
