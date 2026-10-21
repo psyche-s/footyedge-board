@@ -91,3 +91,17 @@ test("The official scheduled refresh locks source-only picks and avoids model-bu
  const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
  assert.match(css,/Final fixture mockup lock/);
 });
+
+test("The fixture UI and parlay page can never fall back to model slips for upcoming games",()=>{
+ const fixtures=fs.readFileSync("ui/part2.html","utf8");
+ const page=fs.readFileSync("top-picks.html","utf8");
+ const researchJob=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
+ const freeze=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
+ const deskJob=fs.readFileSync(".github/workflows/daily-slip-desk.yml","utf8");
+ assert.match(fixtures,/if\(!reviewed&&S\.date>=etDate\(\)&&!ARCHIVE_CAPTURE\)return \[\];/);
+ assert.match(page,/date<localDate\(\)\?await data\("data\/slips\//);
+ assert.match(page,/if\(date>=localDate\(\)\)/);
+ assert.doesNotMatch(researchJob,/SLIP_DATE="\$TODAY" node scripts\/build-daily-slips\.mjs/);
+ assert.match(freeze,/MINUTES_SINCE_MIDNIGHT < 720/);
+ assert.match(deskJob,/github\.event_name \}\}" == "push"/);
+});
