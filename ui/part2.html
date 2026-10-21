@@ -830,7 +830,8 @@ function feOwnerConsensusTop3(g){
  const A=(g.baseResearch?.last10?.away||[]).slice(0,10);
  if(H.length<5||A.length<5)return null;
  const preview=g.editorialPreview;
- const home=String(g.home?.name||""),away=String(g.away?.name||"");
+ const home=String(typeof g.home==="string"?g.home:g.home?.name||"");
+ const away=String(typeof g.away==="string"?g.away:g.away?.name||"");
  const looksValid=preview?.home===home&&preview?.away===away&&Array.isArray(preview.sources);
  const domainAllow=new Set(["footballwhispers.com","sportsmole.co.uk","sportskeeda.com","forebet.com"]);
  const independent=(looksValid?preview.sources:[]).filter(e=>{
