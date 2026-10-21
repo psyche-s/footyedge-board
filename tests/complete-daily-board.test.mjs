@@ -12,7 +12,7 @@ test('published, owner-approved research slate has five-result form and exactly 
  // their original selections to enforce a newer confidence-only contract.
  if(board.date<'2026-10-21'){t.skip('Earlier immutable boards use the historical policy');return}
  assert.ok(board.games.length>0);
- const eligible=new Set(['Goals','Team Goals','BTTS','Double Chance','Match Result']);
+ const eligible=new Set(['Goals','Team Goals','BTTS','Double Chance','Match Result','Handicap']);
  for(const g of board.games){
   assert.ok(Array.isArray(g.top3)&&g.top3.length<=3,'Invalid Top3 for '+g.id);
   // A verified form shortfall produces PASS, not invented records or picks.
