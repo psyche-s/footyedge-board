@@ -1129,8 +1129,8 @@ function feMatchHero(g){
  const h=feKitPalette(g.home,"home"),a=feKitPalette(g.away,"away");
  // Scores are rendered ONLY when confirmed by the live-score feed; missing scores are never inferred.
  const core=scored
-  ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'fe-status-final')+'">'+(live?'<i class="fe-liveDot"></i>':'')+(live?'LIVE':'FINAL')+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
-  :live?'<div class="fe-scorePending"><strong><i class="fe-liveDot"></i> LIVE</strong><small>Score awaiting verification</small></div>'
+  ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'fe-status-final')+'">'+(live?'<span class="fe-liveLabel"><i class="fe-liveDot" aria-hidden="true"></i>LIVE</span>':'<span class="fe-finalLabel">FINAL</span>')+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
+  :live?'<div class="fe-scorePending"><strong class="fe-liveLabel"><i class="fe-liveDot" aria-hidden="true"></i>LIVE</strong><small>Score awaiting verification</small></div>'
   :final?'<div class="fe-scorePending"><strong>FINAL</strong><small>Official score unavailable</small></div>'
   :'<div class="fe-kickoff"><strong>– &nbsp; –</strong><span>'+esc(feDay(g.date))+'</span><small>'+esc(timeET(g.date))+' ET</small></div>';
  return '<div class="fe-hero fe-kitHero" data-home-kit="'+h.pattern+'" data-away-kit="'+a.pattern+'" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
@@ -1139,7 +1139,20 @@ function feMatchHero(g){
 }
 function renderGames(){
   let list=S.games.filter(filterOK);
-  list=[...list].sort(S.sort==="confidence"?(a,b)=>(viewPick(b)?.confidenceRating??viewPick(b)?.score??0)-(viewPick(a)?.confidenceRating??viewPick(a)?.score??0):(a,b)=>new Date(a.date)-new Date(b.date));
+  // Regardless of selected sort: LIVE first, UPCOMING next, FINAL last.
+  // Never infer a live match from kickoff alone; use the verified match status.
+  const fixtureStateRank=g=>feActualLive(g)?0:(g.done===true||feActualFinal(g))?2:1;
+  list=[...list].sort((a,b)=>{
+    const state=fixtureStateRank(a)-fixtureStateRank(b);
+    if(state)return state;
+    if(S.sort==="confidence"){
+      const grade=(viewPick(b)?.confidenceRating??viewPick(b)?.score??0)-
+        (viewPick(a)?.confidenceRating??viewPick(a)?.score??0);
+      if(grade)return grade;
+    }
+    const times=Date.parse(a.date)-Date.parse(b.date);
+    return (Number.isFinite(times)?times:0)||String(a.id).localeCompare(String(b.id));
+  });
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" fixture"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
