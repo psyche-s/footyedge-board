@@ -1957,7 +1957,7 @@ function plainFootballReason(g,p){
   return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
 function feReviewedReason(g,p){
-  if(p?.sourceBackedReason&&p.reason&&Array.isArray(g.feEditorialPicks))return String(p.reason);
+  if(p?.reason&&Array.isArray(g.feEditorialPicks)&&g.feEditorialPicks.some(x=>x.label===p.label))return String(p.reason);
   // Human-readable fallback for archived fixtures that lack a fresh independent
   // match review. Never present old model trends as preview consensus.
   const home=String(g.home?.name||"Home side"),away=String(g.away?.name||"Away side");
