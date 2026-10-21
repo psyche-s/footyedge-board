@@ -20,7 +20,7 @@ test('Live API requests are bounded and always clear abort timers',()=>{
 test('Missing live data never leaves a permanent spinner and has a retry',()=>{
  const load=last.slice(last.indexOf('async function load(date=S.date){'));
  assert.match(load,/const loadingWatchdog=setTimeout/);
- assert.match(load,/13500/);
+ assert.match(load,/11200/);
  assert.match(load,/board\.innerHTML/);
  assert.match(load,/onclick="load\(S.date\)"/);
  assert.match(load,/finally\{clearTimeout\(loadingWatchdog\)\}/);
