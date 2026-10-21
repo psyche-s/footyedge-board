@@ -1859,7 +1859,7 @@ function feTeamPitchRows(x,t,g,position){
 }
 function feLineupsPanel(g){
  // Always present the same football pitch for every tracked league. Without
- // a source-backed XI, keep the missing team half empty instead of repeating an entire squad;
+ // a source-backed XI, show the empty team half without a duplicate squad list;
  // do not position ordinary roster members as alleged starters.
  const raw=g.liveIntel||g.teamIntel;
  const intel=raw&&/^https:\/\//.test(String(raw.source?.url||""))?raw:{home:{},away:{}};
@@ -1904,8 +1904,8 @@ async function feRefreshMatch(g){
   const data=await json('/api/match-updates?league='+encodeURIComponent(g.league)+'&id='+encodeURIComponent(g.id)+'&date='+encodeURIComponent(S.date));
   if(data?.schema!=="footyedge-match-check-v1"||String(data.id)!==String(g.id))throw Error("Match feed could not be verified");
   g.feMatchCheck=data;
-  // A La Liga or other domestic fixture may lack a confirmed XI; use the
-  // roster only for identity and portraits, never a duplicate visible squad.
+  // A La Liga or other domestic fixture may have a verified squad without
+  // a confirmed XI; show that squad clearly labelled instead of a blank tab.
   g.feSquadRosters=data.rosterHeadshots||{};
   const nameKey=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
   const team=(side)=>{
