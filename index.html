@@ -27,6 +27,8 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
 #boardProbe{position:absolute!important;left:-10000px!important;top:-10000px!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important;border:0!important}
 @media(max-width:900px){.grid{grid-template-columns:.8fr 1.2fr}}
 @media(max-width:640px){.nav{height:58px;padding:0 14px;gap:12px}.logo{font-size:19px}.links{gap:10px}.links a{font-size:10px}.hero{padding:16px 12px 18px}.heroVisual{border-radius:17px}.heroStage{height:285px}.heroStage>img{object-fit:cover;object-position:center center}.heroStage:after{background:linear-gradient(180deg,rgba(2,9,5,.03) 0%,rgba(2,10,6,.12) 24%,rgba(2,10,6,.38) 53%,rgba(2,10,6,.82) 82%,#07160d 100%)}.heroBrand{left:22px;right:22px;bottom:22px}.heroBrand h1{font-size:39px;letter-spacing:-2px}.tag{font-size:13px}.heroCopy{padding:16px 22px 22px}.heroIntro{font-size:12px;line-height:1.58}.heroMicro{margin-top:10px;font-size:10.5px}.grid{grid-template-columns:1fr;gap:10px;margin-top:10px}.topCard{grid-column:auto}.card{border-radius:14px;padding:16px}.topCard{padding:0}.rateStrong{font-size:43px}.supportCta{min-height:46px;font-size:13px}.footer{padding:0 14px 22px}}
+
+.fe-homeLinks{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:4px 11px 12px}.fe-homeLinks .cta{margin:0;min-width:0;padding:0 10px}.fe-fixtureCta{background:#0e2d1e!important;border:1px solid #2c915b!important;color:#c9f8db!important}@media(max-width:550px){.fe-homeLinks{grid-template-columns:1fr 1fr}.fe-homeLinks .cta{font-size:11px!important}}
 </style>
 </head>
 <body>
@@ -35,7 +37,7 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
     <a class="logo" href="./">Footy<span>Edge</span></a>
     <div class="links">
       <a class="active" href="./">Home</a>
-      <a href="picks.html">Today’s Picks</a>
+      <a href="top-picks.html">Top Picks</a><a href="picks.html">Fixtures</a>
       <a href="hit-rate.html">Hit Rate</a><a href="about.html">About</a>
     </div>
   </nav>
@@ -51,7 +53,7 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
         </div>
       </div>
       <div class="heroCopy">
-        <p class="heroIntro">FootyEdge is completely free to use. It brings stats, trends, form, H2H, market pricing and model-based analysis into one clean place so you can research matches and make your own picks.</p>
+        <p class="heroIntro">FootyEdge is completely free to use. It brings stats, trends, form, H2H, projections and evidence-based analysis into one clean place so you can research matches and make your own picks.</p>
         <p class="heroMicro">Nothing is behind a paywall. No picks are guaranteed. Gamble responsibly.</p>
         <div class="support">
           <a class="supportCta" href="https://www.buymeacoffee.com/sPsyche" target="_blank" rel="noopener" aria-label="Support FootyEdge">
@@ -76,7 +78,7 @@ a{color:inherit;text-decoration:none}.shell{min-height:100vh}
       <article class="card topCard">
         <div class="topHead"><h2>Today’s Top 5 Picks</h2><small>Live snapshot</small></div>
         <div class="topList" id="topList"><div class="loading">Loading today’s published picks…</div></div>
-        <a class="cta" href="picks.html">See all games &amp; analysis for today <span>→</span></a>
+        <div class="fe-homeLinks"><a class="cta" href="top-picks.html">★ Top Picks <span>→</span></a><a class="cta fe-fixtureCta" href="picks.html">⚽ Today’s Fixtures <span>→</span></a></div>
       </article>
     </section>
   </main>

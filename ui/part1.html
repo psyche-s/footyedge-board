@@ -1639,36 +1639,36 @@ body{background:#031008}
 @media(max-width:760px){.bestRow{grid-template-columns:28px 45px minmax(0,1fr) 72px 12px!important;gap:7px}}
 @media(max-width:500px){.bestRow{grid-template-columns:28px 40px minmax(0,1fr) 59px 10px!important}}
 </style>
-<link rel="stylesheet" href="assets/footyedge-match-v3.css?v=1">
+<link rel="stylesheet" href="assets/footyedge-match-v3.css?v=4">
 </head>
 <body>
 <div class="wrap">
   <nav class="siteNav" aria-label="Main navigation">
     <a class="siteLogo" href="./">Footy<span>Edge</span></a>
-    <div class="siteLinks"><a href="/">Home</a><a class="active" href="picks.html">Today’s Picks</a><a href="hit-rate.html">Hit Rate</a><a href="about.html">About</a></div>
+    <div class="siteLinks"><a href="/">Home</a><a href="top-picks.html">Top Picks</a><a class="active" href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a><a href="about.html">About</a></div>
   </nav>
   <button id="settingsBtn" hidden aria-hidden="true"></button>
 
   <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="todayBtn" id="todayShortcut">Today</button><button class="navBtn gameSearchBtn" id="searchBtn" aria-label="Search games" aria-controls="searchBar" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button><button class="navBtn" id="next">›</button></section>
-  <div class="searchBar" id="searchBar"><input id="searchInput" aria-label="Search team, country or fixture" type="search" placeholder="Search team, country or fixture…"></div>
+  <div class="searchBar on" id="searchBar"><span class="fe-searchGlyph" aria-hidden="true">⌕</span><input id="searchInput" aria-label="Search clubs and fixtures" type="search" placeholder="Search clubs or fixtures…"></div>
 
   <section class="filters" id="filters">
-    <div class="filterGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow"><button class="filterPill active" data-league="all">All Leagues</button></div></div>
-    <div class="filterGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Completed</button><button class="filterPill active" data-status="all">All Games</button></div></div>
-    <div class="filterGroup"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="ml">ML</button><button class="filterPill" data-filter="result">ML / Double Chance</button><button class="filterPill" data-filter="atgs">ATGS</button><button class="filterPill" data-filter="soa" title="Score or Assist" aria-label="Score or Assist">SOA</button></div></div>
+    <div class="filterGroup fe-leagueGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow" hidden><button class="filterPill active" data-league="all">All Leagues</button></div><select id="feLeagueSelect" aria-label="Choose league"><option value="all">All leagues</option></select></div>
+    <div class="filterGroup fe-statusGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="completed">Final</button><button class="filterPill active" data-status="all">Today</button></div></div>
+    <div class="filterGroup fe-hiddenMarket"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="ml">ML</button><button class="filterPill" data-filter="result">ML / Double Chance</button><button class="filterPill" data-filter="atgs">ATGS</button><button class="filterPill" data-filter="soa" title="Score or Assist" aria-label="Score or Assist">SOA</button></div></div>
   </section>
 
   
 
-  <div class="sectionHead" id="topAnchor"><div class="sectionTitle"><span class="sectionIcon starIcon">★</span><h2>Today’s Top Picks</h2></div><div class="sectionMeta" id="topSub">Max 5 · 85%+ confidence</div><span id="stamp" hidden></span></div>
-  <section class="bestList" id="best"><div class="loading"><div class="spin"></div>Ranking today’s best plays…</div></section>
+  <div class="sectionHead" id="topAnchor" hidden><div class="sectionTitle"><span class="sectionIcon starIcon">★</span><h2>Today’s Top Picks</h2></div><div class="sectionMeta" id="topSub">Max 5 · 85%+ confidence</div><span id="stamp" hidden></span></div>
+  <section class="bestList" id="best" hidden><div class="loading"><div class="spin"></div>Ranking today’s best plays…</div></section>
 
-  <div class="sectionHead" id="matchesAnchor"><div class="sectionTitle"><span class="sectionIcon">⚽</span><h2 id="gamesTitle">Today’s Games</h2></div><div class="gamesMeta"><span id="gamesCount">0 games</span><button class="sortBtn" id="sortBtn">☷ Sort</button></div><span id="source" hidden></span></div>
+  <div class="sectionHead" id="matchesAnchor"><div class="sectionTitle"><span class="sectionIcon">⚽</span><h2 id="gamesTitle">Today’s Fixtures</h2></div><div class="gamesMeta"><span id="gamesCount">0 games</span><button class="sortBtn" id="sortBtn">☷ Sort</button></div><span id="source" hidden></span></div>
   <section class="games" id="games"><div class="loading"><div class="spin"></div>Loading live games…</div></section>
   <footer class="foot"><span>FootyEdge · live soccer intelligence</span><span>Model confidence is a ranking signal, not a guarantee</span></footer>
 </div>
 <div class="drawer" id="drawer"><div class="modal" role="dialog" aria-modal="true" aria-label="Match details"><div class="modalHead"><button class="close" id="close" aria-label="Close match details">×</button></div><div class="modalBody" id="modalBody"></div></div></div>
-<nav class="mobileNav"><button class="on" onclick="document.getElementById('topAnchor').scrollIntoView({behavior:'smooth'})">★ Top Picks</button><button onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Matches</button></nav>
+<nav class="mobileNav"><button onclick="location.href='top-picks.html'">★ Top Picks</button><button class="on" onclick="document.getElementById('matchesAnchor').scrollIntoView({behavior:'smooth'})">⚽ Fixtures</button></nav>
 <script src="assets/board-availability.js?v=69"></script>
 <script>
 const TZ="America/Toronto";
