@@ -37,10 +37,10 @@ test("Top picks separate page has research SGP, ACCA and top 10 evidence-gated m
  assert.doesNotMatch(picks,/THE J1 GOALS FLYER/);
  assert.match(picks,/THE MATCHDAY ACCA/);
  assert.match(picks,/Top 10 Market Props/);
- assert.match(picks,/RESEARCH ONLY/);
+ assert.match(picks,/FOOTYEDGE <span class="slipFootmark">◆<\/span>/);
  assert.match(picks,/class="ticketTear"/);
  assert.match(picks,/\.ticketPaper \.legTitle/);
- assert.match(picks,/Confidence percentages describe/);
+ assert.match(picks,/Confidence grades are research rankings/);
  assert.match(picks,/data\("data\/slips\/"\+date\+"\.json"\)/);
  assert.match(picks,/desk\.sgp/);
  assert.match(picks,/desk\.acca/);

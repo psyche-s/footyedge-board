@@ -30,7 +30,8 @@ test("Real reviewed SGP has three to five legs and cross-match accumulator has o
  assert.equal(new Set(doc.acca.legs.map(x=>x.gameId)).size,doc.acca.legs.length);
  for(const leg of [...doc.sgp.legs,...doc.acca.legs])assert.equal(leg.verifiedPrice,false);
  assert.match(picks,/editorial-desk/);
- assert.match(picks,/LEGS · ODDS UNVERIFIED/);
+ assert.match(picks,/items.length+" LEGS"/);
+ assert.doesNotMatch(picks,/LEGS · ODDS UNVERIFIED/);
  assert.match(picks,/length>=3/);
 });
 test("Fixture sides keep a uniform dark-centred visual treatment",()=>{

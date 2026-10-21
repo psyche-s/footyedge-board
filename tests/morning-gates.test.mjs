@@ -222,7 +222,7 @@ test("EV requires calibrated probability and unavailable exact markets are expli
 });
 
 test("expanded Team News keeps the original team-card layout",()=>{
-  assert.match(p2,/Team news has not yet been independently verified for this fixture/);
+  assert.match(p2,/Team news not yet confirmed/);
   assert.match(p2,/teamNewsCard/);
   assert.match(p2,/const newsHtml=feOfficialNewsHTML\(g\)\|\|teamCard\(g\.home\)\+teamCard\(g\.away\)/);
 });
