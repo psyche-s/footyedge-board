@@ -1624,7 +1624,8 @@ function feOfficialNewsHTML(g){
 function fePlayerSafePhoto(src){
  const url=String(src||"");
  return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\//i.test(url)?
-   '<img class="fe-playerPortrait" alt="" loading="lazy" decoding="async" src="'+esc(url)+'">':'';
+   '<img class="fe-playerPortrait" alt="" loading="lazy" decoding="async" src="'+esc(url)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
+   '<span class="fe-playerPortraitPlaceholder" hidden>—</span>':'';
 }
 function fePlayerRole(position){
  const raw=String(position||"").trim(),p=raw.toLowerCase();
