@@ -318,3 +318,12 @@
  .fe-scoreMode>em{grid-column:1/-1;text-align:right}
 }
 @media(prefers-reduced-motion:reduce){.fe-arrowIcon{transition:none!important}}
+
+/* On-demand source refresh in match details: small, not box-within-box */
+.fe-sourceHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.fe-sourceHead h3{margin:0!important}
+.fe-matchRefresh{appearance:none;display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:5px 10px;border:1px solid #3c8b5e;border-radius:9px;background:#113a25;color:#a5ffcc;font-size:11px;font-weight:800;white-space:nowrap}
+.fe-matchRefresh:hover,.fe-matchRefresh:focus-visible{border-color:#71e6aa;background:#195035}
+.fe-refreshXi{margin:0 0 13px}
+.fe-matchDataNote{margin:12px 0 0;color:#a9c8b4;font-size:11px;line-height:1.6}
+@media(max-width:620px){.fe-sourceHead h3{font-size:11px!important}.fe-matchRefresh{font-size:10px;min-height:31px;padding:5px 7px}}
