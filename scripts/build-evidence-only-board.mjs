@@ -47,7 +47,10 @@ function generate(g){
   const candidates=[];
   function angle(label,category,fH,fA,family){
     const h=H.filter(fH).length,a=A.filter(fA).length,n=H.length+A.length,observed=Math.round(100*(h+a)/n);
-    if(Math.min(h/H.length,a/A.length)<0.50||observed<65)return; // Secondary angles may be moderate, never label them elite.
+    if(Math.min(h/H.length,a/A.length)<0.50||observed<65)return; // Unsupported markets are passed, not forced.
+    const h5=H.slice(0,5).filter(fH).length,a5=A.slice(0,5).filter(fA).length;
+    const researchGrade=Math.round(.75*observed+.25*10*(h5+a5));
+    const homeVenue=H.filter(x=>x.venue==='home'),awayVenue=A.filter(x=>x.venue==='away');
     const facts=[g.home.name+': '+h+'/'+H.length+' recent games matched this trend.',g.away.name+': '+a+'/'+A.length+' recent games matched the corresponding trend.'];
     // Write like a football preview, based on the exact relevant match sample.
     let description='';
@@ -66,11 +69,15 @@ function generate(g){
     }else{
       description=label+' fits '+h+' of '+H.length+' recent games for '+g.home.name+' and '+a+' of '+A.length+' for '+g.away.name+'.';
     }
-    const reason=description+' These figures describe recent results, not a guaranteed outcome.';
-    candidates.push({label,category,family,score:observed,modelScore:null,baseScore:null,modelProb:null,marketProb:null,ev:null,
+    const recent=' Across the last five, the same angle held '+h5+'/5 and '+a5+'/5 times respectively.';
+    const venue=(homeVenue.length>=3&&awayVenue.length>=3)?
+      ' Home/away splits: '+homeVenue.filter(fH).length+'/'+homeVenue.length+' for '+g.home.name+' at home, and '+
+      awayVenue.filter(fA).length+'/'+awayVenue.length+' for '+g.away.name+' away.':'';
+    const reason=description+recent+venue;
+    candidates.push({label,category,family,score:researchGrade,modelScore:null,baseScore:null,modelProb:null,marketProb:null,ev:null,
       odds:null,displayOdds:null,provider:null,bookKey:null,bookExact:false,verifiedPrice:false,priceEligible:false,
-      confidenceType:'historical_trend_hit_rate',researchOnly:true,archivedCommentary:reason,
-      archivedSupportFacts:facts,reason,stars:star(observed),historicalHits:h+a,historicalSample:n,homeHits:h,homeSample:H.length,awayHits:a,awaySample:A.length,crossSources:0});
+      confidenceType:'multi_window_research_grade',researchOnly:true,archivedCommentary:reason,
+      archivedSupportFacts:facts,reason,stars:star(researchGrade),historicalHits:h+a,historicalSample:n,homeHits:h,homeSample:H.length,awayHits:a,awaySample:A.length,crossSources:0});
   }
   angle('Over 1.5 Goals','Goals',x=>x.gf+x.ga>=2,x=>x.gf+x.ga>=2,'total-over');
   angle('Over 2.5 Goals','Goals',x=>x.gf+x.ga>=3,x=>x.gf+x.ga>=3,'total-over');
@@ -89,19 +96,29 @@ function generate(g){
   const sourceReview=editorialById.get(String(g.id));
   if(sourceReview&&Array.isArray(sourceReview.sources)){
     for(const candidate of candidates){
-      const note=sourceReview.marketNotes?.[candidate.label]||"";
-      const sources=sourceReview.sources.filter(s=>(s.supports||[]).some(x=>x.toLowerCase()===candidate.label.toLowerCase()));
+      const note=String(sourceReview.marketNotes?.[candidate.label]||"")
+        .replace(/https?:\/\/\S+/gi,"")
+        .replace(/\b(?:Football Whispers|Sportskeeda|Sports Mole|Forebet|FotMob|WhoScored|Soccerway)\b/gi,"")
+        .replace(/\b(?:independent|published) preview(?:s| research)?\b/gi,"match analysis")
+        .replace(/\s{2,}/g," ").trim();
+      const sources=sourceReview.sources.filter(s=>{
+        const day=String(s.publishedOn||"");
+        return /^https:\/\//.test(String(s.url||""))&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&day<=DATE&&
+          Date.parse(DATE+'T00:00:00Z')-Date.parse(day+'T00:00:00Z')<=7*86400000&&
+          (s.supports||[]).some(x=>String(x).toLowerCase()===candidate.label.toLowerCase());
+      });
+      const independentAgreement=new Set(sources.map(x=>new URL(x.url).hostname)).size;
       const disagreement=(sourceReview.disputedMarkets||[]).some(x=>x.toLowerCase()===candidate.label.toLowerCase());
       if(disagreement){candidate.score=Math.max(60,candidate.score-4);candidate.editorialDisagreement=true;}
       if(note){
         candidate.reason=candidate.reason.replace(/ These figures describe recent results, not a guaranteed outcome\.$/,"")+" "+
-          (disagreement?"Independent previews disagree on this result. ":"")+note;
+          (disagreement?"This angle has conflicting match evidence. ":"")+note;
         candidate.archivedCommentary=candidate.reason;
         candidate.sourceBackedReason=true;
         candidate.editorialSources=sourceReview.sources.map(x=>({url:x.url,publishedOn:x.publishedOn}));
       }
       // Modest ranking signal only if two independently attributed previews agree.
-      if(sources.length>=2&&!disagreement)candidate.score=Math.min(96,candidate.score+1);
+      if(independentAgreement>=2&&!disagreement)candidate.score=Math.min(96,candidate.score+2);
       candidate.researchStrength=candidate.score;
     }
   }
