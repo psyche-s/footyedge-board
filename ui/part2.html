@@ -1024,7 +1024,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1037,7 +1037,8 @@ async function load(date=S.date){
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/board-drafts/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/model-boards-v3/'+S.date+'.json').catch(()=>repoData('data/model-boards-v2/'+S.date+'.json').catch(()=>repoData('data/model-boards/'+S.date+'.json').catch(()=>null))),
       repoData('data/market-reviews/'+S.date+'.json').catch(()=>null),
-      repoData('data/h2h/'+S.date+'.json').catch(()=>null)
+      repoData('data/h2h/'+S.date+'.json').catch(()=>null),
+      repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
@@ -1061,8 +1062,15 @@ async function load(date=S.date){
     // H2H is a separate historical-data overlay, NOT part of frozen predictions.
     const h2hCache=new Map((h2hPayload?.schema==='footyedge-h2h-history-v1'&&h2hPayload.date===S.date
       ?h2hPayload.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
+    const verifiedIntel=new Map((teamIntelPayload?.schema==="footyedge-sourced-team-intelligence-v1"&&teamIntelPayload.date===S.date
+      ?teamIntelPayload.fixtures||[]:[]).filter(x=>x.source?.url?.startsWith("https://")&&x.date===S.date)
+      .map(x=>[String(x.fixtureId),x]));
     const attachSavedH2H=items=>{
       for(const game of items){
+        game.teamIntel=verifiedIntel.get(String(game.id))||null;
+        // Restored frozen previews retain their immutable picks; attach
+        // verified last-five form and news only as a read-only display overlay.
+        game.baseResearch=game.baseResearch||researchBaseMap.get(fixtureMatchKey(game.home?.name,game.away?.name))||null;
         const row=h2hCache.get(String(game.id));
         if(!row||String(row.homeId)!==String(game.home?.id)||String(row.awayId)!==String(game.away?.id))continue;
         const before=(row.h2h||[]).filter(m=>Number.isFinite(Date.parse(m.date))&&Date.parse(m.date)<Date.parse(game.date)&&
@@ -1265,7 +1273,7 @@ function matchH2HHtml(g){
   }).join(""):(g.matchDetailsPending?'<p class="h2hEmpty">Checking recorded previous meetings…</p>':'<p class="h2hEmpty">'+esc(info.note||"No verified previous meetings in the available historical records.")+'</p>');
   const count=rows.length,expanded=Boolean(g.h2hExpanded);
   return '<section class="h2hSection fe-accordion"><button type="button" class="h2hToggle fe-accordionButton" data-h2h-toggle aria-expanded="'+expanded+'">'+
-    '<span class="fe-accordionGlyph">◷</span><span class="fe-accordionLabel"><strong>H2H</strong><small>Last '+(count||"5")+' meeting'+(count===1?"":"s")+(count?' recorded':' checked')+' · Tap to expand</small></span><span class="fe-down">'+(expanded?"⌃":"⌄")+'</span></button>'+
+    '<span class="fe-accordionGlyph">'+feIcon("history")+'</span><span class="fe-accordionLabel"><strong>H2H</strong><small>Last '+(count||"5")+' meeting'+(count===1?"":"s")+(count?' recorded':' checked')+' · Tap to expand</small></span><span class="fe-down">'+(expanded?"⌃":"⌄")+'</span></button>'+
     '<div class="h2hResults fe-accordionBody" '+(expanded?"":"hidden")+'>'+body+'</div></section>';
 }
 function feLastFive(g){
@@ -1284,7 +1292,7 @@ function feLastFive(g){
     return '<div class="fe-historyTeam"><h4>'+teamImgTag(x.team,"fe-historyLogo")+esc(teamDisplayName(g,x.team))+'</h4>'+html+'</div>';
   }).join("");
   return '<section class="fe-accordion"><button type="button" class="fe-accordionButton" data-last5-toggle aria-expanded="'+Boolean(g.last5Expanded)+'">'+
-    '<span class="fe-accordionGlyph">▥</span><span class="fe-accordionLabel"><strong>LAST 5 GAMES</strong><small>Recent verified form for both teams · Tap to expand</small></span><span class="fe-down">'+(g.last5Expanded?'⌃':'⌄')+'</span></button>'+
+    '<span class="fe-accordionGlyph">'+feIcon("form")+'</span><span class="fe-accordionLabel"><strong>LAST 5 GAMES</strong><small>Recent verified form for both teams · Tap to expand</small></span><span class="fe-down">'+(g.last5Expanded?'⌃':'⌄')+'</span></button>'+
     '<div class="fe-accordionBody" '+(g.last5Expanded?'':'hidden')+'><div class="fe-historyGrid">'+grouped+'</div></div></section>';
 }
 function feStatsTab(g){
@@ -1303,8 +1311,32 @@ function feStatsTab(g){
   return '<section class="fe-panel"><h3>MATCH STATISTICS · LAST 10</h3><div class="fe-statTeamNames"><b>'+esc(g.home.name)+'</b><b>'+esc(g.away.name)+'</b></div>'+
     vals.map(row).join("")+'<p class="fe-panelNote">Historical averages and rates describe recorded results, not guaranteed match probabilities.</p></section>'+measured+feLastFive(g);
 }
+function feOfficialNewsHTML(g){
+ const intel=g.teamIntel;
+ if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return null;
+ const side=(x,t)=>{
+   const out=Array.isArray(x?.out)?x.out.slice(0,8):[],doubt=Array.isArray(x?.doubtful)?x.doubtful.slice(0,6):[];
+   const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><p class="fe-availabilityText">'+arr.map(esc).join(' · ')+'</p>':'';
+   return '<section class="teamNewsCard fe-sourceNews"><div class="teamNewsHead">'+teamImgTag(t,"newsTeamLogo")+
+     '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+(item(out,'REPORTED OUT / SUSPENDED','out')+item(doubt,'DOUBTFUL','doubt')||
+      '<p class="fe-newsClear">No absence reported in the cited pre-match preview.</p>')+'</section>';
+ };
+ return side(intel.home,g.home)+side(intel.away,g.away)+
+   '<p class="fe-sourceLine fe-sourceSpan">As reported '+esc(intel.source.publishedOn||S.date)+' · <a href="'+esc(intel.source.url)+
+   '" target="_blank" rel="noopener noreferrer">View source and recheck before kickoff ↗</a></p>';
+}
+function feLineupsPanel(g){
+ const intel=g.teamIntel;
+ if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return '<section class="fe-panel"><h3>LINEUPS</h3>'+
+   '<p class="fe-panelNote">A reliable, date-matched predicted XI has not been verified for this fixture. We will not substitute last match’s starters or invented names.</p></section>';
+ const side=(x,t)=>'<section class="fe-xiCard"><h4>'+teamImgTag(t,"fe-historyLogo")+' '+esc(teamDisplayName(g,t))+'</h4>'+
+    '<span class="fe-xiBadge">PREDICTED · NOT CONFIRMED</span><ol class="fe-xiList">'+(x.predictedXI||[]).slice(0,11).map(name=>'<li>'+esc(name)+'</li>').join('')+'</ol></section>';
+ return '<section class="fe-panel"><h3>PREDICTED STARTING XIs</h3><div class="fe-xiGrid">'+side(intel.home,g.home)+side(intel.away,g.away)+'</div>'+
+   '<p class="fe-sourceLine">Predictions and availability from <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
+   esc(intel.source.label||"match preview")+'</a>. Verify official lineups near kickoff.</p></section>';
+}
 function feNewsPanel(g,newsHtml){
-  return '<section class="fe-newsSection"><h3><span aria-hidden="true">▤</span> TEAM NEWS</h3><div class="modalTeamNews">'+newsHtml+'</div></section>';
+  return '<section class="fe-newsSection"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3><div class="modalTeamNews">'+newsHtml+'</div></section>';
 }
 function feTableTab(g){
   const positions=["home","away"].map(side=>{
@@ -1317,8 +1349,8 @@ function feTableTab(g){
     '<p class="fe-panelNote">Only league positions confirmed by the active standings source are shown.</p></section>';
 }
 function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach){
-  const active=["overview","stats","lineups","standings","comments"].includes(g.feTab)?g.feTab:"overview";
-  const tabs=[["overview","Overview"],["stats","Stats"],["lineups","Lineups"],["standings","Standings"],["comments","Comments"]];
+  const active=["overview","stats","lineups","standings","projections"].includes(g.feTab)?g.feTab:"overview";
+  const tabs=[["overview","Overview"],["stats","Stats"],["lineups","Lineups"],["standings","Table"],["projections","Projections"]];
   const nav='<div class="fe-tabs" role="tablist" aria-label="Match analysis">'+tabs.map(([id,label])=>
     '<button type="button" role="tab" aria-selected="'+(id===active)+'" class="'+(id===active?"active":"")+'" data-fe-tab="'+id+'">'+label+'</button>').join("")+'</div>';
   const head='<section class="fe-panel fe-picks"><div class="fe-panelHeading"><h3><span class="fe-star">★</span> TOP '+Math.min(3,(viewCandidates(g)||[]).length)+' PICKS</h3>'+
@@ -1326,9 +1358,9 @@ function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)
   let content;
   if(active==="overview")content=head+matchH2HHtml(g)+feLastFive(g)+feNewsPanel(g,newsHtml)+noteHtml+dcHtml+modelApproach;
   else if(active==="stats")content=feStatsTab(g)+matchH2HHtml(g);
-  else if(active==="lineups")content='<section class="fe-panel"><h3>LINEUPS & AVAILABILITY</h3><p class="fe-panelNote">Confirmed starting lineups will only appear when supported by a verified match source. Projected lineups are not treated as confirmed.</p></section>'+feNewsPanel(g,newsHtml);
+  else if(active==="lineups")content=feLineupsPanel(g)+feNewsPanel(g,newsHtml);
   else if(active==="standings")content=feTableTab(g);
-  else content='<section class="fe-panel"><h3>COMMENTS</h3><p class="fe-panelNote">Community comments are not enabled yet. Predictions and match records remain available under Overview.</p></section>';
+  else content=feProjectionsPanel(g);
   return '<div class="fe-dialogHero">'+feMatchHero(g)+'</div>'+nav+'<div class="fe-tabPanel" role="tabpanel">'+content+
     '<p class="fe-disclaimer">FootyEdge confidence is a research rating from historical evidence, not an independently calibrated probability or guarantee.</p></div>';
 }
@@ -1478,9 +1510,8 @@ function renderModal(g){
   const focus=viewPick(g);
   const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p>'+'</section>'};
   const ranked=top3.length?top3.map((x,i)=>{
-    const badge=i===0?"★ Top Pick":"#"+(i+1)+" Pick";
     return '<article class="modalPick fe-selection">'+
-      '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">'+esc(badge)+'</div>'+
+      '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">#'+(i+1)+'</div>'+
       '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(plainFootballReason(g,x))+'</p></div>'+
       '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
     '</article>';
@@ -1493,7 +1524,7 @@ function renderModal(g){
       :'<div class="teamNewsItem"><div class="newsText mutedNews">Team news has not yet been independently verified for this fixture.</div></div>';
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(teamDisplayName(g,team))+'</b></div>'+body+'</section>'
   };
-  const newsHtml=teamCard(g.home)+teamCard(g.away);
+  const newsHtml=feOfficialNewsHTML(g)||teamCard(g.home)+teamCard(g.away);
   const ownerNote=g.ownerResearchNote;
   const modelPct=g.model?.shadowEstimate?.home_win;
   const noteHtml=ownerNote?'<section class="researchBox"><div class="researchTitle">MATCHUP ANALYSIS · RESEARCH LEAN</div>'+
