@@ -19,7 +19,7 @@ test("Future fixture cards use yellow upcoming and no invalid live dot",()=>{
  assert.match(logic,/function feUpcoming\(g\)/);
  assert.match(logic,/const live=feActualLive\(g\),final=feActualFinal\(g\)/);
  assert.match(logic,/is-upcoming/);
- assert.match(logic,/\(live\?'<i class="fe-liveDot"><\/i>':'\)/);
+ assert.ok(logic.includes("(live?'<i class=\"fe-liveDot\"></i>':'')"));
  assert.match(css,/fe-heroStatus\.is-upcoming/);
 });
 test("H2H, last five and confirmed season standings are independently displayed",()=>{
