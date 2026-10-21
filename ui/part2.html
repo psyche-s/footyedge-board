@@ -1324,10 +1324,10 @@ function feOfficialNewsHTML(g){
  const intel=g.teamIntel;
  if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return null;
  const side=(x,t)=>{
-   const out=Array.isArray(x?.out)?x.out.slice(0,8):[],doubt=Array.isArray(x?.doubtful)?x.doubtful.slice(0,6):[];
+   const out=Array.isArray(x?.out)?x.out.slice(0,8):[],doubt=Array.isArray(x?.doubtful)?x.doubtful.slice(0,6):[],reports=Array.isArray(x?.injuryReports)?x.injuryReports.slice(0,6):[];
    const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><p class="fe-availabilityText">'+arr.map(esc).join(' · ')+'</p>':'';
    return '<section class="teamNewsCard fe-sourceNews"><div class="teamNewsHead">'+teamImgTag(t,"newsTeamLogo")+
-     '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+(item(out,'REPORTED OUT / SUSPENDED','out')+item(doubt,'DOUBTFUL','doubt')||
+     '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+(item(out,'REPORTED OUT / SUSPENDED','out')+item(doubt,'DOUBTFUL','doubt')+item(reports,'INJURY REPORT · AVAILABILITY NOT CONFIRMED','doubt')||
       '<p class="fe-newsClear">No absence reported in the cited pre-match preview.</p>')+'</section>';
  };
  return side(intel.home,g.home)+side(intel.away,g.away)+
