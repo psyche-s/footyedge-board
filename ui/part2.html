@@ -1611,71 +1611,84 @@ function fePlayerSafePhoto(src){
    '<img class="fe-playerPortrait" alt="" loading="lazy" decoding="async" src="'+esc(url)+'">':'';
 }
 function fePlayerRole(position){
- const role=String(position||"").toLowerCase();
- if(role.includes("goalkeep")||role==="gk")return "Goalkeeper · Goal protection and distribution.";
- if(role.includes("centre")||role.includes("center back")||role.includes("defender")||role==="df")
-   return "Defensive role · Maintaining defensive shape and limiting opponent chances.";
- if(role.includes("midfield")||role==="mf")return "Midfield role · Connecting defensive and attacking phases.";
- if(role.includes("wing"))return "Wide role · Providing width and supporting attacks.";
- if(role.includes("forward")||role.includes("striker")||role==="fw")
-   return "Attacking role · Working to create and finish chances.";
- return "A playing-style scouting summary is not verified for this player.";
+ const raw=String(position||"").trim(),p=raw.toLowerCase();
+ const aliases={cm:"Midfielder (CM)",dm:"Midfielder (DM)",cdm:"Midfielder (DM)",cam:"Midfielder (AM)",
+  am:"Midfielder (AM)",lm:"Midfielder (LM)",rm:"Midfielder (RM)",st:"Forward (ST)",
+  cf:"Forward (CF)",lw:"Winger (LW)",rw:"Winger (RW)",cb:"Defender (CB)",
+  lb:"Defender (LB)",rb:"Defender (RB)",gk:"Goalkeeper"};
+ if(aliases[p])return aliases[p];
+ if(p.includes("defensive midfield"))return "Midfielder (DM)";
+ if(p.includes("attacking midfield"))return "Midfielder (AM)";
+ if(p.includes("central midfield")||p.includes("center midfield"))return "Midfielder (CM)";
+ if(p.includes("center back")||p.includes("centre back"))return "Defender (CB)";
+ if(p.includes("left back"))return "Defender (LB)";
+ if(p.includes("right back"))return "Defender (RB)";
+ if(p.includes("goalkeep"))return "Goalkeeper";
+ if(p.includes("wing"))return "Winger";
+ if(p.includes("midfield"))return "Midfielder";
+ if(p.includes("defend"))return "Defender";
+ if(p.includes("forward")||p.includes("striker"))return "Forward";
+ return raw||"";
 }
 function fePlayerProfileMarkup(result,fallback){
  const verified=result?.status==="verified"&&result.player?.name;
  const loading=!result;
  const player=verified?result.player:{name:fallback.name,team:fallback.teamName,headshot:fallback.photoUrl};
  const photo=fePlayerSafePhoto(player.headshot||fallback.photoUrl);
- const initials=String(player.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(z=>z[0]).join("").toUpperCase();
+ const initials=String(player.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
  const display=x=>x!=null&&String(x).trim()?esc(String(x)):"";
- const birth=player.dateOfBirth&&/^\d{4}-\d{2}-\d{2}$/.test(player.dateOfBirth)?
-   new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(player.dateOfBirth+"T12:00:00Z")):null;
- const role=player.position||fallback.position||null;
- const hero='<div class="fe-playerHero">'+
-   '<div class="fe-playerPhotoStage">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div>'+
-   '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER PROFILE</span>'+
-   '<h2 id="fe-playerTitle">'+display(player.name)+'</h2><p>'+display(player.team||fallback.teamName)+'</p>'+
-   (role?'<span class="fe-playerPosition">'+display(role)+'</span>':'')+'</div></div>';
+ const plain=x=>x==null||x===""?"—":display(x);
+ const birthday=player.dateOfBirth&&/^\d{4}-\d{2}-\d{2}$/.test(player.dateOfBirth)?
+  new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(player.dateOfBirth+"T12:00:00Z")):null;
+ const role=fePlayerRole(player.position||fallback.position);
+ const hero='<div class="fe-playerHero"><div class="fe-playerPhotoStage">'+
+  (photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div>'+
+  '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER PROFILE</span>'+
+  '<h2 id="fe-playerTitle">'+display(player.name)+'</h2><p>'+display(player.team||fallback.teamName)+'</p>'+
+  (role?'<span class="fe-playerPosition">'+display(role)+'</span>':'')+'</div></div>';
  if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
-   '<div class="fe-profileShimmer"></div><p>Loading verified player information…</p></div>';
- const numericStats=(result?.stats||[]).filter(x=>Number.isFinite(x.value)&&x.value>=0);
- const priority=["Appearances","Starts","Goals","Assists","Shots","Shots on target","Minutes"];
- const available=priority.map(label=>numericStats.find(x=>x.label===label)).filter(Boolean).slice(0,4);
- const cards=available.map(x=>'<div class="fe-playerStat"><span>'+esc(x.label)+
-   '</span><strong>'+display(x.value)+'</strong></div>').join("");
- const performance=available.length?
-   '<section class="fe-playerPanel"><h3>Season performance</h3>'+
-   (result.competition?'<p class="fe-competitionName">'+display(result.competition)+'</p>':'')+
-   '<div class="fe-playerStatsGrid" style="--fe-player-stat-count:'+available.length+'">'+cards+'</div></section>':
-   '<section class="fe-playerPanel"><h3>Season performance</h3>'+
-   '<p class="fe-playerUnavailable">This competition has no verified season totals yet.</p></section>';
- const personal=[["Full name",player.name],["Nationality",player.nationality],["Date of birth",birth],
-  ["Jersey number",player.jerseyNumber||fallback.jersey],["Height",player.height],
+  '<div class="fe-profileShimmer"></div><p>Checking player details and recent matches…</p></div>';
+ const number=new Map((result?.stats||[]).filter(x=>Number.isFinite(x.value)&&x.value>=0).map(x=>[x.label,x.value]));
+ const priority=["Appearances","Starts","Minutes played","Goals","Assists","Shots on target","Shots",
+  "Fouls committed","Fouls won","Yellow cards","Red cards"];
+ const seasonCards=priority.map(label=>
+  '<div class="fe-playerStat '+(number.has(label)?'':'fe-playerStatEmpty')+'"><span>'+esc(label)+'</span>'+
+  '<strong>'+plain(number.get(label))+'</strong></div>').join("");
+ const competition=result?.competition?'<p class="fe-competitionName">'+display(result.competition)+'</p>':'';
+ const performance='<section class="fe-playerPanel"><h3>Season performance</h3>'+competition+
+  '<p class="fe-playerHint">Appearances = all games played, including substitutions. Starts = games in the starting XI.</p>'+
+  '<div class="fe-playerStatsGrid fe-playerStatsGridFull">'+seasonCards+'</div></section>';
+ const personal=[["Full name",player.name],["Nationality",player.nationality],["Born",birthday],
+  ["Shirt number",player.jerseyNumber||fallback.jersey],["Height",player.height],
   ["Weight",player.weight],["Preferred foot",player.dominantFoot],
-  ["Primary position",role],
-  ["Other positions",player.secondaryPositions?.length?player.secondaryPositions.join(", "):null]]
+  ["Position",role],["Other positions",player.secondaryPositions?.length?player.secondaryPositions.join(", "):null]]
   .filter(x=>x[1]!=null&&String(x[1]).trim());
  const details=personal.length?personal.map(([label,value])=>
-   '<div class="fe-playerDetail"><span>'+esc(label)+'</span><strong>'+display(value)+'</strong></div>').join(""):
-   '<p class="fe-playerUnavailable">Verified personal details are not available yet.</p>';
- const recent=(result?.recent||[]).slice(0,5);
- const recentMarkup=recent.length?recent.map(r=>
-  '<div class="fe-playerGame"><div><span>'+display(r.date)+'</span><strong>'+display(r.opponent)+'</strong></div>'+
-  '<div><span>Goals</span><b>'+display(r.goals??"—")+'</b></div>'+
-  '<div><span>Assists</span><b>'+display(r.assists??"—")+'</b></div>'+
-  '<div><span>Shots</span><b>'+display(r.shots??"—")+'</b></div></div>').join(""):
-  '<p class="fe-playerUnavailable">No verified match-by-match performance data is available yet.</p>';
+  '<div class="fe-playerDetail"><span>'+esc(label)+'</span><strong>'+display(value)+'</strong></div>').join(""):
+  '<p class="fe-playerUnavailable">No verified player details are available.</p>';
+ const last=(result?.recent||[]).slice(0,10);
+ const columns=[["minutes","Minutes"],["goals","Goals"],["assists","Assists"],
+  ["shotsOnTarget","SOT"],["shots","Shots"],["foulsCommitted","Fouls committed"],
+  ["foulsWon","Fouls won"],["yellowCards","Yellow"],["redCards","Red"]];
+ const lastMarkup=last.length?last.map(r=>
+  '<article class="fe-playerLastGame"><div class="fe-playerGameTitle">'+
+   '<div><strong>'+display(r.opponent)+'</strong><span>'+display(r.date)+
+   (r.competition?' · '+display(r.competition):'')+'</span></div>'+
+   (r.appearance?'<span class="fe-playerStartBadge">'+display(r.appearance)+'</span>':'')+'</div>'+
+  '<div class="fe-playerMatchStats">'+columns.map(([key,label])=>
+   '<div class="fe-playerMatchMetric"><span>'+esc(label)+'</span><b>'+plain(r[key])+'</b></div>').join("")+
+  '</div></article>').join(""):
+  '<p class="fe-playerUnavailable">No verified recent match-by-match data is available.</p>';
  const career=player.career||[];
- const careerMarkup=career.length?career.map(x=>
-  '<div class="fe-playerCareer"><strong>'+display(x.club)+'</strong><span>'+
-  display([x.from,x.to].filter(Boolean).join(" – "))+'</span></div>').join(""):
-  '<p class="fe-playerUnavailable">Club transfer history is not available from this record.</p>';
- const note=verified?'Only verified player fields are displayed. Missing values are omitted, not estimated.':
-  (result?.note||"This player could not be matched to a verified roster record.");
+ const careerMarkup=career.map(c=>'<div class="fe-playerCareer"><strong>'+display(c.club)+'</strong>'+
+  '<span>'+plain([c.from,c.to].filter(Boolean).join(" – "))+'</span></div>').join("");
+ const note=verified?'Fields shown are sourced from available player records. “—” means the statistic was not provided, not zero.':
+  (result?.note||"Player verification is unavailable.");
  return hero+'<div class="fe-playerScroll">'+performance+
   '<section class="fe-playerPanel"><h3>Player details</h3><div class="fe-playerDetails">'+details+'</div></section>'+
-  (role?'<section class="fe-playerPanel"><h3>On-field role</h3><p>'+esc(fePlayerRole(role))+'</p></section>':'')+
-  '<section class="fe-playerPanel"><h3>Last five appearances</h3>'+recentMarkup+'</section>'+
+  (role?'<section class="fe-playerPanel"><h3>On-field role</h3><p>'+display(role)+'</p></section>':'')+
+  '<section class="fe-playerPanel"><h3>Last '+last.length+' appearances <span class="fe-playerPanelHint">of up to 10 available</span></h3>'+
+   lastMarkup+'</section>'+
   (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
   '<p class="fe-playerHint">'+esc(note)+'</p></div>';
 }
@@ -1731,9 +1744,11 @@ function feTeamPitchRows(x,t,g,position){
  const formation=validated?sourceShape:"4-2-3-1",shape=validated?values:[4,2,3,1];
  const name=p=>typeof p==="string"?p:String(p?.name||"");
  const safeImage=p=>{
-  const photo=typeof p==="object"?String(p?.photoUrl||""):"";
+  const id=typeof p==="object"?String(p?.id||""):"";
+  const photo=typeof p==="object"?String(p?.photoUrl||(/^\d{1,12}$/.test(id)?"https://a.espncdn.com/i/headshots/soccer/players/full/"+id+".png":"")):"";
   return /^https:\/\/[a-z0-9._/?=&%-]+$/i.test(photo)?
-    '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+esc(photo)+'" alt="">':
+    '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+esc(photo)+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
+     '<span hidden>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>':
     '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>';
  };
  const person=p=>'<button type="button" class="fe-fieldPlayer fe-playerOpen" aria-label="View player profile: '+esc(name(p))+'" '+
