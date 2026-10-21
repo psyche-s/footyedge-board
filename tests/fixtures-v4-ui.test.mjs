@@ -33,15 +33,18 @@ test("H2H, last five and confirmed season standings are independently displayed"
  assert.match(logic,/reportUrls/);
 });
 test("Top picks separate page has research SGP, ACCA and top 10 evidence-gated markets",()=>{
- assert.match(picks,/THE SAME-GAME FLYER/);
+ assert.match(picks,/THE MATCHDAY SGP/);
+ assert.match(picks,/THE J1 GOALS FLYER/);
  assert.match(picks,/THE MATCHDAY ACCA/);
  assert.match(picks,/Top 10 Market Props/);
  assert.match(picks,/RESEARCH ONLY/);
  assert.match(picks,/class="ticketTear"/);
  assert.match(picks,/\.ticketPaper \.legTitle/);
  assert.match(picks,/Confidence percentages describe/);
- assert.match(picks,/return games\.flatMap/);
- assert.match(picks,/differentMarkets/);
+ assert.match(picks,/data\("data\/slips\/"\+date\+"\.json"\)/);
+ assert.match(picks,/desk\.sgp/);
+ assert.match(picks,/desk\.acca/);
+ assert.match(picks,/desk\.props/);
  assert.doesNotMatch(picks,/potential payout|payout of/ig);
 });
 test("Lineups and projections respect source and uncertainty restrictions",()=>{
