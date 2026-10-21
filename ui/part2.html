@@ -886,6 +886,14 @@ function feOwnerConsensusTop3(g){
  if(!accepted.length)return null;
  accepted.sort((a,b)=>b.confidenceRating-a.confidenceRating||b.editorialSupport-a.editorialSupport||a.label.localeCompare(b.label));
  const selection=[],used=new Set();
+ // If multiple current, independent previews agree with the recorded match
+ // data, give the strongest supported thesis a seat in the Top 3. Never
+ // interpret provider disagreement as consensus or inflate its probability.
+ const backed=accepted.filter(p=>p.editorialSupport>0&&!p.editorialDispute)
+   .sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
+ if(backed.length && backed[0].confidenceRating>=50){
+   selection.push(backed[0]);used.add(backed[0].family);
+ }
  for(const p of accepted){
    if(used.has(p.family))continue;
    if(p.family==="total"&&selection.some(x=>x.family==="btts"&&x.label==="BTTS — Yes"&&p.label==="Over 1.5 Goals"))continue;
