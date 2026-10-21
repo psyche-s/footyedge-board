@@ -13,6 +13,7 @@ import path from "node:path";
 import {pathToFileURL} from "node:url";
 import {authorised,readEvidence,trend} from "./apply-editorial-consensus.mjs";
 import {compatible} from "./build-daily-slips.mjs";
+import {selectAsiaFallback} from "./asia-statistical-fallback.mjs";
 
 const todayET=()=>Object.fromEntries(new Intl.DateTimeFormat("en-CA",{
  timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"
@@ -78,7 +79,8 @@ function tickets(choices){
  for(const m of choices)for(const p of m.picks){
    const leg={gameId:m.gameId,fixture:m.home+" vs "+m.away,league:m.league,kickoff:m.kickoff,
     label:p.label,category:p.category,family:p.family,rating:p.confidenceRating,
-    why:p.reason,evidence:"Dated independent match review plus form and venue checks.",
+    why:p.reason,evidence:m.reviewMethod==="verified-stats-no-editorial-preview"?
+      "Verified pre-match form, last five and home/away splits.":"Dated independent match review plus form and venue checks.",
     verifiedPrice:false,odds:null,bookKey:null,source:"FootyEdge original match analysis",risk:[]};
    if(!legsByGame.has(m.gameId))legsByGame.set(m.gameId,[]);
    legsByGame.get(m.gameId).push(leg);
@@ -180,11 +182,19 @@ export function buildEditorialDesk({date,board,research,evidence=[]}){
      selected.push(candidate);families.add(candidate.family);
      if(selected.length===3)break;
    }
-   if(selected.length!==3)continue; // Three genuine editorial angles or PASS.
+   // J1/K1 usually lack three permitted external preview markets.
+   // Use independently researched LAST-10, LAST-5 and venue records instead,
+   // but only when all three distinct theses are supported and nonredundant.
+   const useAsiaFallback=selected.length!==3&&["jpn.1","kor.1"].includes(g.league);
+   const picks=useAsiaFallback?selectAsiaFallback(f):selected;
+   const reviewMethod=useAsiaFallback?"verified-stats-no-editorial-preview":"licensed-editorial";
+   if(picks.length!==3)continue; // Three supported angles or PASS; never invent.
    matches.push({gameId:String(g.id),home:h,away:a,league:g.league,kickoff:g.date,
-     reviewed:true,picks:selected.map((p,i)=>({...p,rank:i+1}))});
+     reviewed:true,reviewMethod,picks:picks.map((p,i)=>({...p,rank:i+1}))});
  }
- const slip=tickets(matches);
+ // Asian research is shown as fixture picks, not misleadingly fed into
+ // the European/major-league matchday SGP builder.
+ const slip=tickets(matches.filter(m=>!["jpn.1","kor.1"].includes(m.league)));
  return {schema:"footyedge-editorial-desk-v1",date,
    state:matches.length?"reviewed":"pass",researchGradeNotProbability:true,
    noSportsbookOdds:true,confidenceCalibrated:false,originalMatchBoardsUnchanged:true,
@@ -193,6 +203,7 @@ export function buildEditorialDesk({date,board,research,evidence=[]}){
    matches,...slip,props:[],
    notes:["Only independently authorised dated research can qualify public selections.",
     "Unreviewed matches show PASS rather than model-generated placeholders.",
+    "J1/K1 may use explicitly labeled verified-statistics fallback (last 10, recent 5 and home/away) with no borrowed preview picks.",
     "Research grades are not calibrated winning probabilities.",
     "No sportsbook odds or payout estimates without exact verified prices.",
     "Frozen previous boards are never rewritten."]};
@@ -208,7 +219,9 @@ export function applyEditorialToDraft(board,desk){
    g.top3=picks;g.top=picks[0]||null;
    g.model={...(g.model||{}),top:g.top,top3:picks,candidates:picks,
      rankedCandidates:picks,researchCandidates:picks};
-   g.recoveryStatus=picks.length===3?"licensed-editorial-review":"pass-unverified-editorial";
+   g.recoveryStatus=picks.length===3?
+     (row?.reviewMethod==="verified-stats-no-editorial-preview"?"independent-asian-statistical-research":"licensed-editorial-review"):
+     "pass-unverified-editorial";
  }
  const sorted=items=>items.filter(g=>g.top&&Number(g.top.confidenceRating)>=85&&Date.parse(g.date)>Date.now())
    .sort((a,b)=>Number(b.top.confidenceRating)-Number(a.top.confidenceRating));
