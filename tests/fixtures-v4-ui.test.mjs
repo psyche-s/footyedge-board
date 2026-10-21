@@ -56,3 +56,24 @@ test("Lineups and projections respect source and uncertainty restrictions",()=>{
  assert.match(logic,/\["standings","Table"\]/);
  assert.doesNotMatch(logic,/\["comments","Comments"\]/);
 });
+
+test("Fixture renderer is complete, uses unified mockup backgrounds, and has no ticket footer",()=>{
+ const start=logic.indexOf("function renderGames(){"),end=logic.indexOf("const FILTER_LEAGUE_LOGOS",start);
+ assert.ok(start>=0 && end>start,"fixture renderer must exist");
+ const renderer=logic.slice(start,end);
+ assert.match(renderer,/feMatchHero\(g\)/);
+ assert.doesNotMatch(renderer,/fe-cardTicket|esc\(label\)/);
+ assert.match(logic,/function feRecentForm\(g\)/);
+ assert.match(logic,/function renderModal\(g\)/);
+ assert.match(logic,/async function load\(/);
+ assert.match(css,/ONE mockup-aligned template/);
+ assert.match(css,/\.fe-dialogHero \.fe-hero\.fe-kitHero/);
+ assert.match(css,/-webkit-mask-image/);
+ assert.match(css,/mix-blend-mode:multiply/);
+});
+test("External sources remain metadata, never visible on the fixture details",()=>{
+ assert.match(logic,/function fePreviewLinks\(g,p\)\{return "";\}/);
+ assert.doesNotMatch(logic,/<a class="fe-sourceLine"/);
+ assert.doesNotMatch(logic,/>Official club report /);
+ assert.doesNotMatch(logic,/source-backed evidence/);
+});
