@@ -1386,9 +1386,9 @@ function feLineupsPanel(g){
    ' A 4–2–3–1 arrangement is illustrative unless the source provides a verified formation. Player photos are used only when matched to sourced profiles.</p>'+
    '<p class="fe-sourceLine">Source: <a href="'+esc(intel.source.url)+'" target="_blank" rel="noopener noreferrer">'+
    esc(intel.source.label||"match preview")+'</a>. Recheck confirmed lineups close to kickoff.</p>'+
-   (["home","away"].filter(side=>/^https:\\/\\//.test(String(intel[side]?.predictedFormationSource||""))).length?
+   (["home","away"].filter(side=>String(intel[side]?.predictedFormationSource||"").startsWith("https://")).length?
       '<p class="fe-shapeSource">Forecast formations: '+
-      ["home","away"].filter(side=>/^https:\\/\\//.test(String(intel[side]?.predictedFormationSource||""))).map(side=>
+      ["home","away"].filter(side=>String(intel[side]?.predictedFormationSource||"").startsWith("https://")).map(side=>
        '<a href="'+esc(intel[side].predictedFormationSource)+'" target="_blank" rel="noopener noreferrer">'+
        esc(g[side].name)+' '+esc(intel[side].predictedFormation)+' ↗</a>').join(' · ')+
       '. These are forecasts, not confirmed formations.</p>':'')+
