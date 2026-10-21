@@ -13,6 +13,9 @@ test("Player resolves by exact team-roster identity; ambiguous surname is not gu
  assert.equal(matchRosterPlayer(sample,"Alvaro Serrano")?.id,"99812");
  assert.equal(matchRosterPlayer(sample,"Serrano"),null);
  assert.equal(matchRosterPlayer(sample,"Someone Else","99812"),null);
+ assert.equal(matchRosterPlayer(sample,"Serrano","99812"),null); // ambiguous club surname
+ const single={athletes:[{items:[{id:"262071",displayName:"Anastasios Douvikas",jersey:"9"}]}]};
+ assert.equal(matchRosterPlayer(single,"Douvikas","262071")?.id,"262071");
  assert.equal(matchRosterPlayer(sample,"Álvaro Serrano","99812")?.id,"99812");
 });
 test("Verified public bio keeps missing information blank, and never includes private contacts",()=>{
