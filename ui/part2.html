@@ -1778,7 +1778,7 @@ function feReviewedReason(g,p){
  const disputed=Array.isArray(preview?.disputedMarkets)&&preview.disputedMarkets.some(x=>String(x).toLowerCase()===String(p?.label||"").toLowerCase());
  return [base,disputed?"This market carries conflicting match evidence.":"",note].filter(Boolean).join(" ");
 }
-function fePreviewLinks(){return "";}
+function fePreviewLinks(g,p){return "";}
 
 function renderModal(g){
   const top3=viewCandidates(g);
