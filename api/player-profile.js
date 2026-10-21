@@ -39,7 +39,9 @@ function parseBio(a,roster,teamName){
  const r=roster||{};
  const candidate=player.headshot?.href||r.headshot?.href||r.headshot||player.headshot;
  const nationality=player.citizenship?.displayName||player.citizenship?.name||
-  player.nationality?.displayName||player.nationality||r.citizenship?.name||r.nationality||null;
+  (typeof player.citizenship==="string"?player.citizenship:null)||
+  player.nationality?.displayName||player.nationality||player.country?.displayName||
+  player.birthPlace?.country?.name||r.citizenship?.name||r.nationality||null;
  const positions=[player.position?.displayName||player.position?.name||r.position?.displayName||
   r.position?.name||r.position||null, ...(Array.isArray(player.positions)?player.positions.map(p=>p.displayName||p.name||null):[])].filter(x=>typeof x==="string"&&x.length<80);
  const first=positions[0]||null;
@@ -111,6 +113,15 @@ function parseRecent(log){
    assists:value("Assists"),minutes:value("Minutes"),shots:value("Shots")};
  }).filter(Boolean).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
 }
+async function verifyESPNHeadshot(id){
+ if(!/^\d{1,12}$/.test(String(id||"")))return null;
+ const url="https://a.espncdn.com/i/headshots/soccer/players/full/"+id+".png";
+ try{
+  const r=await fetch(url,{method:"HEAD",signal:AbortSignal.timeout(2200)});
+  const type=String(r.headers.get("content-type")||"");
+  return r.ok&&type.startsWith("image/")?url:null;
+ }catch{return null}
+}
 async function getJSON(url,ms=3600){
  const r=await fetch(url,{headers:{accept:"application/json"},signal:AbortSignal.timeout(ms)});
  if(!r.ok)throw Error("Provider "+r.status);
@@ -138,6 +149,9 @@ export default async function handler(req,res){
   ]);
   const from=x=>x.status==="fulfilled"?x.value:null;
   const profile=parseBio(from(bio),player,team?.team?.displayName||team?.team?.name||"");
+  // ESPN often omits roster photo URLs while its player-ID CDN has the
+  // portrait. HEAD-verify the URL first; never display a guessed image.
+  if(!profile.headshot)profile.headshot=await verifyESPNHeadshot(id);
   const season=statEntries(from(stats));
   const recent=parseRecent(from(log));
   // No data is silently fabricated: each supported stat originates in ESPN.
