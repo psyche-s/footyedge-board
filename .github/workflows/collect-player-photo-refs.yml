@@ -47,6 +47,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # The branch can advance while CDN checks run. Re-run against its
+          # latest contents instead of rebasing generated JSON and losing data.
+          git fetch origin "$GITHUB_REF_NAME"
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/$GITHUB_REF_NAME")" ]; then
+            git reset --hard "origin/$GITHUB_REF_NAME"
+            node scripts/sync-player-photo-refs.mjs
+            node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+          fi
           git add -- data/player-photo-refs.json assets/player-photo-registry.js
           if git diff --cached --quiet; then
             echo "No new source references"; exit 0
@@ -54,5 +62,4 @@ jobs:
           git config user.name "FootyEdge Photo References"
           git config user.email "actions@users.noreply.github.com"
           git commit -m "data(original): store checked player portrait source references"
-          git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin HEAD:"$GITHUB_REF_NAME"
