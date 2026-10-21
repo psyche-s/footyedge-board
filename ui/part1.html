@@ -2088,9 +2088,14 @@ function priceInfo(p){
 
 function stars(s){return s>=92?"★★★★★":s>=88?"★★★★½":s>=83?"★★★★":s>=78?"★★★½":"★★★"}
 async function json(url){
-  const r=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"}});
-  if(!r.ok){const e=new Error(r.status===429?"Data provider request limit reached. Using cached data when available.":`Data request failed (${r.status})`);e.status=r.status;throw e}
-  return r.json();
+  // Fail fast on stalled upstream requests; Vercel snapshot data remains usable.
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),8000);
+  try{
+    const r=await fetch(url,{cache:"no-store",headers:{Accept:"application/json"},signal:controller.signal});
+    if(!r.ok){const e=new Error(r.status===429?"Data provider request limit reached. Using cached data when available.":`Data request failed (${r.status})`);e.status=r.status;throw e}
+    return await r.json();
+  }finally{clearTimeout(timeout)}
 }
 function leagueOf(e){return FootyEdgeAvailability.leagueOf(e)}
 function marketOdds(o){
