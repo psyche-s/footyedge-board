@@ -16,8 +16,8 @@ const CDN="https://a.espncdn.com/i/headshots/soccer/players/full/";
 const GOOD_LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1",
  "ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf",
  "usa.1","jpn.1","kor.1","ksa.1","cze.1","uefa.nations"]);
-const SCOPE_DAYS=Math.max(1,Math.min(5,Number(process.env.PHOTO_DAYS||2)));
-const MAX_TEAMS=Math.max(1,Math.min(65,Number(process.env.PHOTO_MAX_TEAMS||55)));
+const SCOPE_DAYS=Math.max(1,Math.min(7,Number(process.env.PHOTO_DAYS||5)));
+const MAX_TEAMS=Math.max(1,Math.min(300,Number(process.env.PHOTO_MAX_TEAMS||120)));
 const POOL_SIZE=8;
 const n=x=>String(x??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
   .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
@@ -44,30 +44,92 @@ async function inPool(items,job,count=POOL_SIZE){
  }));
  return output;
 }
-function targetTeams(){
+
+/* Team directories cover every club in every tracked men's competition.
+   Dated fixtures are fallback/priority seeds, never the total collection scope. */
+function parseLeagueTeams(payload,league){
+ const rows=payload?.sports?.[0]?.leagues?.[0]?.teams||payload?.teams||[];
+ if(!Array.isArray(rows))return [];
+ const teams=new Map();
+ for(const entry of rows){
+  const t=entry?.team||entry;
+  const id=String(t?.id||"");
+  if(!numeric(id)||t?.isActive===false)continue;
+  const key=league+":"+id;
+  teams.set(key,{key,league,teamId:id,teamName:String(t.displayName||t.name||"").trim(),
+   source:"ESPN competition team directory"});
+ }
+ return [...teams.values()];
+}
+function fixtureTeams(){
  const targets=new Map();
- for(let offset=0;offset<SCOPE_DAYS;offset++){
+ for(let offset=-7;offset<SCOPE_DAYS;offset++){
   const date=day(offset);
   const board=read("data/boards/"+date+".json");
   const intel=read("data/team-intelligence/"+date+".json");
   const slugs=new Map();
-  for(const game of board?.games||[])if(GOOD_LEAGUES.has(game.league))
-    slugs.set(String(game.id),game.league);
-  for(const game of intel?.fixtures||[])if(GOOD_LEAGUES.has(game.league))
-    slugs.set(String(game.fixtureId),game.league);
-  const fixtures=read("data/"+date+"/fixtures.json")?.response||[];
-  for(const item of fixtures){
+  for(const game of board?.games||[]){
+   if(!GOOD_LEAGUES.has(game.league))continue;
+   slugs.set(String(game.id),game.league);
+   // Published boards already contain source IDs even if fixture snapshots
+   // haven't been generated or are temporarily unavailable.
+   for(const side of ["home","away"]){
+    const team=game.teams?.[side];
+    if(!numeric(team?.id))continue;
+    const key=game.league+":"+team.id;
+    targets.set(key,{key,league:game.league,teamId:String(team.id),
+     teamName:String(team.name||""),date,source:"FootyEdge sourced board"});
+   }
+  }
+  for(const game of intel?.fixtures||[])
+   if(GOOD_LEAGUES.has(game.league))slugs.set(String(game.fixtureId),game.league);
+  for(const item of read("data/"+date+"/fixtures.json")?.response||[]){
    const league=slugs.get(String(item.fixture?.id));
    if(!league)continue;
    for(const t of [item.teams?.home,item.teams?.away]){
-    const id=String(t?.id||"");
-    if(!numeric(id))continue;
+    const id=String(t?.id||"");if(!numeric(id))continue;
     const key=league+":"+id;
-    if(!targets.has(key))targets.set(key,{key,league,teamId:id,teamName:t?.name||"",date});
+    if(!targets.has(key))targets.set(key,{key,league,teamId:id,
+     teamName:String(t?.name||""),date,source:"FootyEdge sourced fixture"});
    }
   }
  }
- return [...targets.values()].slice(0,MAX_TEAMS);
+ return [...targets.values()];
+}
+async function targetTeams(previous={}){
+ const targets=new Map(fixtureTeams().map(x=>[x.key,x]));
+ const attempts=await inPool([...GOOD_LEAGUES],async league=>{
+  const payload=await get(SOURCE+encodeURIComponent(league)+"/teams?limit=1000",7500);
+  return {league,teams:parseLeagueTeams(payload,league)};
+ },5);
+ const coverage={};
+ for(let i=0;i<attempts.length;i++){
+  const league=[...GOOD_LEAGUES][i],attempt=attempts[i];
+  if(!Array.isArray(attempt?.teams)){coverage[league]={status:"unavailable",teams:0};continue;}
+  coverage[league]={status:attempt.teams.length?"ok":"empty",teams:attempt.teams.length};
+  for(const t of attempt.teams)targets.set(t.key,{...targets.get(t.key),...t});
+ }
+ if(!targets.size)throw Error("No team directories or fixture-backed team IDs available.");
+ // Spread collection capacity across leagues instead of stopping after the
+ // first domestic league. Prefer clubs never checked before, then oldest.
+ const byLeague=new Map([...GOOD_LEAGUES].map(l=>[l,[]]));
+ for(const t of targets.values())byLeague.get(t.league)?.push(t);
+ for(const arr of byLeague.values())arr.sort((a,b)=>{
+  const x=previous[a.key],y=previous[b.key];
+  if(Boolean(x)!==Boolean(y))return x?1:-1;
+  const da=Date.parse(x?.checkedAt||"2000-01-01"),db=Date.parse(y?.checkedAt||"2000-01-01");
+  return da-db||a.teamName.localeCompare(b.teamName);
+ });
+ const chosen=[];
+ while(chosen.length<MAX_TEAMS){
+  let progress=false;
+  for(const list of byLeague.values()){
+   if(chosen.length>=MAX_TEAMS)break;
+   if(list.length){chosen.push(list.shift());progress=true;}
+  }
+  if(!progress)break;
+ }
+ return {targets:chosen,available:targets.size,coverage};
 }
 function rosterPlayers(payload){
  const groups=Array.isArray(payload?.athletes)?payload.athletes:[];
@@ -101,8 +163,9 @@ async function verifyImage(item){
 async function main(){
  const current=read("data/player-photo-refs.json")||{schema:"footyedge-player-photo-refs-v1",teams:{}};
  const previous=current.teams||{};
- const targets=targetTeams();
- if(!targets.length)throw Error("No recent tracked club fixtures for photo collection.");
+ const discovery=await targetTeams(previous);
+ const targets=discovery.targets;
+ if(!targets.length)throw Error("No source-backed club rosters available for player-photo collection.");
  const collected=await inPool(targets,async target=>{
   const info=await get(SOURCE+encodeURIComponent(target.league)+"/teams/"+target.teamId+"/roster",5000);
   const players=rosterPlayers(info);
@@ -128,7 +191,8 @@ async function main(){
   fetched++;
   const {target,photos}=entry;
   const prior=teams[target.key]?.players||{};
-  const players={...prior};
+  const rosterIds=new Set(entry.players.map(p=>p.id));
+  const players=Object.fromEntries(Object.entries(prior).filter(([id])=>rosterIds.has(id)));
   for(const photo of photos){
    if(badDigests.has(photo.digest)){discarded++;continue;}
    approved++;
@@ -137,12 +201,15 @@ async function main(){
     sha256:photo.digest};
   }
   teams[target.key]={league:target.league,teamId:target.teamId,
-   teamName:target.teamName,checkedAt:new Date().toISOString(),players};
+   teamName:target.teamName,source:target.source,
+   checkedAt:new Date().toISOString(),
+   roster:Object.fromEntries(entry.players.map(p=>[p.id,{name:p.name}])),players};
  }
  if(!fetched)throw Error("ESPN roster collection returned zero readable teams; existing references not replaced.");
  const result={schema:"footyedge-player-photo-refs-v1",checkedAt:new Date().toISOString(),
   policy:"Source URL references only; no third-party image files stored. Player identity matched to roster.",
-  collection:{targets:targets.length,rostersFetched:fetched,photosChecked:approved,
+  collection:{targets:targets.length,allDiscoveredTeams:discovery.available,
+   leagueCoverage:discovery.coverage,rostersFetched:fetched,photosChecked:approved,
    duplicatePlaceholderRejected:discarded},teams};
  const file=path.join(ROOT,"data/player-photo-refs.json");
  fs.mkdirSync(path.dirname(file),{recursive:true});
@@ -161,4 +228,4 @@ async function main(){
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===path.resolve(new URL(import.meta.url).pathname))
  main().catch(e=>{console.error("Photo collection failed:",e);process.exitCode=1;});
-export{targetTeams,rosterPlayers};
+export{targetTeams,rosterPlayers,parseLeagueTeams,fixtureTeams};
