@@ -35,6 +35,26 @@ function injuries(summary){
  }
  return result;
 }
+function rosterPhotos(payload){
+ const groups=Array.isArray(payload?.athletes)?payload.athletes:[];
+ const rows=groups.flatMap(g=>Array.isArray(g.items)?g.items:Array.isArray(g.athletes)?g.athletes:(g.id||g.displayName)?[g]:[]);
+ return rows.map(entry=>{
+  const a=entry.athlete||entry;
+  const name=String(a.displayName||a.fullName||a.name||"").trim();
+  const href=String(a.headshot?.href||a.headshot||"");
+  return name&&/^https:\/\/a\.espncdn\.com\//.test(href)?{name,photoUrl:href}:null;
+ }).filter(Boolean).filter((row,i,a)=>a.findIndex(x=>x.name===row.name)===i).slice(0,40);
+}
+async function verifiedRosterPhotos(league,competition){
+ const ids=[...new Set((competition?.competitors||[]).map(x=>String(x.team?.id||x.id||"")).filter(x=>/^\d{1,10}$/.test(x)))].slice(0,2);
+ const settled=await Promise.allSettled(ids.map(async id=>{
+  const url="https://site.api.espn.com/apis/site/v2/sports/soccer/"+encodeURIComponent(league)+"/teams/"+id+"/roster";
+  const r=await fetch(url,{headers:{accept:"application/json"},signal:AbortSignal.timeout(3700)});
+  if(!r.ok)throw Error("No sourced roster");return{id,photos:rosterPhotos(await r.json())};
+ }));
+ return Object.fromEntries(settled.filter(x=>x.status==="fulfilled"&&x.value.photos.length).map(x=>[x.value.id,x.value.photos]));
+}
+
 export default async function handler(req,res){
  if(req.method!=="GET")return res.status(405).json({error:"GET only"});
  const id=String(req.query.id||""),league=String(req.query.league||""),date=String(req.query.date||local()),today=local();
@@ -51,14 +71,15 @@ export default async function handler(req,res){
   const statuses=data?.header?.competitions?.[0]?.status?.type||data?.header?.status?.type||{};
   const verified=extractStarters(data);
   const reported=injuries(data);
+  const rosterHeadshots=await verifiedRosterPhotos(league,competition).catch(()=>({}));
   return res.status(200).json({schema:"footyedge-match-check-v1",id,league,date,checkedAt:new Date().toISOString(),
     available:true,provider:"ESPN match summary",sourceUrl:"https://www.espn.com/soccer/match/_/gameId/"+id,
-    liveState:String(statuses.state||"unknown"),confirmedXIs:verified,reportedInjuries:reported,
+    liveState:String(statuses.state||"unknown"),confirmedXIs:verified,reportedInjuries:reported,rosterHeadshots,
     note:verified.length?"Only complete source-marked starting XIs are treated as confirmed.":"No complete confirmed XI was provided; previously sourced predictions remain labelled as predictions."});
  }catch{
   return res.status(200).json({schema:"footyedge-match-check-v1",id,league,date,checkedAt:new Date().toISOString(),
-   available:false,provider:"ESPN match summary",confirmedXIs:[],reportedInjuries:{},
+   available:false,provider:"ESPN match summary",confirmedXIs:[],reportedInjuries:{},rosterHeadshots:{},
    note:"Live match source unavailable. Previously published dated research is unchanged."});
  }
 }
-export{extractStarters,injuries};
+export{extractStarters,injuries,rosterPhotos};
