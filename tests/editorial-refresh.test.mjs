@@ -87,7 +87,7 @@ test("The official scheduled refresh locks source-only picks and avoids model-bu
  assert.match(freeze,/node scripts\/build-editorial-desk\.mjs/);
  assert.ok(freeze.indexOf("node scripts/build-editorial-desk.mjs")<freeze.indexOf("node scripts/archive-board.mjs"));
  assert.doesNotMatch(freeze,/SLIP_DATE="\$TODAY" node scripts\/build-daily-slips\.mjs/);
- assert.match(slip,/00:45 Toronto/);
+ assert.doesNotMatch(slip,/^  schedule:/m);
  assert.match(slip,/git add -A data\/editorial-desk\//);
  assert.doesNotMatch(slip,/REBUILD_DAILY_SLIPS/);
  const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
@@ -105,5 +105,5 @@ test("The fixture UI and parlay page can never fall back to model slips for upco
  assert.match(page,/if\(date>=localDate\(\)\)/);
  assert.doesNotMatch(researchJob,/SLIP_DATE="\$TODAY" node scripts\/build-daily-slips\.mjs/);
  assert.match(freeze,/MINUTES_SINCE_MIDNIGHT < 720/);
- assert.match(deskJob,/github\.event_name \}\}" == "push"/);
+ assert.doesNotMatch(deskJob,/^  schedule:/m);
 });

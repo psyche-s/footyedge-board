@@ -1,54 +1,7 @@
 name: FootyEdge Dixon-Coles shadow model
 
 on:
-  workflow_run:
-    workflows: ['Build FootyEdge Research Base']
-    types: [completed]
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "scripts/shadow_dixon_coles.py"
-      - "assets/board-availability.js"
-      - "scripts/backtest_shadow.py"
-      - "scripts/compare-frozen-slates.mjs"
-      - "scripts/review-shadow.mjs"
-      - "tests/review-shadow.test.mjs"
-      - "tests/test_shadow_model.py"
-      - "tests/saudi-league.test.mjs"
-      - "tests/czech-league.test.mjs"
-      - "assets/czech-first-league.mjs"
-      - "api/espn-scoreboard.js"
-      - "api/the-odds.js"
-      - "scripts/audit-shadow-refresh.mjs"
-      - "scripts/build-model-board.mjs"
-      - "tests/model-board.test.mjs"
-      - "ui/part2.html"
-      - "tests/audit-shadow-refresh.test.mjs"
-      - ".github/workflows/archive-board.yml"
-      - ".github/workflows/shadow-dixon-coles.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "scripts/shadow_dixon_coles.py"
-      - "scripts/backtest_shadow.py"
-      - "scripts/compare-frozen-slates.mjs"
-      - "scripts/review-shadow.mjs"
-      - "tests/review-shadow.test.mjs"
-      - "tests/test_shadow_model.py"
-      - "scripts/audit-shadow-refresh.mjs"
-      - "scripts/build-model-board.mjs"
-      - "tests/model-board.test.mjs"
-      - "ui/part2.html"
-      - "tests/audit-shadow-refresh.test.mjs"
-      - ".github/workflows/archive-board.yml"
-      - ".github/workflows/shadow-dixon-coles.yml"
-      - "requirements-shadow.txt"
-  schedule:
-    # Local 00:10 shadow forecast; workflow_run still triggers after completed research.
-    - cron: "10 4 * * *"
-    - cron: "10 5 * * *"
-
 permissions:
   contents: write
 

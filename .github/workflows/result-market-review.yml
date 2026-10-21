@@ -1,13 +1,5 @@
 name: FootyEdge Result Market Review (ML / Draw / DC)
 on:
-  push:
-    branches: [main]
-    paths:
-      - "scripts/review-result-markets.mjs"
-      - ".github/workflows/result-market-review.yml"
-  schedule:
-    - cron: "18 4 * * *"
-    - cron: "18 5 * * *"
   workflow_dispatch:
 permissions:
   contents: write

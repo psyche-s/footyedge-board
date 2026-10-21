@@ -95,10 +95,9 @@ test("publisher schedules 00:05 Toronto with an immutable daily archive",()=>{
   assert.match(workflow,/cron: "5 0 \* \* \*"/);
    assert.match(workflow,/timezone: "America\/Toronto"/);
   assert.match(workflow,/Toronto 00:05 publication window/);
-  assert.ok(research.includes('cron: "0,15 4,5 * * *"'));
-  for(const [yaml,starts] of [[shadow,["10 4","10 5"]]]){
-    for(const s of starts)assert.ok(yaml.includes('cron: "'+s+' * * *"'));
-  }
+  assert.doesNotMatch(research,/^  schedule:/m);
+  assert.doesNotMatch(shadow,/^  schedule:/m);
+  assert.doesNotMatch(shadow,/^  workflow_run:/m);
   const publisher=fs.readFileSync("scripts/publish-board-previews.mjs","utf8");
   assert.match(publisher,/Same-day published boards are refreshable/);
   assert.doesNotMatch(publisher,/Past 00:30 Toronto lock/);
@@ -418,4 +417,16 @@ test("October 10 owner-approved modal removes GF/GA cards and renders verified H
   assert.match(p2,/function verifiedPositionBadge/);
   assert.doesNotMatch(p2,/<small>HOME GF \/ GA<\/small>/);
   assert.doesNotMatch(p2,/<small>AWAY GF \/ GA<\/small>/);
+});
+
+test("one timed refresh only, without downstream workflow_run triggers",()=>{
+  const dir=".github/workflows";
+  const scheduled=fs.readdirSync(dir).filter(file=>/\.ya?ml$/.test(file))
+    .filter(file=>/^  schedule:/m.test(fs.readFileSync(dir+"/"+file,"utf8")));
+  assert.deepEqual(scheduled,["archive-board.yml"]);
+  const shadow=fs.readFileSync(dir+"/shadow-dixon-coles.yml","utf8");
+  assert.doesNotMatch(shadow,/^  workflow_run:/m);
+  const master=fs.readFileSync(dir+"/archive-board.yml","utf8");
+  assert.match(master,/cancel-in-progress: false/);
+  assert.doesNotMatch(master,/^  push:/m);
 });

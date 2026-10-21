@@ -2,15 +2,6 @@ name: Sync FootyEdge Logo Cache
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - "data/logo-sources.json"
-      - "scripts/sync-football-logos.mjs"
-      - ".github/workflows/sync-football-logos.yml"
-  schedule:
-    - cron: "20 9 1 * *"
-
 permissions:
   contents: write
 

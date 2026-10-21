@@ -8,17 +8,6 @@ on:
         required: true
         default: daily
         options: [daily, full]
-  schedule:
-    # 00:09 America/Toronto on EDT and EST. The first step gates off-season UTC hour,
-    # GitHub delays and post-00:25 runs. No edits to locked picks.
-    - cron: "9 4 * * *"
-    - cron: "9 5 * * *"
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/sync-football-data-hub.yml"
-      - "scripts/v2-data-source-readiness.mjs"
-      - "config/v2-free-data-bridge.json"
 permissions:
   contents: write
 concurrency:

@@ -1,14 +1,6 @@
 name: FootyEdge licensed daily editorial slip desk
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/daily-slip-desk.yml"
-      - "scripts/build-editorial-desk.mjs"
-  schedule:
-    # 00:45 Toronto in EDT / EST, after the published board and research files.
-    - cron: "45 4,5 * * *"
 permissions:
   contents: write
 concurrency:
@@ -30,7 +22,7 @@ jobs:
         shell: bash
         run: |
           NOW="$(TZ=America/Toronto date +%H)"
-          if [[ "${{ github.event_name }}" == "push" || "$NOW" != "00" ]]; then
+          if [[ "${{ github.event_name }}" == "schedule" && "$NOW" != "00" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
           else
             echo "run=true" >> "$GITHUB_OUTPUT"

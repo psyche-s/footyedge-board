@@ -1,18 +1,6 @@
 name: Collect original FootyEdge player photo references
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '17 10 * * *'
-  push:
-    branches:
-      - feat/original-all-league-player-photos-20261021
-      - main
-    paths:
-      - scripts/sync-player-photo-refs.mjs
-      - tests/player-photo-refs.test.mjs
-      - tests/player-profile.test.mjs
-      - tests/ten-appearance-squad.test.mjs
-      - .github/workflows/collect-player-photo-refs.yml
 permissions:
   contents: write
 concurrency:

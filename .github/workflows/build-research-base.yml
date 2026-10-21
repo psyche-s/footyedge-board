@@ -2,23 +2,7 @@ name: Build FootyEdge Research Base
 # Manual research refresh requested 2026-10-14; no changes to publishing guard.
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'assets/board-availability.js'
-      - 'assets/czech-first-league.mjs'
-      - 'scripts/build-research-base.mjs'
-      - 'scripts/build-evidence-only-board.mjs'
-      - 'data/editorial-previews/**'
-      - 'scripts/build-h2h-cache.mjs'
-      - 'scripts/build-daily-slips.mjs'
-      - 'scripts/sync-asia-research.mjs'
-      - '.github/workflows/build-research-base.yml'
-  schedule:
-    # Local midnight research before official 00:30 publication; EDT/EST alternatives.
-    - cron: "0,15 4,5 * * *"
   workflow_dispatch:
-
 permissions:
   contents: write
 

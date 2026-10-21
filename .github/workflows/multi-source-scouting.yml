@@ -1,12 +1,6 @@
 name: FootyEdge Multi-Source Scouting
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths: ["scripts/analytics_pipeline.py", "scripts/advanced_adapter.py", "tests/test_analytics_pipeline.py", "tests/test_advanced_adapter.py", ".github/workflows/multi-source-scouting.yml"]
-  schedule:
-    - cron: "12 4 * * *"
-    - cron: "12 5 * * *"
 permissions:
   contents: write
 concurrency:
