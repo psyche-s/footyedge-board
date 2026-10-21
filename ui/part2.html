@@ -1602,6 +1602,110 @@ function feOfficialNewsHTML(g){
  };
  return side(intel.home,g.home)+side(intel.away,g.away);
 }
+
+/* Player details are lazily researched on click. No arbitrary URLs from lineup
+   data are fetched; the provider-matched ID is rechecked against its club roster. */
+function fePlayerSafePhoto(src){
+ return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!function feTeamPitchRows(x,t,g,position){'()*+,;=:@/%?-]+$/i.test(String(src||""))
+    ?'<img class="fe-playerPortrait" alt="" loading="lazy" src="'+esc(src)+'">':'';
+}
+function fePlayerRole(position){
+ const role=String(position||"").toLowerCase();
+ if(role.includes("goalkeep")||role==="gk")return "Goalkeeper · Goal protection and distribution.";
+ if(role.includes("centre")||role.includes("center back")||role.includes("defender")||role==="df")
+   return "Defensive role · Maintaining defensive shape and limiting opponent chances.";
+ if(role.includes("midfield")||role==="mf")return "Midfield role · Connecting defensive and attacking phases.";
+ if(role.includes("wing"))return "Wide role · Providing width and supporting attacks.";
+ if(role.includes("forward")||role.includes("striker")||role==="fw")
+   return "Attacking role · Working to create and finish chances.";
+ return "A playing-style scouting summary is not verified for this player.";
+}
+function fePlayerProfileMarkup(result,fallback){
+ const verified=result?.status==="verified"&&result.player?.name;
+ const player=verified?result.player:{name:fallback.name,team:fallback.teamName,headshot:fallback.photoUrl};
+ const photo=fePlayerSafePhoto(player.headshot||fallback.photoUrl);
+ const initials=String(player.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(s=>s.slice(0,1)).join("").toUpperCase();
+ const text=x=>x!=null&&String(x).trim()?esc(String(x)):'Not available';
+ const stat=label=>(result?.stats||[]).find(s=>s.label===label)?.value;
+ const birth=player.dateOfBirth&&/^\d{4}-\d{2}-\d{2}$/.test(player.dateOfBirth)?
+   new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(player.dateOfBirth+"T12:00:00Z")):null;
+ const stats=["Appearances","Starts","Goals","Assists"].map(label=>
+   '<div class="fe-playerStat"><span>'+label+'</span><strong>'+text(stat(label))+'</strong></div>').join("");
+ const details=[["Full name",player.name],["Nationality",player.nationality],
+  ["Date of birth",birth],["Jersey number",player.jerseyNumber||fallback.jersey],
+  ["Height",player.height],["Weight",player.weight],["Preferred foot",player.dominantFoot],
+  ["Primary position",player.position||fallback.position],
+  ["Other positions",player.secondaryPositions?.length?player.secondaryPositions.join(", "):null]
+ ].map(([label,value])=>'<div class="fe-playerDetail"><span>'+esc(label)+'</span><strong>'+text(value)+'</strong></div>').join("");
+ const recent=(result?.recent||[]).slice(0,5);
+ const recentMarkup=recent.length?recent.map(r=>
+  '<div class="fe-playerGame"><div><span>'+text(r.date)+'</span><strong>'+text(r.opponent)+'</strong></div>'+
+  '<div><span>Goals</span><b>'+text(r.goals)+'</b></div>'+
+  '<div><span>Assists</span><b>'+text(r.assists)+'</b></div>'+
+  '<div><span>Min</span><b>'+text(r.minutes)+'</b></div></div>').join(""):
+  '<p class="fe-playerUnavailable">No verified match-by-match player statistics are available yet.</p>';
+ const career=player.career||[];
+ const careerMarkup=career.length?career.map(x=>
+  '<div class="fe-playerCareer"><strong>'+text(x.club)+'</strong><span>'+text([x.from,x.to].filter(Boolean).join(" – ")||null)+'</span></div>').join(""):
+  '<p class="fe-playerUnavailable">Verified previous clubs and transfer dates are not available from this record.</p>';
+ const note=verified?'Only verified provider fields are displayed. Season figures may be unavailable for some competitions.':
+  (result?.note||'Could not verify this player against the current squad. No details have been invented.');
+ return '<div class="fe-playerHero">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+
+  '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER PROFILE</span>'+
+  '<h2 id="fe-playerTitle">'+text(player.name)+'</h2><p>'+text(player.team||fallback.teamName)+'</p>'+
+  '<span class="fe-playerPosition">'+text(player.position||fallback.position||"Position unavailable")+'</span></div></div>'+
+  '<div class="fe-playerScroll">'+
+  '<section class="fe-playerPanel"><h3>Season performance</h3><div class="fe-playerStatsGrid">'+stats+'</div></section>'+
+  '<section class="fe-playerPanel"><h3>About the player</h3><div class="fe-playerDetails">'+details+'</div></section>'+
+  '<section class="fe-playerPanel"><h3>On-field role</h3><p>'+esc(fePlayerRole(player.position||fallback.position))+'</p>'+
+    '<p class="fe-playerHint">This describes the position, not an unverified personal scouting report.</p></section>'+
+  '<section class="fe-playerPanel"><h3>Recent matches</h3>'+recentMarkup+'</section>'+
+  '<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>'+
+  '<p class="fe-playerHint">'+esc(note)+'</p></div>';
+}
+async function feOpenPlayerProfile(g,button){
+ const name=String(button.dataset.fePlayerName||""),side=String(button.dataset.fePlayerTeam||"");
+ if(!name||!g)return;
+ document.querySelector(".fe-playerOverlay")?.remove();
+ const focusBack=button,team=[g.home,g.away].find(x=>String(x.id)===side);
+ const fallback={name,teamName:team?.name||"Club not confirmed",photoUrl:button.querySelector(".fe-fieldAvatar img")?.src||"",
+   position:"",jersey:""};
+ const root=document.createElement("div");
+ root.className="fe-playerOverlay";
+ root.innerHTML='<div class="fe-playerShade" data-fe-player-close></div>'+
+  '<section class="fe-playerSheet" role="dialog" aria-modal="true" aria-labelledby="fe-playerTitle">'+
+  '<header class="fe-playerTopbar"><span>FootyEdge · Player intelligence</span>'+
+  '<button type="button" class="fe-playerClose" aria-label="Close player profile" data-fe-player-close>✕</button></header>'+
+  '<div class="fe-playerContent">'+fePlayerProfileMarkup(null,fallback)+
+  '<p class="fe-playerLoading" role="status">Checking player details…</p></div></section>';
+ document.body.appendChild(root);
+ const close=()=>{controller.abort();root.remove();focusBack.isConnected&&focusBack.focus({preventScroll:true});document.removeEventListener("keydown",onKey)};
+ const onKey=event=>{if(event.key==="Escape")close()};
+ root.addEventListener("click",event=>{if(event.target.closest("[data-fe-player-close]"))close()});
+ document.addEventListener("keydown",onKey);
+ root.querySelector(".fe-playerClose")?.focus();
+ const controller=new AbortController();
+ if(!/^\d{1,10}$/.test(side)){
+   root.querySelector(".fe-playerContent").innerHTML=fePlayerProfileMarkup(
+    {status:"unverified",note:"Club ID is not verified, so no player record was requested."},fallback);
+   return;
+ }
+ const qs=new URLSearchParams({league:g.league,teamId:side,name});
+ const athlete=String(button.dataset.fePlayerId||"");
+ if(/^\d{1,12}$/.test(athlete))qs.set("playerId",athlete);
+ try{
+  const r=await fetch("/api/player-profile?"+qs.toString(),{headers:{accept:"application/json"},signal:controller.signal});
+  if(!r.ok)throw Error("Not available");
+  const info=await r.json();
+  if(root.isConnected&&info?.schema==="footyedge-player-profile-v1")
+    root.querySelector(".fe-playerContent").innerHTML=fePlayerProfileMarkup(info,fallback);
+  else if(root.isConnected)throw Error("Not verified");
+ }catch{
+  if(root.isConnected)root.querySelector(".fe-playerContent").innerHTML=fePlayerProfileMarkup(
+   {status:"unavailable",note:"The player profile service is unavailable. No unverified statistics are shown."},fallback);
+ }
+}
+
 function feTeamPitchRows(x,t,g,position){
  const confirmed=Array.isArray(x?.confirmedXI)&&x.confirmedXI.length===11;
  const roster=confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[];
@@ -1616,7 +1720,10 @@ function feTeamPitchRows(x,t,g,position){
     '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+esc(photo)+'" alt="">':
     '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>';
  };
- const person=p=>'<div class="fe-fieldPlayer"><div class="fe-fieldAvatar">'+safeImage(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div></div>';
+ const person=p=>'<button type="button" class="fe-fieldPlayer fe-playerOpen" aria-label="View player profile: '+esc(name(p))+'" '+
+   'data-fe-player-name="'+esc(name(p))+'" data-fe-player-team="'+esc(t.id||"")+'" '+
+   'data-fe-player-id="'+esc(typeof p==="object"?(p.id||""):"")+'">'+
+   '<div class="fe-fieldAvatar">'+safeImage(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div></button>';
  const formTag=validated?formation:'Shape not verified';
  const header='<div class="fe-sharedClub">'+teamImgTag(t,"fe-historyLogo")+'<b>'+esc(teamDisplayName(g,t))+'</b>'+
    '<small>'+esc(formTag)+'</small></div>';
@@ -1682,7 +1789,8 @@ async function feRefreshMatch(g){
     const exact=roster.filter(x=>nameKey(x.name)===key);
     const suffix=roster.filter(x=>nameKey(x.name).endsWith(" "+key));
     const candidate=exact.length===1?exact[0]:suffix.length===1&&key.length>=4?suffix[0]:null;
-    return candidate?{name:text,photoUrl:candidate.photoUrl}:name;
+    return candidate?{name:text,id:candidate.id||null,photoUrl:candidate.photoUrl||null,
+      jersey:candidate.jersey||null,position:candidate.position||null}:name;
    };
    return{...original,predictedXI:(original.predictedXI||[]).map(enrich),
      confirmedXI:match?.players||[],liveInjuries:reports};
@@ -2056,9 +2164,10 @@ function renderModal(g){
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
-  const action=event?.target?.closest?.("[data-fe-tab],[data-h2h-toggle],[data-last5-toggle],[data-refresh-match]");
+  const action=event?.target?.closest?.("[data-fe-player-name],[data-fe-tab],[data-h2h-toggle],[data-last5-toggle],[data-refresh-match]");
   if(!action)return;
   const g=S.games.find(x=>x.id===String(S.openGameId));if(!g)return;
+  if(action.hasAttribute("data-fe-player-name")){feOpenPlayerProfile(g,action);return;}
   if(action.hasAttribute("data-refresh-match")){feRefreshMatch(g);return;}
   if(action.hasAttribute("data-fe-tab")){
     g.feTab=action.getAttribute("data-fe-tab");
