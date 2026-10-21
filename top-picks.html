@@ -122,12 +122,24 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .ticketPaper .slipRisk:before{content:"ⓘ";margin-right:5px;color:#8a806f;font-weight:900}
 .ticketPaper .ticketTear:before,.ticketPaper .ticketTear:after{top:-2px}
 @media(max-width:550px){.ticketPaper .slipHead h2{font-size:clamp(28px,7vw,37px)!important}.ticketPaper .legTitle{font-size:17px!important}.ticketPaper .legRating{font-size:12px!important}.ticketPaper .slipRisk{padding:4px 21px 13px}}
+
+.fe-slipActions{display:flex;flex-direction:column;gap:8px;min-width:230px}
+.fe-refreshBtn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;background:#0b3020;border:1px solid #32714c;border-radius:12px;color:#a3fac5;font-size:12px;font-weight:850}
+.fe-refreshBtn:disabled{opacity:.5;cursor:wait}
+.fe-refreshBtn span{font-size:20px;line-height:1}
+.fe-refreshBtn.busy span{animation:feSpin .85s linear infinite}@keyframes feSpin{to{transform:rotate(360deg)}}
+.fe-refreshStatus{font-size:11px;color:#aad0b6;line-height:1.65}
+.ticketPaper .legWhy summary:before{content:"+"!important;display:inline!important;border:0!important;border-radius:0!important;background:none!important;width:auto!important;height:auto!important;font-size:20px!important;line-height:1!important;color:#366a46!important}
+.ticketPaper .legWhy[open] summary:before{content:"−"!important}
+.ticketPaper .legWhy summary{display:flex!important;align-items:center!important;gap:9px!important}
+.ticketPaper .slipFooter #sgpCount,.ticketPaper .slipFooter #accaCount{color:#238054!important;letter-spacing:.02em!important;font-size:10px!important}
+@media(max-width:550px){.fe-slipActions{width:100%;min-width:0}.fe-refreshBtn{min-height:44px}}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
   <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. SGP and ACCA layouts are indicative research slips, not sportsbook-confirmed bet builders.</p></div>
-  <div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div></div>
-  <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div>
+  <div class="fe-slipActions"><div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh latest data</button></div></div>
+  <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
   <section class="grid" aria-label="FootyEdge research slips">
   <article class="slip ticketPaper" aria-labelledby="sgpTitle">
     <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="sgpMeta">SGP · MATCHDAY</span><span class="slipBadge" id="sgpLegBadge">RESEARCH</span></div>
@@ -218,9 +230,10 @@ function kickoffCountdown(items){
 function printSlip(id,items,empty){
  document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
  const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
- document.getElementById(prefix+"Count").textContent=items.length?items.length+" RESEARCHED LEG"+(items.length===1?"":"S"):"PASS · NO QUALIFIED TICKET";
+ const researchScore=items.length?Math.max(0,Math.round(Math.min(...items.map(x=>x.rating))-3*(items.length-1)-(isSgp?2:0))):null;
+ document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":"OVERALL RESEARCH RATING "+researchScore+"%";
  document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
- if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="jpn.1"?"THE J1 GOALS FLYER":items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
+ if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
  document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
  document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
 }
