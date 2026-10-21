@@ -7,6 +7,7 @@ test("Goal total and team goal 1+ never consume two Top 3 positions",()=>{
  assert.equal(independentSelection(p("Under 4.5 Goals","Goals"),p("Over 1.5 Goals","Goals")),false);
  assert.equal(independentSelection(p("BTTS — Yes","BTTS"),p("Arsenal 1+ Goal","Team Goals")),false);
  assert.equal(independentSelection(p("Arsenal 1+ Goal","Team Goals"),p("Spurs 1+ Goal","Team Goals")),false);
+ assert.equal(independentSelection(p("Over 1.5 Goals","Goals"),p("Spurs 1+ Goal","Team Goals")),false);
 });
 test("ML and double chance do not create duplicate result theses",()=>{
  assert.equal(independentSelection(p("Arsenal ML","Match Result"),p("Arsenal or Draw","Double Chance")),false);

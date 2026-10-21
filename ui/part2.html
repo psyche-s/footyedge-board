@@ -795,10 +795,20 @@ function feThesisKind(p){
 }
 function feDistinctView(ordered){
   const seen=new Set(),out=[];
+  const sideFromGoal=p=>String(p?.label||"").replace(/\s+[123]\+\s+goals?$/i,"").trim().toLowerCase();
+  const sideFromResult=p=>String(p?.label||"").replace(/(?:\s+ml|\s+or\s+draw)$/i,"").trim().toLowerCase();
   for(const p of ordered||[]){
     if(!p?.label)continue;
     const family=feThesisKind(p);
     if(!family||family==="other"||seen.has(family))continue;
+    // Result and a same-team scoring minimum can be redundant as well.
+    if(out.some(q=>{
+      const qScore=feThesisKind(q)==="scoring",pScore=family==="scoring";
+      if(qScore&&pScore)return true;
+      if(qScore&&family==="result"&&sideFromGoal(q)===sideFromResult(p))return true;
+      if(pScore&&feThesisKind(q)==="result"&&sideFromGoal(p)===sideFromResult(q))return true;
+      return false;
+    }))continue;
     seen.add(family);out.push(p);
     if(out.length>=3)break;
   }

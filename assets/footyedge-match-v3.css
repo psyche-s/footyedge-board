@@ -445,3 +445,31 @@
 .fe-whySources span{opacity:.85}
 .fe-whySources a{color:#83ebb3;text-decoration:underline;text-underline-offset:2px;white-space:nowrap}
 @media(max-width:620px){.fe-whySources{font-size:10px;row-gap:4px}.fe-whySources a{font-size:10px}}
+
+/* v8: single grid contract, identical 16px labels and 48px controls */
+#filters{display:grid!important;grid-template-columns:minmax(115px,.84fr) minmax(0,1.56fr)!important;grid-template-rows:auto 71px!important;gap:11px 9px!important;align-items:stretch!important}
+#filters>.fe-statusGroup{grid-row:1!important;grid-column:1/-1!important}
+#filters>.fe-leagueGroup,#filters>.fe-searchGroup{display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:16px 48px!important;row-gap:7px!important;align-items:stretch!important;align-content:end!important;gap:7px!important;margin:0!important;padding:0!important;min-width:0!important;max-height:71px!important}
+#filters>.fe-leagueGroup{grid-column:1!important;grid-row:2!important}
+#filters>.fe-searchGroup{grid-column:2!important;grid-row:2!important}
+#filters>.fe-leagueGroup>.filterTitle,#filters>.fe-searchGroup>.filterTitle{display:block!important;position:static!important;grid-row:1!important;grid-column:1!important;font-size:10px!important;font-weight:850!important;line-height:16px!important;letter-spacing:.13em!important;height:16px!important;min-height:16px!important;max-height:16px!important;margin:0!important;padding:0!important;align-self:start!important}
+#filters>.fe-leagueGroup>#feLeagueSelect,#filters>.fe-searchGroup>#searchBar{grid-row:2!important;grid-column:1!important;align-self:start!important;box-sizing:border-box!important;height:48px!important;min-height:48px!important;max-height:48px!important;width:100%!important;margin:0!important;border-radius:13px!important}
+#filters>.fe-searchGroup>#searchBar{position:relative!important;display:flex!important;align-items:center!important;overflow:visible!important}
+#filters>.fe-searchGroup>#searchBar>input{box-sizing:border-box!important;width:100%!important;height:48px!important;min-height:48px!important;max-height:48px!important;margin:0!important;border-radius:13px!important;padding:0 10px 0 36px!important;font-size:12px!important;line-height:normal!important}
+#filters>.fe-searchGroup>#searchBar>.fe-searchGlyph{position:absolute!important;left:11px!important;top:50%!important;transform:translateY(-50%)!important;line-height:1!important}
+#filters>.fe-leagueGroup>#feLeagueSelect{display:block!important;appearance:none!important;line-height:normal!important;padding:0 26px 0 11px!important;white-space:nowrap!important;text-overflow:ellipsis!important;font-size:12px!important}
+#filters>.fe-leagueGroup>#leagueRow{display:none!important}
+@media(max-width:390px){#filters{grid-template-columns:minmax(112px,.85fr) minmax(0,1.55fr)!important;column-gap:8px!important}#filters>.fe-searchGroup>#searchBar>input{font-size:11px!important;padding-left:30px!important}#filters>.fe-leagueGroup>#feLeagueSelect{font-size:11px!important;padding-left:8px!important}#filters>.fe-searchGroup>#searchBar>.fe-searchGlyph{left:8px!important}}
+/* Reference-inspired club colour glow: richer edges, very dark centre */
+.fe-matchCard .fe-hero{background:radial-gradient(ellipse at 50% 52%,#03130e 0%,#04180f 57%,#05140e 100%)!important}
+.fe-matchCard .fe-hero:before{
+ background:linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 74%,#090b11) 0%,color-mix(in srgb,var(--fe-home) 45%,#08120f) 43%,transparent 99%),
+ repeating-linear-gradient(135deg,rgba(255,255,255,.042) 0 2px,transparent 2px 28px,rgba(0,0,0,.08) 29px 32px,transparent 33px 58px)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 38%,transparent 100%)!important
+}
+.fe-matchCard .fe-hero:after{
+ background:linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 74%,#090b11) 0%,color-mix(in srgb,var(--fe-away) 45%,#08120f) 43%,transparent 99%),
+ repeating-linear-gradient(45deg,rgba(255,255,255,.042) 0 2px,transparent 2px 28px,rgba(0,0,0,.08) 29px 32px,transparent 33px 58px)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 38%,transparent 100%)!important
+}
+.fe-matchCard:after,.fe-matchCard .fe-cardArrow{content:none!important;display:none!important}
