@@ -171,3 +171,31 @@ test("Player profile displays requested ten-game columns, app-start distinction 
  assert.match(css,/fe-playerMatchStats/);
  assert.match(css,/scale\(1\.90\)/);
 });
+
+
+test("Last-ten UI includes a compact scrollable stats table and an abbreviation legend",()=>{
+ const ui=fs.readFileSync("ui/part2.html","utf8");
+ const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
+ const profile=ui.slice(ui.indexOf("function fePlayerProfileMarkup("),ui.indexOf("async function feOpenPlayerProfile("));
+ assert.match(profile,/fe-playerLastTenTable/);
+ assert.match(profile,/fe-playerTableScroll/);
+ assert.match(profile,/fe-playerStatLegend/);
+ assert.match(profile,/slice\(0,10\)/);
+ for(const token of ["MIN","SH","SOT","FC","FW","YC","RC","G","A"])
+  assert.ok(profile.includes('"'+token+'"'),"Missing legend/table abbreviation "+token);
+ assert.match(css,/\.fe-playerLastTenTable/);
+ assert.match(css,/\.fe-playerStatLegend/);
+ assert.match(css,/position:sticky/);
+ assert.match(css,/\.fe-playerPhotoStage/);
+});
+test("Club matches show ESPN's actual competition, not a generic Last 5 Matches label",()=>{
+ const overview={gameLog:{displayName:"Last 5 Matches",
+  statistics:[{names:["totalGoals"],events:[{eventId:"c1",stats:["2"]}]}],
+  events:{c1:{gameDate:"2026-10-19T11:00:00Z",team:{id:"2572"},
+   leagueName:"Italian Serie A",opponent:{displayName:"Udinese"}}}}};
+ const actual=parseESPNLastTen(overview,[],"2572",Date.parse("2026-10-21"));
+ assert.equal(actual.length,1);
+ assert.equal(actual[0].competition,"Italian Serie A");
+ assert.equal(actual[0].goals,2);
+ assert.equal(actual[0].minutes,null);
+});
