@@ -970,7 +970,6 @@ function renderGames(){
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
     const selections=viewCandidates(g),first=viewPick(g);
-    const label=selections.length+" pick"+(selections.length===1?"":"s");
     return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
       'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       feMatchHero(g)+
@@ -1789,6 +1788,7 @@ function feReviewedReason(g,p){
  return [clean,context+extra].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
 }
 function fePreviewLinks(g,p){
+ return "";
  const preview=g.editorialPreview;
  if(!preview?.sources?.length)return "";
  const links=preview.sources.filter(s=>/^https:\/\//.test(String(s.url||""))).slice(0,3).map((s,i)=>
