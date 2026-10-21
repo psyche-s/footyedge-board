@@ -1,0 +1,28 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {scoreLeg,settleTicket,summaryOf} from "../scripts/track-slip-performance.mjs";
+
+const final={id:"401",home:"Sporting CP",away:"LASK Linz",hs:3,as:1,completed:true};
+test("grade only outcome-verifiable score/result markets",()=>{
+  assert.equal(scoreLeg({label:"Sporting CP ML",category:"Match Result"},final),"hit");
+  assert.equal(scoreLeg({label:"LASK Linz or Draw",category:"Double Chance"},final),"miss");
+  assert.equal(scoreLeg({label:"Over 2.5 Goals",category:"Goals"},final),"hit");
+  assert.equal(scoreLeg({label:"Under 4 Goals",category:"Goals"},final),"push");
+  assert.equal(scoreLeg({label:"Sporting CP 1+ Goal",category:"Team Goals"},final),"hit");
+  assert.equal(scoreLeg({label:"BTTS Yes",category:"BTTS"},final),"hit");
+  assert.equal(scoreLeg({label:"Ivan Fresneda — 1+ Fouls Committed",category:"Player Fouls Committed"},final),"pending");
+});
+test("a slip settles as a whole, not as a count of winning legs",()=>{
+  assert.equal(settleTicket([{result:"hit"},{result:"hit"},{result:"hit"}]),"hit");
+  assert.equal(settleTicket([{result:"hit"},{result:"miss"},{result:"pending"}]),"miss");
+  assert.equal(settleTicket([{result:"hit"},{result:"pending"}]),"pending");
+  assert.equal(settleTicket([{result:"hit"},{result:"push"}]),"push");
+  assert.equal(settleTicket([]),"pending");
+});
+test("duplicate tickets never inflate the whole-slip hit rate",()=>{
+  assert.deepEqual(summaryOf([{id:"sgp",result:"hit"},{id:"league:uefa.champions",result:"hit",duplicateOf:"sgp"},{id:"acca",result:"miss"},{id:"league:eng.1",result:"pending"}]),{hits:1,misses:1,pushes:0,pending:1,settled:2,hitRate:50});
+});
+test("unfinished games are not automatically graded",()=>{
+  assert.equal(scoreLeg({label:"Sporting CP ML"}, {...final,completed:false}),"pending");
+  assert.equal(scoreLeg({label:"Sporting CP ML"}, {...final,hs:null}),"pending");
+});
