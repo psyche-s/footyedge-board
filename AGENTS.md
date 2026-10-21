@@ -1,3 +1,11 @@
+## Latest owner instruction — October 21, 2026 (original FootyEdge only)
+
+- **Only scheduled original FootyEdge data refresh** is `.github/workflows/archive-board.yml`, daily **00:05 America/Toronto**. This supersedes every older 00:00/00:05/00:30/00:45/6 AM/hours-long schedule in this document. Remove all other scheduled and automatic downstream data-refresh triggers. Allow manual maintenance and read-only CI; they are not alternative nightly publishers.
+- **No UI changes during nightly refresh.** Current design, lineup pitch and scrolling player-profile table must remain intact. Restore/protect original published picks and past records, only update allowed dated data, research, verified source refs, outcome tracking and editorial slips.
+- Before daily publication: use sourced fixtures, last-ten/five, league standing, H2H, licensed editorial consensus, verified predicted lineups/news, market and matchup checks; make strongest justified Top 3 per game, Top 5 overall, compatible eligible league SGPs, best SGP and one cross-game parlay. No invented stats, previews, lines or prices. No forced picks on insufficient evidence.
+- **Track parlay slips as whole tickets** (hit only when the entire bet settles winning), separate from individual Top 5 tracking, and preserve pending fouls/shots/SOT without confirmed player logs. No unapproved historical rewriting.
+- The adjacent Football Data Hub's nightly schedule was disabled as redundant; the original daily workflow performs licensed/public-domain historical import. FootyEdge V2 automatic refresh remains disabled. See `docs/original-daily-refresh.md` for the supported pipeline, remaining licensed feed/data gaps, timing and source fallback rules.
+
 ## Source-link presentation rule — October 13, 2026
 - Do NOT render research/source links below picks, match details, or the H2H panel. They clutter the owner's compact match dashboard.
 - Keep source URLs in data fields (sourceProvenance, sourceUrl, h2hSummary.url) for audit and model use, but no external-source link footers should appear in the public UI.
