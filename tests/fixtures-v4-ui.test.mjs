@@ -34,7 +34,7 @@ test("H2H, last five and confirmed season standings are independently displayed"
 });
 test("Top picks separate page has research SGP, ACCA and top 10 evidence-gated markets",()=>{
  assert.match(picks,/THE MATCHDAY SGP/);
- assert.match(picks,/THE J1 GOALS FLYER/);
+ assert.doesNotMatch(picks,/THE J1 GOALS FLYER/);
  assert.match(picks,/THE MATCHDAY ACCA/);
  assert.match(picks,/Top 10 Market Props/);
  assert.match(picks,/RESEARCH ONLY/);
