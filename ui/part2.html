@@ -954,8 +954,8 @@ function feMatchHero(g){
  const h=fePalette(g.home),a=fePalette(g.away);
  const core=scored
   ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'')+'">'+(live?'<i class="fe-liveDot"></i>':'')+esc(label)+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
-  :'<div class="fe-kickoff"><strong>'+esc(timeET(g.date))+'</strong><span>'+esc(feDay(g.date))+'</span><small>ET</small></div>';
- return '<div class="fe-hero" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
+  :'<div class="fe-kickoff"><strong>– &nbsp; –</strong><span>'+esc(feDay(g.date))+'</span><small>'+esc(timeET(g.date))+' ET</small></div>';
+ return '<div class="fe-hero fe-kitHero" style="--fe-home:+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
   '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span>'+
   '<span class="fe-heroStatus '+(live?'is-live':final?'is-final':'is-upcoming')+'">'+(live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
   '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div></div>';
@@ -1799,7 +1799,7 @@ function renderModal(g){
   const ranked=top3.length?top3.map((x,i)=>{
     return '<article class="modalPick fe-selection">'+
       '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">#'+(i+1)+'</div>'+
-      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+fePreviewLinks(g,x)+'</div>'+
+      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+'</div>'+
       '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
     '</article>';
   }).join(""):'<div class="fe-empty">No selection has enough verified support for this fixture.</div>';
