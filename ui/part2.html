@@ -1720,23 +1720,26 @@ function fePlayerProfileMarkup(result,fallback){
   '<p class="fe-playerUnavailable">No verified player details are available.</p>';
 
  const last=(result?.recent||[]).slice(0,10);
- // Keep the match-by-match rows familiar: opponent/date on the left, the
- // performance figures together on the right. No horizontal scrolling needed.
+ // One appearance per row; match/date remain visible while the nine verified
+ // statistics scroll horizontally on narrow screens.
  const columns=[["goals","G","Goals"],["assists","A","Assists"],
   ["shots","SH","Shots"],["shotsOnTarget","SOT","Shots on target"],
   ["minutes","MIN","Minutes played"],["foulsCommitted","FC","Fouls committed"],
   ["foulsWon","FW","Fouls won"],["yellowCards","YC","Yellow cards"],
   ["redCards","RC","Red cards"]];
  const lastMarkup=last.length?
-  '<div class="fe-playerAppearances" role="list">'+last.map(r=>
-   '<div class="fe-playerAppearanceRow" role="listitem">'+
-    '<div class="fe-playerMatchIdentity"><time>'+display(r.date)+'</time>'+
+  '<p class="fe-playerSwipeHint">Scroll sideways to see all match statistics →</p>'+
+  '<div class="fe-playerTableScroll" role="region" tabindex="0" aria-label="Last 10 appearances table, scroll horizontally for additional statistics">'+
+  '<table class="fe-playerLastTenTable"><thead><tr><th scope="col">Match</th>'+
+   columns.map(([,abbr,label])=>'<th scope="col" title="'+esc(label)+'">'+esc(abbr)+'</th>').join('')+
+   '</tr></thead><tbody>'+last.map(r=>
+    '<tr><th scope="row" class="fe-playerOpponent">'+
+     '<span class="fe-playerMatchDate">'+display(r.date)+'</span>'+
      '<strong>'+display(r.opponent)+'</strong>'+
      (r.competition?'<small>'+display(r.competition)+'</small>':'')+
-     (r.appearance?'<span class="fe-playerAppearance">'+display(r.appearance)+'</span>':'')+'</div>'+
-    '<div class="fe-playerMetricGrid">'+columns.map(([field,abbr,label])=>
-     '<div class="fe-playerMetric"><span title="'+esc(label)+'">'+esc(abbr)+'</span>'+
-     '<strong>'+plain(r[field])+'</strong></div>').join('')+'</div></div>').join('')+'</div>'+
+     (r.appearance?'<span class="fe-playerAppearance">'+display(r.appearance)+'</span>':'')+'</th>'+
+     columns.map(([field])=>'<td>'+plain(r[field])+'</td>').join('')+
+    '</tr>').join('')+'</tbody></table></div>'+
   '<div class="fe-playerStatLegend"><b>Stat abbreviations</b><div>'+
    columns.map(([,abbr,label])=>'<span><strong>'+esc(abbr)+'</strong> '+esc(label)+'</span>').join('')+
    '</div><p>— means not reported, not zero. Includes only verified recorded appearances.</p></div>':
@@ -1855,22 +1858,29 @@ function feVerifiedSquadPanel(g){
    '<p class="fe-panelNote">Tap a squad member for a player profile. Starting positions will appear only after an XI is supplied.</p></div>';
 }
 function feLineupsPanel(g){
- const intel=g.liveIntel||g.teamIntel;
- if(!intel||!/^https:\/\//.test(String(intel.source?.url||"")))return '<section class="fe-panel"><h3>LINEUPS</h3>'+
-   '<p class="fe-panelNote">Confirmed starting XIs have not been published for this fixture.</p>'+
-   '<button type="button" class="fe-matchRefresh" data-refresh-match>↻ Check lineups</button>'+
-   feVerifiedSquadPanel(g)+feMatchSourceStatus(g)+'</section>';
- const hasHome=(intel.home?.confirmedXI||intel.home?.predictedXI||[]).length===11;
- const hasAway=(intel.away?.confirmedXI||intel.away?.predictedXI||[]).length===11;
+ // Always present the same football pitch for every tracked league. Without
+ // a source-backed XI, show the empty team half and verified squads separately;
+ // do not position ordinary roster members as alleged starters.
+ const raw=g.liveIntel||g.teamIntel;
+ const intel=raw&&/^https:\/\//.test(String(raw.source?.url||""))?raw:{home:{},away:{}};
+ const homeXI=intel.home?.confirmedXI?.length===11?intel.home.confirmedXI:intel.home?.predictedXI||[];
+ const awayXI=intel.away?.confirmedXI?.length===11?intel.away.confirmedXI:intel.away?.predictedXI||[];
+ const hasHome=homeXI.length===11,hasAway=awayXI.length===11;
+ const confirmedHome=intel.home?.confirmedXI?.length===11,confirmedAway=intel.away?.confirmedXI?.length===11;
+ const status=confirmedHome&&confirmedAway?'OFFICIAL':
+  (confirmedHome||confirmedAway)?'PARTIALLY CONFIRMED':
+  (hasHome||hasAway)?'PREDICTED · NOT CONFIRMED':'XI PENDING';
+ const caution=confirmedHome&&confirmedAway?'Both starting XIs have been confirmed by the match provider.':
+  (hasHome||hasAway)?'Available predicted or partial XIs may change when official teams are published.':
+  'Confirmed starting XIs have not been published for this fixture.';
  return '<section class="fe-panel fe-lineupPanel">'+
-   '<div class="fe-panelHeading"><h3>STARTING XIs</h3><span class="fe-sourceTag">'+
-   (intel.home?.confirmedXI?.length===11&&intel.away?.confirmedXI?.length===11?'OFFICIAL':'PREDICTED · NOT CONFIRMED')+'</span></div>'+
-   '<div class="fe-lineupToolbar"><span>Both teams · matchday lineup information</span><button type="button" class="fe-matchRefresh" data-refresh-match>↻ Update XIs</button></div>'+
-   '<div class="fe-sharedPitch" role="group" aria-label="Illustrative football pitch showing both '+esc(g.home.name)+' and '+esc(g.away.name)+' starting elevens">'+
+   '<div class="fe-panelHeading"><h3>STARTING XIs</h3><span class="fe-sourceTag">'+status+'</span></div>'+
+   '<div class="fe-lineupToolbar"><span>Both teams · matchday lineup information</span><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
+    (hasHome||hasAway?'Update XIs':'Check lineups')+'</button></div>'+
+   '<div class="fe-sharedPitch" role="group" aria-label="Football pitch showing available starting XIs for '+esc(g.home.name)+' and '+esc(g.away.name)+'">'+
    '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
    feTeamPitchRows(intel.away,g.away,g,"top")+feTeamPitchRows(intel.home,g.home,g,"bottom")+'</div>'+
-   '<p class="fe-lineupCaution">'+((hasHome&&hasAway)?'Predicted XI — official lineups may differ.':'Predicted lineups incomplete for this fixture.')+'</p>'+
-   ''+
+   '<p class="fe-lineupCaution">'+caution+'</p>'+
    ((!hasHome||!hasAway)?feVerifiedSquadPanel(g):'')+
    feMatchSourceStatus(g)+'</section>';
 }
