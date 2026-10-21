@@ -34,26 +34,10 @@ test("Player profile renders ten horizontal-scroll table rows with nine metrics 
  assert.match(result,/— means not reported, not zero/);
  assert.match(result,/Scroll sideways to see all match statistics/);
 });
-test("A fixture with verified squads but no confirmed La Liga XI shows an accurately labelled roster",()=>{
- const source=extract("function feVerifiedSquadPanel(g){","function feLineupsPanel(g){");
- const panel=vm.runInNewContext(source+";feVerifiedSquadPanel",browserContext);
- const game={home:{id:"1538",name:"Levante"},away:{id:"93",name:"Athletic Club"},
-   feSquadRosters:{"1538":[{id:"141438",name:"Mathew Ryan",jersey:"13"}],
-    "93":[{id:"214412",name:"Iñaki Williams",jersey:"9"}]}};
- const html=panel(game);
- assert.match(html,/Verified team squads/);
- assert.match(html,/not a confirmed XI/);
- assert.match(html,/Mathew Ryan/);
- assert.match(html,/Iñaki Williams/);
- assert.equal((html.match(/data-fe-player-name=/g)||[]).length,2);
- assert.doesNotMatch(html,/OFFICIAL STARTING XI|Predicted formation/);
- const none=panel({...game,feSquadRosters:{}});
- assert.match(none,/has not yet published/);
-});
-test("La Liga lineup pane retains a verification button and saves ESPN roster even without XI",()=>{
+test("La Liga lineup pane keeps pitch but hides duplicate squad cards",()=>{
  assert.match(html,/g\.feSquadRosters=data\.rosterHeadshots\|\|\{\}/);
  assert.match(html,/Confirmed starting XIs have not been published/);
- assert.match(html,/feVerifiedSquadPanel\(g\)/);
+ assert.doesNotMatch(html,/function feVerifiedSquadPanel\(g\)/);
  assert.match(html,/Check lineups/);
  assert.match(html,/g\.feTab==="lineups"&&!g\.feLastRefreshTime/);
  assert.match(css,/\.fe-playerTableScroll/);
@@ -66,7 +50,6 @@ test("Every league retains the field when lineups are still pending",()=>{
  const panel=vm.runInNewContext(source+";feLineupsPanel",{
   ...browserContext,
   feTeamPitchRows:(_intel,t)=>'<div class="fe-sharedHalf">'+t.name+'</div>',
-  feVerifiedSquadPanel:()=>'<div class="fe-verifiedSquads">Squad players</div>',
   feMatchSourceStatus:()=>''
  });
  const game={league:"esp.1",home:{name:"Levante"},away:{name:"Athletic Club"}};
@@ -76,9 +59,25 @@ test("Every league retains the field when lineups are still pending",()=>{
  assert.match(output,/Athletic Club/);
  assert.match(output,/XI PENDING/);
  assert.match(output,/Confirmed starting XIs have not been published/);
- assert.match(output,/Squad players/);
+ assert.doesNotMatch(output,/Verified team squads|Squad players/);
  const supplied=panel({...game,teamIntel:{source:{url:"https://example.org/fixture"},
   home:{predictedXI:Array.from({length:11},(_,i)=>"Player "+i)},away:{predictedXI:[]}}});
  assert.match(supplied,/PREDICTED · NOT CONFIRMED/);
  assert.match(supplied,/class="fe-sharedPitch"/);
+});
+
+test("Photo lookup uses the matching club and avoids ambiguous surnames",()=>{
+ const source=extract("function fePhotoMatch(g,t,player){","function feTeamPitchRows(x,t,g,position){");
+ const match=vm.runInNewContext(source+";fePhotoMatch",{
+  window:{FOOTYEDGE_PLAYER_PHOTOS:{teams:{"esp.1:83":{players:[
+   {name:"Eric García",id:"128714"},{name:"Álex García",id:"99444"},
+   {name:"Lamine Yamal",id:"77444"}
+  ]}}}}
+ });
+ const g={league:"esp.1"},t={id:"83"};
+ const yamal=match(g,t,"Lamine Yamal");
+ assert.equal(yamal.id,"77444");
+ assert.match(yamal.photoUrl,/77444\.png$/);
+ assert.equal(match(g,t,"García"),"García");
+ assert.equal(match(g,{id:"93"},"Lamine Yamal"),"Lamine Yamal");
 });
