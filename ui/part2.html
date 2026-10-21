@@ -1622,47 +1622,66 @@ function fePlayerRole(position){
 }
 function fePlayerProfileMarkup(result,fallback){
  const verified=result?.status==="verified"&&result.player?.name;
+ const loading=!result;
  const player=verified?result.player:{name:fallback.name,team:fallback.teamName,headshot:fallback.photoUrl};
  const photo=fePlayerSafePhoto(player.headshot||fallback.photoUrl);
- const initials=String(player.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(s=>s.slice(0,1)).join("").toUpperCase();
- const text=x=>x!=null&&String(x).trim()?esc(String(x)):'Not available';
- const stat=label=>(result?.stats||[]).find(s=>s.label===label)?.value;
+ const initials=String(player.name||"?").split(/\s+/).filter(Boolean).slice(0,2).map(z=>z[0]).join("").toUpperCase();
+ const display=x=>x!=null&&String(x).trim()?esc(String(x)):"";
  const birth=player.dateOfBirth&&/^\d{4}-\d{2}-\d{2}$/.test(player.dateOfBirth)?
    new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(player.dateOfBirth+"T12:00:00Z")):null;
- const stats=["Appearances","Starts","Goals","Assists"].map(label=>
-   '<div class="fe-playerStat"><span>'+label+'</span><strong>'+text(stat(label))+'</strong></div>').join("");
- const details=[["Full name",player.name],["Nationality",player.nationality],
-  ["Date of birth",birth],["Jersey number",player.jerseyNumber||fallback.jersey],
-  ["Height",player.height],["Weight",player.weight],["Preferred foot",player.dominantFoot],
-  ["Primary position",player.position||fallback.position],
-  ["Other positions",player.secondaryPositions?.length?player.secondaryPositions.join(", "):null]
- ].map(([label,value])=>'<div class="fe-playerDetail"><span>'+esc(label)+'</span><strong>'+text(value)+'</strong></div>').join("");
+ const role=player.position||fallback.position||null;
+ const hero='<div class="fe-playerHero">'+
+   '<div class="fe-playerPhotoStage">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div>'+
+   '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER PROFILE</span>'+
+   '<h2 id="fe-playerTitle">'+display(player.name)+'</h2><p>'+display(player.team||fallback.teamName)+'</p>'+
+   (role?'<span class="fe-playerPosition">'+display(role)+'</span>':'')+'</div></div>';
+ if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
+   '<div class="fe-profileShimmer"></div><p>Loading verified player information…</p></div>';
+ const available=(result?.stats||[]).filter(x=>["Appearances","Starts","Goals","Assists"].includes(x.label)&&
+   Number.isFinite(x.value)&&x.value>=0);
+ const labelData=label=>available.find(x=>x.label===label)?.value;
+ const cards=["Appearances","Starts","Goals","Assists"].map(label=>{
+   const value=labelData(label);
+   return '<div class="fe-playerStat'+(value==null?' fe-playerStatEmpty':'')+'"><span>'+label+
+    '</span><strong>'+(value==null?'—':display(value))+'</strong></div>';
+ }).join("");
+ const performance=available.length?
+   '<section class="fe-playerPanel"><h3>Season performance</h3>'+
+   (result.competition?'<p class="fe-competitionName">'+display(result.competition)+'</p>':'')+
+   '<div class="fe-playerStatsGrid">'+cards+'</div></section>':
+   '<section class="fe-playerPanel"><h3>Season performance</h3>'+
+   '<p class="fe-playerUnavailable">Season numbers have not been verified for this competition.</p></section>';
+ const personal=[["Full name",player.name],["Nationality",player.nationality],["Date of birth",birth],
+  ["Jersey number",player.jerseyNumber||fallback.jersey],["Height",player.height],
+  ["Weight",player.weight],["Preferred foot",player.dominantFoot],
+  ["Primary position",role],
+  ["Other positions",player.secondaryPositions?.length?player.secondaryPositions.join(", "):null]]
+  .filter(x=>x[1]!=null&&String(x[1]).trim());
+ const details=personal.length?personal.map(([label,value])=>
+   '<div class="fe-playerDetail"><span>'+esc(label)+'</span><strong>'+display(value)+'</strong></div>').join(""):
+   '<p class="fe-playerUnavailable">Verified personal details are not available yet.</p>';
  const recent=(result?.recent||[]).slice(0,5);
  const recentMarkup=recent.length?recent.map(r=>
-  '<div class="fe-playerGame"><div><span>'+text(r.date)+'</span><strong>'+text(r.opponent)+'</strong></div>'+
-  '<div><span>Goals</span><b>'+text(r.goals)+'</b></div>'+
-  '<div><span>Assists</span><b>'+text(r.assists)+'</b></div>'+
-  '<div><span>Min</span><b>'+text(r.minutes)+'</b></div></div>').join(""):
-  '<p class="fe-playerUnavailable">No verified match-by-match player statistics are available yet.</p>';
+  '<div class="fe-playerGame"><div><span>'+display(r.date)+'</span><strong>'+display(r.opponent)+'</strong></div>'+
+  '<div><span>Goals</span><b>'+display(r.goals??"—")+'</b></div>'+
+  '<div><span>Assists</span><b>'+display(r.assists??"—")+'</b></div>'+
+  '<div><span>Shots</span><b>'+display(r.shots??"—")+'</b></div></div>').join(""):
+  '<p class="fe-playerUnavailable">No verified match-by-match performance data is available yet.</p>';
  const career=player.career||[];
  const careerMarkup=career.length?career.map(x=>
-  '<div class="fe-playerCareer"><strong>'+text(x.club)+'</strong><span>'+text([x.from,x.to].filter(Boolean).join(" – ")||null)+'</span></div>').join(""):
-  '<p class="fe-playerUnavailable">Verified previous clubs and transfer dates are not available from this record.</p>';
- const note=verified?'Only verified provider fields are displayed. Season figures may be unavailable for some competitions.':
-  (result?.note||'Could not verify this player against the current squad. No details have been invented.');
- return '<div class="fe-playerHero">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+
-  '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER PROFILE</span>'+
-  '<h2 id="fe-playerTitle">'+text(player.name)+'</h2><p>'+text(player.team||fallback.teamName)+'</p>'+
-  '<span class="fe-playerPosition">'+text(player.position||fallback.position||"Position unavailable")+'</span></div></div>'+
-  '<div class="fe-playerScroll">'+
-  '<section class="fe-playerPanel"><h3>Season performance</h3><div class="fe-playerStatsGrid">'+stats+'</div></section>'+
-  '<section class="fe-playerPanel"><h3>About the player</h3><div class="fe-playerDetails">'+details+'</div></section>'+
-  '<section class="fe-playerPanel"><h3>On-field role</h3><p>'+esc(fePlayerRole(player.position||fallback.position))+'</p>'+
-    '<p class="fe-playerHint">This describes the position, not an unverified personal scouting report.</p></section>'+
-  '<section class="fe-playerPanel"><h3>Recent matches</h3>'+recentMarkup+'</section>'+
-  '<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>'+
+  '<div class="fe-playerCareer"><strong>'+display(x.club)+'</strong><span>'+
+  display([x.from,x.to].filter(Boolean).join(" – "))+'</span></div>').join(""):
+  '<p class="fe-playerUnavailable">Club transfer history is not available from this record.</p>';
+ const note=verified?'Only verified player fields are displayed. Missing values are omitted, not estimated.':
+  (result?.note||"This player could not be matched to a verified roster record.");
+ return hero+'<div class="fe-playerScroll">'+performance+
+  '<section class="fe-playerPanel"><h3>Player details</h3><div class="fe-playerDetails">'+details+'</div></section>'+
+  (role?'<section class="fe-playerPanel"><h3>On-field role</h3><p>'+esc(fePlayerRole(role))+'</p></section>':'')+
+  '<section class="fe-playerPanel"><h3>Last five appearances</h3>'+recentMarkup+'</section>'+
+  (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
   '<p class="fe-playerHint">'+esc(note)+'</p></div>';
 }
+
 async function feOpenPlayerProfile(g,button){
  const name=String(button.dataset.fePlayerName||""),side=String(button.dataset.fePlayerTeam||"");
  if(!name||!g)return;
@@ -1676,8 +1695,7 @@ async function feOpenPlayerProfile(g,button){
   '<section class="fe-playerSheet" role="dialog" aria-modal="true" aria-labelledby="fe-playerTitle">'+
   '<header class="fe-playerTopbar"><span>FootyEdge · Player intelligence</span>'+
   '<button type="button" class="fe-playerClose" aria-label="Close player profile" data-fe-player-close>✕</button></header>'+
-  '<div class="fe-playerContent">'+fePlayerProfileMarkup(null,fallback)+
-  '<p class="fe-playerLoading" role="status">Checking player details…</p></div></section>';
+  '<div class="fe-playerContent">'+fePlayerProfileMarkup(null,fallback)+'</div></section>';
  document.body.appendChild(root);
  const close=()=>{controller.abort();root.remove();focusBack.isConnected&&focusBack.focus({preventScroll:true});document.removeEventListener("keydown",onKey)};
  const onKey=event=>{if(event.key==="Escape")close()};
