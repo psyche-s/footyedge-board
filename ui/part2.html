@@ -1438,7 +1438,7 @@ function feTeamPitchRows(x,t,g,position){
  const plot=position==="top"?rows:rows.reverse();
  return '<div class="fe-sharedHalf fe-half-'+position+'">'+header+
   '<div class="fe-sharedRows">'+plot.map(row=>'<div class="fe-pitchRow">'+row.map(person).join("")+'</div>').join("")+'</div>'+
-  (!validated?'<span class="fe-xiUnverified">Illustrative formation only</span>':'')+'</div>';
+  '</div>';
 }
 function feLineupsPanel(g){
  const intel=g.liveIntel||g.teamIntel;

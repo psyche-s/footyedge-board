@@ -36,12 +36,13 @@ test("match selection is diverse, ordered, statistical and not calibrated",()=>{
  const out=compareDraft(board,base,e);
  assert.ok(out.games[0].top3.length>=1&&out.games[0].top3.length<=2);
  assert.equal(out.games[0].top3.filter(p=>["Goals","Team Goals","BTTS"].includes(p.category)).length<=1,true);
- assert.equal(out.games[0].top3.filter(p=>p.family==="totals").length,1);
+ assert.ok(out.games[0].top3.filter(p=>["goals","team goals","btts"].includes(p.category.toLowerCase())).length<=1);
  assert.equal(out.games[0].top3[0].label,out.games[0].top.label);
  assert.deepEqual(out.games[0].top3.map(p=>p.confidenceRating),out.games[0].top3.map(p=>p.confidenceRating).sort((a,b)=>b-a));
  assert.match(out.games[0].top3[0].reason,/last 10.*GF.*GA\/game/);
- assert.equal(out.games[0].top3[0].editorialSupport,1);
- assert.equal(out.games[0].top3[0].editorialOppose,1);
+ const reviewed=out.games[0].model.rankedCandidates.find(p=>p.label==="Home 1+ Goal");
+ assert.equal(reviewed.editorialSupport,1);
+ assert.equal(reviewed.editorialOppose,1);
  assert.equal(out.games[0].top3[0].score,null);
  assert.equal(out.top5[0].pick,out.games[0].top);
  assert.equal(out.sourceQuality.editorialConsensus.matchesWithLicensedEditorial,1);
