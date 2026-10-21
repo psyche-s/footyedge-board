@@ -22,7 +22,7 @@
       const section=add(box,"section","feBetLeg"),head=add(section,"div","feBetLegHead"),label=add(head,"div");
       add(label,"b","",(i+1)+". "+leg.label);add(label,"small","",leg.category);
       add(head,"em","",(leg.confidencePercent??leg.rating)+"%");
-      add(section,"p","",leg.why);
+      add(section,"p","",cleanReason(leg.why));
     });
     if(offer.url==="https://www.on.bet365.ca/s/r/gFzcf"){
       const link=add(box,"a","feBetLink","Add to Your Bet Slip ↗");

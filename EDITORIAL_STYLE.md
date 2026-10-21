@@ -1,3 +1,7 @@
+## Owner override — October 21, 2026: minimal public copy
+
+Public pick commentary should contain the football reasons only. Remove public provider/preview names, external research URLs, source captions/citations, source-link footers and redundant status/model-check prose. Retain private provenance and citations in internal data for evidence quality, and preserve existing layout and approved actions (including site navigation and bet365 bet-slip links). Keep player news and risk when important. Never rewrite frozen historical selections.
+
 ## Czech First League additions
 
 We cover men's Czech First League (Chance Liga) fixtures. Use real completed match results from our date-specific Czech public-domain football data for last-five/last-ten form and head-to-head. Do not backfill a pick for any match after kickoff. Display the correct Chance Liga competition crest. No invented odds or model probability.

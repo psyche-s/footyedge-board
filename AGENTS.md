@@ -1,3 +1,10 @@
+## Owner-facing copy cleanup — October 21, 2026 (all future original FootyEdge boards)
+
+- Do not display provider/preview names, source footnotes, citations, raw URLs, article links, or additional references in public Top 3, WHY THIS PICK, league SGPs, main SGP, cross-game ACCA, team news, H2H or player explanations. Keep source URLs, identity references and rights records in internal research metadata only.
+- Write concise football-specific WHY reasoning with concrete form, H2H, opponent matchup and relevant injury evidence. Omit repeated evidence callouts, filler research status phrases and duplicate supplemental model-market paragraphs. Preserve the layout, useful stats, standings, lineups, dates, and confidence displays.
+- Render older locked commentary through display-only text sanitization. Never rewrite historical frozen picks. Do not remove existing functional navigation or owner-approved bet365 bet-slip action.
+- Regression-check public display cleanup without compromising data verification, source retention, or historical immutable boards.
+
 ## Latest owner instruction — October 21, 2026 (original FootyEdge only)
 
 - **Only scheduled original FootyEdge data refresh** is `.github/workflows/archive-board.yml`, daily **00:05 America/Toronto**. This supersedes every older 00:00/00:05/00:30/00:45/6 AM/hours-long schedule in this document. Remove all other scheduled and automatic downstream data-refresh triggers. Allow manual maintenance and read-only CI; they are not alternative nightly publishers.

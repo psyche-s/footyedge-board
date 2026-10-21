@@ -746,7 +746,7 @@ function peopleFromNews(g,text){
   const m=String(text||"").match(/\b[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+(?:\s+[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ž'’.-]+){1,2}\b/g)||[];
   return [...new Set(m)].filter(x=>!blocked.some(b=>normName(x)===b||normName(x).startsWith(b+" "))).slice(0,4)
 }
-function displayNewsText(g,item){return String(item?.text||"")}
+function displayNewsText(g,item){return feCleanPublicCopy(item?.text||"")}
 function newsImpact(g,p,item){return item?.impact?String(item.impact):""}
 function itemBelongsToTeam(g,item,team){
   const t=normName(item?.team||""),name=normName(team.name),raw=normName(item?.text||"");
@@ -1887,7 +1887,7 @@ function feMatchSourceStatus(g){
  const state=g.feMatchCheck;
  if(!state)return '';
  const time=Number.isFinite(Date.parse(state.checkedAt))?new Intl.DateTimeFormat("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/Toronto"}).format(new Date(state.checkedAt))+" ET":"recently";
- return '<p class="fe-matchDataNote">Latest data check '+esc(time)+': '+esc(state.note||"Match provider check completed.")+'</p>';
+ return ''; // No redundant source or provider notes in the public panel.
 }
 async function feRefreshMatch(g){
  const now=Date.now();
@@ -1946,7 +1946,7 @@ function feLatestProviderInjuries(g){
   const id=String(g[side]?.id||""),rows=lookup[id]||[];
   return rows.length?['<div class="fe-freshNewsTeam"><strong>'+esc(g[side].name)+'</strong><ul class="fe-newsPlayers">'+rows.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>']:[];
  });
- return details.length?'<div class="fe-freshNews"><b>Latest source-reported injuries</b><div class="fe-freshNewsGrid">'+details.join('')+'</div></div>':'';
+ return details.length?'<div class="fe-freshNews"><b>Injury updates</b><div class="fe-freshNewsGrid">'+details.join('')+'</div></div>':'';
 }
 function feNewsPanel(g,newsHtml){
   return '<section class="fe-newsSection"><div class="fe-sourceHead"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3>'+
@@ -2044,9 +2044,9 @@ function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)
   const nav='<div class="fe-tabs" role="tablist" aria-label="Match analysis">'+tabs.map(([id,label])=>
     '<button type="button" role="tab" aria-selected="'+(id===active)+'" class="'+(id===active?"active":"")+'" data-fe-tab="'+id+'">'+label+'</button>').join("")+'</div>';
   const head='<section class="fe-panel fe-picks"><div class="fe-panelHeading"><h3><span class="fe-star">★</span> TOP '+Math.min(3,(viewCandidates(g)||[]).length)+' PICKS</h3>'+
-    '<span>'+viewCandidates(g).length+' researched picks</span></div>'+ranked+'</section>';
+    '</div>'+ranked+'</section>';
   let content;
-  if(active==="overview")content=head+matchH2HHtml(g)+feLastFive(g)+feNewsPanel(g,newsHtml)+noteHtml+dcHtml+modelApproach;
+  if(active==="overview")content=head+matchH2HHtml(g)+feLastFive(g)+feNewsPanel(g,newsHtml);
   else if(active==="stats")content=feStatsTab(g)+matchH2HHtml(g);
   else if(active==="lineups")content=feLineupsPanel(g)+feNewsPanel(g,newsHtml);
   else if(active==="standings")content=feTableTab(g);
@@ -2195,7 +2195,21 @@ function plainFootballReason(g,p){
   }
   return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
-function feReviewedReason(g,p){
+function feCleanPublicCopy(value){
+  return String(value??"")
+    .replace(/\[[^\]]*\]\(https?:\/\/[^)]+\)/gi,"")
+    .replace(/<a\b[^>]*>[\s\S]*?<\/a>/gi,"")
+    .replace(/https?:\/\/[^\s<>"']+/gi,"")
+    .replace(/\b(?:according to|as reported by|via|per)\s+(?:the\s+)?(?:Football\s*Whispers|Sports\s*Mole|Sportskeeda|Forebet|FotMob|WhoScored|FBref|Understat|Soccerway|ESPN|Opta|Flashscore)\b[,\s:]*/gi,"")
+    .replace(/\b(?:Football\s*Whispers|Sports\s*Mole|Sportskeeda|Forebet|FotMob|WhoScored|FBref|Understat|Soccerway|ESPN|Opta|Flashscore)\b/gi,"")
+    .replace(/\b(?:Sources?|References?|Read more|Read here|Match preview|Match statistics)\s*:\s*[^.!?\n]*(?:[.!?]|$)/gi,"")
+    .replace(/\s+([,.;:!?])/g,"$1")
+    .replace(/^[,.;:\s]+|[,;:\s]+$/g,"")
+    .replace(/[ \t]{2,}/g," ")
+    .trim();
+}
+
+function feRawReviewedReason(g,p){
   if(p?.reason&&Array.isArray(g.feEditorialPicks)&&g.feEditorialPicks.some(x=>x.label===p.label))return String(p.reason);
   // Human-readable fallback for archived fixtures that lack a fresh independent
   // match review. Never present old model trends as preview consensus.
@@ -2229,6 +2243,7 @@ function feReviewedReason(g,p){
     .replace(/These figures describe recent results, not a guaranteed outcome\.\s*/gi,"").trim()||
     "This market needs more recent match evidence before we can explain it confidently.";
 }
+function feReviewedReason(g,p){return feCleanPublicCopy(feRawReviewedReason(g,p));}
 function fePreviewLinks(g,p){return "";}
 
 function renderModal(g){
@@ -2246,15 +2261,15 @@ function renderModal(g){
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
     const body=items.length
-      ?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(newsImpact(g,focus,item))+'</div>':'')+'</div>').join("")
-      :'<div class="teamNewsItem"><div class="newsText mutedNews">Team news has not yet been independently verified for this fixture.</div></div>';
+      ?items.map(item=>'<div class="teamNewsItem"><div class="newsLabel">'+esc(item.type==="confirmed"?"CONFIRMED XI":item.type==="projected"?"PROJECTED XI":"TEAM NEWS")+'</div><div class="newsText">'+esc(displayNewsText(g,item))+'</div>'+(newsImpact(g,focus,item)?'<div class="newsImpact">'+esc(feCleanPublicCopy(newsImpact(g,focus,item)))+'</div>':'')+'</div>').join("")
+      :'<div class="teamNewsItem"><div class="newsText mutedNews">Team news not yet confirmed.</div></div>';
     return '<section class="teamNewsCard"><div class="teamNewsHead">'+teamImgTag(team,"newsTeamLogo")+'<b>'+esc(teamDisplayName(g,team))+'</b></div>'+body+'</section>'
   };
   const newsHtml=feOfficialNewsHTML(g)||teamCard(g.home)+teamCard(g.away);
   const ownerNote=g.ownerResearchNote;
   const modelPct=g.model?.shadowEstimate?.home_win;
   const noteHtml=ownerNote?'<section class="researchBox"><div class="researchTitle">MATCHUP ANALYSIS · RESEARCH LEAN</div>'+
-    '<p class="candidateCommentary">'+esc(ownerNote.body)+'</p>'+
+    '<p class="candidateCommentary">'+esc(feCleanPublicCopy(ownerNote.body))+'</p>'+
     '<div class="researchFacts"><div class="researchFact"><span class="researchDot"></span><span>'+
     esc(ownerNote.lean)+
     '</span></div>'+
@@ -2292,7 +2307,7 @@ function renderModal(g){
         ' opponent-side results</span></div>';
     }).join('')+'</div>'+
     '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No recalibration or new official selection is implied. Official frozen picks remain unchanged.</p></section>':'';
-  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+marketReviewHtml+oddsExtra;
+  document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+oddsExtra;
 }
 document.getElementById("modalBody").onclick=event=>{
   const action=event?.target?.closest?.("[data-fe-player-name],[data-fe-tab],[data-h2h-toggle],[data-last5-toggle],[data-refresh-match]");
