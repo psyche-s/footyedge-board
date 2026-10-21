@@ -86,6 +86,11 @@ jobs:
           if [[ -f "data/research-base-$TOMORROW.json" ]]; then
             H2H_DATE="$TOMORROW" node scripts/build-h2h-cache.mjs
           fi
+      - name: Verify independent Top 3 market theses
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/market-diversity.test.mjs
       - name: Publish confidence-only tomorrow preview using verified research
         env:
           OWNER_RESEARCH_PICKS: "1"
