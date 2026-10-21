@@ -1,0 +1,54 @@
+name: Collect original FootyEdge player photo references
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/original-player-photo-refs-20261021
+    paths:
+      - scripts/sync-player-photo-refs.mjs
+      - tests/player-photo-refs.test.mjs
+      - tests/player-profile.test.mjs
+      - tests/ten-appearance-squad.test.mjs
+      - .github/workflows/collect-player-photo-refs.yml
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-original-photo-refs
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate script and identity matcher
+        run: |
+          node --check scripts/sync-player-photo-refs.mjs
+          node --test tests/player-photo-refs.test.mjs
+      - name: Collect available source-matched player portraits
+        env:
+          PHOTO_DAYS: "2"
+          PHOTO_MAX_TEAMS: "55"
+        run: node scripts/sync-player-photo-refs.mjs
+      - name: Validate saved references and original UI regression tests
+        run: |
+          node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+          node scripts/validate-public-metrics.mjs
+      - name: Commit checked source references to collector branch
+        if: startsWith(github.ref, 'refs/heads/fix/original-player-photo-refs-20261021')
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/player-photo-refs.json assets/player-photo-registry.js
+          if git diff --cached --quiet; then
+            echo "No new source references"; exit 0
+          fi
+          git config user.name "FootyEdge Photo References"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "data(original): store checked player portrait source references"
+          git push origin HEAD:fix/original-player-photo-refs-20261021

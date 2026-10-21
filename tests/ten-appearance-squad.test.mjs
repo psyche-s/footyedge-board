@@ -10,7 +10,7 @@ const extract=(start,end)=>{
  return html.slice(a,b);
 };
 const browserContext={esc:x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"),
- fePlayerSafePhoto:()=>"",fePlayerRole:x=>x||"",
+ fePlayerSafePhoto:()=>"",fePlayerRole:x=>x||"",feCachedPlayerPhoto:()=>"",
  teamImgTag:()=>"",teamDisplayName:(_g,x)=>x.name};
 test("Player profile renders ten horizontal-scroll table rows with nine metrics each",()=>{
  const source=extract("function fePlayerProfileMarkup(result,fallback){","async function feOpenPlayerProfile(g,button){");
