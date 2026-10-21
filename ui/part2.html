@@ -866,7 +866,9 @@ function feOwnerConsensusTop3(g){
    const venueRate=venueEnough?100*(homeVenue.filter(testH).length+awayVenue.filter(testA).length)/(homeVenue.length+awayVenue.length):rate;
    const votes=new Set(independent.filter(x=>(x.supports||[]).some(y=>norm(y)===norm(label))).map(x=>new URL(x.url).hostname)).size;
    const disputed=looksValid&&(preview.disputedMarkets||[]).some(x=>norm(x)===norm(label));
-   if(rate<52||Math.min(hitsH/H.length,hitsA/A.length)<.30)continue;
+   // A genuine independently dated match pick may remain on the shortlist
+   // despite a modest raw historical rate, but disagreement reduces its grade.
+   if((rate<52||Math.min(hitsH/H.length,hitsA/A.length)<.30)&&votes===0)continue;
    const rating=Math.max(45,Math.min(96,Math.round(.60*rate+.25*recent+.15*venueRate+Math.min(16,8*votes)-(disputed?11:0))));
    const venueText=venueEnough?" At home/away, the matching record is "+homeVenue.filter(testH).length+"/"+homeVenue.length+
      " for "+home+" and "+awayVenue.filter(testA).length+"/"+awayVenue.length+" for "+away+".":"";
@@ -1923,6 +1925,7 @@ function plainFootballReason(g,p){
 }
 function feReviewedReason(g,p){
  const base=String(plainFootballReason(g,p)||"").replace(/\s*These figures describe recent results, not a guaranteed outcome\.\s*$/i,"").trim();
+ if(p?.editorialSupport!==undefined)return base; // Already has complete owner-reviewed rationale.
  const preview=g.editorialPreview;
  // Match-specific cross-check stays internal. Write the rationale in FootyEdge's voice.
  const note=String(preview?.marketNotes?.[p?.label]||"").trim();
