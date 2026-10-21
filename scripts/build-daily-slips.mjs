@@ -114,9 +114,16 @@ function correlation(a,b){
  if(aF==="double-chance"&&bF==="team-goal"||bF==="double-chance"&&aF==="team-goal")return 3;
  return 1;
 }
+// SGP/ACCA are the marquee competitions only. J1, K League 1, Saudi
+// Pro League, Czech and friendly slates remain on Fixtures, not on the slips.
+const MAJOR_SLIP_LEAGUES=new Set([
+ "eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1",
+ "uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"
+]);
+function isMajor(league){return MAJOR_SLIP_LEAGUES.has(String(league||""));}
 function sgp(all){
  const groups=new Map();
- for(const x of all){if(!groups.has(x.gameId))groups.set(x.gameId,[]);groups.get(x.gameId).push(x);}
+ for(const x of all.filter(v=>isMajor(v.league))){if(!groups.has(x.gameId))groups.set(x.gameId,[]);groups.get(x.gameId).push(x);}
  const choices=[];
  for(const [id,group] of groups){
   const eligible=group.filter(x=>x.rating>=73).sort((a,b)=>b.rating-a.rating||a.label.localeCompare(b.label)).slice(0,11);
@@ -138,7 +145,7 @@ function sgp(all){
  {status:"pass",format:"Same-game parlay",legs:[],caution:"No fixture has two compatible, sufficiently supported selections. Passing rather than forcing a slip."};
 }
 function acca(all){
- const sorted=all.filter(x=>x.rating>=79).sort((a,b)=>b.rating-a.rating||a.gameId.localeCompare(b.gameId));
+ const sorted=all.filter(x=>isMajor(x.league)&&x.rating>=79).sort((a,b)=>b.rating-a.rating||a.gameId.localeCompare(b.gameId));
  const used=new Set(),categories=new Map(),leagues=new Map(),legs=[];
  while(legs.length<5){
   let choice=null,best=-Infinity;
@@ -180,12 +187,15 @@ function build({date,board,research,h2h,intel}){
    sample:{fixtures:research.fixtures.length,screenedLegs:all.length,newsFixtures:news.size,h2hFixtures:previous.size},
    noSportsbookOdds:true,confidenceCalibrated:false,originalMatchBoardsUnchanged:true,
    method:"10-match base plus weighted last-five, home/away checks, source-backed H2H, known availability, compatible markets",
+   eligibleSlipLegs:all.filter(x=>isMajor(x.league)).sort((a,b)=>b.rating-a.rating),
+   excludedSlipLeagues:["jpn.1","kor.1","ksa.1"],majorLeagueRule:true,
    sgp:sgp(all),acca:acca(all),props,notes:[
     "Selection percentages are evidence grades, not calibrated probabilities or a combined parlay chance.",
     "No sportsbook odds, payout, implied probabilities or EV. Market availability must be checked separately.",
     "No invented cards, corners, shots, fouls, player starts or other unsupported props.",
     "Fewer supported legs are better than artificially lengthening a ticket.",
-    "Review official XI, suspensions and late injury news before using a selection."
+    "Review official XI, suspensions and late injury news before using a selection.",
+    "SGP and ACCA exclude Japan J1, Korea K1, Saudi Pro League, Czech and international friendlies."
    ]};
 }
 export{market,trend,compatible,sgp,acca,build};
