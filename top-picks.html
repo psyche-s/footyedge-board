@@ -155,7 +155,7 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
-  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. SGP and ACCA layouts are indicative research slips, not sportsbook-confirmed bet builders.</p></div>
+  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. Featured SGP uses a dated bet365 ticket with boosted odds; other combinations remain research-only.</p></div>
   <div class="fe-slipActions"><div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh latest data</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
   <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">BEST SGP FROM</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Only compatible, independently supported legs qualify.</span></section>
@@ -179,7 +179,7 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 </section>
   <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>One supported ticket per qualifying league</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
   <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
-  <p class="notice">FootyEdge slips are selected across the full verified slate. Each SGP must have compatible markets within one fixture; each ACCA uses one leg per fixture and prioritizes varied markets. Confidence percentages describe the relative strength of research evidence, not calibrated hit probabilities. Legs can be correlated, and the ability to combine them is not verified against a sportsbook. Player shots, shots on target, fouls, cards and corners are shown only when individually supported by a dated data source and a real selection; otherwise they are omitted. <a class="btnLink" href="picks.html">See all fixture analysis ↗</a></p>
+  <p class="notice">FootyEdge slips are selected across the full verified slate. Each SGP must have compatible markets within one fixture; each ACCA uses one leg per fixture and prioritizes varied markets. Confidence percentages describe the relative strength of research evidence, not calibrated hit probabilities. Legs can be correlated. The featured bet365 ticket uses quoted screenshot odds, not live odds; other combinations are not independently sportsbook-verified. Player shots, shots on target, fouls, cards and corners are shown only when individually supported by a dated data source and a real selection; otherwise they are omitted. <a class="btnLink" href="picks.html">See all fixture analysis ↗</a></p>
 </main>
 <script>
 const GH="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/";
@@ -358,4 +358,4 @@ document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
 document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
 document.getElementById("refreshBtn").onclick=refreshLive;
 refresh();
-</script></body></html>
+</script><script src="assets/sgp-bet365-2026-10-21.js?v=1"></script><script>refresh();</script></body></html>
