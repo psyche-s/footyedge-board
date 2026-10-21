@@ -957,6 +957,67 @@ function feSide(g,which){
 }
 const FE_PALETTES={"arsenal":["#EF0107","#FEE861"],"aston villa":["#670E36","#95BFE5"],"bournemouth":["#B50E12","#111111"],"brentford":["#E30613","#111111"],"brighton & hove albion":["#0057B8","#FFFFFF"],"chelsea":["#034694","#FFFFFF"],"crystal palace":["#1B458F","#C4122E"],"everton":["#003399","#FFFFFF"],"fulham":["#171717","#FFFFFF"],"ipswich town":["#144FC2","#FFFFFF"],"liverpool":["#C8102E","#00B2A9"],"manchester city":["#6CABDF","#1C2C5B"],"man city":["#6CABDF","#1C2C5B"],"manchester united":["#DA291C","#111111"],"newcastle united":["#171717","#FFFFFF"],"nottingham forest":["#DD0000","#FFFFFF"],"tottenham hotspur":["#132257","#FFFFFF"],"tottenham":["#132257","#FFFFFF"],"west ham united":["#7A263A","#1BB1E7"],"wolverhampton wanderers":["#FDB913","#231F20"],"wolverhampton wanderers fc":["#FDB913","#231F20"],"alaves":["#005697","#FFFFFF"],"athletic club":["#EE2524","#FFFFFF"],"atletico madrid":["#CB3524","#164D8F"],"barcelona":["#004D98","#A50044"],"celta vigo":["#87CEEB","#E30613"],"espanyol":["#0073AF","#FFFFFF"],"getafe":["#0000FF","#FFFFFF"],"girona":["#E20613","#FFFFFF"],"osasuna":["#C4122E","#133164"],"rayo vallecano":["#E30613","#FFFFFF"],"real betis":["#009A44","#FFFFFF"],"real madrid":["#E4E8EE","#11265B"],"real sociedad":["#0000FF","#FFFFFF"],"sevilla":["#E30613","#FFFFFF"],"valencia":["#E5E5E5","#FF7900"],"villarreal":["#FFE600","#00529F"],"levante":["#922E55","#1D3D8B"],"ac milan":["#E30613","#111111"],"as roma":["#8E1A33","#F1A417"],"roma":["#8E1A33","#F1A417"],"atalanta":["#0054A6","#111111"],"bologna":["#A6192E","#002F6C"],"cagliari":["#CC0033","#002244"],"como":["#0054A6","#FFFFFF"],"fiorentina":["#4C2375","#FFFFFF"],"genoa":["#A6192E","#132257"],"internazionale":["#0053A0","#111111"],"juventus":["#171717","#FFFFFF"],"lazio":["#85B3E2","#132257"],"lecce":["#E30613","#FFD100"],"napoli":["#1F6BB0","#FFFFFF"],"parma":["#ECECEC","#002F6C"],"torino":["#70191B","#FFFFFF"],"udinese":["#171717","#FFFFFF"],"bayer 04 leverkusen":["#E30613","#111111"],"bayern munich":["#DC052D","#0066B2"],"borussia dortmund":["#FDE100","#111111"],"borussia monchengladbach":["#191919","#009A44"],"eintracht frankfurt":["#E30613","#111111"],"fc augsburg":["#BA0D25","#007A48"],"rb leipzig":["#DD013F","#0C2340"],"sc freiburg":["#E30613","#111111"],"werder bremen":["#009A44","#FFFFFF"],"tsg hoffenheim":["#0054A6","#FFFFFF"],"vfb stuttgart":["#E30613","#FFFFFF"],"as monaco":["#ED1C24","#FFFFFF"],"lille":["#E01E26","#122F53"],"ogc nice":["#E30613","#111111"],"lyon":["#104286","#DA251D"],"marseille":["#00A6EA","#FFFFFF"],"psg":["#001C55","#EF3340"],"paris saint germain":["#001C55","#EF3340"],"rc lens":["#FFF200","#CC181E"],"lens":["#FFF200","#CC181E"],"strasbourg":["#0054A6","#FFFFFF"],"brest":["#E30613","#FFFFFF"],"rennes":["#E30613","#111111"],"galatasaray":["#A32638","#F2A900"],"fenerbahce":["#002147","#FCE300"],"besiktas":["#171717","#FFFFFF"],"trabzonspor":["#800020","#4169E1"],"istanbul basaksehir":["#FF4500","#000080"],"kasimpasa":["#0000FF","#FFFFFF"],"samsunspor":["#FF0000","#FFFFFF"],"ajax":["#CC0000","#FFFFFF"],"az alkmaar":["#E30613","#FFFFFF"],"fc twente":["#E30613","#FFFFFF"],"fc utrecht":["#E30613","#FFFFFF"],"feyenoord rotterdam":["#E30613","#111111"],"go ahead eagles":["#FFE600","#E30613"],"psv":["#E30613","#FFFFFF"],"sporting cp":["#168958","#FFFFFF"],"fc porto":["#0054A6","#FFFFFF"],"porto":["#0054A6","#FFFFFF"],"benfica":["#E30613","#FFFFFF"],"avispa fukuoka":["#217db5","#111111"],"gamba osaka":["#2167b1","#111111"],"fagiano okayama":["#be2548","#103B74"],"mito hollyhock":["#25679a","#FFFFFF"],"fc tokyo":["#173e9b","#D33238"],"kashiwa reysol":["#d4b21b","#171717"],"kawasaki frontale":["#1a83b7","#171717"],"vissel kobe":["#a62e3a","#FFFFFF"],"kyoto sanga":["#9a306b","#111111"],"kashima antlers":["#b51c36","#171717"],"nagoya grampus":["#c34624","#111111"],"cerezo osaka":["#e75693","#1B4B8A"],"shimizu s pulse":["#f07822","#FFFFFF"],"machida zelvia":["#1d3d8b","#FFFFFF"],"v varen nagasaki":["#f1832c","#1C498B"],"sanfrecce hiroshima":["#7041ab","#111111"],"yokohama f marinos":["#245caf","#D32C39"],"tokyo verdy 1969":["#28774c","#FFFFFF"],"urawa red diamonds":["#c52337","#111111"],"jef united ichihara chiba":["#d7b91b","#111111"],"viking fk":["#0d3b85","#FFFFFF"],"club brugge":["#103b96","#111111"],"lask linz":["#2b3037","#FFFFFF"],"shakhtar donetsk":["#ec7b18","#111111"],"fc cincinnati":["#dd6b25","#18458A"],"d c united":["#26282d","#DD2534"]};
 function fePalette(t){const key=String(t?.name||t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();const alias={"inter":"internazionale","inter milan":"internazionale","bayern munchen":"bayern munich","fc bayern munchen":"bayern munich","manchester city fc":"manchester city","manchester united fc":"manchester united","lille osc":"lille","galatasaray sk":"galatasaray","psg fc":"psg","sporting lisbon":"sporting cp","fc barcelona":"barcelona","real madrid cf":"real madrid","athletic bilbao":"athletic club","tottenham hotspur fc":"tottenham hotspur"};const p=FE_PALETTES[key]||FE_PALETTES[alias[key]];const colors=t?.kitSourceVerified===true&&Array.isArray(t.kitColors)?t.kitColors.filter(x=>/^#[0-9A-Fa-f]{6}$/.test(x)):[];const primary=colors[0]||p?.[0]||"#245B4A",secondary=colors[1]||p?.[1]||"#102C39";return{primary,secondary};}
+// 2026/27 shirt treatments: home side is the home shirt, away side is
+// the visitor's away shirt. Styles with confirmed 26/27 launches use
+// their documented palettes/patterns; others are restrained club-colour
+// fallbacks until a contemporary kit can be independently verified.
+// No copyrighted jersey photograph is hotlinked or redistributed.
+const FE_2026_KIT_STYLES={
+ "arsenal":{home:["#CE1628","#6E1528","tonal"],away:["#1C2348","#D9B548","diagonal"]},
+ "aston villa":{home:["#702337","#75A9C9","plain"]},
+ "bayern munich":{home:["#CB092C","#EEE7E5","vertical"]},
+ "manchester united":{away:["#234D8D","#B3C4DB","waves"]},
+ "real betis":{home:["#16804D","#F1F0E9","pinstripe"]},
+ "feyenoord rotterdam":{home:["#C9202E","#ECEBE7","halves"],away:["#7BB9D9","#DAE8F2","tonal"]},
+ "internazionale":{home:["#1548A0","#121720","vertical"],away:["#C5D6E8","#265FA6","pinstripe"]},
+ "inter milan":{home:["#1548A0","#121720","vertical"],away:["#C5D6E8","#265FA6","pinstripe"]},
+ "shakhtar donetsk":{home:["#D77722","#151515","vertical"],away:["#72B0D6","#823857","tonal"]},
+ "galatasaray":{home:["#9E233B","#D89E28","halves"],away:["#DDDEDA","#A32638","tonal"]},
+ "real madrid":{home:["#E9E7E2","#AAAEC2","plain"]},
+ "sporting cp":{home:["#15885E","#EDF2E9","hoops"]},
+ "fc porto":{home:["#1954A7","#D7E9F4","vertical"]},
+ "porto":{home:["#1954A7","#D7E9F4","vertical"]},
+ "benfica":{away:["#E0E0D9","#A32030","tonal"]},
+ "como":{home:["#1A5D9C","#BFD7E8","tonal"]},
+ "lille":{home:["#AD2535","#1B3558","tonal"]},
+ "club brugge":{home:["#1642A3","#151515","vertical"]},
+ "lens":{away:["#F1E6CA","#C41E35","tonal"]},
+ "viking fk":{away:["#D5D9E6","#203A68","tonal"]},
+ "rb leipzig":{away:["#273B65","#C7364D","tonal"]},
+ "lask linz":{away:["#D2D3D2","#141414","tonal"]},
+ "levante":{home:["#872A4B","#203A77","vertical"]},
+ "athletic club":{away:["#BFC9CE","#C33241","tonal"]},
+ "fc cincinnati":{home:["#D97430","#1D3D66","tonal"]},
+ "d c united":{away:["#C7C7C3","#3C3838","tonal"]},
+ "avispa fukuoka":{home:["#164A71","#192833","vertical"]},
+ "gamba osaka":{away:["#D7E2E9","#17589A","tonal"]},
+ "fagiano okayama":{home:["#B33552","#232A44","tonal"]},
+ "mito hollyhock":{away:["#C6E1E9","#245D91","tonal"]},
+ "fc tokyo":{home:["#20539D","#B52A43","gradient"]},
+ "kashiwa reysol":{away:["#D7D8D1","#C8A529","tonal"]},
+ "kawasaki frontale":{home:["#2084AE","#171F31","tonal"]},
+ "vissel kobe":{away:["#E6E0DE","#9E3549","tonal"]},
+ "kyoto sanga":{home:["#75317E","#332043","tonal"]},
+ "kashima antlers":{away:["#DADDE0","#A1324A","tonal"]},
+ "nagoya grampus":{home:["#C95420","#222222","tonal"]},
+ "cerezo osaka":{away:["#E1DEE3","#E76A95","tonal"]},
+ "shimizu s pulse":{home:["#D97529","#F0BC4C","tonal"]},
+ "machida zelvia":{away:["#CBD6DE","#1A3C72","tonal"]},
+ "v varen nagasaki":{home:["#D0792D","#1C4A81","tonal"]},
+ "sanfrecce hiroshima":{away:["#DBD4E3","#6A4C98","tonal"]},
+ "yokohama f marinos":{home:["#2152A1","#D23D54","tonal"]},
+ "tokyo verdy 1969":{away:["#D8DDDC","#2B6A4F","tonal"]},
+ "urawa red diamonds":{home:["#B42836","#1D171D","tonal"]},
+ "jef united ichihara chiba":{away:["#D7DACF","#C1AE31","tonal"]}
+};
+function feKitPalette(team,role){
+ const raw=String(team?.name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const entry=FE_2026_KIT_STYLES[raw]?.[role];
+ const fallback=fePalette(team);
+ if(!entry)return {primary:fallback.primary,secondary:fallback.secondary,pattern:"tonal"};
+ return {primary:entry[0],secondary:entry[1],pattern:entry[2]};
+}
+
 function feUpcoming(g){return Date.parse(g.date)>Date.now()-120000;}
 function feActualLive(g){return !feUpcoming(g)&&g.liveStatusVerified===true&&g.live===true&&!g.done;}
 function feActualFinal(g){return !feUpcoming(g)&&g.liveStatusVerified===true&&g.done===true;}
@@ -966,14 +1027,14 @@ function feIcon(kind){
 }
 function feMatchHero(g){
  const live=feActualLive(g),final=feActualFinal(g),scored=feVerifiedScore(g)&&(live||final);
- const h=fePalette(g.home),a=fePalette(g.away);
+ const h=feKitPalette(g.home,"home"),a=feKitPalette(g.away,"away");
  // Scores are rendered ONLY when confirmed by the live-score feed; missing scores are never inferred.
  const core=scored
   ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'fe-status-final')+'">'+(live?'<i class="fe-liveDot"></i>':'')+(live?'LIVE':'FINAL')+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
   :live?'<div class="fe-scorePending"><strong><i class="fe-liveDot"></i> LIVE</strong><small>Score awaiting verification</small></div>'
   :final?'<div class="fe-scorePending"><strong>FINAL</strong><small>Official score unavailable</small></div>'
   :'<div class="fe-kickoff"><strong>– &nbsp; –</strong><span>'+esc(feDay(g.date))+'</span><small>'+esc(timeET(g.date))+' ET</small></div>';
- return '<div class="fe-hero fe-kitHero" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
+ return '<div class="fe-hero fe-kitHero" data-home-kit="'+h.pattern+'" data-away-kit="'+a.pattern+'" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
   '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span></div>'+
   '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div></div>';
 }
