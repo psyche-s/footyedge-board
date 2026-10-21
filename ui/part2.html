@@ -950,15 +950,16 @@ function feIcon(kind){
  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(paths[kind]||paths.history)+'</svg>';
 }
 function feMatchHero(g){
- const live=feActualLive(g),final=feActualFinal(g),scored=feVerifiedScore(g)&&(live||final),label=live?"LIVE":final?"FINAL":"UPCOMING";
+ const live=feActualLive(g),final=feActualFinal(g),scored=feVerifiedScore(g)&&(live||final);
  const h=fePalette(g.home),a=fePalette(g.away);
+ // Scores are rendered ONLY when confirmed by the live-score feed; missing scores are never inferred.
  const core=scored
-  ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'')+'">'+(live?'<i class="fe-liveDot"></i>':'')+esc(label)+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
-  :final?'<div class="fe-finalMissing"><strong>FINAL</strong><small>Official score unavailable</small></div>':
-   '<div class="fe-kickoff"><strong>– &nbsp; –</strong><span>'+esc(feDay(g.date))+'</span><small>'+esc(timeET(g.date))+' ET</small></div>';
+  ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'fe-status-final')+'">'+(live?'<i class="fe-liveDot"></i>':'')+(live?'LIVE':'FINAL')+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
+  :live?'<div class="fe-scorePending"><strong><i class="fe-liveDot"></i> LIVE</strong><small>Score awaiting verification</small></div>'
+  :final?'<div class="fe-scorePending"><strong>FINAL</strong><small>Official score unavailable</small></div>'
+  :'<div class="fe-kickoff"><strong>– &nbsp; –</strong><span>'+esc(feDay(g.date))+'</span><small>'+esc(timeET(g.date))+' ET</small></div>';
  return '<div class="fe-hero fe-kitHero" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
-  '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span>'+
-  '<span class="fe-heroStatus '+(live?'is-live':final?'is-final':'is-upcoming')+'">'+(live?'<i class="fe-liveDot"></i>':'')+esc(label)+'</span></div>'+
+  '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span></div>'+
   '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div></div>';
 }
 function renderGames(){
@@ -973,6 +974,7 @@ function renderGames(){
     return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
       'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
       feMatchHero(g)+
+      '<div class="fe-cardTicket"><span>'+esc(label)+' · Match analysis</span><span class="fe-ticketChevron" aria-hidden="true">›</span></div>'+
     '</article>';
   }).join("");
 }
