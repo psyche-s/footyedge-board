@@ -231,7 +231,7 @@ function viewLeg(x){
 function legHTML(x,i){
  const p=x.p,g=x.g;
  return '<div class="leg"><div class="legTop"><div class="legTitle">'+esc(p.label)+'</div>'+
-  '<span class="legRating" title="Research strength grade">'+x.rating+'%<small>CONF.</small></span></div>'+
+  '<span class="legRating" title="Research strength grade">'+x.rating+'%<small>GRADE</small></span></div>'+
   '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+
   '<details class="legWhy"><summary>Why this leg</summary><p>'+esc(p.reason||"See the full researched match analysis.")+'</p>'+
   (x.evidence?'<span class="legEvidence">'+esc(x.evidence)+'</span>':'')+
@@ -251,7 +251,7 @@ function printSlip(id,items,empty){
  document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
  const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
  const researchScore=items.length?Math.max(0,Math.round(Math.min(...items.map(x=>x.rating))-3*(items.length-1)-(isSgp?2:0))):null;
- document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":"OVERALL RESEARCH RATING "+researchScore+"%";
+ document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":items.length+" LEGS · ODDS UNVERIFIED";
  document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
  if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
  document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
@@ -282,7 +282,7 @@ function fillSgpSelect(){
 let displayedDesk=null;
 function renderCompetitionSlips(list){
  const target=document.getElementById("sgpLeagueList");
- const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=2&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
+ const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
  target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
   '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+x.legs.length+' LEGS</strong></div>'+
   '<h3>'+esc(FE_MAJOR_NAMES[x.league]||x.league)+' FLYER</h3>'+
@@ -291,7 +291,7 @@ function renderCompetitionSlips(list){
   '<div class="fe-sgpEmpty">No additional league-specific SGP currently clears the multi-market research screen. Press Refresh for the latest active-fixture shortlist.</div>';
 }
 function renderDesk(desk,date,live=false){
- const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
  if(!valid){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
@@ -303,9 +303,11 @@ function renderDesk(desk,date,live=false){
  }
  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
  (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
-  (desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+  (desk.schema==="footyedge-editorial-desk-v1"?"Independently reviewed match picks · odds unverified":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
  function drawSlip(result,id,empty){
-  const legs=result?.status==="qualified"?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
+  const isSgp=id==="sgpSlip";
+  const eligible=result?.status==="qualified"&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
+  const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
   printSlip(id,legs,result?.caution||empty);
   const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
@@ -321,11 +323,16 @@ async function refresh(){
  document.getElementById("todayBtn").classList.toggle("active",selected===0);
  document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
  document.getElementById("refreshStatus").textContent="";
- renderDesk(await data("data/slips/"+date+".json"),date);
+ const desk=await data("data/editorial-desk/"+date+".json")||await data("data/slips/"+date+".json");
+ renderDesk(desk,date);
 }
 async function refreshLive(){
  const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
  const date=chosenDate(),key="footyedge-last-slip-refresh-"+date,last=Number(sessionStorage.getItem(key)||0);
+ if(displayedDesk?.schema==="footyedge-editorial-desk-v1"){
+  note.textContent="Reviewed picks remain unchanged. No new verified sportsbook prices are available; check the bookmaker before placing.";
+  return;
+ }
  if(Date.now()-last<4*60*1000){note.textContent="Recently checked. Please wait four minutes for updated match information.";return;}
  button.disabled=true;button.classList.add("busy");
  note.textContent="Checking latest match status; excluding started or finished fixtures and rebuilding slip selections…";
