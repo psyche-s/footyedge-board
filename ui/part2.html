@@ -1638,20 +1638,17 @@ function fePlayerProfileMarkup(result,fallback){
    (role?'<span class="fe-playerPosition">'+display(role)+'</span>':'')+'</div></div>';
  if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
    '<div class="fe-profileShimmer"></div><p>Loading verified player information…</p></div>';
- const available=(result?.stats||[]).filter(x=>["Appearances","Starts","Goals","Assists"].includes(x.label)&&
-   Number.isFinite(x.value)&&x.value>=0);
- const labelData=label=>available.find(x=>x.label===label)?.value;
- const cards=["Appearances","Starts","Goals","Assists"].map(label=>{
-   const value=labelData(label);
-   return '<div class="fe-playerStat'+(value==null?' fe-playerStatEmpty':'')+'"><span>'+label+
-    '</span><strong>'+(value==null?'—':display(value))+'</strong></div>';
- }).join("");
+ const numericStats=(result?.stats||[]).filter(x=>Number.isFinite(x.value)&&x.value>=0);
+ const priority=["Appearances","Starts","Goals","Assists","Shots","Shots on target","Minutes"];
+ const available=priority.map(label=>numericStats.find(x=>x.label===label)).filter(Boolean).slice(0,4);
+ const cards=available.map(x=>'<div class="fe-playerStat"><span>'+esc(x.label)+
+   '</span><strong>'+display(x.value)+'</strong></div>').join("");
  const performance=available.length?
    '<section class="fe-playerPanel"><h3>Season performance</h3>'+
    (result.competition?'<p class="fe-competitionName">'+display(result.competition)+'</p>':'')+
-   '<div class="fe-playerStatsGrid">'+cards+'</div></section>':
+   '<div class="fe-playerStatsGrid" style="--fe-player-stat-count:'+available.length+'">'+cards+'</div></section>':
    '<section class="fe-playerPanel"><h3>Season performance</h3>'+
-   '<p class="fe-playerUnavailable">Season numbers have not been verified for this competition.</p></section>';
+   '<p class="fe-playerUnavailable">This competition has no verified season totals yet.</p></section>';
  const personal=[["Full name",player.name],["Nationality",player.nationality],["Date of birth",birth],
   ["Jersey number",player.jerseyNumber||fallback.jersey],["Height",player.height],
   ["Weight",player.weight],["Preferred foot",player.dominantFoot],
