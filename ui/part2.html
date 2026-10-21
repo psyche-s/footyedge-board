@@ -1394,13 +1394,31 @@ async function feRefreshMatch(g){
   const data=await json('/api/match-updates?league='+encodeURIComponent(g.league)+'&id='+encodeURIComponent(g.id)+'&date='+encodeURIComponent(S.date));
   if(data?.schema!=="footyedge-match-check-v1"||String(data.id)!==String(g.id))throw Error("Match feed could not be verified");
   g.feMatchCheck=data;
-  const team=(side)=>{const t=g[side];const match=(data.confirmedXIs||[]).find(x=>String(x.teamId)===String(t?.id));
-    const reports=(data.reportedInjuries||{})[String(t?.id)]||[];
-    return{...(g.teamIntel?.[side]||{}),confirmedXI:match?.players||[],liveInjuries:reports};};
+  const nameKey=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  const team=(side)=>{
+   const t=g[side],original=g.teamIntel?.[side]||{},teamId=String(t?.id||"");
+   const match=(data.confirmedXIs||[]).find(x=>String(x.teamId)===teamId);
+   const reports=(data.reportedInjuries||{})[teamId]||[];
+   const roster=data.rosterHeadshots?.[teamId]||[];
+   // Exact name or unique surname only; never attach an ambiguous portrait.
+   const enrich=name=>{
+    const text=typeof name==="string"?name:String(name?.name||"");
+    const key=nameKey(text);
+    const exact=roster.filter(x=>nameKey(x.name)===key);
+    const suffix=roster.filter(x=>nameKey(x.name).endsWith(" "+key));
+    const candidate=exact.length===1?exact[0]:suffix.length===1&&key.length>=4?suffix[0]:null;
+    return candidate?{name:text,photoUrl:candidate.photoUrl}:name;
+   };
+   return{...original,predictedXI:(original.predictedXI||[]).map(enrich),
+     confirmedXI:match?.players||[],liveInjuries:reports};
+  };
   const h=team("home"),a=team("away");
-  if(h.confirmedXI.length===11||a.confirmedXI.length===11){
+  const hasConfirmed=h.confirmedXI.length===11||a.confirmedXI.length===11;
+  const hasPortraits=[...h.predictedXI,...a.predictedXI].some(x=>typeof x==="object"&&x.photoUrl);
+  if(hasConfirmed||hasPortraits){
    g.liveIntel={...(g.teamIntel||{}),home:h,away:a,
-    source:{label:"ESPN verified complete XI",url:data.sourceUrl,checkedAt:data.checkedAt}};
+    source:hasConfirmed?{label:"ESPN verified starting XI",url:data.sourceUrl,checkedAt:data.checkedAt}:
+       g.teamIntel?.source};
   }else g.liveIntel=null;
  }catch(error){g.feMatchCheck={checkedAt:new Date().toISOString(),note:"The latest match source is unavailable; dated research is unchanged."};}
  const current=S.games.find(x=>String(x.id)===String(S.openGameId));
@@ -1409,10 +1427,17 @@ async function feRefreshMatch(g){
   renderModal(current);document.getElementById("modalBody").scrollTop=pos;
  }
 }
+function feLatestProviderInjuries(g){
+ const lookup=g.feMatchCheck?.reportedInjuries||{},details=["home","away"].flatMap(side=>{
+  const id=String(g[side]?.id||""),rows=lookup[id]||[];
+  return rows.length?['<div class="fe-freshNewsTeam"><strong>'+esc(g[side].name)+'</strong><ul class="fe-newsPlayers">'+rows.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul></div>']:[];
+ });
+ return details.length?'<div class="fe-freshNews"><b>Latest source-reported injuries</b><div class="fe-freshNewsGrid">'+details.join('')+'</div></div>':'';
+}
 function feNewsPanel(g,newsHtml){
   return '<section class="fe-newsSection"><div class="fe-sourceHead"><h3><span aria-hidden="true">'+feIcon("news")+'</span> TEAM NEWS</h3>'+
    '<button type="button" class="fe-matchRefresh" data-refresh-match>↻ Check updates</button></div>'+
-   '<div class="modalTeamNews">'+newsHtml+'</div>'+feMatchSourceStatus(g)+'</section>';
+   '<div class="modalTeamNews">'+newsHtml+'</div>'+feLatestProviderInjuries(g)+feMatchSourceStatus(g)+'</section>';
 }
 
 function feExperimentalProjection(g){
