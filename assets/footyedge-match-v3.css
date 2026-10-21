@@ -1037,3 +1037,57 @@
  .fe-playerScroll{padding:8px 13px 18px!important}
 }
 @media(prefers-reduced-motion:reduce){.fe-profileShimmer{animation:none!important}}
+
+/* Player profile finish: clean, borderless portrait cut-out at consistent
+   visual scale. Data tiles only exist when a measured value is available. */
+.fe-playerHero{
+  align-items:center!important;gap:10px!important;
+  min-height:178px!important;padding:11px 17px 0!important;
+  overflow:hidden!important;
+  background:linear-gradient(100deg,rgba(22,90,60,.45),rgba(2,28,18,.10))!important;
+}
+.fe-playerPhotoStage{
+  flex:0 0 148px!important;width:148px!important;height:178px!important;
+  align-self:flex-end!important;overflow:hidden!important;position:relative!important;
+  border:0!important;border-radius:0!important;
+  box-shadow:none!important;background:none!important;
+}
+.fe-playerPhotoStage>.fe-playerPortrait{
+  display:block!important;position:absolute!important;inset:0!important;
+  width:100%!important;height:100%!important;max-width:none!important;
+  object-fit:contain!important;object-position:center bottom!important;
+  transform:scale(1.58)!important;transform-origin:50% 84%!important;
+  background:transparent!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;filter:none!important;
+}
+.fe-playerPhotoStage>.fe-playerPortraitPlaceholder{
+  width:100%!important;height:100%!important;display:grid!important;
+  place-items:center!important;background:transparent!important;
+  border:0!important;box-shadow:none!important;color:#6be4aa!important;
+}
+.fe-playerHero .fe-playerIdentity{flex:1!important;min-width:0!important;padding:0 0 12px!important}
+.fe-playerHero .fe-playerIdentity h2{line-height:1.13!important;letter-spacing:-.03em!important;
+  font-size:clamp(21px,5.2vw,28px)!important}
+.fe-playerStatsGrid{
+ grid-template-columns:repeat(var(--fe-player-stat-count,4),minmax(0,1fr))!important;
+ gap:8px!important;
+}
+.fe-playerStatsGrid .fe-playerStat{
+  min-height:76px!important;overflow:hidden!important;
+  display:flex!important;flex-direction:column-reverse!important;
+  justify-content:center!important;gap:7px!important;
+}
+.fe-playerStatsGrid .fe-playerStat strong{
+ font-size:clamp(20px,4.4vw,27px)!important;font-weight:900!important;
+ white-space:nowrap!important;line-height:1.1!important;
+}
+.fe-playerStatsGrid .fe-playerStat span{font-size:10px!important;line-height:1.2!important;
+ overflow-wrap:break-word!important;text-align:center!important}
+@media(max-width:460px){
+ .fe-playerHero{padding:9px 12px 0!important;min-height:169px!important;gap:9px!important}
+ .fe-playerPhotoStage{flex-basis:126px!important;width:126px!important;height:166px!important}
+ .fe-playerPhotoStage>.fe-playerPortrait{transform:scale(1.58)!important}
+ .fe-playerHero .fe-playerIdentity{padding-bottom:12px!important}
+ .fe-playerStatsGrid{gap:6px!important}
+ .fe-playerStatsGrid .fe-playerStat{min-height:70px!important}
+}
