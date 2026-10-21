@@ -1148,3 +1148,59 @@
 }
 
 .fe-playerPhotoStage > .fe-playerPortrait[hidden], .fe-playerPhotoStage > .fe-playerPortraitPlaceholder[hidden]{display:none!important}
+
+/* Player profile: swipeable ten-match stats table. Fixture cards untouched. */
+.fe-playerSwipeHint{font-size:11px!important;color:#91c8ab!important;margin:-4px 0 10px!important}
+.fe-playerTableScroll{
+ overflow-x:auto;overscroll-behavior-inline:contain;max-width:100%;
+ border:1px solid rgba(87,190,132,.28);border-radius:12px;
+ scrollbar-color:#2a8f60 #08291b;scrollbar-width:thin;
+ background:rgba(4,31,20,.75);
+}
+.fe-playerTableScroll:focus-visible{outline:2px solid #48daa0;outline-offset:2px}
+.fe-playerLastTenTable{border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;
+ font-variant-numeric:tabular-nums;text-align:center;table-layout:auto}
+.fe-playerLastTenTable th,.fe-playerLastTenTable td{
+ padding:12px 8px;white-space:nowrap;border-bottom:1px solid rgba(95,172,120,.15);
+ font-size:11px;color:#e6faed;
+}
+.fe-playerLastTenTable thead th{
+ position:sticky;top:0;background:#134431;color:#a6e8c5;
+ font-size:10px;letter-spacing:.05em;font-weight:850;
+}
+.fe-playerLastTenTable thead th:first-child{z-index:4}
+.fe-playerLastTenTable thead th:not(:first-child){min-width:37px}
+.fe-playerLastTenTable tbody tr:last-child>*{border-bottom:0}
+.fe-playerLastTenTable tbody tr:nth-child(even){background:rgba(39,102,71,.14)}
+.fe-playerLastTenTable th:first-child{
+ position:sticky;left:0;z-index:2;width:147px;min-width:147px;max-width:147px;
+ text-align:left;box-shadow:3px 0 8px rgba(0,13,7,.25);
+}
+.fe-playerLastTenTable tbody th:first-child{background:#092c1d}
+.fe-playerLastTenTable tbody tr:nth-child(even) th:first-child{background:#103725}
+.fe-playerLastTenTable tbody .fe-playerOpponent strong{
+ color:#f1fff7;font-size:11px;display:block;
+ overflow:hidden;text-overflow:ellipsis;max-width:132px;
+}
+.fe-playerLastTenTable tbody .fe-playerOpponent small{
+ color:#91b99f;display:block;margin-top:4px;font-size:9px;
+ white-space:normal;line-height:1.3;max-width:134px;
+}
+.fe-playerStatLegend{border-top:1px solid rgba(116,188,137,.15);padding:14px 2px 2px}
+.fe-playerStatLegend>b{display:block;font-size:11px;letter-spacing:.06em;
+ color:#e4fff0;text-transform:uppercase;margin-bottom:10px}
+.fe-playerStatLegend>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 12px}
+.fe-playerStatLegend span{font-size:10px;color:#b5dac3;line-height:1.4}
+.fe-playerStatLegend span strong{display:inline-block;min-width:32px;color:#50dfa0;font-size:10px}
+.fe-playerStatLegend p{font-size:10px!important;line-height:1.5!important;color:#8fb6a1!important;
+ margin-top:12px!important}
+.fe-playerPhotoStage{background:transparent!important;border:0!important;box-shadow:none!important}
+.fe-playerPhotoStage>.fe-playerPortrait{
+ background:transparent!important;border:0!important;box-shadow:none!important;
+ object-fit:contain!important;object-position:bottom center!important;
+}
+@media(max-width:460px){
+ .fe-playerLastTenTable th,.fe-playerLastTenTable td{padding:11px 7px;font-size:10px}
+ .fe-playerLastTenTable th:first-child{min-width:128px;max-width:128px;width:128px}
+ .fe-playerLastTenTable tbody .fe-playerOpponent strong{max-width:116px}
+}
