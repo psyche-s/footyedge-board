@@ -923,8 +923,10 @@ function viewCandidates(g){
   // selections belong to the same broad scoring/result market family.
   // Duplicate identical labels are still suppressed.
   const seen=new Set();
-  const ownerReview=feOwnerConsensusTop3(g);
-  return (ownerReview||g.model?.top3||[]).filter(p=>{
+  // Read the independently reviewed match-preview shortlist first. The archived
+  // old ranking is only historical fallback when a fixture lacks reviewed coverage.
+  const reviewed=Array.isArray(g.feEditorialPicks)&&g.feEditorialPicks.length===3?g.feEditorialPicks:null;
+  return (reviewed||g.model?.top3||[]).filter(p=>{
     if(!p?.label)return false;
     const key=String(p.label).toLowerCase().trim().replace(/\s+/g," ");
     if(seen.has(key))return false;
@@ -1222,7 +1224,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload]=await Promise.all([
+    const [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload,editorialDeskPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1238,7 +1240,8 @@ async function load(date=S.date){
       repoData('data/h2h/'+S.date+'.json').catch(()=>null),
       repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null),
       repoData('data/league-tables/'+S.date+'.json').catch(()=>null),
-      repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null)
+      repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null),
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null)
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
@@ -1265,6 +1268,9 @@ async function load(date=S.date){
     const previewMap=new Map((editorialPayload?.schema==="footyedge-editorial-crosscheck-v1"&&editorialPayload.date===S.date?
       editorialPayload.matches||[]:[]).filter(x=>Array.isArray(x.sources)&&x.sources.some(s=>/^https:\/\//.test(s.url)))
        .map(x=>[String(x.fixtureId),x]));
+    const editorPicksById=new Map((editorialDeskPayload?.schema==='footyedge-editorial-desk-v1'&&editorialDeskPayload.date===S.date?
+      editorialDeskPayload.matches||[]:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length===3)
+      .map(x=>[String(x.gameId),x]));
     const verifiedIntel=new Map((teamIntelPayload?.schema==="footyedge-sourced-team-intelligence-v1"&&teamIntelPayload.date===S.date
       ?teamIntelPayload.fixtures||[]:[]).filter(x=>x.source?.url?.startsWith("https://")&&x.date===S.date)
       .map(x=>[String(x.fixtureId),x]));
@@ -1272,6 +1278,8 @@ async function load(date=S.date){
       for(const game of items){
         game.teamIntel=verifiedIntel.get(String(game.id))||null;
         game.editorialPreview=previewMap.get(String(game.id))||null;
+        const edited=editorPicksById.get(String(game.id));
+        game.feEditorialPicks=edited&&normName(edited.home)===normName(game.home?.name)&&normName(edited.away)===normName(game.away?.name)?edited.picks:null;
         const snapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
         if(snapshot?.season===Number(game.year||S.date.slice(0,4))&&Array.isArray(snapshot.table)){
           game.feTable={...snapshot,status:'verified',source:leagueTablePayload.source?.label,sourceUrl:leagueTablePayload.source?.url,asOf:leagueTablePayload.asOf};
@@ -1933,20 +1941,45 @@ function plainFootballReason(g,p){
   return parts.length?parts.join(" "):String(p.reason||"There is not enough recent evidence to explain this selection confidently.");
 }
 function feReviewedReason(g,p){
- const base=String(plainFootballReason(g,p)||"").replace(/\s*These figures describe recent results, not a guaranteed outcome\.\s*$/i,"").trim();
- if(p?.editorialSupport!==undefined)return base; // Already has complete owner-reviewed rationale.
- const preview=g.editorialPreview;
- // Match-specific cross-check stays internal. Write the rationale in FootyEdge's voice.
- const note=String(preview?.marketNotes?.[p?.label]||"").trim();
- const disputed=Array.isArray(preview?.disputedMarkets)&&preview.disputedMarkets.some(x=>String(x).toLowerCase()===String(p?.label||"").toLowerCase());
- return [base,disputed?"This market carries conflicting match evidence.":"",note].filter(Boolean).join(" ");
+  if(p?.sourceBackedReason&&p.reason&&Array.isArray(g.feEditorialPicks))return String(p.reason);
+  // Human-readable fallback for archived fixtures that lack a fresh independent
+  // match review. Never present old model trends as preview consensus.
+  const home=String(g.home?.name||"Home side"),away=String(g.away?.name||"Away side");
+  const h=g.model?.home,a=g.model?.away,label=String(p?.label||"");
+  const historical=String(p?.reason||p?.archivedCommentary||"");
+  const total=label.match(/^(Over|Under) (\d+(?:\.\d+)?) Goals$/i);
+  let lead="";
+  if(total){
+    const line=Number(total[2]),isOver=total[1].toLowerCase()==="over";
+    const key=(isOver?"o":"u")+String(line).replace(".","");
+    if(Number.isFinite(h?.[key])&&Number.isFinite(a?.[key]))
+      lead=home+" and "+away+" have both shown a tendency for "+(isOver?"open games":"lower-scoring games")+
+        " recently. This total has appeared in about "+Math.round(h[key]*100)+"% and "+
+        Math.round(a[key]*100)+"% of their recorded samples.";
+  }else if(/ or Draw$/.test(label)){
+    lead=label.replace(/ or Draw$/,"")+" have enough recent form to keep this competitive. Covering the draw avoids relying on an outright win.";
+  }else if(/ ML$/.test(label)){
+    lead=label.replace(/ ML$/,"")+" have a possible result edge here, but the recent form and available team news still need to be weighed against the opposition.";
+  }else if(/^BTTS/.test(label)){
+    lead="Both teams have shown ways to create chances, but whether both convert them depends on the quality of the opposing defenses.";
+  }else if(/ 1\+ Goal$/.test(label)){
+    lead=label.replace(/ 1\+ Goal$/,"")+" have shown some scoring consistency. One goal is a more forgiving target than needing them to win.";
+  }
+  const preview=g.editorialPreview;
+  const add=String(preview?.marketNotes?.[label]||"").replace(/https?:\/\/\S+/gi,"")
+      .replace(/\b(?:Football Whispers|Sports Mole|Sportskeeda|Forebet)\b/gi,"").trim();
+  if(lead)return lead+(add?" "+add:"");
+  return historical.replace(/^(?:Our )?[^:]{1,90}:\s*\d+\/\d+[^.]*\.\s*/,"")
+    .replace(/\bPicks are research estimates, not calibrated probabilities\.\s*/gi,"")
+    .replace(/These figures describe recent results, not a guaranteed outcome\.\s*/gi,"").trim()||
+    "This market needs more recent match evidence before we can explain it confidently.";
 }
 function fePreviewLinks(g,p){return "";}
 
 function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
-  const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(plainFootballReason(g,p))+'</p>'+'</section>'};
+  const whyHtml=p=>{return '<section class="researchBox" data-why-pick="1"><div class="researchTitle">WHY THIS PICK</div><p class="candidateCommentary">'+esc(feReviewedReason(g,p))+'</p>'+'</section>'};
   const ranked=top3.length?top3.map((x,i)=>{
     return '<article class="modalPick fe-selection">'+
       '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">#'+(i+1)+'</div>'+
