@@ -821,6 +821,88 @@ function feDistinctView(ordered){
   }
   return out;
 }
+// Owner-approved same-day research overlay. It compares all available
+// independently dated market opinions with verified last-10, last-5 and venue
+// results. The immutable published JSON is never edited here.
+function feOwnerConsensusTop3(g){
+ if(S.date!=="2026-10-21"||S.date!==etDate())return null;
+ const H=(g.baseResearch?.last10?.home||[]).slice(0,10);
+ const A=(g.baseResearch?.last10?.away||[]).slice(0,10);
+ if(H.length<5||A.length<5)return null;
+ const preview=g.editorialPreview;
+ const home=String(g.home?.name||""),away=String(g.away?.name||"");
+ const looksValid=preview?.home===home&&preview?.away===away&&Array.isArray(preview.sources);
+ const domainAllow=new Set(["footballwhispers.com","sportsmole.co.uk","sportskeeda.com","forebet.com"]);
+ const independent=(looksValid?preview.sources:[]).filter(e=>{
+   try {
+     const u=new URL(e.url),date=String(e.publishedOn||"");
+     return u.protocol==="https:"&&[...domainAllow].some(d=>u.hostname===d||u.hostname.endsWith("."+d))&&
+       /^2026-10-(19|20|21)$/.test(date);
+   }catch{return false}
+ });
+ const markets=[
+  ["Over 1.5 Goals","Goals",x=>x.gf+x.ga>=2,x=>x.gf+x.ga>=2,"total"],
+  ["Over 2.5 Goals","Goals",x=>x.gf+x.ga>=3,x=>x.gf+x.ga>=3,"total"],
+  ["Under 3.5 Goals","Goals",x=>x.gf+x.ga<=3,x=>x.gf+x.ga<=3,"total"],
+  ["Under 4.5 Goals","Goals",x=>x.gf+x.ga<=4,x=>x.gf+x.ga<=4,"total"],
+  ["BTTS — Yes","BTTS",x=>x.gf>0&&x.ga>0,x=>x.gf>0&&x.ga>0,"btts"],
+  ["BTTS — No","BTTS",x=>x.gf===0||x.ga===0,x=>x.gf===0||x.ga===0,"btts"],
+  [home+" 1+ Goal","Team Goals",x=>x.gf>0,x=>x.ga>0,"home-goal"],
+  [away+" 1+ Goal","Team Goals",x=>x.ga>0,x=>x.gf>0,"away-goal"],
+  [home+" or Draw","Double Chance",x=>x.result!=="L",x=>x.result!=="W","result"],
+  [away+" or Draw","Double Chance",x=>x.result!=="W",x=>x.result!=="L","result"],
+  [home+" ML","Match Result",x=>x.result==="W",x=>x.result==="L","result"],
+  [away+" ML","Match Result",x=>x.result==="L",x=>x.result==="W","result"]
+ ];
+ const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const homeVenue=H.filter(x=>x.venue==="home"),awayVenue=A.filter(x=>x.venue==="away");
+ const accepted=[];
+ for(const [label,category,testH,testA,family] of markets){
+   const hitsH=H.filter(testH).length,hitsA=A.filter(testA).length;
+   const rate=100*(hitsH+hitsA)/(H.length+A.length);
+   const recentH=H.slice(0,5).filter(testH).length,recentA=A.slice(0,5).filter(testA).length;
+   const recent=10*(recentH+recentA);
+   const venueEnough=homeVenue.length>=3&&awayVenue.length>=3;
+   const venueRate=venueEnough?100*(homeVenue.filter(testH).length+awayVenue.filter(testA).length)/(homeVenue.length+awayVenue.length):rate;
+   const votes=new Set(independent.filter(x=>(x.supports||[]).some(y=>norm(y)===norm(label))).map(x=>new URL(x.url).hostname)).size;
+   const disputed=looksValid&&(preview.disputedMarkets||[]).some(x=>norm(x)===norm(label));
+   if(rate<52||Math.min(hitsH/H.length,hitsA/A.length)<.30)continue;
+   const rating=Math.max(45,Math.min(96,Math.round(.60*rate+.25*recent+.15*venueRate+Math.min(16,8*votes)-(disputed?11:0))));
+   const venueText=venueEnough?" At home/away, the matching record is "+homeVenue.filter(testH).length+"/"+homeVenue.length+
+     " for "+home+" and "+awayVenue.filter(testA).length+"/"+awayVenue.length+" for "+away+".":"";
+   const evidence=label+": "+hitsH+"/"+H.length+" "+home+" results and "+hitsA+"/"+A.length+" "+away+
+     " results meet the condition. Over the latest five: "+recentH+"/5 and "+recentA+"/5."+venueText;
+   const note=String(looksValid?preview.marketNotes?.[label]||"":"")
+     .replace(/https?:\/\/\S+/gi,"")
+     .replace(/\b(?:Football Whispers|Sports Mole|Sportskeeda|Forebet|FotMob)\b/gi,"")
+     .replace(/\s{2,}/g," ").trim();
+   const reasoning=evidence+(disputed?" The match evidence conflicts on this market.":"")+(note?" "+note:"");
+   accepted.push({label,category,confidenceRating:rating,score:null,ev:null,probabilityCalibrated:false,
+       sourceBackedReason:true,reason:reasoning,editorialSupport:votes,editorialDispute:Boolean(disputed),
+       researchOnly:true,family,statsRate:rate});
+ }
+ if(!accepted.length)return null;
+ accepted.sort((a,b)=>b.confidenceRating-a.confidenceRating||b.editorialSupport-a.editorialSupport||a.label.localeCompare(b.label));
+ const selection=[],used=new Set();
+ for(const p of accepted){
+   if(used.has(p.family))continue;
+   if(p.family==="total"&&selection.some(x=>x.family==="btts"&&x.label==="BTTS — Yes"&&p.label==="Over 1.5 Goals"))continue;
+   if(p.family==="btts"&&selection.some(x=>x.family==="total"&&x.label==="Over 1.5 Goals"&&p.label==="BTTS — Yes"))continue;
+   if(p.family==="home-goal"&&selection.some(x=>x.family==="result"&&x.label===home+" ML"))continue;
+   if(p.family==="away-goal"&&selection.some(x=>x.family==="result"&&x.label===away+" ML"))continue;
+   selection.push(p);used.add(p.family);
+   if(selection.length===3)break;
+ }
+ if(selection.length<3){
+   for(const p of (g.model?.top3||[])){
+     if(selection.some(x=>norm(x.label)===norm(p.label)))continue;
+     selection.push(p);
+     if(selection.length===3)break;
+   }
+ }
+ return selection.sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0)).slice(0,3);
+}
+
 function viewCandidates(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
@@ -830,7 +912,8 @@ function viewCandidates(g){
   // selections belong to the same broad scoring/result market family.
   // Duplicate identical labels are still suppressed.
   const seen=new Set();
-  return (g.model?.top3||[]).filter(p=>{
+  const ownerReview=feOwnerConsensusTop3(g);
+  return (ownerReview||g.model?.top3||[]).filter(p=>{
     if(!p?.label)return false;
     const key=String(p.label).toLowerCase().trim().replace(/\s+/g," ");
     if(seen.has(key))return false;
