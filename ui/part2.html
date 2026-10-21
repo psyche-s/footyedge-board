@@ -976,14 +976,9 @@ function renderGames(){
   const el=document.getElementById("games");
   document.getElementById("gamesCount").textContent=list.length+" fixture"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
-  el.innerHTML=list.map(g=>{
-    const selections=viewCandidates(g),first=viewPick(g);
-    return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
-      'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
-      feMatchHero(g)+
-      '<div class="fe-cardTicket"><span>'+esc(label)+' · Match analysis</span><span class="fe-ticketChevron" aria-hidden="true">›</span></div>'+
-    '</article>';
-  }).join("");
+  el.innerHTML=list.map(g=>'<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name)+'" '+
+    'onclick="openGame(\\''+g.id+'\\')" onkeydown="if(event.key===\\'Enter\\'||event.key===\\' \\'){event.preventDefault();openGame(\\''+g.id+'\\')}">'+
+    feMatchHero(g)+'</article>').join("");
 }
 const FILTER_LEAGUE_LOGOS={
   "eng.1":"assets/logos/competitions/eng.1.png",
