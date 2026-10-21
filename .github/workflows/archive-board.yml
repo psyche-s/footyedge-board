@@ -1,12 +1,6 @@
 name: Publish FootyEdge Daily Frozen Board
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/archive-board.yml"
-      - "scripts/build-evidence-only-board.mjs"
-      - "scripts/sync-asia-research.mjs"
   schedule:
     # GitHub timezone-aware schedule keeps 00:05 Toronto through DST.
     - cron: "5 0 * * *"
@@ -17,13 +11,13 @@ permissions:
   contents: write
 
 concurrency:
-  group: footyedge-board-publish
-  cancel-in-progress: true
+  group: footyedge-original-sole-daily-refresh
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 100
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,9 +34,8 @@ jobs:
           RUN=false
           # GitHub scheduled runs may arrive hours late. Permit a delayed same-day
           # recovery after 00:05 and before noon only while today's write-once
-          # archive is absent. DST duplicate UTC runs at 23:30 local must NEVER
-          # publish a previous-day board before its scheduled midnight freeze.
-          # The EDT/EST retries therefore cannot create a duplicate official board.
+          # archive is absent. One timezone-aware cron and this write-once
+          # guard prevent a second publication of an already completed board.
           if (( MINUTES_SINCE_MIDNIGHT >= 5 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
             RUN=true
           fi
@@ -52,6 +45,25 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         with:
           node-version: "22"
+
+      - uses: actions/setup-python@v5
+        if: steps.gate.outputs.run == 'true'
+        with:
+          python-version: '3.11'
+
+      - name: Refresh fixture horizon and public-domain score history (single writer)
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FOOTBALL_DATA_HUB_TOKEN: ${{ secrets.FOOTBALL_DATA_HUB_READ_TOKEN }}
+          HUB_HISTORY_MODE: daily
+          HUB_HISTORY_START_YEAR: '2015'
+        shell: bash
+        run: |
+          node scripts/refresh-fixture-horizon.mjs || echo "::warning::Fixture horizon source unavailable; retained last good."
+          node --test tests/football-hub.test.mjs tests/h2h-archive.test.mjs tests/source-registry.test.mjs
+          node scripts/sync-football-data-hub.mjs || echo "::warning::CC0 history unavailable; preserving existing verified archive."
+          node scripts/audit-data-sources.mjs || echo "::warning::Source freshness audit unavailable."
 
       - name: Validate whole-slip grading and ensure dated research exists
         if: steps.gate.outputs.run == 'true'
@@ -69,9 +81,15 @@ jobs:
           node --test tests/track-slip-performance.test.mjs
           TODAY="$(TZ=America/Toronto date +%F)"
           node scripts/sync-asia-research.mjs
-          if [[ ! -s "data/research-base-$TODAY.json" ]]; then
-            echo "No current-date research baseline; generating from real fixtures before picks."
-            FORCE_RESEARCH=1 RESEARCH_DATE="$TODAY" node scripts/build-research-base.mjs
+          # Refresh exact-day research once, even when a dated earlier build exists.
+          # The builder keeps previous verified file if provider collection fails.
+          if ! FORCE_RESEARCH=1 RESEARCH_DATE="$TODAY" node scripts/build-research-base.mjs; then
+            if [[ -s "data/research-base-$TODAY.json" ]]; then
+              echo "::warning::Research provider failed; retaining dated baseline for review."
+            else
+              echo "::error::No current-date verified research. Stop without fabricating picks."
+              exit 1
+            fi
           fi
           if [[ ! -s "data/research-base-$TODAY.json" ]]; then
             echo "::error::Exact-date research missing. Cannot publish guesses."
@@ -84,6 +102,23 @@ jobs:
             echo "Dated predicted-lineup/news file available; predictions are not confirmed starting XIs."
           else
             echo "::warning::No verified dated team news/predicted XI file; player-dependent picks must PASS."
+          fi
+
+
+      - name: Prepare sourced H2H, match statistics, market review and shadow model
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+        run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
+          if [[ -s "data/research-base-$TODAY.json" ]]; then
+            node --test tests/h2h-score-cache.test.mjs tests/market-diversity.test.mjs
+            H2H_DATE="$TODAY" node scripts/build-h2h-cache.mjs || echo "::warning::Current H2H unavailable."
+            timeout 200s python scripts/analytics_pipeline.py --date "$TODAY" || echo "::warning::Source-matched shots/fouls research unavailable."
+            node scripts/review-result-markets.mjs "$TODAY" || echo "::warning::Market review unavailable."
+            # Research-only forecasts never rewrite official picks.
+            timeout 240s python scripts/shadow_dixon_coles.py --capture-candidate --capture-expansion || echo "::warning::Shadow forecast unavailable; official model unaffected."
           fi
 
       - name: Settle prior boards and ingest post-match learning before picks
@@ -146,6 +181,27 @@ jobs:
         continue-on-error: true
         run: node scripts/audit-editorial-board.mjs
 
+
+      - name: Collect sourced player portraits and next-day fixture research
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          PHOTO_DAYS: '5'
+          PHOTO_MAX_TEAMS: '25'
+        run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
+          TOMORROW="$(TZ=America/Toronto date -d "$TODAY +1 day" +%F)"
+          node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+          node scripts/sync-player-photo-refs.mjs || echo "::warning::No new player portrait refs; retained old verified references."
+          # Dated forward research remains a preview; cannot publish tomorrow's locked board.
+          if [[ ! -e "data/boards/$TOMORROW.json" ]]; then
+            FORCE_RESEARCH=1 RESEARCH_DATE="$TOMORROW" node scripts/build-research-base.mjs || echo "::warning::Tomorrow's research unavailable."
+            if [[ -s "data/research-base-$TOMORROW.json" ]]; then
+              H2H_DATE="$TOMORROW" node scripts/build-h2h-cache.mjs || echo "::warning::Tomorrow H2H unavailable."
+            fi
+          fi
+
       - name: Validate and commit immutable same-day picks
         if: steps.gate.outputs.run == 'true'
         shell: bash
@@ -156,7 +212,15 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews)
+          files+=(data/player-photo-refs.json assets/player-photo-registry.js)
+          for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
+            if [[ -f "$file" ]]; then files+=("$file"); fi
+          done
+          TOMORROW="$(TZ=America/Toronto date -d "$TODAY +1 day" +%F)"
+          for file in "data/research-base-$TOMORROW.json" "data/board-drafts/$TOMORROW.json" "data/model-shadow/$TODAY.json" "data/model-candidates/$TODAY.json" "data/model-candidates-expanded/$TODAY.json" "data/market-reviews/$TODAY.json" "data/analytics/$TODAY.json"; do
+            if [[ -f "$file" ]]; then files+=("$file"); fi
+          done
           if [[ -f "data/research-base-$TODAY.json" ]]; then files+=("data/research-base-$TODAY.json"); fi
           if [[ -d data/asia ]]; then files+=("data/asia"); fi
           if [[ -f "data/team-intelligence/$TODAY.json" ]]; then files+=("data/team-intelligence/$TODAY.json"); fi
