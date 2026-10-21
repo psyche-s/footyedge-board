@@ -12,7 +12,7 @@ const form=(f,side)=>(f?.last10?.[side]||[]).filter(r=>dateValid(r,Date.parse(f.
 const name=(g,side)=>typeof g[side]==="string"?g[side]:g[side]?.name||g.teams?.[side]?.name||"";
 const hits=(arr,fn)=>arr.filter(fn).length;
 function market(p){
- const label=norm(p.label);
+ const label=String(p.label||"").trim().toLowerCase().replace(/\s+/g," ");
  const m=label.match(/^(over|under) (\d+(?:\.\d+)?) goals$/);
  if(m)return{family:"total",dir:m[1],line:Number(m[2])};
  const n=label.match(/^(.+) ([123])\+ goals?$/);
