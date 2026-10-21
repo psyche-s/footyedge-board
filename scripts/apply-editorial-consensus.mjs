@@ -152,7 +152,7 @@ export function compareDraft(board,research,evidence=[]){
  }};
  return board;
 }
-async function readEvidence(day){
+export async function readEvidence(day){
  const file=path.join("data","editorial-evidence",day+".json");
  let doc;
  if(fs.existsSync(file))doc=JSON.parse(fs.readFileSync(file,"utf8"));
