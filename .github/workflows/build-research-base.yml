@@ -101,21 +101,20 @@ jobs:
           if [[ -f "data/research-base-$TOMORROW.json" && ! -f "data/boards/$TOMORROW.json" ]]; then
             PREVIEW_DATE="$TOMORROW" node scripts/build-evidence-only-board.mjs
           fi
-      - name: Build researched SGP and ACCA slips
+      - name: Test editorial parlay safeguards without writing model-built slips
         shell: bash
         run: |
           set -euo pipefail
-          node --test tests/daily-slips.test.mjs
-          TODAY="$(TZ=America/Toronto date +%F)"
-          TOMORROW="$(TZ=America/Toronto date -d 'tomorrow' +%F)"
-          SLIP_DATE="$TODAY" node scripts/build-daily-slips.mjs
-          SLIP_DATE="$TOMORROW" node scripts/build-daily-slips.mjs
+          node --test tests/daily-slips.test.mjs tests/editorial-refresh.test.mjs
+          # The authorised editorial desk is published by the 00:30 freeze or
+          # recovered by the 00:45 desk workflow. This preliminary research
+          # job must not publish model-built SGPs or tomorrow's model slips.
       - name: Commit research base
         shell: bash
         run: |
           git add -A -- data/research-base-*.json
           git add -A -- data/board-drafts/ || true
-          git add -A -- data/slips/ || true
+          # Dated historical slips may exist, but no new model-built slips are staged.
           if [[ -d data/asia ]]; then git add -A -- data/asia/; fi
           if [[ -d data/h2h ]]; then git add -A -- data/h2h/; fi
           if [[ -d data/model-reviews ]]; then git add -A -- data/model-reviews/; fi
