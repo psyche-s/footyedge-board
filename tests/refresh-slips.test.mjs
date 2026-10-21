@@ -16,7 +16,7 @@ test("status distinguishes active, completed and postponements",()=>{
  assert.equal(eventStatus({status:{type:{name:"STATUS_POSTPONED"}}}).cancelled,true);
 });
 test("readonly rerank draws from eligible source-backed pool",()=>{
- const pool=[leg("eng.1",60,1),leg("eng.1",60,1,"Team A 1+ Goal","team-goal"),
+ const pool=[leg("eng.1",60,1),leg("eng.1",60,1,"Team A or Draw","double-chance"),
   leg("ita.1",65,2),leg("esp.1",80,3),leg("ger.1",90,4,"Team B 1+ Goal","team-goal"),
   leg("uefa.champions",90,5,"Team C 1+ Goal","team-goal")];
  const d={eligibleSlipLegs:pool,props:[]},result=rebuild(d,NOW,new Map());

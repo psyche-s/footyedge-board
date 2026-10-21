@@ -18,16 +18,22 @@ function compatible(a,b){
  if(norm(a.label)===norm(b.label))return false;
  const A=market(a),B=market(b);if(!A||!B)return false;
  if(A.family==="total"&&B.family==="total")return false;
- if(A.family==="btts"&&B.family==="btts")return false;
- if(A.family==="team-goal"&&B.family==="team-goal"&&A.team===B.team)return false;
- if(A.family==="double-chance"&&B.family==="double-chance")return false;
+ if(A.family==="team-goal"&&B.family==="total"||A.family==="total"&&B.family==="team-goal")return false;
+ // Two "team 1+" picks just restate BTTS Yes, rather than two distinct markets.
+ if(A.family==="team-goal"&&B.family==="team-goal")return false;
+ if(A.family==="btts"||B.family==="btts"){
+   const other=A.family==="btts"?B:A;
+   return !["total","team-goal","btts"].includes(other.family);
+ }
  if(A.family==="winner"&&B.family==="winner")return false;
- if(A.family==="winner"&&B.family==="double-chance")return false;
- if(B.family==="winner"&&A.family==="double-chance")return false;
- if(A.family==="btts"&&A.yes&&B.family==="team-goal")return false;
- if(B.family==="btts"&&B.yes&&A.family==="team-goal")return false;
- if(A.family==="btts"&&A.yes&&B.family==="total"&&B.dir==="over"&&B.line<=1.5)return false;
- if(B.family==="btts"&&B.yes&&A.family==="total"&&A.dir==="over"&&A.line<=1.5)return false;
+ if(A.family==="double-chance"&&B.family==="double-chance")return false;
+ if(A.family==="winner"&&B.family==="double-chance"||B.family==="winner"&&A.family==="double-chance")return false;
+ if(A.family==="winner"&&B.family==="team-goal"&&A.team===B.team)return false;
+ if(B.family==="winner"&&A.family==="team-goal"&&A.team===B.team)return false;
+ if(A.family==="double-chance"&&B.family==="team-goal"&&A.team===B.team)return false;
+ if(B.family==="double-chance"&&A.family==="team-goal"&&A.team===B.team)return false;
+ // Do not implicitly claim unrelated player-event markets are combinable.
+ if(A.family==="player"&&B.family==="player")return false;
  return true;
 }
 function correlation(a,b){

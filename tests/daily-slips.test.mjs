@@ -5,9 +5,11 @@ test("classify goal markets and results",()=>{assert.equal(market({label:"Over 1
 test("Do not stack two goal-total lines or redundant winner/double chance",()=>{
  assert.equal(compatible(mk("1","total",85,"Over 1.5 Goals"),mk("1","total",84,"Under 4.5 Goals")),false);
  assert.equal(compatible(mk("1","winner",85,"Team A ML"),mk("1","double-chance",82,"Team A or Draw")),false);
+ assert.equal(compatible(mk("1","total",94,"Over 1.5 Goals"),mk("1","team-goal",90,"Team A 1+ Goal")),false);
+ assert.equal(compatible(mk("1","team-goal",90,"Team A 1+ Goal"),mk("1","team-goal",83,"Team B 1+ Goal")),false);
 });
 test("SGP has one fixture with at least two supported compatible markets, else pass",()=>{
- const x=[mk("1","total",90,"Over 1.5 Goals"),mk("1","team-goal",86,"Team A 1+ Goal"),mk("2","winner",96,"Team C ML")];
+ const x=[mk("1","total",90,"Under 4.5 Goals"),mk("1","double-chance",86,"Team A or Draw"),mk("2","winner",96,"Team C ML")];
  assert.equal(sgp(x).status,"qualified");assert.ok(sgp(x).legs.every(v=>v.gameId==="1"));assert.equal(sgp(x.slice(-1)).status,"pass");
 });
 test("ACCA restricts to one leg per fixture and caps families",()=>{
