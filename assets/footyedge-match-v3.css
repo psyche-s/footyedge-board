@@ -1456,3 +1456,18 @@
   width:16px!important;flex-basis:16px!important;
  }
 }
+
+/* Optical balance on phone-size fixture and expanded headers:
+   shift the away-side block slightly toward the score without resizing columns.
+   Unlike the previous 264px-grid attempt, this cannot squeeze team names. */
+@media(max-width:620px){
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away{
+  position:relative!important;
+  left:-9px!important;
+ }
+}
+@media(max-width:360px){
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away{
+  left:-5px!important;
+ }
+}
