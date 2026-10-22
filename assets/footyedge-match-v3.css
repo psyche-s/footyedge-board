@@ -1356,3 +1356,52 @@
 }
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroHead,
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{position:relative!important;z-index:2!important;}
+
+/* v27 — approved artwork-driven match backgrounds, not overlays. The complete
+   reference compositions are standalone SVG backgrounds; one asset shared by
+   list and expanded card. No score or match details are baked into artwork. */
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art]{
+ background-color:#00100a!important;
+ background-position:center!important;
+ background-size:100% 100%!important;
+ background-repeat:no-repeat!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="hazem-fayha"]{background-image:url("/assets/fixture-art/premium-hazem-fayha.svg")!important}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="kairat-panathinaikos"]{background-image:url("/assets/fixture-art/premium-kairat-panathinaikos.svg")!important}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="fateh-shabab"]{background-image:url("/assets/fixture-art/premium-fateh-shabab.svg")!important}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="union-hapoel"]{background-image:url("/assets/fixture-art/premium-union-hapoel.svg")!important}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art]::before,
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art]::after{
+ background:none!important;opacity:0!important;
+}
+/* Consistent vertical rhythm: team names may wrap, but ranking and form rows
+   remain level on the two sides. Preserve crest, chip and score dimensions. */
+.fe-matchCard .fe-heroTeams .fe-side,
+.fe-dialogHero .fe-heroTeams .fe-side{
+ align-self:stretch!important;
+ display:grid!important;
+ grid-template-rows:70px minmax(35px,auto) 23px 24px!important;
+ row-gap:6px!important;
+ justify-items:center!important;align-items:center!important;
+}
+.fe-matchCard .fe-side .fe-logoWrap,
+.fe-dialogHero .fe-side .fe-logoWrap{
+ height:70px!important;max-height:70px!important;
+}
+.fe-matchCard .fe-side .fe-sideName,
+.fe-dialogHero .fe-side .fe-sideName{
+ min-height:35px!important;max-height:43px!important;
+ display:-webkit-box!important;-webkit-box-orient:vertical!important;
+ -webkit-line-clamp:2!important;line-clamp:2!important;
+ overflow:hidden!important;text-align:center!important;
+ align-content:center!important;line-height:1.2!important;
+}
+.fe-matchCard .fe-side .fe-standing,
+.fe-dialogHero .fe-side .fe-standing{margin:0!important;justify-self:center!important;}
+.fe-matchCard .fe-side .fe-form,
+.fe-dialogHero .fe-side .fe-form{margin:0!important;align-self:center!important;}
+@media(max-width:480px){
+ .fe-matchCard .fe-hero.fe-kitHero{min-height:217px!important;padding-top:11px!important;padding-bottom:11px!important;}
+ .fe-matchCard .fe-heroTeams .fe-side{grid-template-rows:66px minmax(35px,auto) 23px 24px!important;row-gap:5px!important;}
+ .fe-matchCard .fe-side .fe-logoWrap{height:66px!important;max-height:66px!important;}
+}

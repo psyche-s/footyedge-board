@@ -1454,13 +1454,19 @@ function feIcon(kind){
 function feMatchHero(g){
  const live=feActualLive(g),final=feActualFinal(g),scored=feVerifiedScore(g)&&(live||final);
  const h=feKitPalette(g.home,"home"),a=feKitPalette(g.away,"away");
+ const featuredArt={
+  "al hazem|al fayha":"hazem-fayha",
+  "kairat almaty|panathinaikos":"kairat-panathinaikos",
+  "al fateh|al shabab":"fateh-shabab",
+  "union st gilloise|hapoel be er":"union-hapoel"
+ }[normName(g.home.name)+"|"+normName(g.away.name)]||"";
  // Scores are rendered ONLY when confirmed by the live-score feed; missing scores are never inferred.
  const core=scored
   ?'<div class="fe-scoreLine"><strong>'+esc(g.home.score)+'</strong><span class="fe-scoreStatus '+(live?'fe-status-live':'fe-status-final')+'">'+(live?'<span class="fe-liveLabel"><i class="fe-liveDot" aria-hidden="true"></i>LIVE</span>':'<span class="fe-finalLabel">FINAL</span>')+(live&&g.liveClock?'<small>'+esc(g.liveClock)+'</small>':'')+'</span><strong>'+esc(g.away.score)+'</strong></div>'
   :live?'<div class="fe-scorePending"><strong class="fe-liveLabel"><i class="fe-liveDot" aria-hidden="true"></i>LIVE</strong><small>Score awaiting verification</small></div>'
   :final?'<div class="fe-scorePending"><strong>FINAL</strong><small>Official score unavailable</small></div>'
   :'<div class="fe-kickoff"><strong>– &nbsp; –</strong><span>'+esc(feDay(g.date))+'</span><small>'+esc(timeET(g.date))+' ET</small></div>';
- return '<div class="fe-hero fe-kitHero" data-home-kit="'+h.pattern+'" data-away-kit="'+a.pattern+'" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
+ return '<div class="fe-hero fe-kitHero" '+(featuredArt?'data-featured-art="'+featuredArt+'" ':'')+'data-home-kit="'+h.pattern+'" data-away-kit="'+a.pattern+'" style="--fe-home:'+h.primary+';--fe-home-accent:'+h.secondary+';--fe-away:'+a.primary+';--fe-away-accent:'+a.secondary+'">'+
   '<div class="fe-heroHead"><span class="fe-heroLeague">'+leagueIconHtml(g.league,g.leagueLogo)+'<span>'+esc(displayLeagueName(g.league,g.leagueName))+'</span></span></div>'+
   '<div class="fe-heroTeams">'+feSide(g,"home")+'<div class="fe-center">'+core+'</div>'+feSide(g,"away")+'</div></div>';
 }
