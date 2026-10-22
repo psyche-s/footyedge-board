@@ -61,3 +61,15 @@ test("Both fixture and expanded score headers contain names within equal team tr
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=30/);
  assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=138/);
 });
+
+test("Away teams shift only nine pixels left on phone-size fixture and expanded headers",()=>{
+ const block=css.slice(css.indexOf("/* Optical balance on phone-size fixture"));
+ assert.match(block,/@media\(max-width:620px\)/);
+ assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-heroTeams>\.fe-side\.fe-away\{/);
+ assert.match(block,/left:-9px!important/);
+ assert.match(block,/@media\(max-width:360px\)/);
+ assert.match(block,/left:-5px!important/);
+ assert.doesNotMatch(block,/grid-template-columns|width:|translate|scale/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=31/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=139/);
+});
