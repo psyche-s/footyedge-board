@@ -1312,15 +1312,27 @@ async function load(date=S.date){
     const previewMap=new Map((editorialPayload?.schema==="footyedge-editorial-crosscheck-v1"&&editorialPayload.date===S.date?
       editorialPayload.matches||[]:[]).filter(x=>Array.isArray(x.sources)&&x.sources.some(s=>/^https:\/\//.test(s.url)))
        .map(x=>[String(x.fixtureId),x]));
+    // A dated XI payload has a parent date; individual fixtures need not repeat it.
+    function feVerifiedLineupRows(payload,date){
+      if(payload?.schema!=="footyedge-sourced-team-intelligence-v1"||payload.date!==date||!Array.isArray(payload.fixtures))return [];
+      return payload.fixtures.filter(x=>{
+        if(!x?.fixtureId||!/^https:\/\//i.test(String(x.source?.url||"")))return false;
+        if(x.date&&x.date!==date)return false;
+        const xi=side=>(Array.isArray(side?.predictedXI)&&side.predictedXI.length===11)||
+          (Array.isArray(side?.confirmedXI)&&side.confirmedXI.length===11);
+        return !!(x.home?.name&&x.away?.name&&xi(x.home)&&xi(x.away));
+      });
+    }
     const editorPicksById=new Map((editorialDeskPayload?.schema==='footyedge-editorial-desk-v1'&&editorialDeskPayload.date===S.date?
-      editorialDeskPayload.matches||[]:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length===3)
+      editorialDeskPayload.matches||[]:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3)
       .map(x=>[String(x.gameId),x]));
-    const verifiedIntel=new Map((teamIntelPayload?.schema==="footyedge-sourced-team-intelligence-v1"&&teamIntelPayload.date===S.date
-      ?teamIntelPayload.fixtures||[]:[]).filter(x=>x.source?.url?.startsWith("https://")&&x.date===S.date)
+    const verifiedIntel=new Map(feVerifiedLineupRows(teamIntelPayload,S.date)
       .map(x=>[String(x.fixtureId),x]));
     const attachSavedH2H=items=>{
       for(const game of items){
-        game.teamIntel=verifiedIntel.get(String(game.id))||null;
+        const verifiedXI=verifiedIntel.get(String(game.id));
+        game.teamIntel=verifiedXI&&normName(verifiedXI.home?.name)===normName(game.home?.name)&&
+          normName(verifiedXI.away?.name)===normName(game.away?.name)?verifiedXI:null;
         game.editorialPreview=previewMap.get(String(game.id))||null;
         const edited=editorPicksById.get(String(game.id));
         game.feEditorialPicks=edited&&normName(edited.home)===normName(game.home?.name)&&normName(edited.away)===normName(game.away?.name)?edited.picks:null;
@@ -1867,11 +1879,14 @@ function feLineupsPanel(g){
  const awayXI=intel.away?.confirmedXI?.length===11?intel.away.confirmedXI:intel.away?.predictedXI||[];
  const hasHome=homeXI.length===11,hasAway=awayXI.length===11;
  const confirmedHome=intel.home?.confirmedXI?.length===11,confirmedAway=intel.away?.confirmedXI?.length===11;
+ const previousXI=intel.home?.lineupStatus==="prior-match-XI-not-confirmed"||
+   intel.away?.lineupStatus==="prior-match-XI-not-confirmed";
  const status=confirmedHome&&confirmedAway?'OFFICIAL':
   (confirmedHome||confirmedAway)?'PARTIALLY CONFIRMED':
-  (hasHome||hasAway)?'PREDICTED · NOT CONFIRMED':'XI PENDING';
+  (hasHome||hasAway)?(previousXI?'PREVIOUS XI · NOT CONFIRMED':'PREDICTED · NOT CONFIRMED'):'XI PENDING';
  const caution=confirmedHome&&confirmedAway?'Both starting XIs have been confirmed by the match provider.':
-  (hasHome||hasAway)?'Available predicted or partial XIs may change when official teams are published.':
+  previousXI?'This lineup includes a prior-match XI, not a verified forecast for this game.':
+  (hasHome||hasAway)?'Predicted XIs may change when official starters are published.':
   'Confirmed starting XIs have not been published for this fixture.';
  return '<section class="fe-panel fe-lineupPanel">'+
    '<div class="fe-panelHeading"><h3>STARTING XIs</h3><span class="fe-sourceTag">'+status+'</span></div>'+
