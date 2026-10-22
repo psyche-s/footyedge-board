@@ -1670,6 +1670,18 @@ function feOfficialNewsHTML(g){
    data are fetched; the provider-matched ID is rechecked against its club roster. */
 /* Player photo sources are matched to ESPN club-roster identities only.
    There is no cross-club/player-name global guessing or image-search fallback. */
+function feRosterLeague(g,team){
+ const id=String(team?.id||""),name=String(team?.name||"").toLowerCase().trim();
+ const keys=Object.keys(window.FE_PLAYER_PHOTOS||{}).filter(k=>k.endsWith(":"+id));
+ const domestic=keys.map(k=>k.split(":")[0]).find(k=>["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","ksa.1","jpn.1","kor.1","cze.1"].includes(k));
+ if(domestic)return domestic;
+ const fallback={"juventus":"ita.1","ac milan":"ita.1","atalanta":"ita.1","stade rennais":"fra.1","marseille":"fra.1","lyon":"fra.1","as monaco":"fra.1",
+ "bayer leverkusen":"ger.1","tsg hoffenheim":"ger.1","sc freiburg":"ger.1",
+ "sunderland":"eng.1","afc bournemouth":"eng.1","crystal palace":"eng.1","brighton & hove albion":"eng.1",
+ "az alkmaar":"ned.1","nec nijmegen":"ned.1","ajax amsterdam":"ned.1",
+ "getafe":"esp.1","celta vigo":"esp.1","real sociedad":"esp.1","braga":"por.1","benfica":"por.1","besiktas":"tur.1","trabzonspor":"tur.1"};
+ return fallback[name]||"";
+}
 function feCachedPlayerPhoto(g,team,player){
  const src=window.FE_PLAYER_PHOTOS||{},teamId=String(team?.id||"");
  const league=String(g?.league||"");
@@ -1821,6 +1833,8 @@ async function feOpenPlayerProfile(g,button){
    return;
  }
  const qs=new URLSearchParams({league:g.league,teamId:side,name});
+ const fallbackLeague=feRosterLeague(g,team);
+ if(fallbackLeague&&fallbackLeague!==g.league)qs.set("fallbackLeague",fallbackLeague);
  const athlete=String(button.dataset.fePlayerId||"");
  if(/^\d{1,12}$/.test(athlete))qs.set("playerId",athlete);
  try{
@@ -1916,7 +1930,10 @@ async function feRefreshMatch(g){
  const scroll=document.getElementById("modalBody").scrollTop;
  renderModal(g);document.getElementById("modalBody").scrollTop=scroll;
  try{
-  const data=await json('/api/match-updates?league='+encodeURIComponent(g.league)+'&id='+encodeURIComponent(g.id)+'&date='+encodeURIComponent(S.date));
+  const params=new URLSearchParams({league:g.league,id:String(g.id),date:S.date,
+    homeTeamId:String(g.home?.id||""),awayTeamId:String(g.away?.id||""),
+    homeFallbackLeague:feRosterLeague(g,g.home),awayFallbackLeague:feRosterLeague(g,g.away)});
+  const data=await json('/api/match-updates?'+params.toString());
   if(data?.schema!=="footyedge-match-check-v1"||String(data.id)!==String(g.id))throw Error("Match feed could not be verified");
   g.feMatchCheck=data;
   // A La Liga or other domestic fixture may have a verified squad without
@@ -1944,7 +1961,8 @@ async function feRefreshMatch(g){
   const h=team("home"),a=team("away");
   const hasConfirmed=h.confirmedXI.length===11||a.confirmedXI.length===11;
   const hasPortraits=[...h.predictedXI,...a.predictedXI].some(x=>typeof x==="object"&&x.photoUrl);
-  if(hasConfirmed||hasPortraits){
+  const hasPlayerIds=[...h.predictedXI,...a.predictedXI].some(x=>typeof x==="object"&&/^\d+$/.test(String(x.id||"")));
+  if(hasConfirmed||hasPortraits||hasPlayerIds){
    g.liveIntel={...(g.teamIntel||{}),home:h,away:a,
     source:hasConfirmed?{label:"ESPN verified starting XI",url:data.sourceUrl,checkedAt:data.checkedAt}:
        g.teamIntel?.source};
