@@ -16,6 +16,10 @@ function rosterRows(payload){
   Array.isArray(g.athletes)?g.athletes:(g.id||g.displayName)?[g]:[]);
  return items.map(row=>row.athlete||row).filter(a=>a&&a.id&&(a.displayName||a.fullName||a.name));
 }
+function matchesInitialSurname(full,input){
+ const m=input.match(/^([a-z])\s+([a-z][a-z0-9 ]{3,})$/);
+ return Boolean(m&&full.startsWith(m[1])&&full.endsWith(" "+m[2]));
+}
 function matchRosterPlayer(payload,name,id){
  const rows=rosterRows(payload),input=escName(name),want=String(id||"");
  if(want){
@@ -25,8 +29,11 @@ function matchRosterPlayer(payload,name,id){
   // Sourced lineups often print just a surname. Require that surname to be
   // an unambiguous match *within this club* even when ESPN supplied an ID.
   const suffix=input.length>=4&&full.endsWith(" "+input);
-  const unique=rows.filter(a=>escName(a.displayName||a.fullName||a.name).endsWith(" "+input));
-  return !input||full===input||(suffix&&unique.length===1)?matched[0]:null;
+  const unique=rows.filter(a=>{
+   const k=escName(a.displayName||a.fullName||a.name);
+   return k.endsWith(" "+input)||matchesInitialSurname(k,input);
+  });
+  return !input||full===input||((suffix||matchesInitialSurname(full,input))&&unique.length===1)?matched[0]:null;
  }
  if(input.length<3)return null;
  const exact=rows.filter(a=>escName(a.displayName||a.fullName||a.name)===input);
@@ -38,7 +45,10 @@ function matchRosterPlayer(payload,name,id){
   const k=escName(a.displayName||a.fullName||a.name);
   return k.endsWith(" "+input)&&input.length>=5;
  });
- return similar.length===1?similar[0]:null;
+ if(similar.length===1)return similar[0];
+ if(similar.length>1)return null;
+ const abbreviated=rows.filter(a=>matchesInitialSurname(escName(a.displayName||a.fullName||a.name),input));
+ return abbreviated.length===1?abbreviated[0]:null;
 }
 function parseBio(a,roster,teamName){
  const player=a&&typeof a==="object"?a:{};
@@ -216,20 +226,34 @@ async function getJSON(url,ms=3600){
 export default async function handler(req,res){
  if(req.method!=="GET")return res.status(405).json({error:"GET required"});
  const league=String(req.query.league||""),teamId=String(req.query.teamId||""),
-  name=txt(req.query.name),playerId=String(req.query.playerId||"");
+  name=txt(req.query.name),playerId=String(req.query.playerId||""),fallbackLeague=String(req.query.fallbackLeague||"");
  if(!LEAGUES.has(league)||! /^\d{1,10}$/.test(teamId)||
-  (playerId&&!/^\d{1,12}$/.test(playerId))||(!name&&!playerId)||name.length>80)
+  (playerId&&!/^\d{1,12}$/.test(playerId))||(!name&&!playerId)||name.length>80||
+  (fallbackLeague&&!LEAGUES.has(fallbackLeague)))
   return res.status(400).json({error:"Invalid player request"});
  res.setHeader("Cache-Control","public, s-maxage=900, stale-while-revalidate=3600");
- const root="https://site.api.espn.com/apis/site/v2/sports/soccer/"+league;
+ const root="https://site.api.espn.com/apis/site/v2/sports/soccer/";
  try{
-  const team=await getJSON(root+"/teams/"+teamId+"/roster",4000);
-  const player=matchRosterPlayer(team,name,playerId);
+  // Match exact ESPN team identity across the European competition and its
+  // separately recorded domestic roster. Never accept a global-name guess.
+  const options=[...new Set([league,fallbackLeague].filter(Boolean))];
+  let team=null,player=null,matchedLeague=league,anyRoster=false;
+  for(const candidate of options){
+   try{
+    const roster=await getJSON(root+candidate+"/teams/"+teamId+"/roster",4300);
+    const officialId=String(roster?.team?.id||"");
+    if(officialId&&officialId!==teamId)continue;
+    anyRoster=true;
+    const found=matchRosterPlayer(roster,name,playerId);
+    if(!found)continue;
+    team=roster;player=found;matchedLeague=candidate;break;
+   }catch{continue;}
+  }
   if(!player)return res.status(200).json({schema:"footyedge-player-profile-v1",
-    status:"unverified",name,team:txt(team?.team?.displayName||team?.team?.name),
-    note:"We could not match this player uniquely to the verified club roster.",stats:[],recent:[]});
-  const id=String(player.id),api="https://sports.core.api.espn.com/v2/sports/soccer/leagues/"+league+"/athletes/"+id;
-  const v3="https://site.web.api.espn.com/apis/common/v3/sports/soccer/"+league+"/athletes/"+id;
+   status:anyRoster?"unverified":"unavailable",name,team:"",
+   note:anyRoster?"No uniquely matching athlete in this club's verified roster.":"Club roster unavailable; player details cannot be verified.",stats:[],recent:[]});
+  const id=String(player.id),api="https://sports.core.api.espn.com/v2/sports/soccer/leagues/"+matchedLeague+"/athletes/"+id;
+  const v3="https://site.web.api.espn.com/apis/common/v3/sports/soccer/"+matchedLeague+"/athletes/"+id;
   const [bio,stats,log,overview,gameLog]=await Promise.allSettled([
    getJSON(api,3500),getJSON(api+"/statistics",3400),getJSON(api+"/statisticslog",3400),
    getJSON(v3+"/overview",4500),getJSON(v3+"/gamelog",4500)
@@ -240,12 +264,12 @@ export default async function handler(req,res){
   // portrait. HEAD-verify the URL first; never display a guessed image.
   if(!profile.headshot)profile.headshot=await verifyESPNHeadshot(id);
   const verified=from(overview),matches=from(gameLog);
-  const summary=parseOverviewSeason(verified,league,teamId,matches);
+  const summary=parseOverviewSeason(verified,matchedLeague,teamId,matches);
   const season=summary.stats.length?summary.stats:statEntries(from(stats));
   // Champions League records and domestic-club games share a verified athlete
   // identity. Query at most one additional club competition to fill ten apps.
   const additionalLeague=verified?.statistics?.splits?.find(x=>
-    String(x.teamId)===String(teamId)&&x.leagueSlug!==league&&
+    String(x.teamId)===String(teamId)&&x.leagueSlug!==matchedLeague&&
     /2026[-–]27|2026/.test(String(x.displayName||""))&&
     !/nations|friendly/i.test(String(x.leagueSlug||""))&&
     LEAGUES.has(String(x.leagueSlug||"")))?.leagueSlug;
