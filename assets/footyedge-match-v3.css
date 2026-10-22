@@ -1397,49 +1397,62 @@
  .fe-matchCard .fe-side .fe-logoWrap{height:66px!important;max-height:66px!important;}
 }
 
-/* Mobile fixture-card geometry — home and away must sit symmetrically around
-   the score, not spread across the full card. Keep premium kit art untouched.
-   With a 264px inner grid and 116px score island, both 74px team tracks
-   share the same centre distance at iPhone widths (320–520px). */
-@media (max-width:520px){
- .fe-matchCard .fe-hero.fe-kitHero>.fe-heroTeams{
+
+/* Responsive match-header containment — same rules on the fixture card and
+   expanded details. The previous 264px inner-grid forced 74px team columns
+   and let max-content names spill across the live score. Avoid both. */
+@media(max-width:620px){
+ :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{
   display:grid!important;
-  width:min(100%,264px)!important;
-  max-width:264px!important;
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
   margin-inline:auto!important;
-  padding:2px 0 5px!important;
-  grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr)!important;
-  column-gap:0!important;
+  padding-inline:2px!important;
+  grid-template-columns:minmax(0,1fr) minmax(116px,.9fr) minmax(0,1fr)!important;
+  column-gap:4px!important;
   justify-items:stretch!important;
   align-items:center!important;
  }
- .fe-matchCard .fe-heroTeams>.fe-side.fe-home,
- .fe-matchCard .fe-heroTeams>.fe-side.fe-away{
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side{
+  box-sizing:border-box!important;
   width:100%!important;
+  max-width:100%!important;
   min-width:0!important;
-  justify-self:center!important;
+  justify-self:stretch!important;
   justify-items:center!important;
  }
- .fe-matchCard .fe-heroTeams>.fe-center{
-  width:116px!important;
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .fe-sideName{
+  box-sizing:border-box!important;
+  width:100%!important;
+  max-width:100%!important;
   min-width:0!important;
-  justify-self:center!important;
- }
- .fe-matchCard .fe-heroTeams .fe-sideName{
-  width:max-content!important;
-  max-width:116px!important;
-  min-width:0!important;
-  margin-inline:auto!important;
-  overflow-wrap:normal!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
   word-break:normal!important;
+  text-align:center!important;
  }
- .fe-matchCard .fe-heroTeams .fe-form{
-  justify-content:center!important;
-  align-self:center!important;
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-center{
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  justify-self:stretch!important;
+ }
+ :is(.fe-matchCard,.fe-dialogHero) .fe-center>.fe-scoreLine{
+  width:100%!important;
+  min-width:0!important;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+  align-items:center!important;
  }
 }
-/* Even on compact 320px phones, no team content may force a wider grid.
-   This does not alter cards at desktop widths or the match detail pitch. */
 @media(max-width:360px){
- .fe-matchCard .fe-hero.fe-kitHero>.fe-heroTeams{width:min(100%,252px)!important;max-width:252px!important;}
+ :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{
+  grid-template-columns:minmax(0,1fr) 108px minmax(0,1fr)!important;
+  column-gap:2px!important;
+ }
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .fe-form{gap:2px!important}
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .formChip{
+  width:16px!important;flex-basis:16px!important;
+ }
 }
