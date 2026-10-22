@@ -54,6 +54,19 @@ test("Restore the pre-alignment layout for BOTH original fixture and expanded he
  assert.match(css,/\.fe-matchCard \.fe-heroTeams\{display:grid!important;grid-template-columns:/);
  assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
  assert.ok(js.includes("return '<div class=\"fe-dialogHero\">'+feMatchHero(g)"));
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=33/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=141/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
+});
+
+test("Away content nudges left on mobile, without resizing either fixture or expanded layout",()=>{
+ const block=css.slice(css.indexOf("/* Small away-side optical correction only."));
+ assert.ok(block.startsWith("/* Small away-side"));
+ assert.match(block,/@media\(max-width:620px\)/);
+ assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-heroTeams > \.fe-side\.fe-away\{/);
+ assert.match(block,/transform:translateX\(-22px\)!important/);
+ assert.match(block,/@media\(max-width:360px\)/);
+ assert.match(block,/transform:translateX\(-14px\)!important/);
+ assert.doesNotMatch(block,/^\s*(?:width|grid-template-columns|left|padding|margin)\s*:/m);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
 });
