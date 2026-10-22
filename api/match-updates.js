@@ -67,7 +67,7 @@ async function verifiedRosterPhotos(league,competition,requested=[]){
     for(const p of rosterPhotos(payload)){const k=p.id||p.name;
       const previous=players.get(k);if(!previous||(!previous.photoUrl&&p.photoUrl))players.set(k,p);
     }
-    if([...players.values()].some(x=>x.photoUrl))break;
+    // Always merge domestic and cup rosters; the cup roster can be sparse even when it has one valid headshot.
    }catch{}
   }
   return {id,players:[...players.values()]};
