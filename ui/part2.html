@@ -1694,8 +1694,10 @@ function feCachedPlayerPhoto(g,team,player){
  const records=keys.flatMap(k=>Array.isArray(src[k])?src[k]:[]);
  const candidates=records.filter(row=>{
   const fullname=norm(row[1]),asked=norm(name);
+  const initials=asked.match(/^([a-z]) ([a-z][a-z0-9 ]{3,})$/);
   return asked.length>=3&&(fullname===asked||
-   (asked.length>=4&&fullname.endsWith(" "+asked)));
+   (asked.length>=4&&fullname.endsWith(" "+asked))||
+   (initials&&fullname.startsWith(initials[1])&&fullname.endsWith(" "+initials[2])));
  });
  const unique=[...new Map(candidates.map(r=>[String(r[0]),r])).values()];
  const match=id?unique.find(r=>String(r[0])===id):unique.length===1?unique[0]:null;
@@ -1754,8 +1756,9 @@ function fePlayerProfileMarkup(result,fallback){
   '<strong>'+plain(number.get(label))+'</strong></div>').join("");
  const competition=result?.competition?'<p class="fe-competitionName">'+display(result.competition)+'</p>':'';
  const performance='<section class="fe-playerPanel"><h3>Season performance</h3>'+competition+
-  '<p class="fe-playerHint">Appearances = all games played, including substitutions. Starts = games in the starting XI.</p>'+
-  '<div class="fe-playerStatsGrid fe-playerStatsGridFull">'+seasonCards+'</div></section>';
+  (number.size?'<p class="fe-playerHint">Appearances = all games played, including substitutions. Starts = games in the starting XI.</p>'+
+  '<div class="fe-playerStatsGrid fe-playerStatsGridFull">'+seasonCards+'</div>':
+  '<p class="fe-playerUnavailable">No verified season statistics are available for this player yet.</p>')+'</section>';
  const personal=[["Full name",player.name],["Nationality",player.nationality],["Born",birthday],
   ["Shirt number",player.jerseyNumber||fallback.jersey],["Height",player.height],
   ["Weight",player.weight],["Preferred foot",player.dominantFoot],
@@ -1951,7 +1954,12 @@ async function feRefreshMatch(g){
     const key=nameKey(text);
     const exact=roster.filter(x=>nameKey(x.name)===key);
     const suffix=roster.filter(x=>nameKey(x.name).endsWith(" "+key));
-    const candidate=exact.length===1?exact[0]:suffix.length===1&&key.length>=4?suffix[0]:null;
+    const token=key.match(/^([a-z]) ([a-z][a-z0-9 ]{3,})$/);
+    const abbreviations=token?roster.filter(x=>{const k=nameKey(x.name);
+      return k.startsWith(token[1])&&k.endsWith(" "+token[2]);}):[];
+    const candidate=exact.length===1?exact[0]:
+      suffix.length===1&&key.length>=4?suffix[0]:
+      abbreviations.length===1?abbreviations[0]:null;
     return candidate?{name:text,id:candidate.id||null,photoUrl:candidate.photoUrl||null,
       jersey:candidate.jersey||null,position:candidate.position||null}:name;
    };
