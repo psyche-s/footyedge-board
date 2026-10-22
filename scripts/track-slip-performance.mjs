@@ -42,7 +42,7 @@ export function scoreLeg(leg,event){
   m=label.match(/\b(Over|Under)\s+(\d+(?:\.\d+)?)\s+Goals?/i);
   if(m){const total=hs+as,line=Number(m[2]);return total===line?"push":answer(m[1].toLowerCase()==="over"?total>line:total<line);}
   if(cat==="btts"||/\bBTTS\b/i.test(label))return answer(/yes/i.test(label)?hs>0&&as>0:hs===0||as===0);
-  m=label.match(/^(.*?)\s+([+-]\d+(?:\.\d+)?)$/);
+  m=label.match(/^(.*?)\s+([+-]\d+(?:\.\d+)?)(?:\s+Handicap)?$/i);
   if(m){const n=teamScore(m[1]);if(n!==null){const d=n-(n===hs?as:hs)+Number(m[2]);return d===0?"push":answer(d>0);}}
   return "pending";
 }
@@ -100,10 +100,15 @@ async function finalResultsFor(date){
 
 const profileCache=new Map();
 let profileRequests=0;
+function parsePlayerMarket(label){
+ // Supports archived "Player — 1+ Shots" and source-reviewed "Player 1+ Shot".
+ // Only verified player logs may settle an event prop; a final score never can.
+ return String(label||"").match(/^\s*(.+?)(?:\s+[—–-]\s*|\s+)(\d+)\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won)\s*$/i);
+}
 export function playerStatResult(leg,recent,opponent,date){
-  const match=String(leg.label||"").match(/^\s*(.+?)\s+[—–-]\s*(\d+)\+\s+(Shots on Target|Shots|Fouls Committed|Fouls Won)\s*$/i);
+  const match=parsePlayerMarket(leg.label);
   if(!match||!Array.isArray(recent))return null;
-  const field=({"shots on target":"shotsOnTarget","shots":"shots",
+  const field=({"shot on target":"shotsOnTarget","shots on target":"shotsOnTarget","shot":"shots","shots":"shots",
     "fouls committed":"foulsCommitted","fouls won":"foulsWon"})[match[3].toLowerCase()];
   const opp=norm(opponent);
   const matches=recent.filter(x=>{
@@ -116,7 +121,7 @@ export function playerStatResult(leg,recent,opponent,date){
 }
 async function playerOutcome(leg,date,game,research,news){
   const label=String(leg.label||"");
-  const name=label.match(/^\s*(.+?)\s+[—–-]\s*\d+\+\s+(?:Shots on Target|Shots|Fouls Committed|Fouls Won)\s*$/i)?.[1];
+  const name=parsePlayerMarket(label)?.[1];
   if(!name||!game||!research)return null;
   const fixture=(research.fixtures||[]).find(x=>String(x.id)===leg.gameId);
   if(!fixture||!fixture.home?.id||!fixture.away?.id||!fixture.league)return null;

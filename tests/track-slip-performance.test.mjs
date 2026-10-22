@@ -36,3 +36,15 @@ test("player markets settle only from matching dated verified match-log values",
   assert.equal(playerStatResult(leg,matches,"Porto","2026-10-21"),null);
   assert.equal(playerStatResult(leg,[{date:"2026-10-21",opponent:"LASK Linz",foulsCommitted:null}],"LASK Linz","2026-10-21"),null);
 });
+
+test("reviewed slips settle formatted handicap and singular player-shot labels",()=>{
+ const a={id:"652",home:"Braga",away:"KAA Gent",hs:1,as:2,completed:true};
+ assert.equal(scoreLeg({label:"KAA Gent +1.5 Handicap",category:"Handicap"},a),"hit");
+ assert.equal(scoreLeg({label:"Braga +1.5 Handicap",category:"Handicap"},a),"hit");
+ assert.equal(scoreLeg({label:"Braga -1.5 Handicap",category:"Handicap"},a),"miss");
+ const sample=[{date:"2026-10-22",opponent:"Bayer Leverkusen",shots:2,shotsOnTarget:1}];
+ assert.equal(playerStatResult({label:"Ibrahim Maza 1+ Shot"},sample,"Bayer Leverkusen","2026-10-22").result,"hit");
+ assert.equal(playerStatResult({label:"Ibrahim Maza 3+ Shots"},sample,"Bayer Leverkusen","2026-10-22").result,"miss");
+ assert.equal(playerStatResult({label:"Patrik Wålemark 1+ Shot on Target"},sample,"Bayer Leverkusen","2026-10-22").result,"hit");
+ assert.equal(scoreLeg({label:"Ibrahim Maza 1+ Shot"},a),"pending");
+});
