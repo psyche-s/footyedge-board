@@ -32,5 +32,5 @@ test("fixture pitch reads attached XIs and still accepts supported one-to-three 
  assert.match(src,/function feTeamPitchRows\(x,t,g,position\)/);
  assert.match(src,/x\.picks\.length>=1&&x\.picks\.length<=3/);
  assert.match(src,/PREVIOUS XI · NOT CONFIRMED/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part2\.html\?v=134/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part2\.html\?v=135/);
 });
