@@ -1286,85 +1286,76 @@
 .fe-playerLastTenTable tbody th:first-child{z-index:3}
 
 
-/* FootyEdge v26 — SHARED visual artwork for fixture cards and expanded view.
-   Uses real committed SVG artwork, preserving DOM, geometry and all stats. */
+/* v28 repaired: clean embossed club art fading to a true green-black centre;
+   single shared implementation for collapsed cards and expanded match headers. */
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero{
- background:radial-gradient(ellipse at 50% 50%,#000b07 0%,#01120b 63%,#04190f 100%)!important;
+ background:radial-gradient(ellipse at 50% 49%,#001008 0%,#03170e 100%)!important;
  --fe-home-art:url("/assets/fixture-art/stadium.svg");
  --fe-away-art:url("/assets/fixture-art/stadium.svg");
 }
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="angled"]{--fe-home-art:url("/assets/fixture-art/stadium.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="angled"]{--fe-away-art:url("/assets/fixture-art/stadium.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="chevron"]{--fe-home-art:url("/assets/fixture-art/shards.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="diagonal"]{--fe-home-art:url("/assets/fixture-art/shards.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="angled"],
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="stadium"]{--fe-home-art:url("/assets/fixture-art/stadium.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="chevron"],
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="diagonal"],
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="shards"]{--fe-home-art:url("/assets/fixture-art/shards.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="chevron"]{--fe-away-art:url("/assets/fixture-art/shards.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="diagonal"]{--fe-away-art:url("/assets/fixture-art/shards.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="shards"]{--fe-away-art:url("/assets/fixture-art/shards.svg")}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="mosaic"]{--fe-home-art:url("/assets/fixture-art/mosaic.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="mosaic"]{--fe-away-art:url("/assets/fixture-art/mosaic.svg")}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="diamonds"]{--fe-home-art:url("/assets/fixture-art/diamonds.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="diamonds"]{--fe-away-art:url("/assets/fixture-art/diamonds.svg")}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="filigree"]{--fe-home-art:url("/assets/fixture-art/filigree.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="filigree"]{--fe-away-art:url("/assets/fixture-art/filigree.svg")}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="vertical"]{--fe-home-art:url("/assets/fixture-art/vertical.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="vertical"]{--fe-away-art:url("/assets/fixture-art/vertical.svg")}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="pinstripe"]{--fe-home-art:url("/assets/fixture-art/pinstripe.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="pinstripe"]{--fe-away-art:url("/assets/fixture-art/pinstripe.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="quartered"],
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="halves"]{--fe-home-art:url("/assets/fixture-art/quartered.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="quartered"]{--fe-home-art:url("/assets/fixture-art/quartered.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="halves"]{--fe-away-art:url("/assets/fixture-art/quartered.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="quartered"]{--fe-away-art:url("/assets/fixture-art/quartered.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="waves"]{--fe-home-art:url("/assets/fixture-art/waves.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="waves"],
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit="hoops"]{--fe-home-art:url("/assets/fixture-art/waves.svg")}
-:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="waves"]{--fe-away-art:url("/assets/fixture-art/waves.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="angled"],
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="stadium"]{--fe-away-art:url("/assets/fixture-art/stadium.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="chevron"],
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="diagonal"],
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="shards"]{--fe-away-art:url("/assets/fixture-art/shards.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="mosaic"]{--fe-away-art:url("/assets/fixture-art/mosaic.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="diamonds"]{--fe-away-art:url("/assets/fixture-art/diamonds.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="filigree"]{--fe-away-art:url("/assets/fixture-art/filigree.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="vertical"]{--fe-away-art:url("/assets/fixture-art/vertical.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="pinstripe"]{--fe-away-art:url("/assets/fixture-art/pinstripe.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="quartered"],
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="halves"]{--fe-away-art:url("/assets/fixture-art/quartered.svg")}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="waves"],
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-away-kit="hoops"]{--fe-away-art:url("/assets/fixture-art/waves.svg")}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero::before,
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero::after{
- position:absolute!important;top:0!important;bottom:0!important;width:62%!important;
- z-index:0!important;opacity:1!important;pointer-events:none!important;
+ content:""!important;position:absolute!important;top:0!important;bottom:0!important;
+ width:60%!important;z-index:0!important;opacity:1!important;pointer-events:none!important;
+ background-size:100% 100%,100% 100%,100% 100%!important;
  background-repeat:no-repeat!important;
- background-size:100% 100%,cover,100% 100%,100% 100%!important;
 }
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero::before{
  left:0!important;right:auto!important;
- background-image:
-  radial-gradient(ellipse at 7% 16%,rgba(255,255,255,.17),transparent 60%),
-  var(--fe-home-art),
-  linear-gradient(180deg,rgba(255,255,255,.035),transparent 38%,rgba(0,0,0,.19)),
-  linear-gradient(90deg,
-   color-mix(in srgb,var(--fe-home,#244463) 96%,#05100d) 0%,
-   color-mix(in srgb,var(--fe-home,#244463) 84%,#04110f) 35%,
-   color-mix(in srgb,var(--fe-home,#244463) 48%,#01130a) 68%,
-   transparent 100%)!important;
- -webkit-mask-image:linear-gradient(90deg,#000 0 44%,rgba(0,0,0,.88) 67%,transparent 100%)!important;
- mask-image:linear-gradient(90deg,#000 0 44%,rgba(0,0,0,.88) 67%,transparent 100%)!important;
+ background-image:linear-gradient(180deg,rgba(255,255,255,.05),transparent 60%,rgba(0,0,0,.16)),
+ var(--fe-home-art),
+ linear-gradient(90deg,
+ color-mix(in srgb,var(--fe-home,#31465c) 95%,#03100b) 0%,
+ color-mix(in srgb,var(--fe-home,#31465c) 84%,#03120b) 40%,
+ color-mix(in srgb,var(--fe-home,#31465c) 37%,#03120b) 71%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 40%,rgba(0,0,0,.70) 61%,transparent 91%)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 40%,rgba(0,0,0,.70) 61%,transparent 91%)!important;
 }
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero::after{
  right:0!important;left:auto!important;
- background-image:
-  radial-gradient(ellipse at 93% 16%,rgba(255,255,255,.17),transparent 60%),
-  var(--fe-away-art),
-  linear-gradient(180deg,rgba(255,255,255,.035),transparent 38%,rgba(0,0,0,.19)),
-  linear-gradient(270deg,
-   color-mix(in srgb,var(--fe-away,#244463) 96%,#05100d) 0%,
-   color-mix(in srgb,var(--fe-away,#244463) 84%,#04110f) 35%,
-   color-mix(in srgb,var(--fe-away,#244463) 48%,#01130a) 68%,
-   transparent 100%)!important;
- -webkit-mask-image:linear-gradient(270deg,#000 0 44%,rgba(0,0,0,.88) 67%,transparent 100%)!important;
- mask-image:linear-gradient(270deg,#000 0 44%,rgba(0,0,0,.88) 67%,transparent 100%)!important;
+ background-image:linear-gradient(180deg,rgba(255,255,255,.05),transparent 60%,rgba(0,0,0,.16)),
+ var(--fe-away-art),
+ linear-gradient(270deg,
+ color-mix(in srgb,var(--fe-away,#31465c) 95%,#03100b) 0%,
+ color-mix(in srgb,var(--fe-away,#31465c) 84%,#03120b) 40%,
+ color-mix(in srgb,var(--fe-away,#31465c) 37%,#03120b) 71%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 40%,rgba(0,0,0,.70) 61%,transparent 91%)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 40%,rgba(0,0,0,.70) 61%,transparent 91%)!important;
 }
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroHead,
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{position:relative!important;z-index:2!important;}
-
-/* v27 — approved artwork-driven match backgrounds, not overlays. The complete
-   reference compositions are standalone SVG backgrounds; one asset shared by
-   list and expanded card. No score or match details are baked into artwork. */
+/* Featured layouts use complete SVG backgrounds with a baked-in centre fade. */
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art]{
- background-color:#00100a!important;
- background-position:center!important;
- background-size:100% 100%!important;
- background-repeat:no-repeat!important;
+ background-color:#00130c!important;background-size:100% 100%!important;
+ background-position:center!important;background-repeat:no-repeat!important;
 }
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="hazem-fayha"]{background-image:url("/assets/fixture-art/premium-hazem-fayha.svg")!important}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="kairat-panathinaikos"]{background-image:url("/assets/fixture-art/premium-kairat-panathinaikos.svg")!important}
@@ -1372,7 +1363,7 @@
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art="union-hapoel"]{background-image:url("/assets/fixture-art/premium-union-hapoel.svg")!important}
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art]::before,
 :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-featured-art]::after{
- background:none!important;opacity:0!important;
+ background-image:none!important;opacity:0!important;
 }
 /* Consistent vertical rhythm: team names may wrap, but ranking and form rows
    remain level on the two sides. Preserve crest, chip and score dimensions. */
