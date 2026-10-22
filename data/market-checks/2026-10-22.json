@@ -1,0 +1,147 @@
+{
+  "schema": "footyedge-external-bookmaker-context-v1",
+  "date": "2026-10-22",
+  "capturedAt": "2026-10-22T05:14:10.619Z",
+  "purpose": "Check market existence, pricing sanity, attractive vs short lines; never imply combination odds or event probabilities",
+  "displayOnWebsite": false,
+  "notOntarioVerified": true,
+  "liveOddsNotGuaranteed": true,
+  "quotedMarkets": [
+    {
+      "fixtureId": "401915559",
+      "match": "OFI Crete vs Bayer Leverkusen",
+      "market": "Bayer Leverkusen ML",
+      "operator": "Ladbrokes",
+      "quoteFractional": "2/9",
+      "decimal": 1.2222222222222223,
+      "sourceUrl": "https://www.ladbrokes.com/en/sports/event/football/uefa-club-competitions/uefa-europa-league/ofi-crete-v-bayer-leverkusen/259219312",
+      "country": "UK site",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-450"
+    },
+    {
+      "fixtureId": "401915559",
+      "match": "OFI Crete vs Bayer Leverkusen",
+      "market": "Under BTTS (No)",
+      "operator": "Ladbrokes",
+      "quoteFractional": "19/20",
+      "decimal": 1.95,
+      "sourceUrl": "https://www.ladbrokes.com/en/sports/event/football/uefa-club-competitions/uefa-europa-league/ofi-crete-v-bayer-leverkusen/259219312",
+      "country": "UK site",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-105"
+    },
+    {
+      "fixtureId": "401915559",
+      "match": "OFI Crete vs Bayer Leverkusen",
+      "market": "Over 1.5 Goals",
+      "operator": "Ladbrokes",
+      "quoteFractional": "1/11",
+      "decimal": 1.0909090909090908,
+      "sourceUrl": "https://www.ladbrokes.com/en/sports/event/football/uefa-club-competitions/uefa-europa-league/ofi-crete-v-bayer-leverkusen/259219312/goals",
+      "country": "UK site",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-1100"
+    },
+    {
+      "fixtureId": "401915842",
+      "match": "Jablonec vs Brighton",
+      "market": "Brighton ML",
+      "operator": "Ladbrokes",
+      "quoteFractional": "4/11",
+      "decimal": 1.3636363636363638,
+      "sourceUrl": "https://www.ladbrokes.com/en/sports/event/259219297",
+      "country": "UK site",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-275"
+    },
+    {
+      "fixtureId": "401915842",
+      "match": "Jablonec vs Brighton",
+      "market": "BTTS No",
+      "operator": "Ladbrokes",
+      "quoteFractional": "19/20",
+      "decimal": 1.95,
+      "sourceUrl": "https://www.ladbrokes.com/en/sports/event/259219297",
+      "country": "UK site",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-105"
+    },
+    {
+      "fixtureId": "401915832",
+      "match": "Braga vs Gent",
+      "market": "KAA Gent +1.5 Handicap",
+      "operator": "Market comparison average",
+      "quoteFractional": null,
+      "decimal": 1.37,
+      "sourceUrl": "https://legalbet.com/game-center/sporting-braga-gent-22-10-2026/",
+      "country": "market average / country unspecified",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-270"
+    },
+    {
+      "fixtureId": "401915543",
+      "match": "Hoffenheim vs Lyon",
+      "market": "Over 2.5 Goals",
+      "operator": "bet365 listed by Statz",
+      "quoteFractional": null,
+      "decimal": 1.5,
+      "sourceUrl": "https://statz.ai/h2h/hoffenheim-vs-lyon/19873947",
+      "country": "bookmaker quote aggregated / Ontario unverified",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "-200"
+    },
+    {
+      "fixtureId": "401915553",
+      "match": "Besiktas vs Crystal Palace",
+      "market": "Besiktas ML",
+      "operator": "Paddy Power via Racing Post",
+      "quoteFractional": "Evs",
+      "decimal": 2,
+      "sourceUrl": "https://www.racingpost.com/sport/football-tips/europa-league/besiktas-vs-crystal-palace-predictions-team-news-odds-betting-tips-bet-builder-aESPy8D0B0cj/",
+      "country": "UK preview, price at publication",
+      "marketConfirmedOnPage": true,
+      "indicativeAmerican": "+100"
+    }
+  ],
+  "sgpNotes": [
+    {
+      "league": "uefa.europa",
+      "fixture": "OFI Crete vs Bayer Leverkusen",
+      "issue": "ML is very short. Maza 1+ shot availability and native Ontario market price cannot be confirmed; do not multiply unmatched bookmaker lines. BTTS No is meaningful but correlated with ML/win-to-nil."
+    },
+    {
+      "league": "uefa.europa.conf",
+      "fixture": "Jablonec vs Brighton",
+      "issue": "Brighton ML is very short; BTTS No is near even-money externally. 3-leg builder requires native bookmaker compatibility and review of rotation."
+    }
+  ],
+  "propAudit": {
+    "reviewedCategories": [
+      "shots",
+      "shots on target",
+      "fouls committed",
+      "fouls won",
+      "cards",
+      "corners",
+      "goal scorer",
+      "assists",
+      "team goals",
+      "totals",
+      "double chance",
+      "handicap"
+    ],
+    "currentlyGroundedPlayerMarkets": [
+      "Ibrahim Maza 1+ shot (five recorded matches supported)",
+      "Patrik Walemark 1+ shot on target (five recorded matches supported)"
+    ],
+    "blockedCategories": [
+      "player fouls where opponent position-specific allowances missing",
+      "player cards where referee + disciplinary match logs absent",
+      "shots where expected starter and individual logs missing",
+      "corners without stable team event data",
+      "scorer/assist without role and minutes verification"
+    ],
+    "decision": "No additional player markets or combined odds published without exact player log, projected minutes and bookmaker-listed market."
+  }
+}
