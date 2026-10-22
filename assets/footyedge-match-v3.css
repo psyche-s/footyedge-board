@@ -1285,71 +1285,137 @@
 .fe-playerLastTenTable thead th:first-child{z-index:5}
 .fe-playerLastTenTable tbody th:first-child{z-index:3}
 
-/* Oct 22 reference fidelity: collapsed fixture BACKGROUND ARTWORK ONLY.
-   Keep the existing card DOM, size, spacing, form, labels and all match UI. */
+/* FootyEdge fixture art v25. Visually rich home/away club-colour panels
+   with a deep black-green center. Existing mobile layout is intentionally
+   untouched: only background pseudo-elements and pattern variables change. */
 .fe-matchCard .fe-hero.fe-kitHero{
- background:radial-gradient(ellipse at 50% 51%,#010c08 0%,#01130c 52%,#03150e 100%)!important;
+  background:radial-gradient(ellipse at 50% 48%,#001009 0%,#00120c 46%,#03180e 100%)!important;
 }
-/* Quiet embossed fabric on generic/tonal kits: no full-card diagonal banding. */
-.fe-matchCard .fe-hero.fe-kitHero[data-home-kit="tonal"],
-.fe-matchCard .fe-hero.fe-kitHero[data-home-kit="plain"]{
+/* Every team gets a textured fallback; no solid-fill-only clubs. */
+.fe-matchCard .fe-hero.fe-kitHero{
  --fe-home-texture:
-  repeating-linear-gradient(90deg,rgba(255,255,255,.020) 0 1px,transparent 1px 7px),
-  repeating-linear-gradient(0deg,rgba(0,0,0,.022) 0 1px,transparent 1px 9px),
-  radial-gradient(ellipse at 13% 32%,rgba(255,255,255,.040),transparent 58%);
-}
-.fe-matchCard .fe-hero.fe-kitHero[data-away-kit="tonal"],
-.fe-matchCard .fe-hero.fe-kitHero[data-away-kit="plain"]{
+  repeating-linear-gradient(133deg,transparent 0 19px,rgba(255,255,255,.045) 19px 20px,transparent 20px 51px),
+  repeating-linear-gradient(42deg,transparent 0 21px,rgba(0,0,0,.09) 21px 22px,transparent 22px 49px);
  --fe-away-texture:
-  repeating-linear-gradient(90deg,rgba(255,255,255,.020) 0 1px,transparent 1px 7px),
-  repeating-linear-gradient(0deg,rgba(0,0,0,.022) 0 1px,transparent 1px 9px),
-  radial-gradient(ellipse at 87% 32%,rgba(255,255,255,.040),transparent 58%);
+  repeating-linear-gradient(47deg,transparent 0 19px,rgba(255,255,255,.045) 19px 20px,transparent 20px 51px),
+  repeating-linear-gradient(138deg,transparent 0 21px,rgba(0,0,0,.09) 21px 22px,transparent 22px 49px);
 }
-/* Pattern strengths for known shirt treatments are softened to look like
-   fabric, not big stripes over the score and club crests. */
-.fe-matchCard .fe-hero.fe-kitHero[data-home-kit="vertical"]{
- --fe-home-texture:repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 16px,color-mix(in srgb,var(--fe-home-accent) 29%,transparent) 16px 33px,transparent 33px 48px);
+.fe-matchCard .fe-kitHero[data-home-kit="filigree"]{
+ --fe-home-texture:
+  repeating-conic-gradient(from 40deg at 12% 20%,rgba(255,255,255,.075) 0deg 2deg,transparent 2deg 44deg,rgba(0,0,0,.06) 44deg 46deg,transparent 46deg 90deg),
+  repeating-linear-gradient(124deg,transparent 0 29px,rgba(255,255,255,.043) 29px 31px,transparent 31px 67px);
 }
-.fe-matchCard .fe-hero.fe-kitHero[data-away-kit="vertical"]{
- --fe-away-texture:repeating-linear-gradient(90deg,rgba(0,0,0,.12) 0 16px,color-mix(in srgb,var(--fe-away-accent) 29%,transparent) 16px 33px,transparent 33px 48px);
+.fe-matchCard .fe-kitHero[data-away-kit="filigree"]{
+ --fe-away-texture:
+  repeating-conic-gradient(from 45deg at 87% 20%,rgba(255,255,255,.075) 0deg 2deg,transparent 2deg 44deg,rgba(0,0,0,.06) 44deg 46deg,transparent 46deg 90deg),
+  repeating-linear-gradient(56deg,transparent 0 29px,rgba(255,255,255,.043) 29px 31px,transparent 31px 67px);
 }
-.fe-matchCard .fe-hero.fe-kitHero[data-home-kit="diagonal"]{
- --fe-home-texture:repeating-linear-gradient(135deg,transparent 0 18px,color-mix(in srgb,var(--fe-home-accent) 17%,transparent) 18px 24px,transparent 24px 46px);
+.fe-matchCard .fe-kitHero[data-home-kit="mosaic"]{
+ --fe-home-texture:
+  repeating-conic-gradient(from 45deg at 20% 20%,rgba(255,255,255,.065) 0deg 5deg,transparent 5deg 90deg),
+  repeating-linear-gradient(144deg,transparent 0 20px,rgba(0,0,0,.16) 20px 26px,transparent 26px 62px);
 }
-.fe-matchCard .fe-hero.fe-kitHero[data-away-kit="diagonal"]{
- --fe-away-texture:repeating-linear-gradient(45deg,transparent 0 18px,color-mix(in srgb,var(--fe-away-accent) 17%,transparent) 18px 24px,transparent 24px 46px);
+.fe-matchCard .fe-kitHero[data-away-kit="mosaic"]{
+ --fe-away-texture:
+  repeating-conic-gradient(from 45deg at 80% 20%,rgba(255,255,255,.065) 0deg 5deg,transparent 5deg 90deg),
+  repeating-linear-gradient(36deg,transparent 0 20px,rgba(0,0,0,.16) 20px 26px,transparent 26px 62px);
 }
+.fe-matchCard .fe-kitHero[data-home-kit="diamonds"]{
+ --fe-home-texture:
+  repeating-linear-gradient(45deg,transparent 0 16px,rgba(255,255,255,.085) 17px 18px,transparent 19px 46px),
+  repeating-linear-gradient(135deg,transparent 0 16px,rgba(0,0,0,.11) 17px 18px,transparent 19px 46px);
+}
+.fe-matchCard .fe-kitHero[data-away-kit="diamonds"]{
+ --fe-away-texture:
+  repeating-linear-gradient(45deg,transparent 0 16px,rgba(255,255,255,.085) 17px 18px,transparent 19px 46px),
+  repeating-linear-gradient(135deg,transparent 0 16px,rgba(0,0,0,.11) 17px 18px,transparent 19px 46px);
+}
+.fe-matchCard .fe-kitHero[data-home-kit="chevron"],
+.fe-matchCard .fe-kitHero[data-home-kit="angled"]{
+ --fe-home-texture:
+  repeating-linear-gradient(132deg,transparent 0 24px,color-mix(in srgb,var(--fe-home-accent,#fff) 18%,transparent) 24px 31px,rgba(0,0,0,.10) 31px 34px,transparent 34px 71px),
+  repeating-linear-gradient(48deg,transparent 0 31px,rgba(255,255,255,.03) 31px 32px,transparent 33px 69px);
+}
+.fe-matchCard .fe-kitHero[data-away-kit="chevron"],
+.fe-matchCard .fe-kitHero[data-away-kit="angled"]{
+ --fe-away-texture:
+  repeating-linear-gradient(48deg,transparent 0 24px,color-mix(in srgb,var(--fe-away-accent,#fff) 18%,transparent) 24px 31px,rgba(0,0,0,.10) 31px 34px,transparent 34px 71px),
+  repeating-linear-gradient(132deg,transparent 0 31px,rgba(255,255,255,.03) 31px 32px,transparent 33px 69px);
+}
+.fe-matchCard .fe-kitHero[data-home-kit="vertical"]{
+ --fe-home-texture:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.27) 0 17px,transparent 17px 34px,color-mix(in srgb,var(--fe-home-accent,#000) 29%,transparent) 34px 46px,transparent 46px 64px),
+  repeating-linear-gradient(133deg,transparent 0 9px,rgba(255,255,255,.025) 9px 10px,transparent 10px 22px);
+}
+.fe-matchCard .fe-kitHero[data-away-kit="vertical"]{
+ --fe-away-texture:
+  repeating-linear-gradient(90deg,rgba(0,0,0,.27) 0 17px,transparent 17px 34px,color-mix(in srgb,var(--fe-away-accent,#000) 29%,transparent) 34px 46px,transparent 46px 64px),
+  repeating-linear-gradient(47deg,transparent 0 9px,rgba(255,255,255,.025) 9px 10px,transparent 10px 22px);
+}
+.fe-matchCard .fe-kitHero[data-home-kit="quartered"]{
+ --fe-home-texture:
+  linear-gradient(90deg,rgba(0,0,0,.27) 0 45%,transparent 45%),
+  linear-gradient(0deg,rgba(255,255,255,.11) 0 46%,transparent 46%),
+  repeating-linear-gradient(0deg,transparent 0 6px,rgba(255,255,255,.024) 6px 7px,transparent 7px 15px);
+}
+.fe-matchCard .fe-kitHero[data-away-kit="quartered"]{
+ --fe-away-texture:
+  linear-gradient(90deg,rgba(0,0,0,.27) 0 45%,transparent 45%),
+  linear-gradient(0deg,rgba(255,255,255,.11) 0 46%,transparent 46%),
+  repeating-linear-gradient(0deg,transparent 0 6px,rgba(255,255,255,.024) 6px 7px,transparent 7px 15px);
+}
+.fe-matchCard .fe-kitHero[data-home-kit="pinstripe"]{
+ --fe-home-texture:repeating-linear-gradient(90deg,transparent 0 13px,color-mix(in srgb,var(--fe-home-accent) 30%,transparent) 13px 15px,transparent 15px 29px);
+}
+.fe-matchCard .fe-kitHero[data-away-kit="pinstripe"]{
+ --fe-away-texture:repeating-linear-gradient(90deg,transparent 0 13px,color-mix(in srgb,var(--fe-away-accent) 30%,transparent) 13px 15px,transparent 15px 29px);
+}
+.fe-matchCard .fe-kitHero[data-home-kit="silk"]{
+ --fe-home-texture:
+  repeating-linear-gradient(135deg,transparent 0 24px,rgba(255,255,255,.035) 24px 25px,transparent 25px 48px),
+  radial-gradient(ellipse at 16% 38%,rgba(255,255,255,.14),transparent 66%);
+}
+.fe-matchCard .fe-kitHero[data-away-kit="silk"]{
+ --fe-away-texture:
+  repeating-linear-gradient(45deg,transparent 0 24px,rgba(255,255,255,.035) 24px 25px,transparent 25px 48px),
+  radial-gradient(ellipse at 84% 38%,rgba(255,255,255,.14),transparent 66%);
+}
+/* The brighter lit fabric occupies the club's half only and dissolves before
+   the score/time area. These are only existing pseudo-element paint rules. */
 .fe-matchCard .fe-hero.fe-kitHero::before,
 .fe-matchCard .fe-hero.fe-kitHero::after{
+ width:60%!important;opacity:1!important;
  pointer-events:none!important;
- opacity:1!important;
  background-repeat:no-repeat!important;
 }
 .fe-matchCard .fe-hero.fe-kitHero::before{
  background-image:
   var(--fe-home-texture),
-  radial-gradient(ellipse at 15% 5%,rgba(255,255,255,.10),transparent 52%),
-  radial-gradient(ellipse at 0% 105%,rgba(0,0,0,.20),transparent 67%),
+  radial-gradient(ellipse at 7% 21%,rgba(255,255,255,.17),transparent 60%),
+  radial-gradient(ellipse at 0 99%,rgba(0,0,0,.21),transparent 72%),
   linear-gradient(90deg,
-    color-mix(in srgb,var(--fe-home,#27333d) 94%,#030d0a) 0%,
-    color-mix(in srgb,var(--fe-home,#27333d) 85%,#030f0b) 31%,
-    color-mix(in srgb,var(--fe-home,#27333d) 50%,#03110c) 63%,
-    color-mix(in srgb,var(--fe-home,#27333d) 10%,#01100a) 84%,
-    transparent 100%)!important;
- -webkit-mask-image:linear-gradient(90deg,#000 0 40%,rgba(0,0,0,.88) 62%,transparent 100%)!important;
- mask-image:linear-gradient(90deg,#000 0 40%,rgba(0,0,0,.88) 62%,transparent 100%)!important;
+    color-mix(in srgb,var(--fe-home,#33485A) 94%,#05100d) 0%,
+    color-mix(in srgb,var(--fe-home,#33485A) 85%,#06140f) 29%,
+    color-mix(in srgb,var(--fe-home,#33485A) 59%,#01140c) 56%,
+    color-mix(in srgb,var(--fe-home,#33485A) 12%,#01100b) 83%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0 45%,rgba(0,0,0,.81) 65%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0 45%,rgba(0,0,0,.81) 65%,transparent 100%)!important;
 }
 .fe-matchCard .fe-hero.fe-kitHero::after{
  background-image:
   var(--fe-away-texture),
-  radial-gradient(ellipse at 85% 5%,rgba(255,255,255,.10),transparent 52%),
-  radial-gradient(ellipse at 100% 105%,rgba(0,0,0,.20),transparent 67%),
+  radial-gradient(ellipse at 93% 21%,rgba(255,255,255,.17),transparent 60%),
+  radial-gradient(ellipse at 100% 99%,rgba(0,0,0,.21),transparent 72%),
   linear-gradient(270deg,
-    color-mix(in srgb,var(--fe-away,#27333d) 94%,#030d0a) 0%,
-    color-mix(in srgb,var(--fe-away,#27333d) 85%,#030f0b) 31%,
-    color-mix(in srgb,var(--fe-away,#27333d) 50%,#03110c) 63%,
-    color-mix(in srgb,var(--fe-away,#27333d) 10%,#01100a) 84%,
-    transparent 100%)!important;
- -webkit-mask-image:linear-gradient(270deg,#000 0 40%,rgba(0,0,0,.88) 62%,transparent 100%)!important;
- mask-image:linear-gradient(270deg,#000 0 40%,rgba(0,0,0,.88) 62%,transparent 100%)!important;
+    color-mix(in srgb,var(--fe-away,#33485A) 94%,#05100d) 0%,
+    color-mix(in srgb,var(--fe-away,#33485A) 85%,#06140f) 29%,
+    color-mix(in srgb,var(--fe-away,#33485A) 59%,#01140c) 56%,
+    color-mix(in srgb,var(--fe-away,#33485A) 12%,#01100b) 83%,transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0 45%,rgba(0,0,0,.81) 65%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0 45%,rgba(0,0,0,.81) 65%,transparent 100%)!important;
+}
+/* Official identity from football-logos.cc is black/green. White is an
+   intentional contrast treatment against original FootyEdge's dark cards. */
+.league-uefa-europa-conf .leagueLogoImg{
+ filter:brightness(0) invert(1)!important;
 }
