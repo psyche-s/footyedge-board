@@ -47,18 +47,17 @@ test("Receipt refresh conserves deployment limits and uses major-league-only sou
  assert.match(engine,/majorLeagueRule:true/);
 });
 
-test("Mobile fixture crest/name/form columns are centred symmetrically around a fixed score island",()=>{
- const match=css.match(/\/\* Mobile fixture-card geometry[\s\S]*?(?=\/\* Even on compact)/)?.[0]||"";
- assert.ok(match,"Mobile fixture-centering rules must be retained after kit artwork");
- assert.match(match,/max-width:520px/);
- assert.match(match,/width:min\(100%,264px\)!important/);
- assert.match(match,/grid-template-columns:minmax\(0,1fr\) 116px minmax\(0,1fr\)!important/);
- assert.match(match,/fe-side\.fe-home/);
- assert.match(match,/fe-side\.fe-away/);
- assert.match(match,/fe-heroTeams>\.fe-center/);
- assert.match(match,/margin-inline:auto!important/);
- const part1=fs.readFileSync("ui/part1.html","utf8");
- const loader=fs.readFileSync("picks.html","utf8");
- assert.match(part1,/footyedge-match-v3\.css\?v=29/);
- assert.match(loader,/ui\/part1\.html\?v=137/);
+
+test("Both fixture and expanded score headers contain names within equal team tracks",()=>{
+ const block=css.slice(css.indexOf("/* Responsive match-header containment"));
+ assert.ok(block.includes(":is(.fe-matchCard,.fe-dialogHero)"),"Both layouts must be fixed together");
+ assert.match(block,/grid-template-columns:minmax\(0,1fr\) minmax\(116px,\.9fr\) minmax\(0,1fr\)!important/);
+ assert.match(block,/\.fe-heroTeams \.fe-sideName\{/);
+ assert.match(block,/width:100%!important/);
+ assert.match(block,/overflow-wrap:anywhere!important/);
+ assert.match(block,/\.fe-center>\.fe-scoreLine/);
+ assert.doesNotMatch(css,/width:min\(100%,264px\)/);
+ assert.doesNotMatch(css,/width:max-content!important/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=30/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=138/);
 });
