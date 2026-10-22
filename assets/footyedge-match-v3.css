@@ -1396,3 +1396,18 @@
  .fe-matchCard .fe-heroTeams .fe-side{grid-template-rows:66px minmax(35px,auto) 23px 24px!important;row-gap:5px!important;}
  .fe-matchCard .fe-side .fe-logoWrap{height:66px!important;max-height:66px!important;}
 }
+
+
+/* Small away-side optical correction only. Keep the approved card grid, score
+   centre, kit artwork, and team row sizing exactly as they were. Applies to
+   both fixture cards and expanded match headers on handheld screens. */
+@media(max-width:620px){
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams > .fe-side.fe-away{
+  transform:translateX(-22px)!important;
+ }
+}
+@media(max-width:360px){
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams > .fe-side.fe-away{
+  transform:translateX(-14px)!important;
+ }
+}
