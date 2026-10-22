@@ -1114,7 +1114,15 @@ function feKitPalette(team,role){
  const entry=FE_2026_KIT_STYLES[raw]?.[role];
  const fallback=fePalette(team);
  if(!entry)return {primary:fallback.primary,secondary:fallback.secondary,pattern:"tonal"};
- return {primary:entry[0],secondary:entry[1],pattern:entry[2]};
+ // Fixture artwork needs a dark readable club colour even when an actual away
+ // shirt is pale (e.g. Benfica). Keep the shirt pattern, not its light base.
+ const lightness=hex=>{
+   const rgb=(String(hex).match(/[a-f0-9]{2}/ig)||[]).slice(0,3).map(x=>parseInt(x,16));
+   return rgb.length===3?(rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722)/255:0;
+ };
+ const primary=lightness(entry[0])>.57?
+   ([fallback.primary,fallback.secondary].find(color=>lightness(color)<.55)||"#224337"):entry[0];
+ return {primary,secondary:entry[1],pattern:entry[2]};
 }
 
 function feUpcoming(g){return Date.parse(g.date)>Date.now()-120000;}
