@@ -47,24 +47,13 @@ test("Receipt refresh conserves deployment limits and uses major-league-only sou
  assert.match(engine,/majorLeagueRule:true/);
 });
 
-
-
-test("Fixture and expanded match headers anchor to 5px edges with an immovable centre",()=>{
- const block=css.slice(css.indexOf("/* Single edge-anchored match-header geometry"));
- assert.ok(block.startsWith("/* Single edge-anchored"),"Edge-based layout must be last in cascade");
- assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-hero\.fe-kitHero\{/);
- assert.match(block,/padding-left:5px!important/);
- assert.match(block,/padding-right:5px!important/);
- assert.match(block,/grid-template-columns:minmax\(0,1fr\) minmax\(116px,\.9fr\) minmax\(0,1fr\)!important/);
- assert.match(block,/fe-side\.fe-home[\s\S]*?justify-items:start!important/);
- assert.match(block,/fe-side\.fe-away[\s\S]*?justify-items:end!important/);
- assert.match(block,/fe-side\.fe-home \.fe-sideName[\s\S]*?text-align:left!important/);
- assert.match(block,/fe-side\.fe-away \.fe-sideName[\s\S]*?text-align:right!important/);
- assert.match(block,/fe-center\{[\s\S]*?grid-column:2!important/);
- assert.match(block,/\.fe-center>\.fe-kickoff\{[\s\S]*?text-align:center!important/);
- assert.match(block,/@media\(max-width:375px\)/);
- assert.match(block,/grid-template-columns:minmax\(0,1fr\) 100px minmax\(0,1fr\)!important/);
- assert.doesNotMatch(block,/left:-9px|left:-5px|width:min\(100%,264px\)/);
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=32/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=140/);
+test("Restore the pre-alignment layout for BOTH original fixture and expanded headers",()=>{
+ // Never override the previously approved match-card geometry with nudges.
+ assert.doesNotMatch(css,/Mobile fixture-card geometry|Responsive match-header containment|Optical balance on phone-size fixture|Single edge-anchored match-header geometry/);
+ assert.doesNotMatch(css,/\.fe-heroTeams>\.fe-side\.fe-away\{\s*position:relative/);
+ assert.match(css,/\.fe-matchCard \.fe-heroTeams\{display:grid!important;grid-template-columns:/);
+ assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
+ assert.match(js,/return '<div class="fe-dialogHero">'+feMatchHero\(g\)/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=33/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=141/);
 });
