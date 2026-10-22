@@ -1112,38 +1112,304 @@ const FE_2026_KIT_STYLES={
 // Background artwork only: prevent unrecognized clubs from inheriting FootyEdge
 // green. These are club-colour illustration fallbacks, not verified kit claims.
 const FE_FIXTURE_COLOR_FALLBACKS={
- "stade rennais":["#B71F36","#16191E"],
- "stade rennais fc":["#B71F36","#16191E"],
- "rennes":["#B71F36","#16191E"],
- "ararat armenia":["#242528","#B5B8B8"],
- "fc ararat armenia":["#242528","#B5B8B8"],
- "dinamo zagreb":["#1756B1","#192A60"],
- "gnk dinamo zagreb":["#1756B1","#192A60"],
- "nec nijmegen":["#A62132","#1D2722"],
- "nec":["#A62132","#1D2722"]
+ "stade rennais": [
+  "#B71F36",
+  "#16191E"
+ ],
+ "stade rennais fc": [
+  "#B71F36",
+  "#16191E"
+ ],
+ "rennes": [
+  "#B71F36",
+  "#16191E"
+ ],
+ "ararat armenia": [
+  "#242528",
+  "#B5B8B8"
+ ],
+ "fc ararat armenia": [
+  "#242528",
+  "#B5B8B8"
+ ],
+ "dinamo zagreb": [
+  "#1756B1",
+  "#192A60"
+ ],
+ "gnk dinamo zagreb": [
+  "#1756B1",
+  "#192A60"
+ ],
+ "nec nijmegen": [
+  "#A62132",
+  "#1D2722"
+ ],
+ "nec": [
+  "#A62132",
+  "#1D2722"
+ ],
+ "ferencvaros": [
+  "#0F804B",
+  "#E6E9E6"
+ ],
+ "torreense": [
+  "#84243D",
+  "#F0ECE9"
+ ],
+ "lech poznan": [
+  "#1C58AE",
+  "#F0F0F0"
+ ],
+ "sunderland": [
+  "#C72839",
+  "#F1F0ED"
+ ],
+ "ofi crete": [
+  "#20252A",
+  "#E7E9EA"
+ ],
+ "sk sturm graz": [
+  "#202427",
+  "#EAEAEA"
+ ],
+ "union st gilloise": [
+  "#D3B33C",
+  "#152D65"
+ ],
+ "hapoel be er": [
+  "#B32034",
+  "#10171C"
+ ],
+ "celtic": [
+  "#148A51",
+  "#E6EDE7"
+ ],
+ "jagiellonia bialystok": [
+  "#B72536",
+  "#EAC335"
+ ],
+ "anderlecht": [
+  "#55238A",
+  "#E6E4E9"
+ ],
+ "lillestrom": [
+  "#D3BB3F",
+  "#101722"
+ ],
+ "nk celje": [
+  "#D7BE36",
+  "#183B74"
+ ],
+ "rb salzburg": [
+  "#B62439",
+  "#F1EFEF"
+ ],
+ "olympiacos": [
+  "#B52137",
+  "#F2EEEE"
+ ],
+ "sparta prague": [
+  "#842940",
+  "#EFE3DC"
+ ],
+ "omonia nicosia": [
+  "#167B4C",
+  "#F0F0E8"
+ ],
+ "viktoria plzen": [
+  "#B32B38",
+  "#225DA1"
+ ],
+ "levski sofia": [
+  "#2356A2",
+  "#F0F0F0"
+ ],
+ "kairat almaty": [
+  "#CCB63B",
+  "#171C22"
+ ],
+ "panathinaikos": [
+  "#177A4C",
+  "#E7EDE7"
+ ],
+ "fc nordsj lland": [
+  "#C02D36",
+  "#E5A62F"
+ ],
+ "cska sofia": [
+  "#B52233",
+  "#F1F0ED"
+ ],
+ "fc lugano": [
+  "#25282D",
+  "#EBEBE7"
+ ],
+ "iberia 1999": [
+  "#B12E38",
+  "#E0D8D5"
+ ],
+ "mj llby aif": [
+  "#D0B336",
+  "#1E2429"
+ ],
+ "inter d escaldes": [
+  "#1E4E9A",
+  "#1C2538"
+ ],
+ "csu craiova": [
+  "#1D7FB9",
+  "#F0F1F0"
+ ],
+ "jablonec": [
+  "#157847",
+  "#F0F0EB"
+ ],
+ "kauno zalgiris": [
+  "#1B8051",
+  "#EDEDE9"
+ ],
+ "sk brann": [
+  "#B8273A",
+  "#F1E8E8"
+ ],
+ "pafos": [
+  "#255392",
+  "#EAEFF2"
+ ],
+ "riga fc": [
+  "#1F5B97",
+  "#F0EFEA"
+ ],
+ "red star belgrade": [
+  "#B82334",
+  "#F2EBE7"
+ ],
+ "f c k benhavn": [
+  "#1C3664",
+  "#EBEDEC"
+ ],
+ "heart of midlothian": [
+  "#77203B",
+  "#EBE8EA"
+ ],
+ "agf": [
+  "#293740",
+  "#E4E7EB"
+ ],
+ "egnatia": [
+  "#29353D",
+  "#D2B64B"
+ ],
+ "borac banja luka": [
+  "#AA2836",
+  "#1D4A96"
+ ],
+ "kups kuopio": [
+  "#CBB63B",
+  "#161A20"
+ ],
+ "braga": [
+  "#B92738",
+  "#E9E9E6"
+ ],
+ "kaa gent": [
+  "#1D5794",
+  "#F0EBE8"
+ ],
+ "fc midtjylland": [
+  "#B62436",
+  "#20252B"
+ ],
+ "sint truidense": [
+  "#D4B940",
+  "#172750"
+ ],
+ "fc thun": [
+  "#B52436",
+  "#F0E9E5"
+ ],
+ "hajduk split": [
+  "#1C3B69",
+  "#ECECE9"
+ ],
+ "lincoln red imps": [
+  "#AD2634",
+  "#1D2022"
+ ],
+ "al hazem": [
+  "#C19C37",
+  "#1F3143"
+ ],
+ "al fayha": [
+  "#CD692D",
+  "#573471"
+ ],
+ "al fateh": [
+  "#276BA6",
+  "#E8EFF4"
+ ],
+ "al shabab": [
+  "#21262B",
+  "#E5E8E6"
+ ],
+ "al ahli": [
+  "#1B7F52",
+  "#E8ECE9"
+ ],
+ "al khaleej": [
+  "#C7AB3A",
+  "#15724C"
+ ]
+};
+
+// Provider names are not stable: reuse the same club palette across variants.
+const FE_FIXTURE_PALETTE_ALIASES={
+ "bayer leverkusen": "bayer 04 leverkusen",
+ "afc bournemouth": "bournemouth",
+ "brighton hove albion": "brighton & hove albion",
+ "ajax amsterdam": "ajax",
+ "f c kobenhavn": "f c k benhavn",
+ "fc kobenhavn": "f c k benhavn",
+ "fc copenhagen": "f c k benhavn",
+ "kobenhavn": "f c k benhavn",
+ "fc nordsjaelland": "fc nordsj lland",
+ "nordsjaelland": "fc nordsj lland",
+ "mjallby aif": "mj llby aif",
+ "sturm graz": "sk sturm graz",
+ "union saint gilloise": "union st gilloise",
+ "union sg": "union st gilloise",
+ "stade rennais fc": "stade rennais",
+ "rennes": "stade rennais",
+ "az": "az alkmaar",
+ "al ahly": "al ahli",
+ "of i crete": "ofi crete",
+ "hapoel beer sheva": "hapoel be er",
+ "hapoel beer": "hapoel be er",
+ "hapoel beer sheva fc": "hapoel be er",
+ "fc midtjylland": "fc midtjylland"
 };
 
 function feKitPalette(team,role){
  const raw=String(team?.name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
- const entry=FE_2026_KIT_STYLES[raw]?.[role];
- const fallback=fePalette(team);
- const knownArtwork=FE_FIXTURE_COLOR_FALLBACKS[raw];
+ const key=FE_FIXTURE_PALETTE_ALIASES[raw]||raw;
+ const entry=FE_2026_KIT_STYLES[key]?.[role]||FE_2026_KIT_STYLES[raw]?.[role];
+ const fallback=fePalette(key===raw?team:{...team,name:key});
+ const art=FE_FIXTURE_COLOR_FALLBACKS[key]||FE_FIXTURE_COLOR_FALLBACKS[raw];
+ const luminance=hex=>{
+  const rgb=(String(hex).match(/[a-f0-9]{2}/ig)||[]).slice(0,3).map(x=>parseInt(x,16));
+  return rgb.length===3?(rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722)/255:0;
+ };
+ // Never silently replace an unrecognized club with generic FootyEdge green.
+ // A neutral dark steel kit treatment is used until a club colour is mapped.
  if(!entry){
   const unknown=fallback.primary==="#245B4A"&&fallback.secondary==="#102C39";
-  return {
-   primary:knownArtwork?.[0]||(unknown?"#29333A":fallback.primary),
-   secondary:knownArtwork?.[1]||(unknown?"#161E23":fallback.secondary),
-   pattern:"tonal"
-  };
+  const base=art?.[0]||(unknown?"#3E5060":fallback.primary);
+  const accent=art?.[1]||(unknown?"#1D303B":fallback.secondary);
+  return {primary:luminance(base)>.63?(luminance(accent)<.58?accent:"#33485A"):base,
+   secondary:accent,pattern:"tonal"};
  }
- // Fixture artwork needs a dark readable club colour even when an actual away
- // shirt is pale (e.g. Benfica). Keep the shirt pattern, not its light base.
- const lightness=hex=>{
-   const rgb=(String(hex).match(/[a-f0-9]{2}/ig)||[]).slice(0,3).map(x=>parseInt(x,16));
-   return rgb.length===3?(rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722)/255:0;
- };
- const primary=lightness(entry[0])>.57?
-   ([fallback.primary,fallback.secondary].find(color=>lightness(color)<.55)||"#224337"):entry[0];
+ const primary=luminance(entry[0])>.57?
+  ([art?.[0],fallback.primary,fallback.secondary].find(color=>color&&luminance(color)<.55)||"#33485A"):entry[0];
  return {primary,secondary:entry[1],pattern:entry[2]};
 }
 
