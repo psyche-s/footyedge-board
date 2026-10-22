@@ -312,6 +312,8 @@ jobs:
             exit 0
           fi
           git commit -m "data(original): update verified player refs and next-day match research [skip ci]"
+          # Keep unrelated generated artifacts out of auxiliary publication.
+          git stash push --include-untracked -m "FootyEdge auxiliary residuals" || true
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
