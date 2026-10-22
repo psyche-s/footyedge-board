@@ -229,9 +229,12 @@ jobs:
             exit 0
           fi
           git commit -m "chore(board): freeze same-day Top 5 $TODAY [skip ci]"
+          # Park unrelated generated model files so publication can rebase cleanly.
+          git stash push --include-untracked -m "FootyEdge daily auxiliary files" || true
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
+          git stash pop || echo "::warning::Unrestored auxiliary files remain stashed; official board already pushed."
 
       - name: Publish frozen Top 5 to GitHub Releases when picks qualify
         if: steps.gate.outputs.run == 'true'
