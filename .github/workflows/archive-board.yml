@@ -171,6 +171,14 @@ jobs:
           node --test tests/editorial-refresh.test.mjs
           node scripts/build-editorial-desk.mjs
 
+      - name: Cross-check available dated previews and independently screen match history
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          node --check scripts/build-review-shortlist.mjs
+          node --test tests/build-review-shortlist.test.mjs
+          node scripts/build-review-shortlist.mjs
+
       - name: Publish and lock current-day source-reviewed picks once
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
