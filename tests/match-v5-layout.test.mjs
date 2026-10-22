@@ -53,7 +53,7 @@ test("Restore the pre-alignment layout for BOTH original fixture and expanded he
  assert.doesNotMatch(css,/\.fe-heroTeams>\.fe-side\.fe-away\{\s*position:relative/);
  assert.match(css,/\.fe-matchCard \.fe-heroTeams\{display:grid!important;grid-template-columns:/);
  assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
- assert.match(js,/return '<div class="fe-dialogHero">'+feMatchHero\(g\)/);
+ assert.ok(js.includes("return '<div class=\"fe-dialogHero\">'+feMatchHero(g)"));
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=33/);
  assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=141/);
 });
