@@ -1285,67 +1285,53 @@
 .fe-playerLastTenTable thead th:first-child{z-index:5}
 .fe-playerLastTenTable tbody th:first-child{z-index:3}
 
-/* Oct 22 owner reference: mockup-inspired club backgrounds ONLY.
-   No layout, text, logos, form chips, score/status, card measurements,
-   expanded match hero, or interactions are modified by these overrides. */
+/* Oct 22 fidelity correction — fixture artwork ONLY, no layout updates.
+   The old heavy diagonal overlay is deliberately removed. The existing
+   team-specific home/away patterns stay subtle over deeper club colours.
+   The same card DOM, standing/form/score layout and expanded view remain. */
 .fe-matchCard .fe-hero.fe-kitHero{
-  background:radial-gradient(ellipse at 50% 51%,#001008 0%,#00170e 47%,#04180e 100%)!important;
+ background:radial-gradient(ellipse at 50% 48%,#001008 0%,#00130d 44%,#041811 100%)!important;
 }
-/* Layered colour + shirt-fabric patterns are painted solely into the already
-   existing ::before and ::after artwork surfaces. */
-.fe-matchCard .fe-hero.fe-kitHero::before,
-.fe-matchCard .fe-hero.fe-kitHero::after{
-  opacity:1!important;
-  pointer-events:none!important;
-  background-repeat:no-repeat!important;
-}
-.fe-matchCard .fe-hero.fe-kitHero::before{
-  background-image:
-    var(--fe-home-texture),
-    repeating-linear-gradient(137deg,
-      transparent 0 18px,rgba(255,255,255,.035) 18px 19px,
-      rgba(0,0,0,.045) 20px 22px,transparent 22px 39px),
-    radial-gradient(ellipse at 11% 25%,rgba(255,255,255,.075),transparent 64%),
-    linear-gradient(90deg,
-      color-mix(in srgb,var(--fe-home,#9b2339) 96%,#06110d) 0%,
-      color-mix(in srgb,var(--fe-home,#9b2339) 88%,#06110d) 34%,
-      color-mix(in srgb,var(--fe-home,#9b2339) 43%,#04120b) 66%,
-      transparent 100%)!important;
-  -webkit-mask-image:linear-gradient(90deg,#000 0 39%,rgba(0,0,0,.90) 61%,transparent 100%)!important;
-  mask-image:linear-gradient(90deg,#000 0 39%,rgba(0,0,0,.90) 61%,transparent 100%)!important;
-}
-.fe-matchCard .fe-hero.fe-kitHero::after{
-  background-image:
-    var(--fe-away-texture),
-    repeating-linear-gradient(43deg,
-      transparent 0 18px,rgba(255,255,255,.035) 18px 19px,
-      rgba(0,0,0,.045) 20px 22px,transparent 22px 39px),
-    radial-gradient(ellipse at 89% 25%,rgba(255,255,255,.075),transparent 64%),
-    linear-gradient(270deg,
-      color-mix(in srgb,var(--fe-away,#143665) 96%,#06110d) 0%,
-      color-mix(in srgb,var(--fe-away,#143665) 88%,#06110d) 34%,
-      color-mix(in srgb,var(--fe-away,#143665) 43%,#04120b) 66%,
-      transparent 100%)!important;
-  -webkit-mask-image:linear-gradient(270deg,#000 0 39%,rgba(0,0,0,.90) 61%,transparent 100%)!important;
-  mask-image:linear-gradient(270deg,#000 0 39%,rgba(0,0,0,.90) 61%,transparent 100%)!important;
-}
-/* Tonal and unknown-shirt fallbacks still get restrained fabric texture,
-   using the club colours already calculated by the fixture renderer. */
+/* Restrained fabric-like weave for unknown/tonal shirts, never thick bands. */
 .fe-matchCard .fe-kitHero[data-home-kit="tonal"],
 .fe-matchCard .fe-kitHero[data-home-kit="plain"]{
  --fe-home-texture:
-   repeating-linear-gradient(139deg,transparent 0 26px,
-      color-mix(in srgb,var(--fe-home-accent,#ffffff) 12%,transparent) 26px 34px,
-      transparent 34px 58px),
-   repeating-radial-gradient(ellipse at 12% 13%,transparent 0 25px,
-      rgba(255,255,255,.023) 26px 27px,transparent 28px 54px);
+  repeating-linear-gradient(128deg,transparent 0 15px,rgba(255,255,255,.026) 15px 16px,transparent 16px 31px),
+  repeating-linear-gradient(42deg,transparent 0 20px,rgba(0,0,0,.035) 20px 21px,transparent 21px 43px);
 }
 .fe-matchCard .fe-kitHero[data-away-kit="tonal"],
 .fe-matchCard .fe-kitHero[data-away-kit="plain"]{
  --fe-away-texture:
-   repeating-linear-gradient(41deg,transparent 0 26px,
-      color-mix(in srgb,var(--fe-away-accent,#ffffff) 12%,transparent) 26px 34px,
-      transparent 34px 58px),
-   repeating-radial-gradient(ellipse at 88% 13%,transparent 0 25px,
-      rgba(255,255,255,.023) 26px 27px,transparent 28px 54px);
+  repeating-linear-gradient(52deg,transparent 0 15px,rgba(255,255,255,.026) 15px 16px,transparent 16px 31px),
+  repeating-linear-gradient(138deg,transparent 0 20px,rgba(0,0,0,.035) 20px 21px,transparent 21px 43px);
+}
+/* Only the existing two pseudo-elements are recoloured. */
+.fe-matchCard .fe-hero.fe-kitHero::before,
+.fe-matchCard .fe-hero.fe-kitHero::after{
+ opacity:1!important;pointer-events:none!important;
+ background-repeat:no-repeat!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::before{
+ background-image:
+  var(--fe-home-texture),
+  radial-gradient(ellipse at 7% 25%,color-mix(in srgb,var(--fe-home-accent,#fff) 12%,transparent),transparent 62%),
+  linear-gradient(90deg,
+   color-mix(in srgb,var(--fe-home,#27333d) 82%,#040d0c) 0%,
+   color-mix(in srgb,var(--fe-home,#27333d) 73%,#04120f) 37%,
+   color-mix(in srgb,var(--fe-home,#27333d) 31%,#03140e) 68%,
+   transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0 39%,rgba(0,0,0,.85) 62%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0 39%,rgba(0,0,0,.85) 62%,transparent 100%)!important;
+}
+.fe-matchCard .fe-hero.fe-kitHero::after{
+ background-image:
+  var(--fe-away-texture),
+  radial-gradient(ellipse at 93% 25%,color-mix(in srgb,var(--fe-away-accent,#fff) 12%,transparent),transparent 62%),
+  linear-gradient(270deg,
+   color-mix(in srgb,var(--fe-away,#27333d) 82%,#040d0c) 0%,
+   color-mix(in srgb,var(--fe-away,#27333d) 73%,#04120f) 37%,
+   color-mix(in srgb,var(--fe-away,#27333d) 31%,#03140e) 68%,
+   transparent 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0 39%,rgba(0,0,0,.85) 62%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0 39%,rgba(0,0,0,.85) 62%,transparent 100%)!important;
 }

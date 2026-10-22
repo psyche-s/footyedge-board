@@ -1109,11 +1109,33 @@ const FE_2026_KIT_STYLES={
  "urawa red diamonds":{home:["#B42836","#1D171D","tonal"]},
  "jef united ichihara chiba":{away:["#D7DACF","#C1AE31","tonal"]}
 };
+// Background artwork only: prevent unrecognized clubs from inheriting FootyEdge
+// green. These are club-colour illustration fallbacks, not verified kit claims.
+const FE_FIXTURE_COLOR_FALLBACKS={
+ "stade rennais":["#B71F36","#16191E"],
+ "stade rennais fc":["#B71F36","#16191E"],
+ "rennes":["#B71F36","#16191E"],
+ "ararat armenia":["#242528","#B5B8B8"],
+ "fc ararat armenia":["#242528","#B5B8B8"],
+ "dinamo zagreb":["#1756B1","#192A60"],
+ "gnk dinamo zagreb":["#1756B1","#192A60"],
+ "nec nijmegen":["#A62132","#1D2722"],
+ "nec":["#A62132","#1D2722"]
+};
+
 function feKitPalette(team,role){
  const raw=String(team?.name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
  const entry=FE_2026_KIT_STYLES[raw]?.[role];
  const fallback=fePalette(team);
- if(!entry)return {primary:fallback.primary,secondary:fallback.secondary,pattern:"tonal"};
+ const knownArtwork=FE_FIXTURE_COLOR_FALLBACKS[raw];
+ if(!entry){
+  const unknown=fallback.primary==="#245B4A"&&fallback.secondary==="#102C39";
+  return {
+   primary:knownArtwork?.[0]||(unknown?"#29333A":fallback.primary),
+   secondary:knownArtwork?.[1]||(unknown?"#161E23":fallback.secondary),
+   pattern:"tonal"
+  };
+ }
  // Fixture artwork needs a dark readable club colour even when an actual away
  // shirt is pale (e.g. Benfica). Keep the shirt pattern, not its light base.
  const lightness=hex=>{
