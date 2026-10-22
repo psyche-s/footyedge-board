@@ -58,8 +58,8 @@ test("Both fixture and expanded score headers contain names within equal team tr
  assert.match(block,/\.fe-center>\.fe-scoreLine/);
  assert.doesNotMatch(css,/width:min\(100%,264px\)/);
  assert.doesNotMatch(css,/width:max-content!important/);
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=30/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=138/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=31/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=139/);
 });
 
 test("Away teams shift only nine pixels left on phone-size fixture and expanded headers",()=>{
@@ -69,7 +69,7 @@ test("Away teams shift only nine pixels left on phone-size fixture and expanded 
  assert.match(block,/left:-9px!important/);
  assert.match(block,/@media\(max-width:360px\)/);
  assert.match(block,/left:-5px!important/);
- assert.doesNotMatch(block,/grid-template-columns|width:|translate|scale/);
+ assert.doesNotMatch(block,/^\s*(?:grid-template-columns|width|max-width|transform|scale)\s*:/m);
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=31/);
  assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=139/);
 });
