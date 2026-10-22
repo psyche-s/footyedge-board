@@ -23,7 +23,7 @@ html,body{margin:0;min-height:100%;background:#031008;color:#fff;font-family:sys
 <script src="assets/football-hub-history.js?v=1"></script>
 <script src="assets/player-photo-registry.js?v=2"></script>
 <script>
-const PARTS=["ui/part0.html?v=115","ui/part1.html?v=139","ui/part2.html?v=139"];
+const PARTS=["ui/part0.html?v=115","ui/part1.html?v=140","ui/part2.html?v=139"];
 Promise.all(PARTS.map(url=>fetch(url,{cache:"no-store"}).then(r=>{
   if(!r.ok) throw new Error("UI bundle "+r.status);
   return r.text();

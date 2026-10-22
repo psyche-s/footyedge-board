@@ -1396,78 +1396,113 @@
  .fe-matchCard .fe-heroTeams .fe-side{grid-template-rows:66px minmax(35px,auto) 23px 24px!important;row-gap:5px!important;}
  .fe-matchCard .fe-side .fe-logoWrap{height:66px!important;max-height:66px!important;}
 }
-
-
-/* Responsive match-header containment — same rules on the fixture card and
-   expanded details. The previous 264px inner-grid forced 74px team columns
-   and let max-content names spill across the live score. Avoid both. */
-@media(max-width:620px){
- :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{
-  display:grid!important;
-  box-sizing:border-box!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  margin-inline:auto!important;
-  padding-inline:2px!important;
-  grid-template-columns:minmax(0,1fr) minmax(116px,.9fr) minmax(0,1fr)!important;
-  column-gap:4px!important;
-  justify-items:stretch!important;
-  align-items:center!important;
- }
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side{
-  box-sizing:border-box!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  justify-self:stretch!important;
-  justify-items:center!important;
- }
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .fe-sideName{
-  box-sizing:border-box!important;
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  white-space:normal!important;
-  overflow-wrap:anywhere!important;
-  word-break:normal!important;
-  text-align:center!important;
- }
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-center{
-  width:100%!important;
-  max-width:100%!important;
-  min-width:0!important;
-  justify-self:stretch!important;
- }
- :is(.fe-matchCard,.fe-dialogHero) .fe-center>.fe-scoreLine{
-  width:100%!important;
-  min-width:0!important;
-  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
-  align-items:center!important;
- }
+/* Single edge-anchored match-header geometry, shared by fixture cards and
+   expanded match details. Each team uses the same 5px inside-edge gutter.
+   Two equal team tracks keep the score/date on the EXACT card centreline.
+   This replaces earlier optical shifts and the narrow 264px grid. */
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero{
+ padding-left:5px!important;
+ padding-right:5px!important;
 }
-@media(max-width:360px){
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroHead{
+ padding-inline:12px!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) minmax(116px,.9fr) minmax(0,1fr)!important;
+ box-sizing:border-box!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ margin:0!important;
+ padding:2px 0 5px!important;
+ column-gap:4px!important;
+ justify-items:stretch!important;
+ align-items:center!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side{
+ box-sizing:border-box!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ justify-self:stretch!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-home{
+ position:static!important;
+ left:auto!important;
+ justify-items:start!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away{
+ position:static!important;
+ left:auto!important;
+ justify-items:end!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side .fe-logoWrap,
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side .fe-standing,
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side .fe-form{
+ margin-inline:0!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-home :is(.fe-logoWrap,.fe-standing,.fe-form){
+ justify-self:start!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away :is(.fe-logoWrap,.fe-standing,.fe-form){
+ justify-self:end!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side .fe-sideName{
+ box-sizing:border-box!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ margin:0!important;
+ white-space:normal!important;
+ overflow-wrap:anywhere!important;
+ word-break:normal!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-home .fe-sideName{
+ text-align:left!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away .fe-sideName{
+ text-align:right!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-home .fe-form{
+ justify-content:flex-start!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away .fe-form{
+ justify-content:flex-end!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-center{
+ grid-column:2!important;
+ justify-self:stretch!important;
+ align-self:center!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ margin:0!important;
+ text-align:center!important;
+ transform:none!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-center>.fe-scoreLine{
+ display:grid!important;
+ width:100%!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ align-items:center!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-center>.fe-kickoff{
+ align-items:center!important;
+ text-align:center!important;
+}
+@media(max-width:375px){
  :is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero>.fe-heroTeams{
-  grid-template-columns:minmax(0,1fr) 108px minmax(0,1fr)!important;
+  grid-template-columns:minmax(0,1fr) 100px minmax(0,1fr)!important;
   column-gap:2px!important;
  }
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .fe-form{gap:2px!important}
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .formChip{
-  width:16px!important;flex-basis:16px!important;
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .fe-form{gap:2px!important;}
+ :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams .fe-form .formChip{
+  width:15px!important;
+  flex-basis:15px!important;
+  height:18px!important;
+  font-size:8px!important;
  }
-}
-
-/* Optical balance on phone-size fixture and expanded headers:
-   shift the away-side block slightly toward the score without resizing columns.
-   Unlike the previous 264px-grid attempt, this cannot squeeze team names. */
-@media(max-width:620px){
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away{
-  position:relative!important;
-  left:-9px!important;
- }
-}
-@media(max-width:360px){
- :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side.fe-away{
-  left:-5px!important;
- }
+ :is(.fe-matchCard,.fe-dialogHero) .fe-scoreLine>strong{font-size:25px!important;}
+ :is(.fe-matchCard,.fe-dialogHero) .fe-scoreStatus{min-width:40px!important;padding-inline:2px!important;}
 }
