@@ -48,28 +48,23 @@ test("Receipt refresh conserves deployment limits and uses major-league-only sou
 });
 
 
-test("Both fixture and expanded score headers contain names within equal team tracks",()=>{
- const block=css.slice(css.indexOf("/* Responsive match-header containment"));
- assert.ok(block.includes(":is(.fe-matchCard,.fe-dialogHero)"),"Both layouts must be fixed together");
- assert.match(block,/grid-template-columns:minmax\(0,1fr\) minmax\(116px,\.9fr\) minmax\(0,1fr\)!important/);
- assert.match(block,/\.fe-heroTeams \.fe-sideName\{/);
- assert.match(block,/width:100%!important/);
- assert.match(block,/overflow-wrap:anywhere!important/);
- assert.match(block,/\.fe-center>\.fe-scoreLine/);
- assert.doesNotMatch(css,/width:min\(100%,264px\)/);
- assert.doesNotMatch(css,/width:max-content!important/);
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=31/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=139/);
-});
 
-test("Away teams shift only nine pixels left on phone-size fixture and expanded headers",()=>{
- const block=css.slice(css.indexOf("/* Optical balance on phone-size fixture"));
- assert.match(block,/@media\(max-width:620px\)/);
- assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-heroTeams>\.fe-side\.fe-away\{/);
- assert.match(block,/left:-9px!important/);
- assert.match(block,/@media\(max-width:360px\)/);
- assert.match(block,/left:-5px!important/);
- assert.doesNotMatch(block,/^\s*(?:grid-template-columns|width|max-width|transform|scale)\s*:/m);
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=31/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=139/);
+test("Fixture and expanded match headers anchor to 5px edges with an immovable centre",()=>{
+ const block=css.slice(css.indexOf("/* Single edge-anchored match-header geometry"));
+ assert.ok(block.startsWith("/* Single edge-anchored"),"Edge-based layout must be last in cascade");
+ assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-hero\.fe-kitHero\{/);
+ assert.match(block,/padding-left:5px!important/);
+ assert.match(block,/padding-right:5px!important/);
+ assert.match(block,/grid-template-columns:minmax\(0,1fr\) minmax\(116px,\.9fr\) minmax\(0,1fr\)!important/);
+ assert.match(block,/fe-side\.fe-home[\s\S]*?justify-items:start!important/);
+ assert.match(block,/fe-side\.fe-away[\s\S]*?justify-items:end!important/);
+ assert.match(block,/fe-side\.fe-home \.fe-sideName[\s\S]*?text-align:left!important/);
+ assert.match(block,/fe-side\.fe-away \.fe-sideName[\s\S]*?text-align:right!important/);
+ assert.match(block,/fe-center\{[\s\S]*?grid-column:2!important/);
+ assert.match(block,/\.fe-center>\.fe-kickoff\{[\s\S]*?text-align:center!important/);
+ assert.match(block,/@media\(max-width:375px\)/);
+ assert.match(block,/grid-template-columns:minmax\(0,1fr\) 100px minmax\(0,1fr\)!important/);
+ assert.doesNotMatch(block,/left:-9px|left:-5px|width:min\(100%,264px\)/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=32/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=140/);
 });
