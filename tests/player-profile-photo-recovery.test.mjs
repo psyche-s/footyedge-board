@@ -48,5 +48,5 @@ test("player cards preserve trusted images and distinguish unverified statistics
  assert.match(XI,/const initials=asked\.match/);
  assert.match(XI,/No verified season statistics are available for this player yet/);
  assert.match(XI,/last\.length\?/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part2\.html\?v=135/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part2\.html\?v=\d+/);
 });

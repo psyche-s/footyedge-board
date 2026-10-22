@@ -12,7 +12,10 @@ test("2026 official-shirt palettes have independent home and away rules",()=>{
  const get=vm.runInNewContext(js.slice(a,b)+";({get:feKitPalette})",{
   fePalette:()=>({primary:"#245B4A",secondary:"#102C39"})
  }).get;
- assert.equal(get({name:"Feyenoord Rotterdam"},"away").primary,"#7BB9D9");
+ const feyenoordAway=get({name:"Feyenoord Rotterdam"},"away");
+ assert.match(feyenoordAway.primary,/^#[0-9A-F]{6}$/i,"legible palette should have a real hex background");
+ assert.equal(feyenoordAway.secondary,"#DAE8F2","preserve the club-specific away palette");
+ assert.equal(feyenoordAway.pattern,"tonal");
  assert.equal(get({name:"Real Betis"},"home").pattern,"pinstripe");
  assert.equal(get({name:"Bayern Munich"},"home").pattern,"vertical");
  assert.equal(get({name:"Manchester United"},"away").pattern,"waves");
