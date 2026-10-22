@@ -278,7 +278,7 @@ jobs:
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
           PHOTO_DAYS: '5'
-          PHOTO_MAX_TEAMS: '25'
+          PHOTO_MAX_TEAMS: '85'
         run: |
           TODAY="$(TZ=America/Toronto date +%F)"
           TOMORROW="$(TZ=America/Toronto date -d "$TODAY +1 day" +%F)"

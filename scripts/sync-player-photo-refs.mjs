@@ -97,7 +97,9 @@ function fixtureTeams(){
  return [...targets.values()];
 }
 async function targetTeams(previous={}){
- const targets=new Map(fixtureTeams().map(x=>[x.key,x]));
+ const fixtures=fixtureTeams();
+ const todayKeys=new Set(fixtures.filter(x=>x.date===day(0)).map(x=>x.key));
+ const targets=new Map(fixtures.map(x=>[x.key,x]));
  const attempts=await inPool([...GOOD_LEAGUES],async league=>{
   const payload=await get(SOURCE+encodeURIComponent(league)+"/teams?limit=1000",7500);
   return {league,teams:parseLeagueTeams(payload,league)};
@@ -120,7 +122,18 @@ async function targetTeams(previous={}){
   const da=Date.parse(x?.checkedAt||"2000-01-01"),db=Date.parse(y?.checkedAt||"2000-01-01");
   return da-db||a.teamName.localeCompare(b.teamName);
  });
- const chosen=[];
+ // Prioritize the verified clubs playing today; prior round-robin discovery
+ // was mostly researching unrelated rosters while 39 live XIs had no pictures.
+ const chosen=[...todayKeys].map(key=>targets.get(key)).filter(Boolean)
+   .sort((a,b)=>{
+      const ap=previous[a.key],bp=previous[b.key];
+      const da=Date.parse(ap?.checkedAt||"2000-01-01"),db=Date.parse(bp?.checkedAt||"2000-01-01");
+      return da-db||a.teamName.localeCompare(b.teamName);
+   }).slice(0,MAX_TEAMS);
+ const priority=new Set(chosen.map(x=>x.key));
+ for(const rows of byLeague.values()){
+  for(let i=rows.length-1;i>=0;i--)if(priority.has(rows[i].key))rows.splice(i,1);
+ }
  while(chosen.length<MAX_TEAMS){
   let progress=false;
   for(const list of byLeague.values()){
