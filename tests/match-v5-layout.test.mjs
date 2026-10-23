@@ -54,19 +54,24 @@ test("Restore the pre-alignment layout for BOTH original fixture and expanded he
  assert.match(css,/\.fe-matchCard \.fe-heroTeams\{display:grid!important;grid-template-columns:/);
  assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
  assert.ok(js.includes("return '<div class=\"fe-dialogHero\">'+feMatchHero(g)"));
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=35/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=143/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=36/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=144/);
 });
 
-test("Away content nudges left on mobile, without resizing either fixture or expanded layout",()=>{
- const block=css.slice(css.indexOf("/* Small away-side optical correction only."));
- assert.ok(block.startsWith("/* Small away-side"));
- assert.match(block,/@media\(max-width:620px\)/);
- assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-heroTeams > \.fe-side\.fe-away\{/);
- assert.match(block,/transform:translateX\(-22px\)!important/);
- assert.match(block,/@media\(max-width:360px\)/);
- assert.match(block,/transform:translateX\(-14px\)!important/);
- assert.doesNotMatch(block,/^\s*(?:width|grid-template-columns|left|padding|margin)\s*:/m);
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=35/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=143/);
+test("Fixture and expanded cards keep a symmetric three-column mobile layout",()=>{
+ const block=css.slice(css.indexOf("/* 2026-10-23 MOBILE ALIGNMENT CONTRACT"));
+ assert.ok(block.startsWith("/* 2026-10-23 MOBILE ALIGNMENT CONTRACT"));
+ assert.match(block,/:is\(\.fe-matchCard,\.fe-dialogHero\) \.fe-hero\.fe-kitHero>\.fe-heroTeams/);
+ assert.match(block,/grid-template-columns:minmax\(0,1fr\) minmax\(116px,\.93fr\) minmax\(0,1fr\)!important/);
+ assert.match(block,/transform:none!important/);
+ assert.match(block,/grid-template-rows:70px 40px 24px 25px!important/);
+ assert.match(block,/grid-template-rows:62px 40px 24px 25px!important/);
+ assert.match(block,/\.fe-center>\.fe-kickoff/);
+ assert.match(block,/\.fe-center>\.fe-scoreLine/);
+ assert.match(block,/\.fe-logoWrap img\.fe-crest/);
+ assert.doesNotMatch(css,/transform:translateX\(-22px\)!important|transform:translateX\(-14px\)!important/);
+ assert.match(css,/broadcast-home\.svg/);
+ assert.match(css,/broadcast-away\.svg/);
+ assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\\.css\\?v=36/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\\/part1\\.html\\?v=144/);
 });
