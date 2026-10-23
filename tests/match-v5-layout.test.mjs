@@ -72,6 +72,6 @@ test("Fixture and expanded cards keep a symmetric three-column mobile layout",()
  assert.doesNotMatch(css,/transform:translateX\(-22px\)!important|transform:translateX\(-14px\)!important/);
  assert.match(css,/broadcast-home\.svg/);
  assert.match(css,/broadcast-away\.svg/);
- assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\\.css\\?v=36/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\\/part1\\.html\\?v=144/);
+ assert.ok(fs.readFileSync("ui/part1.html","utf8").includes("footyedge-match-v3.css?v=36"));
+ assert.ok(fs.readFileSync("picks.html","utf8").includes("ui/part1.html?v=144"));
 });
