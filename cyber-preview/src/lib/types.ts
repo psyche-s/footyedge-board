@@ -49,6 +49,19 @@ export interface LineupData {
   players: PlayerVector[];
 }
 
+export interface ModelGoalForecast {
+  homeLambda: number;
+  awayLambda: number;
+  homeWin: number; // Percent, not calibrated
+  draw: number;
+  awayWin: number;
+  over25: number;
+  sample: { league: number; homeVenue: number; awayVenue: number };
+  version: string;
+  calibrated: false;
+  kind: "historical-results-model-estimate";
+}
+
 export interface MatchData {
   id: string;
   league: LeagueId;
@@ -62,6 +75,7 @@ export interface MatchData {
   rating?: number | null; // Research strength, NOT probability
   homeXG?: number | null;
   awayXG?: number | null;
+  modelForecast?: ModelGoalForecast | null;
   projectedShots?: ValueProjection | null;
   sgp?: SGPResult | null;
   h2h?: {date: string; home: string; away: string; score: string}[];

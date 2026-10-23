@@ -28,6 +28,7 @@ class PipelineTests(unittest.TestCase):
         self.assertIsNone(game["awayXG"])
         self.assertIsNone(game["projectedShots"])
         self.assertIsNone(game["sgp"])
+        self.assertIsNone(game["modelForecast"])
         self.assertEqual(game["homeTeam"]["form"], ["W"])
         self.assertEqual(game["homeTeam"]["goalsFor"], 2.0)
         self.assertEqual(len(game["h2h"]), 1)

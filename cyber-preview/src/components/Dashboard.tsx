@@ -205,6 +205,33 @@ export default function Dashboard({initialData}: {initialData:DashboardData}) {
                   })}
                 </section>
                 <section className="rounded-xl border border-zinc-800/60 bg-zinc-900/20 p-4 sm:p-5">
+                  <PanelHeading icon={<Activity size={17}/>} title="Goal model outlook" subtitle="Venue-aware, recency-weighted historical estimates. Not measured xG or calibrated betting probabilities."/>
+                  {selected.modelForecast ? <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3 border-b border-zinc-800/60 pb-3">
+                      <div><div className="text-[10px] uppercase tracking-wide text-zinc-500">Home goal rate (λ)</div>
+                        <div className="mt-1 font-mono text-xl font-semibold tabular-nums tracking-tight text-zinc-100">{number(selected.modelForecast.homeLambda, 2)}</div></div>
+                      <div><div className="text-[10px] uppercase tracking-wide text-zinc-500">Away goal rate (λ)</div>
+                        <div className="mt-1 font-mono text-xl font-semibold tabular-nums tracking-tight text-zinc-100">{number(selected.modelForecast.awayLambda, 2)}</div></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="text-[10px] uppercase tracking-wider text-zinc-500">Estimated result distribution</div>
+                      <div className="grid grid-cols-3 gap-2">{[
+                        ["Home",selected.modelForecast.homeWin],["Draw",selected.modelForecast.draw],["Away",selected.modelForecast.awayWin]
+                      ].map(([label,percent])=><div key={String(label)} className="rounded-md border border-zinc-800/60 p-2 text-center">
+                        <div className="font-mono text-[15px] font-semibold tabular-nums tracking-tight">{number(Number(percent), 1)}%</div>
+                        <div className="mt-0.5 text-[10px] uppercase tracking-wide text-zinc-500">{label}</div>
+                      </div>)}</div>
+                      <div className="flex justify-between gap-2 border-t border-zinc-800/50 pt-2 text-[11px]">
+                        <span className="text-zinc-500">Estimated P(over 2.5)</span>
+                        <span className="font-mono font-semibold tabular-nums text-zinc-200">{number(selected.modelForecast.over25, 1)}%</span>
+                      </div>
+                    </div>
+                    <p className="font-mono text-[10px] leading-relaxed text-zinc-600">
+                      Prior games: league {selected.modelForecast.sample.league} · home venue {selected.modelForecast.sample.homeVenue} · away venue {selected.modelForecast.sample.awayVenue}. Independent Poisson baseline; not calibrated or validated for bets.
+                    </p>
+                  </div> : <p className="text-[11px] leading-relaxed text-zinc-500">Awaiting sufficient, verified league and home/away history to produce a non-random model estimate. Current match data remains unchanged.</p>}
+                </section>
+                <section className="rounded-xl border border-zinc-800/60 bg-zinc-900/20 p-4 sm:p-5">
                   <PanelHeading icon={<Target size={17}/>} title="Match analysis" subtitle="Evidence-led selections on this published board"/>
                   {(selected.analysis?.length??0)>0? <div className="space-y-3">
                     {selected.analysis!.map((pick,i)=><div key={i} className="border-b border-zinc-800/60 pb-3 last:border-0 last:pb-0">

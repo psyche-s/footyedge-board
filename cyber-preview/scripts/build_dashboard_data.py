@@ -25,6 +25,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 import requests
+from forecast_model import forecast_goals
 
 LOG = logging.getLogger("footyedge")
 LEAGUES = {
@@ -235,6 +236,8 @@ def generate(
         if quoted is not None and quoted > 0 and predicted is not None and predicted >= 0 and line.get("provider") and line.get("as_of"):
             value = {"metric": str(line.get("metric", "Team shots")), "line": quoted,
                      "projected": predicted, "edge": None, "provider": str(line["provider"]), "asOf": str(line["as_of"])}
+        # Forecast is based on historical completed games only; NOT measured xG.
+        model_forecast = forecast_goals(fixture_history, row.leagueCode, row.homeKey, row.awayKey, row.kickoff)
         manual = curated.get(row.key, {})
         legs = manual.get("sgp", {}).get("legs", []) if isinstance(manual, dict) else []
         valid_legs = isinstance(legs, list) and len(legs) == 3 and all(isinstance(l, dict) and l.get("label") for l in legs)
@@ -248,6 +251,7 @@ def generate(
             "status": "scheduled", "minute": None, "score": {"home": None, "away": None},
             "homeTeam": h, "awayTeam": a,
             "rating": None, "homeXG": home_xg, "awayXG": away_xg,
+            "modelForecast": model_forecast,
             "projectedShots": value, "sgp": sgp,
             "h2h": head_to_head(fixture_history[fixture_history["leagueCode"] == row.leagueCode], row.homeKey, row.awayKey, row.kickoff),
             "analysis": manual.get("analysis", []) if isinstance(manual, dict) else [],
