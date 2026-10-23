@@ -137,3 +137,22 @@ test("V3 preview snapshot uses source-identified men's fixtures, never invented 
  assert.ok(payload.events.some(e=>e.footyedgeLeague==="ksa.1"));
  assert.ok(payload.events.some(e=>e.footyedgeLeague==="eng.1"));
 });
+
+test("V4 has structurally new matchday card, not the legacy split-kit hero",()=>{
+ const html=fs.readFileSync("v4.html","utf8");
+ const css=fs.readFileSync("assets/footyedge-v4-concept.css","utf8");
+ assert.match(html,/FootyEdge V4 — Matchday Studio/);
+ assert.match(html,/function feV4Side\(g,which\)/);
+ assert.match(html,/function feMatchHero\(g\)\{/);
+ assert.match(html,/class="v4-match"/);
+ assert.match(html,/class="v4-central"/);
+ assert.match(html,/class="v4-matchBottom"/);
+ assert.match(html,/MATCH CENTRE/);
+ assert.match(html,/REIMAGINED/);
+ assert.match(html,/v4-quickStats/);
+ assert.match(html,/previewDate/);
+ assert.match(css,/\.v4-matchTeams\{display:grid;grid-template-columns:minmax\(0,1fr\) 134px minmax\(0,1fr\)/);
+ assert.match(css,/\.v4-formDisplay \.formChip/);
+ assert.match(css,/@media\(max-width:374px\)/);
+ assert.doesNotMatch(html.slice(html.indexOf("function feMatchHero(g){"),html.indexOf("function renderGames(){")) ,/class="fe-hero fe-kitHero"/);
+});
