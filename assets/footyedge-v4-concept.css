@@ -1,0 +1,234 @@
+/* FootyEdge V4 — original site's isolated matchday STUDIO concept.
+   Different information architecture & card markup; NOT a V3 reskin. */
+:root{--v4-ink:#070b12;--v4-panel:#101824;--v4-cream:#ebf0e9;--v4-mint:#c5f57c;--v4-cyan:#68dfce;--v4-muted:#99a7ac}
+*{box-sizing:border-box}
+html,body{background:#080c12!important;color:var(--v4-cream)!important}
+body{background:radial-gradient(ellipse 85% 600px at 8% -130px,#18323b 0%,transparent 80%),#080c12!important}
+.wrap{max-width:1340px!important;padding:16px clamp(12px,2vw,32px) 50px!important}
+.siteNav.v4-navigation{
+ min-height:65px!important;margin:0 0 16px!important;border-radius:18px!important;
+ border:1px solid #303c43!important;background:#121a25!important;
+ padding:10px 18px!important;display:flex!important;align-items:center!important;
+}
+.v4-navigation .siteLogo{font:950 26px/1 system-ui!important;letter-spacing:-.075em!important;color:#f5f8ef!important}
+.v4-navigation .siteLogo span{color:var(--v4-mint)!important}
+.v4-mark{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;background:#263530;color:var(--v4-mint);border:1px solid #3f6153;border-radius:7px;font:900 9px/1 system-ui;letter-spacing:.14em;white-space:nowrap}
+.v4-mark i,.v4-signal{display:inline-block;width:7px;height:7px;background:var(--v4-mint);border-radius:1px;box-shadow:0 0 12px #d1fd76}
+.siteLinks a{color:#a5b5bb!important;font:780 11px/1 system-ui!important}
+.siteLinks a.active{color:var(--v4-mint)!important;border-color:var(--v4-mint)!important}
+.v4-landing{
+ background:linear-gradient(112deg,#142a36,#101921 63%,#141c26);
+ border:1px solid #34444b;border-radius:25px;min-height:248px;padding:28px clamp(19px,3vw,38px);
+ display:flex;justify-content:space-between;position:relative;overflow:hidden;margin:0 0 15px;
+ box-shadow:inset 0 1px rgba(255,255,255,.04),0 22px 55px #0005;
+}
+.v4-landing::before{content:"";position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(125deg,transparent 20%,#8af4df08 35%,transparent 50%);
+}
+.v4-landingBody{position:relative;z-index:1}
+.v4-kicker{font:900 10px/1.4 system-ui;color:var(--v4-mint);letter-spacing:.18em;display:flex;gap:9px;align-items:center}
+.v4-landing h1{font:1000 clamp(33px,4vw,57px)/.98 system-ui,sans-serif;letter-spacing:-.075em;color:#fbfdf7;margin:12px 0 12px}
+.v4-landing h1 em{font-style:normal;color:var(--v4-mint)}
+.v4-titlePunctuation{color:#76e2d7}
+.v4-landing p{font-size:12px;line-height:1.5;color:#a7bec2;max-width:360px;margin:0}
+.v4-quickStats{display:flex;gap:0;margin-top:20px}
+.v4-quickStats>div{display:grid;gap:4px;min-width:100px;padding:0 18px;border-left:1px solid #42565d}
+.v4-quickStats>div:first-child{border-left:none;padding-left:0}
+.v4-quickStats b{font:900 21px/1 system-ui;letter-spacing:-.025em;color:#eafdf1;font-variant-numeric:tabular-nums}
+.v4-quickStats span{font:900 9px/1 system-ui;letter-spacing:.12em;color:#8ca6aa}
+.v4-stadiumGraphic{position:absolute;width:390px;height:390px;right:0;top:-68px;display:grid;place-items:center;opacity:.95;pointer-events:none}
+.v4-stadiumRing{position:absolute;width:285px;height:285px;border-radius:50%;
+ border:1px solid #5ee9d04a;box-shadow:0 0 0 38px #2ad6b208,0 0 0 75px #49d7c20b,0 0 0 107px #68edd709;
+ transform:rotate(-24deg)}
+.v4-stadiumRing::before,.v4-stadiumRing::after{content:"";position:absolute;inset:36px;border:1px dashed #8fe1cd41;border-radius:50%}
+.v4-stadiumRing::after{inset:91px;border-style:solid}
+.v4-stadiumCenter{font:1000 77px/1 system-ui;letter-spacing:-.14em;color:#e0ffd0;transform:rotate(-9deg);text-shadow:0 6px 30px #7ccfb53d}
+.v4-stadiumCenter span{font-size:34px;color:#8cf4d9}
+.v4-stadiumLabel{position:absolute;bottom:76px;right:36px;text-align:right;font:800 10px/1.55 system-ui;letter-spacing:.19em;color:#86caba}
+.datebar{margin:0 0 13px!important;padding:12px!important;border:1px solid #273b43!important;border-radius:16px!important;
+ background:#111a25!important;grid-template-columns:40px minmax(0,1fr) auto 40px 40px!important;gap:8px!important}
+.datebar .dateCenter strong{font:900 16px/1.2 system-ui!important;color:#f2fcf5!important}
+.datebar .dateCenter small{color:#8eaab0!important;font-size:10px!important}
+.datebar :is(.navBtn,.todayBtn){height:37px!important;border-radius:8px!important;background:#202e3a!important;border-color:#41525a!important;color:#eef8ed!important}
+#filters{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;grid-template-areas:"status status" "league search"!important;
+ gap:12px!important;background:#101924!important;padding:17px!important;margin:0 0 25px!important;border-radius:18px!important;
+ border:1px solid #263743!important}
+#filters .fe-statusGroup{grid-area:status!important;min-width:0}
+#filters .fe-leagueGroup{grid-area:league!important;min-width:0}
+#filters .fe-searchGroup{grid-area:search!important;min-width:0}
+#filters .filterTitle{font:900 10px/1.2 system-ui!important;letter-spacing:.16em!important;color:#9db4b7!important}
+#statusRow{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;background:#081019!important;
+ border:1px solid #314148!important;border-radius:10px!important;padding:5px!important}
+#statusRow .filterPill{min-height:38px!important;height:38px!important;background:transparent!important;color:#c5d1ca!important;
+ border:0!important;border-radius:7px!important;font-size:12px!important;box-shadow:none!important}
+#statusRow .filterPill.active{background:var(--v4-mint)!important;color:#13251a!important}
+#feLeagueSelect,.searchBar input{height:44px!important;min-height:44px!important;width:100%!important;max-width:none!important;
+ background:#121f2b!important;border:1px solid #344851!important;color:#e2f5ec!important;border-radius:10px!important;font-size:12px!important}
+.searchBar{display:block!important;margin:0!important;min-width:0!important}
+.searchBar input{padding-left:37px!important}
+.fe-searchGlyph{color:var(--v4-mint)!important}
+#matchesAnchor{margin:19px 0 12px!important;align-items:center!important}
+#matchesAnchor .sectionTitle{gap:12px!important}
+#matchesAnchor .sectionIcon{width:34px;height:34px;display:grid;place-items:center;background:var(--v4-mint)!important;
+ color:#152824!important;border-radius:9px!important}
+#matchesAnchor h2{font:950 22px/1 system-ui!important;letter-spacing:-.045em!important;color:#e8f4ee!important}
+#gamesCount{color:#91abb3!important;font-size:11px!important}
+#sortBtn{background:#182833!important;color:#d8ece2!important;border:1px solid #3c4b51!important;border-radius:8px!important}
+.games{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;max-width:none!important;margin-inline:0!important}
+.fe-matchCard{display:block!important;min-width:0!important;overflow:hidden!important;background:none!important;
+ border:none!important;border-radius:20px!important;box-shadow:none!important}
+.v4-match{position:relative;isolation:isolate;overflow:hidden;border-radius:19px;border:1px solid #36464b;background:#111b27;
+ box-shadow:inset 0 1px #ffffff0c,0 14px 40px #0005;min-height:282px;
+ transition:transform .2s ease,border-color .2s ease;display:flex;flex-direction:column}
+.fe-matchCard:hover .v4-match,.fe-matchCard:focus-visible .v4-match{border-color:var(--v4-mint)!important;transform:translateY(-2px)}
+.v4-match::before,.v4-match::after{content:"";position:absolute;z-index:-1;top:65px;width:42%;height:175px;opacity:.24;filter:blur(40px);pointer-events:none}
+.v4-match::before{left:-15%;background:var(--v4-home)}
+.v4-match::after{right:-15%;background:var(--v4-away)}
+.v4-matchTop{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:55px;padding:12px 18px;
+ border-bottom:1px solid #2a3843;background:#101822cc}
+.v4-competition{display:flex;align-items:center;gap:8px;min-width:0;color:#d6e6db}
+.v4-competition b{font:900 10px/1.2 system-ui;letter-spacing:.13em;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v4-competition :is(.leagueIcon,.leagueFallback){width:22px!important;height:22px!important;flex:0 0 22px!important}
+.v4-state{display:flex;gap:6px;align-items:center;font:900 9px/1.2 system-ui;letter-spacing:.13em;color:#9aaeb3;
+ border:1px solid #405158;border-radius:5px;padding:5px 7px;white-space:nowrap;background:#18252f}
+.v4-state-live{border-color:#fa65718e!important;color:#ff8291!important}
+.v4-state-final{color:#caf4d4!important}
+.v4-liveLight{width:7px;height:7px;border-radius:50%;background:#ff546e;box-shadow:0 0 8px #fd4153}
+.v4-matchTeams{display:grid;grid-template-columns:minmax(0,1fr) 134px minmax(0,1fr);gap:9px;padding:17px 18px 10px;
+ align-items:stretch;min-width:0;flex:1}
+.v4-team{display:grid;grid-template-rows:69px minmax(37px,auto) 20px 20px;align-content:start;align-items:center;
+ justify-items:center;row-gap:5px;min-width:0;text-align:center}
+.v4-logoHolder{height:69px;width:80px;display:grid;place-items:center;position:relative;align-self:center}
+.v4-logoHolder::before{content:"";position:absolute;width:72px;height:62px;border-radius:20px;background:#eff5e807;transform:rotate(-9deg);
+ border:1px solid #e6f9e619}
+.v4-logoHolder img{position:relative;z-index:1;width:61px!important;height:61px!important;object-fit:contain!important;max-width:61px!important;max-height:61px!important;filter:drop-shadow(0 8px 9px #0007)}
+.v4-teamTitle{margin:0!important;min-width:0;max-width:100%;width:100%;font:900 clamp(12px,1.4vw,16px)/1.18 system-ui;
+ color:#f3f6ef;letter-spacing:-.035em;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;
+ text-overflow:ellipsis;overflow:hidden;min-height:30px;max-height:39px}
+.v4-leaguePlace{font:700 10px/1.2 system-ui;color:#a9c0b6;display:flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.v4-placeDot{height:4px;width:4px;background:var(--v4-mint);border-radius:50%}
+.v4-formDisplay{display:flex;justify-content:center;align-items:center;gap:2px;min-width:0}
+.v4-formDisplay .formChip{width:17px!important;min-width:17px!important;flex:0 0 17px!important;height:18px!important;
+ font-size:9px!important;border-radius:5px!important}
+.v4-central{align-self:center;min-width:0;padding:8px 4px 7px;background:linear-gradient(180deg,#0a1119,#162431);border:1px solid #334b4d;
+ border-radius:14px;display:flex;flex-direction:column;justify-content:center;align-items:center;min-height:115px;gap:7px;
+ box-shadow:0 8px 24px #0005;text-align:center}
+.v4-centreEyebrow{font:850 8px/1.1 system-ui;color:#82b3ae;letter-spacing:.13em;white-space:nowrap}
+.v4-matchTime{font:900 10px/1.2 system-ui;color:#d4f4e0;letter-spacing:.1em;text-transform:uppercase}
+.v4-timeLarge{font:950 clamp(15px,2vw,22px)/1.13 system-ui;color:#f6fdf4;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.v4-timeZone{font:850 8px/1 system-ui;color:#7da7ac;letter-spacing:.12em}
+.v4-numbers{display:flex;align-items:center;gap:7px;justify-content:center}
+.v4-numbers b{font:950 31px/1 system-ui;color:#f6fff2;font-variant-numeric:tabular-nums}
+.v4-numbers i{font:900 20px/1 system-ui;color:var(--v4-mint);font-style:normal}
+.v4-scoreUnknown{font:900 13px/1.15 system-ui;color:#d6ffe4}
+.v4-centreDash{height:3px;width:19px;border-radius:20px;background:var(--v4-mint);opacity:.8}
+.v4-matchBottom{height:34px;margin-top:auto;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+ padding:0 17px;gap:5px;border-top:1px solid #2b3944;background:#121b27;color:#7e9ba3}
+.v4-matchBottom>span:first-child{text-align:left}
+.v4-matchBottom>span:last-child{text-align:right}
+.v4-matchBottom>span{font:850 9px/1 system-ui;letter-spacing:.1em}
+.v4-matchBottom .v4-openAnalysis{color:var(--v4-mint);font-size:9px!important}
+.v4-openAnalysis b{font-size:13px;margin-left:3px}
+.fe-dialogHero{background:none!important;box-shadow:none!important;overflow:hidden!important}
+.fe-dialogHero .v4-match{min-height:294px!important}
+.fe-panel{background:#111c26!important;border:1px solid #36474c!important;border-radius:14px!important}
+.fe-tabs button{background:#192a31!important;color:#c8dad6!important;border:1px solid #385257!important;border-radius:9px!important}
+.fe-tabs button.active{background:var(--v4-mint)!important;color:#13241b!important;border-color:var(--v4-mint)!important}
+.fe-accordion{background:#111c27!important;border-color:#40505a!important}
+.foot{color:#7f9c9e!important}
+@media(max-width:1020px){.games{grid-template-columns:1fr!important;max-width:740px!important;margin-inline:auto!important}}
+@media(max-width:650px){
+ .wrap{padding-inline:12px!important}
+ .siteNav.v4-navigation{min-height:54px!important;padding:10px 12px!important}
+ .siteLogo{font-size:21px!important}
+ .v4-mark{font-size:8px;padding:6px}
+ .siteLinks{gap:8px!important}
+ .siteLinks a{font-size:9px!important}
+ .siteLinks a:not(.active){display:none!important}
+ .v4-landing{min-height:212px;padding:20px 18px 16px;margin-bottom:11px}
+ .v4-landing h1{font-size:clamp(31px,8.8vw,45px);margin:9px 0!important}
+ .v4-landing p{max-width:250px;font-size:11px}
+ .v4-kicker{font-size:8px;letter-spacing:.13em}
+ .v4-quickStats{margin-top:15px}
+ .v4-quickStats>div{min-width:70px;padding:0 11px}
+ .v4-quickStats b{font-size:17px}
+ .v4-quickStats span{font-size:7px}
+ .v4-stadiumGraphic{width:210px;height:210px;right:-81px;top:-13px;opacity:.5}
+ .v4-stadiumRing{width:155px;height:155px;box-shadow:0 0 0 25px #2ad6b208,0 0 0 50px #49d7c20b}
+ .v4-stadiumCenter{font-size:39px}
+ .v4-stadiumCenter span{font-size:18px}
+ .v4-stadiumLabel{display:none}
+ .datebar{padding:8px!important;grid-template-columns:33px minmax(0,1fr) auto 33px 33px!important;gap:5px!important}
+ .datebar :is(.navBtn,.todayBtn){height:35px!important}
+ #filters{padding:12px!important;gap:9px!important;margin-bottom:16px!important}
+ #statusRow .filterPill{font-size:11px!important}
+ #matchesAnchor h2{font-size:19px!important}
+ .games{gap:12px!important}
+ .v4-matchTop{padding:10px 12px;min-height:45px}
+ .v4-matchTeams{padding:13px 11px 9px;grid-template-columns:minmax(0,1fr) 114px minmax(0,1fr);gap:5px}
+ .v4-team{grid-template-rows:60px minmax(33px,auto) 18px 20px;row-gap:4px}
+ .v4-logoHolder{width:67px;height:60px}
+ .v4-logoHolder::before{width:62px;height:54px}
+ .v4-logoHolder img{width:54px!important;height:54px!important}
+ .v4-teamTitle{font-size:12px;min-height:31px}
+ .v4-formDisplay .formChip{width:15px!important;min-width:15px!important;flex-basis:15px!important;font-size:8px!important}
+ .v4-central{min-height:101px;gap:5px;padding:8px 3px}
+ .v4-timeLarge{font-size:17px}
+ .v4-match{min-height:255px}
+ .v4-matchBottom{height:31px}
+}
+@media(max-width:374px){
+ #filters{grid-template-columns:1fr!important;grid-template-areas:"status" "league" "search"!important}
+ .v4-matchTeams{grid-template-columns:minmax(0,1fr) 98px minmax(0,1fr);gap:4px;padding-inline:8px}
+ .v4-formDisplay{gap:1px}
+ .v4-formDisplay .formChip{width:13px!important;min-width:13px!important;flex-basis:13px!important}
+ .v4-timeLarge{font-size:15px}
+ .v4-numbers b{font-size:24px}
+ .v4-competition b{font-size:9px}
+ .v4-landing h1{font-size:31px}
+ .v4-quickStats>div{min-width:64px;padding-inline:8px}
+}
+@media(prefers-reduced-motion:reduce){.v4-match{transition:none}}
+
+/* Standalone V4 visual showcase: always populated with sourced fixture cards. */
+.v4-showcase .siteNav{justify-content:flex-start!important;gap:18px}
+.v4-showcaseLabel{margin-left:auto;color:#8fa7ad;font:900 10px/1 system-ui;letter-spacing:.13em}
+.v4-showcase .v4-landing{margin-bottom:14px}
+.v4-demoStrip{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;padding:11px 15px;
+ background:#1b292d;border:1px solid #4b6668;border-radius:12px;color:#d5e7dc;font:700 11px/1.4 system-ui;flex-wrap:wrap}
+.v4-demoStrip>div{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.v4-demoStrip b{font:950 10px/1.2 system-ui;letter-spacing:.12em;color:#cbf486}
+.v4-demoDot{width:7px;height:7px;border-radius:50%;background:#c9f77e}
+.v4-demoNotice{font-size:10px;color:#92b3b3}
+.v4-controlDock{background:#111a25;border:1px solid #293a47;border-radius:17px;padding:15px 17px;margin-bottom:14px}
+.v4-statusLabel{font:900 10px/1.2 system-ui;letter-spacing:.14em;color:#bff08e;margin-bottom:10px}
+.v4-controlFields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.v4-controlFields label{font:850 9px/1.5 system-ui;letter-spacing:.12em;color:#9eb7b8;display:grid;gap:5px}
+.v4-controlFields :is(select,input){width:100%;height:42px;min-width:0;padding:0 12px;border-radius:9px;
+ background:#172634;border:1px solid #3a5059;color:#f1f7ef;font:700 12px/1 system-ui}
+.v4-controlFields select{appearance:auto}
+.v4-showcase .games{margin:0!important}
+.v4-showcaseCard[hidden]{display:none!important}
+.v4-showcaseCard{cursor:pointer;outline-offset:4px}
+.v4-compMark{display:grid;place-items:center;width:23px;height:23px;background:#38545a;border-radius:6px;color:#c5f57c;font-size:18px}
+.v4-fallbackCrest{font:950 18px/1 system-ui;color:#c8f7da;text-transform:uppercase}
+.v4-miniDash{font:850 8px/1 system-ui;letter-spacing:.03em;color:#849da1;white-space:nowrap}
+.v4-sortLabel{color:#c1e6cb;font:850 10px/1 system-ui}
+.v4-showcaseDisclaimer{padding:16px 2px;color:#90aaa8;font:500 11px/1.6 system-ui;max-width:720px}
+.v4-sheet{border:1px solid #526a67;background:#121d2a;color:#f2f9f1;border-radius:20px;padding:0;
+ width:min(92vw,590px);max-height:90vh;box-shadow:0 25px 100px #000b}
+.v4-sheet::backdrop{background:#02070bdc;backdrop-filter:blur(6px)}
+.v4-sheetHead{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#202c35;
+ border-bottom:1px solid #3e5054;padding:13px 17px;color:#c4ef97;font:900 10px/1.2 system-ui;letter-spacing:.15em}
+.v4-sheetHead button{background:#2c3d43;border:1px solid #59706c;color:#f2faed;border-radius:8px;width:32px;height:32px;font-size:24px;cursor:pointer}
+.v4-sheet h2{font:950 clamp(23px,5vw,33px)/1.12 system-ui;letter-spacing:-.04em;margin:25px 22px 8px}
+.v4-sheetTime{margin:0 22px;color:#99b6b6;font:850 11px/1.2 system-ui}
+.v4-sheetTabs{display:flex;gap:5px;margin:22px 22px 15px;border-bottom:1px solid #405258}
+.v4-sheetTabs button{border:0;border-radius:7px 7px 0 0;background:#202e38;color:#b0c8c1;font:900 10px/1.3 system-ui;
+ padding:11px 12px;cursor:pointer}
+.v4-sheetTabs button.selected{background:#c5f57c;color:#112416}
+.v4-sheet p{color:#c5d8d2;line-height:1.6;font-size:13px;padding:0 22px 10px}
+.v4-sheetActions{padding:12px 22px 22px}
+.v4-sheetActions button{width:100%;padding:12px 15px;border-radius:9px;background:#c5f57c;color:#16251d;font-weight:900;border:0;cursor:pointer}
+@media(max-width:650px){.v4-controlDock{padding:12px}.v4-showcaseLabel{font-size:8px}.v4-demoStrip{padding:9px 11px}.v4-showcase .siteNav{gap:7px}}
+@media(max-width:375px){.v4-controlFields{grid-template-columns:1fr}.v4-landing p{max-width:220px}.v4-showcaseLabel{display:none}}

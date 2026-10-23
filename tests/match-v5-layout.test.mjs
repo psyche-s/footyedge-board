@@ -55,7 +55,7 @@ test("Restore the pre-alignment layout for BOTH original fixture and expanded he
  assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
  assert.ok(js.includes("return '<div class=\"fe-dialogHero\">'+feMatchHero(g)"));
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=143/);
 });
 
 test("Away content nudges left on mobile, without resizing either fixture or expanded layout",()=>{
@@ -68,5 +68,104 @@ test("Away content nudges left on mobile, without resizing either fixture or exp
  assert.match(block,/transform:translateX\(-14px\)!important/);
  assert.doesNotMatch(block,/^\s*(?:width|grid-template-columns|left|padding|margin)\s*:/m);
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=143/);
+});
+
+test("V3 preview design is additive and keeps fixture/expanded match renderer identical",()=>{
+ const preview=fs.readFileSync("assets/footyedge-v3-preview.css","utf8");
+ const p1=fs.readFileSync("ui/part1.html","utf8");
+ const p2=fs.readFileSync("ui/part2.html","utf8");
+ const loader=fs.readFileSync("picks.html","utf8");
+ assert.match(preview,/grid-template-columns:minmax\(0,1fr\) 112px minmax\(0,1fr\)!important/);
+ assert.match(preview,/\.fe-matchCard,\.fe-dialogHero/);
+ assert.match(preview,/\.fe-heroTeams>\.fe-side/);
+ assert.match(preview,/transform:none!important/);
+ assert.match(preview,/\.fe-kickoff/);
+ assert.match(preview,/@media\(max-width:380px\)/);
+ assert.match(preview,/\.games\{grid-template-columns:1fr/);
+ assert.match(preview,/\.fe-hero\.fe-kitHero::before/);
+ assert.match(p1,/footyedge-v3-preview\.css\?v=1/);
+ assert.match(p1,/DESIGN PREVIEW/);
+ assert.match(p1,/id="feLeagueSelect"/);
+ assert.match(p1,/id="searchInput"/);
+ assert.match(p1,/data-status="live"/);
+ assert.match(p2,/function feMatchHero\(g\)/);
+ assert.match(p2,/searchParams.get\("previewDate"\)/);
+ assert.match(p2,/feMatchHero\(g\)\+'/);
+ assert.match(loader,/ui\/part1\.html\?v=143/);
+});
+
+test("V3 fully cancels original away transform and keeps form chip row inside 320px screens",()=>{
+ const c=fs.readFileSync("assets/footyedge-v3-preview.css","utf8");
+ assert.match(c,/\.fe-heroTeams > \.fe-side\.fe-away\{\s*transform:none!important/);
+ assert.match(c,/\.fe-heroTeams > \.fe-side\.fe-home,/);
+ assert.match(c,/@media\(max-width:380px\)[\s\S]*gap:1px!important/);
+ for(const w of [320,360,375,390,430,620]){
+   const gap=w<=380?3:4,mid=w<=380?102:112;
+   const inset=w<=380?10:14;
+   const side=(w-24-2*inset-mid-2*gap)/2;
+   const chipWidth=w<=380?14:17,chipGap=w<=380?1:3;
+   assert.ok(5*chipWidth+4*chipGap<=side,
+    "Five form chips must fit on a "+w+"px viewport, track "+side);
+ }
+});
+
+test("V3 static HTML is one complete document, not the fragile three-part browser loader",()=>{
+ const html=fs.readFileSync("v3.html","utf8");
+ assert.match(html,/<meta name="footyedge-preview" content="standalone-static-v3">/);
+ assert.match(html,/<title>FootyEdge V3 — Design Lab<\/title>/);
+ assert.match(html,/footyedge-v3-preview\.css\?v=1/);
+ assert.match(html,/searchParams\.get\("previewDate"\)/);
+ assert.match(html,/function feMatchHero\(g\)/);
+ assert.match(html,/function feLineupsPanel\(g\)/);
+ assert.match(html,/DESIGN PREVIEW/);
+ const opens=(html.match(/<script\b[^>]*>/g)||[]).length;
+ const closes=(html.match(/<\/script>/g)||[]).length;
+ assert.equal(opens,closes);
+ const start=html.lastIndexOf("<script>",html.indexOf("const FLAG_CODES={"));
+ const end=html.indexOf("</script>",start);
+ assert.ok(start>=0 && end>html.indexOf("const FLAG_CODES={"),"Match logic must remain inside the inline script, not visible on screen");
+ assert.doesNotMatch(html,/Promise\.all\(PARTS\.map/);
+});
+
+test("V3 preview snapshot uses source-identified men's fixtures, never invented live scores",()=>{
+ const payload=JSON.parse(fs.readFileSync("data/2026-10-23/scoreboard.json","utf8"));
+ assert.equal(payload.footyedgeSources.scoreboard.kind,"saved-espn-fixture-snapshot");
+ assert.equal(payload.footyedgeSources.scoreboard.live,false);
+ assert.ok(payload.events.length>=8);
+ assert.ok(payload.events.every(e=>e.status.type.state==="pre" && !e.competitions[0].competitors.some(x=>x.score!=null)));
+ assert.ok(payload.events.some(e=>e.footyedgeLeague==="ksa.1"));
+ assert.ok(payload.events.some(e=>e.footyedgeLeague==="eng.1"));
+});
+
+test("V4 has structurally new matchday card, not the legacy split-kit hero",()=>{
+ const html=fs.readFileSync("v4.html","utf8");
+ const css=fs.readFileSync("assets/footyedge-v4-concept.css","utf8");
+ assert.match(html,/FootyEdge V4 — Matchday Studio/);
+ assert.match(html,/function feV4Side\(g,which\)/);
+ assert.match(html,/function feMatchHero\(g\)\{/);
+ assert.match(html,/class="v4-match"/);
+ assert.match(html,/class="v4-central"/);
+ assert.match(html,/class="v4-matchBottom"/);
+ assert.match(html,/MATCH CENTRE/);
+ assert.match(html,/REIMAGINED/);
+ assert.match(html,/v4-quickStats/);
+ assert.match(html,/previewDate/);
+ assert.match(css,/\.v4-matchTeams\{display:grid;grid-template-columns:minmax\(0,1fr\) 134px minmax\(0,1fr\)/);
+ assert.match(css,/\.v4-formDisplay \.formChip/);
+ assert.match(css,/@media\(max-width:374px\)/);
+ assert.doesNotMatch(html.slice(html.indexOf("function feMatchHero(g){"),html.indexOf("function renderGames(){")) ,/class="fe-hero fe-kitHero"/);
+});
+
+test("V4 visual showcase is populated before any API request and supports search/filter",()=>{
+ const page=fs.readFileSync("v4-showcase.html","utf8");
+ assert.match(page,/DESIGN SHOWCASE/);
+ assert.match(page,/Al Nassr/);
+ assert.match(page,/Ipswich Town/);
+ assert.match(page,/id="v4League"/);
+ assert.match(page,/id="v4Search"/);
+ assert.match(page,/class="v4-sheet"/);
+ assert.match(page,/modal\.showModal\(\)/);
+ assert.ok((page.match(/v4-showcaseCard/g)||[]).length>=10);
+ assert.doesNotMatch(page,/\/api\/espn-scoreboard/);
 });
