@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-22T04:39:57.400Z",
+  "generatedAt": "2026-10-23T05:34:46.821Z",
   "trackingStarted": "2026-10-05",
   "month": {
     "key": "2026-10",
@@ -22,12 +22,12 @@
     "hitRate": 63.63636363636363
   },
   "week": {
-    "hits": 10,
-    "misses": 8,
+    "hits": 9,
+    "misses": 6,
     "pushes": 0,
     "pending": 0,
-    "settled": 18,
-    "hitRate": 55.55555555555556
+    "settled": 15,
+    "hitRate": 60
   },
   "byFamily": {
     "goals_under": {
@@ -174,6 +174,16 @@
     }
   ],
   "monthDays": [
+    {
+      "date": "2026-10-22",
+      "hits": 0,
+      "misses": 0,
+      "pushes": 0,
+      "pending": 0,
+      "settled": 0,
+      "hitRate": null,
+      "top5": []
+    },
     {
       "date": "2026-10-21",
       "hits": 2,
@@ -1162,6 +1172,16 @@
   ],
   "recentDays": [
     {
+      "date": "2026-10-22",
+      "hits": 0,
+      "misses": 0,
+      "pushes": 0,
+      "pending": 0,
+      "settled": 0,
+      "hitRate": null,
+      "top5": []
+    },
+    {
       "date": "2026-10-21",
       "hits": 2,
       "misses": 3,
@@ -1489,67 +1509,189 @@
           "settledAt": "2026-10-17T04:33:49.703Z"
         }
       ]
-    },
-    {
-      "date": "2026-10-15",
-      "hits": 0,
-      "misses": 0,
-      "pushes": 0,
-      "pending": 0,
-      "settled": 0,
-      "hitRate": null,
-      "top5": []
     }
   ],
   "slips": {
     "trackingType": "entire-parlay-outcomes",
-    "generatedAt": "2026-10-22T04:39:58.462Z",
+    "generatedAt": "2026-10-23T05:34:49.245Z",
     "month": {
       "key": "2026-10",
       "hits": 0,
-      "misses": 1,
+      "misses": 6,
       "pushes": 0,
-      "pending": 1,
-      "settled": 1,
+      "pending": 0,
+      "settled": 6,
       "hitRate": 0
     },
     "year": {
       "key": "2026",
       "hits": 0,
-      "misses": 1,
+      "misses": 6,
       "pushes": 0,
-      "pending": 1,
-      "settled": 1,
+      "pending": 0,
+      "settled": 6,
       "hitRate": 0
     },
     "recentDays": [
       {
-        "date": "2026-10-21",
+        "date": "2026-10-22",
         "hits": 0,
-        "misses": 1,
+        "misses": 4,
         "pushes": 0,
-        "pending": 1,
-        "settled": 1,
+        "pending": 0,
+        "settled": 4,
         "hitRate": 0,
         "tickets": [
           {
             "id": "sgp",
             "type": "sgp",
             "league": null,
-            "result": "pending",
+            "result": "miss",
+            "duplicateOf": null,
+            "legResults": [
+              {
+                "label": "Over 2.5 Goals",
+                "result": "hit"
+              },
+              {
+                "label": "BTTS Yes",
+                "result": "miss"
+              },
+              {
+                "label": "Lyon ML",
+                "result": "miss"
+              }
+            ]
+          },
+          {
+            "id": "acca",
+            "type": "acca",
+            "league": null,
+            "result": "miss",
+            "duplicateOf": null,
+            "legResults": [
+              {
+                "label": "Over 2.5 Goals",
+                "result": "hit"
+              },
+              {
+                "label": "KAA Gent +1.5 Handicap",
+                "result": "miss"
+              },
+              {
+                "label": "Brighton & Hove Albion ML",
+                "result": "miss"
+              },
+              {
+                "label": "Bayer Leverkusen ML",
+                "result": "hit"
+              },
+              {
+                "label": "BTTS Yes",
+                "result": "miss"
+              },
+              {
+                "label": "BTTS Yes",
+                "result": "miss"
+              },
+              {
+                "label": "Under 3.5 Goals",
+                "result": "hit"
+              }
+            ]
+          },
+          {
+            "id": "league:uefa.europa",
+            "type": "league_sgp",
+            "league": "uefa.europa",
+            "result": "miss",
+            "duplicateOf": "sgp",
+            "legResults": [
+              {
+                "label": "Over 2.5 Goals",
+                "result": "hit"
+              },
+              {
+                "label": "BTTS Yes",
+                "result": "miss"
+              },
+              {
+                "label": "Lyon ML",
+                "result": "miss"
+              }
+            ]
+          },
+          {
+            "id": "league:uefa.europa.conf",
+            "type": "league_sgp",
+            "league": "uefa.europa.conf",
+            "result": "miss",
+            "duplicateOf": null,
+            "legResults": [
+              {
+                "label": "Brighton & Hove Albion ML",
+                "result": "miss"
+              },
+              {
+                "label": "BTTS No",
+                "result": "hit"
+              },
+              {
+                "label": "Over 1.5 Goals",
+                "result": "miss"
+              }
+            ]
+          },
+          {
+            "id": "league:ksa.1",
+            "type": "league_sgp",
+            "league": "ksa.1",
+            "result": "miss",
+            "duplicateOf": null,
+            "legResults": [
+              {
+                "label": "Al Hazem 1+ Goal",
+                "result": "hit"
+              },
+              {
+                "label": "Under 3.5 Goals",
+                "result": "miss"
+              },
+              {
+                "label": "Al Fayha or Draw",
+                "result": "hit"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2026-10-21",
+        "hits": 0,
+        "misses": 2,
+        "pushes": 0,
+        "pending": 0,
+        "settled": 2,
+        "hitRate": 0,
+        "tickets": [
+          {
+            "id": "sgp",
+            "type": "sgp",
+            "league": null,
+            "result": "miss",
             "duplicateOf": null,
             "legResults": [
               {
                 "label": "Geny Catamo — 2+ Shots",
-                "result": "pending"
+                "result": "hit"
               },
               {
                 "label": "Ivan Fresneda — 1+ Fouls Committed",
-                "result": "pending"
+                "result": "miss"
               },
               {
                 "label": "Sergi Altimira — 1+ Fouls Committed",
-                "result": "pending"
+                "result": "miss"
               },
               {
                 "label": "Luis Suarez — Anytime Goalscorer",
@@ -1590,20 +1732,20 @@
             "id": "league:uefa.champions",
             "type": "league_sgp",
             "league": "uefa.champions",
-            "result": "pending",
+            "result": "miss",
             "duplicateOf": "sgp",
             "legResults": [
               {
                 "label": "Geny Catamo — 2+ Shots",
-                "result": "pending"
+                "result": "hit"
               },
               {
                 "label": "Ivan Fresneda — 1+ Fouls Committed",
-                "result": "pending"
+                "result": "miss"
               },
               {
                 "label": "Sergi Altimira — 1+ Fouls Committed",
-                "result": "pending"
+                "result": "miss"
               },
               {
                 "label": "Luis Suarez — Anytime Goalscorer",
