@@ -55,7 +55,7 @@ test("Restore the pre-alignment layout for BOTH original fixture and expanded he
  assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
  assert.ok(js.includes("return '<div class=\"fe-dialogHero\">'+feMatchHero(g)"));
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=143/);
 });
 
 test("Away content nudges left on mobile, without resizing either fixture or expanded layout",()=>{
@@ -68,7 +68,7 @@ test("Away content nudges left on mobile, without resizing either fixture or exp
  assert.match(block,/transform:translateX\(-14px\)!important/);
  assert.doesNotMatch(block,/^\s*(?:width|grid-template-columns|left|padding|margin)\s*:/m);
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=143/);
 });
 
 test("V3 preview design is additive and keeps fixture/expanded match renderer identical",()=>{
