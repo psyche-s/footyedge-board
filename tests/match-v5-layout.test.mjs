@@ -109,3 +109,21 @@ test("V3 fully cancels original away transform and keeps form chip row inside 32
     "Five form chips must fit on a "+w+"px viewport, track "+side);
  }
 });
+
+test("V3 static HTML is one complete document, not the fragile three-part browser loader",()=>{
+ const html=fs.readFileSync("v3.html","utf8");
+ assert.match(html,/<meta name="footyedge-preview" content="standalone-static-v3">/);
+ assert.match(html,/<title>FootyEdge V3 — Design Lab<\/title>/);
+ assert.match(html,/footyedge-v3-preview\.css\?v=1/);
+ assert.match(html,/searchParams\.get\("previewDate"\)/);
+ assert.match(html,/function feMatchHero\(g\)/);
+ assert.match(html,/function feLineupsPanel\(g\)/);
+ assert.match(html,/DESIGN PREVIEW/);
+ const opens=(html.match(/<script\b[^>]*>/g)||[]).length;
+ const closes=(html.match(/<\/script>/g)||[]).length;
+ assert.equal(opens,closes);
+ const start=html.lastIndexOf("<script>",html.indexOf("const FLAG_CODES={"));
+ const end=html.indexOf("</script>",start);
+ assert.ok(start>=0 && end>html.indexOf("const FLAG_CODES={"),"Match logic must remain inside the inline script, not visible on screen");
+ assert.doesNotMatch(html,/Promise\.all\(PARTS\.map/);
+});
