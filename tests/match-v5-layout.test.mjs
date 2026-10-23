@@ -156,3 +156,16 @@ test("V4 has structurally new matchday card, not the legacy split-kit hero",()=>
  assert.match(css,/@media\(max-width:374px\)/);
  assert.doesNotMatch(html.slice(html.indexOf("function feMatchHero(g){"),html.indexOf("function renderGames(){")) ,/class="fe-hero fe-kitHero"/);
 });
+
+test("V4 visual showcase is populated before any API request and supports search/filter",()=>{
+ const page=fs.readFileSync("v4-showcase.html","utf8");
+ assert.match(page,/DESIGN SHOWCASE/);
+ assert.match(page,/Al Nassr/);
+ assert.match(page,/Ipswich Town/);
+ assert.match(page,/id="v4League"/);
+ assert.match(page,/id="v4Search"/);
+ assert.match(page,/class="v4-sheet"/);
+ assert.match(page,/modal\.showModal\(\)/);
+ assert.ok((page.match(/v4-showcaseCard/g)||[]).length>=10);
+ assert.doesNotMatch(page,/\/api\/espn-scoreboard/);
+});

@@ -189,3 +189,46 @@ body{background:radial-gradient(ellipse 85% 600px at 8% -130px,#18323b 0%,transp
  .v4-quickStats>div{min-width:64px;padding-inline:8px}
 }
 @media(prefers-reduced-motion:reduce){.v4-match{transition:none}}
+
+/* Standalone V4 visual showcase: always populated with sourced fixture cards. */
+.v4-showcase .siteNav{justify-content:flex-start!important;gap:18px}
+.v4-showcaseLabel{margin-left:auto;color:#8fa7ad;font:900 10px/1 system-ui;letter-spacing:.13em}
+.v4-showcase .v4-landing{margin-bottom:14px}
+.v4-demoStrip{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;padding:11px 15px;
+ background:#1b292d;border:1px solid #4b6668;border-radius:12px;color:#d5e7dc;font:700 11px/1.4 system-ui;flex-wrap:wrap}
+.v4-demoStrip>div{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.v4-demoStrip b{font:950 10px/1.2 system-ui;letter-spacing:.12em;color:#cbf486}
+.v4-demoDot{width:7px;height:7px;border-radius:50%;background:#c9f77e}
+.v4-demoNotice{font-size:10px;color:#92b3b3}
+.v4-controlDock{background:#111a25;border:1px solid #293a47;border-radius:17px;padding:15px 17px;margin-bottom:14px}
+.v4-statusLabel{font:900 10px/1.2 system-ui;letter-spacing:.14em;color:#bff08e;margin-bottom:10px}
+.v4-controlFields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.v4-controlFields label{font:850 9px/1.5 system-ui;letter-spacing:.12em;color:#9eb7b8;display:grid;gap:5px}
+.v4-controlFields :is(select,input){width:100%;height:42px;min-width:0;padding:0 12px;border-radius:9px;
+ background:#172634;border:1px solid #3a5059;color:#f1f7ef;font:700 12px/1 system-ui}
+.v4-controlFields select{appearance:auto}
+.v4-showcase .games{margin:0!important}
+.v4-showcaseCard[hidden]{display:none!important}
+.v4-showcaseCard{cursor:pointer;outline-offset:4px}
+.v4-compMark{display:grid;place-items:center;width:23px;height:23px;background:#38545a;border-radius:6px;color:#c5f57c;font-size:18px}
+.v4-fallbackCrest{font:950 18px/1 system-ui;color:#c8f7da;text-transform:uppercase}
+.v4-miniDash{font:850 8px/1 system-ui;letter-spacing:.03em;color:#849da1;white-space:nowrap}
+.v4-sortLabel{color:#c1e6cb;font:850 10px/1 system-ui}
+.v4-showcaseDisclaimer{padding:16px 2px;color:#90aaa8;font:500 11px/1.6 system-ui;max-width:720px}
+.v4-sheet{border:1px solid #526a67;background:#121d2a;color:#f2f9f1;border-radius:20px;padding:0;
+ width:min(92vw,590px);max-height:90vh;box-shadow:0 25px 100px #000b}
+.v4-sheet::backdrop{background:#02070bdc;backdrop-filter:blur(6px)}
+.v4-sheetHead{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#202c35;
+ border-bottom:1px solid #3e5054;padding:13px 17px;color:#c4ef97;font:900 10px/1.2 system-ui;letter-spacing:.15em}
+.v4-sheetHead button{background:#2c3d43;border:1px solid #59706c;color:#f2faed;border-radius:8px;width:32px;height:32px;font-size:24px;cursor:pointer}
+.v4-sheet h2{font:950 clamp(23px,5vw,33px)/1.12 system-ui;letter-spacing:-.04em;margin:25px 22px 8px}
+.v4-sheetTime{margin:0 22px;color:#99b6b6;font:850 11px/1.2 system-ui}
+.v4-sheetTabs{display:flex;gap:5px;margin:22px 22px 15px;border-bottom:1px solid #405258}
+.v4-sheetTabs button{border:0;border-radius:7px 7px 0 0;background:#202e38;color:#b0c8c1;font:900 10px/1.3 system-ui;
+ padding:11px 12px;cursor:pointer}
+.v4-sheetTabs button.selected{background:#c5f57c;color:#112416}
+.v4-sheet p{color:#c5d8d2;line-height:1.6;font-size:13px;padding:0 22px 10px}
+.v4-sheetActions{padding:12px 22px 22px}
+.v4-sheetActions button{width:100%;padding:12px 15px;border-radius:9px;background:#c5f57c;color:#16251d;font-weight:900;border:0;cursor:pointer}
+@media(max-width:650px){.v4-controlDock{padding:12px}.v4-showcaseLabel{font-size:8px}.v4-demoStrip{padding:9px 11px}.v4-showcase .siteNav{gap:7px}}
+@media(max-width:375px){.v4-controlFields{grid-template-columns:1fr}.v4-landing p{max-width:220px}.v4-showcaseLabel{display:none}}
