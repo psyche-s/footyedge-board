@@ -94,3 +94,18 @@ test("V3 preview design is additive and keeps fixture/expanded match renderer id
  assert.match(p2,/feMatchHero\(g\)\+'/);
  assert.match(loader,/ui\/part1\.html\?v=143/);
 });
+
+test("V3 fully cancels original away transform and keeps form chip row inside 320px screens",()=>{
+ const c=fs.readFileSync("assets/footyedge-v3-preview.css","utf8");
+ assert.match(c,/\.fe-heroTeams > \.fe-side\.fe-away\{\s*transform:none!important/);
+ assert.match(c,/\.fe-heroTeams > \.fe-side\.fe-home,/);
+ assert.match(c,/@media\(max-width:380px\)[\s\S]*gap:1px!important/);
+ for(const w of [320,360,375,390,430,620]){
+   const gap=w<=380?3:4,mid=w<=380?102:112;
+   const inset=w<=380?10:14;
+   const side=(w-24-2*inset-mid-2*gap)/2;
+   const chipWidth=w<=380?14:17,chipGap=w<=380?1:3;
+   assert.ok(5*chipWidth+4*chipGap<=side,
+    "Five form chips must fit on a "+w+"px viewport, track "+side);
+ }
+});

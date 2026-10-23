@@ -234,3 +234,18 @@ body{background:radial-gradient(ellipse 62% 280px at 50% 0%,rgba(65,116,84,.18),
 @media(prefers-reduced-motion:reduce){
  .fe-matchCard{transition:none!important}
 }
+/* Specificity safeguard against the original -22px away-team mobile transform.
+   Match both selectors exactly so both sides share an identical centre anchor. */
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams > .fe-side.fe-home,
+:is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams > .fe-side.fe-away{
+ transform:none!important;
+ position:static!important;
+ left:auto!important;
+ right:auto!important;
+}
+@media(max-width:380px){
+ :is(.fe-matchCard,.fe-dialogHero) .fe-form{gap:1px!important}
+ :is(.fe-matchCard,.fe-dialogHero) .fe-form .formChip{
+  width:14px!important;flex-basis:14px!important;
+ }
+}
