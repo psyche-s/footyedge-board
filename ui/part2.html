@@ -2777,7 +2777,7 @@ planRefresh=function(){
   const delay=live?45000:nearby?90000:240000;
   refreshTimer=setTimeout(async()=>{await Promise.allSettled([pollMatchScores(),pollAttributedOdds()]);planRefresh()},delay);
 };
-window.openGame=openGame;const captureDate=ARCHIVE_CAPTURE?new URLSearchParams(window.location.search).get("boardDate"):null;S.date=/^\d{4}-\d{2}-\d{2}$/.test(captureDate||"")?captureDate:etDate();
+window.openGame=openGame;const searchParams=new URLSearchParams(window.location.search);const captureDate=ARCHIVE_CAPTURE?searchParams.get("boardDate"):null;const previewDate=ARCHIVE_CAPTURE?captureDate:searchParams.get("previewDate");S.date=/^\d{4}-\d{2}-\d{2}$/.test(previewDate||"")?previewDate:etDate();
 load().then(()=>{if(!ARCHIVE_CAPTURE&&!GITHUB_STATIC&&S.date===etDate())return Promise.allSettled([pollMatchScores(),pollAttributedOdds()])}).catch(e=>console.debug('Initial data refresh unavailable',String(e)));
 </script>
 </body>

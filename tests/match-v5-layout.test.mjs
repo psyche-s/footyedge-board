@@ -90,6 +90,7 @@ test("V3 preview design is additive and keeps fixture/expanded match renderer id
  assert.match(p1,/id="searchInput"/);
  assert.match(p1,/data-status="live"/);
  assert.match(p2,/function feMatchHero\(g\)/);
+ assert.match(p2,/searchParams.get\("previewDate"\)/);
  assert.match(p2,/feMatchHero\(g\)\+'/);
  assert.match(loader,/ui\/part1\.html\?v=143/);
 });
