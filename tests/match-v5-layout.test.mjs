@@ -127,3 +127,13 @@ test("V3 static HTML is one complete document, not the fragile three-part browse
  assert.ok(start>=0 && end>html.indexOf("const FLAG_CODES={"),"Match logic must remain inside the inline script, not visible on screen");
  assert.doesNotMatch(html,/Promise\.all\(PARTS\.map/);
 });
+
+test("V3 preview snapshot uses source-identified men's fixtures, never invented live scores",()=>{
+ const payload=JSON.parse(fs.readFileSync("data/2026-10-23/scoreboard.json","utf8"));
+ assert.equal(payload.footyedgeSources.scoreboard.kind,"saved-espn-fixture-snapshot");
+ assert.equal(payload.footyedgeSources.scoreboard.live,false);
+ assert.ok(payload.events.length>=8);
+ assert.ok(payload.events.every(e=>e.status.type.state==="pre" && !e.competitions[0].competitors.some(x=>x.score!=null)));
+ assert.ok(payload.events.some(e=>e.footyedgeLeague==="ksa.1"));
+ assert.ok(payload.events.some(e=>e.footyedgeLeague==="eng.1"));
+});
