@@ -70,3 +70,26 @@ test("Away content nudges left on mobile, without resizing either fixture or exp
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=34/);
  assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=142/);
 });
+
+test("V3 preview design is additive and keeps fixture/expanded match renderer identical",()=>{
+ const preview=fs.readFileSync("assets/footyedge-v3-preview.css","utf8");
+ const p1=fs.readFileSync("ui/part1.html","utf8");
+ const p2=fs.readFileSync("ui/part2.html","utf8");
+ const loader=fs.readFileSync("picks.html","utf8");
+ assert.match(preview,/grid-template-columns:minmax\(0,1fr\) 112px minmax\(0,1fr\)!important/);
+ assert.match(preview,/\.fe-matchCard,\.fe-dialogHero/);
+ assert.match(preview,/\.fe-heroTeams>\.fe-side/);
+ assert.match(preview,/transform:none!important/);
+ assert.match(preview,/\.fe-kickoff/);
+ assert.match(preview,/@media\(max-width:380px\)/);
+ assert.match(preview,/\.games\{grid-template-columns:1fr/);
+ assert.match(preview,/\.fe-hero\.fe-kitHero::before/);
+ assert.match(p1,/footyedge-v3-preview\.css\?v=1/);
+ assert.match(p1,/DESIGN PREVIEW/);
+ assert.match(p1,/id="feLeagueSelect"/);
+ assert.match(p1,/id="searchInput"/);
+ assert.match(p1,/data-status="live"/);
+ assert.match(p2,/function feMatchHero\(g\)/);
+ assert.match(p2,/feMatchHero\(g\)\+'/);
+ assert.match(loader,/ui\/part1\.html\?v=143/);
+});
