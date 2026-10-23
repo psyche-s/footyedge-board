@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Target, TrendingUp, Zap } from "lucide-react";
 import type { MatchData } from "@/lib/types";
 
@@ -66,8 +65,7 @@ export default function MatchStatsCard({match, selected, expanded, onSelect}: Pr
             }>
               {kickoffLabel(match)}
             </span>
-            <motion.span animate={{rotate: expanded ? 180 : 0}} transition={{duration: 0.2}}
-              className="text-zinc-500"><ChevronDown size={15} aria-hidden="true" /></motion.span>
+            <span className={"text-zinc-500 transition-transform duration-200 " + (expanded ? "rotate-180" : "")}><ChevronDown size={15} aria-hidden="true" /></span>
           </div>
         </div>
         <div className="mt-3 flex items-center gap-3">
@@ -83,17 +81,12 @@ export default function MatchStatsCard({match, selected, expanded, onSelect}: Pr
           Research strength · not win probability
         </div>
       </button>
-      <AnimatePresence initial={false}>
-        {expanded && (
-          <motion.div
-            id={previewId}
-            initial={{height: 0, opacity: 0}}
-            animate={{height: "auto", opacity: 1}}
-            exit={{height: 0, opacity: 0}}
-            transition={{duration: 0.25, ease: "easeInOut"}}
-            className="overflow-hidden border-t border-zinc-800/60"
-          >
-            <div className="space-y-4 px-3.5 py-4 sm:px-4">
+      <div id={previewId} aria-hidden={!expanded}
+        className={"grid transition-[grid-template-rows,opacity] duration-300 ease-in-out " +
+          (expanded ? "grid-rows-[1fr] border-t border-zinc-800/60 opacity-100" : "grid-rows-[0fr] opacity-0")}
+      >
+        <div className="min-h-0 overflow-hidden">
+          <div className="space-y-4 px-3.5 py-4 sm:px-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="border-r border-zinc-800/60">
                   <div className="text-[10px] uppercase tracking-wider text-zinc-500">Verified xG</div>
@@ -170,10 +163,9 @@ export default function MatchStatsCard({match, selected, expanded, onSelect}: Pr
                   ))}
                 </div>
               )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      </div>
     </article>
   );
 }
