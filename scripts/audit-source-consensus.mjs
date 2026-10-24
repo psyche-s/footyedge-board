@@ -21,8 +21,8 @@ export function audit(review,doc){
  for(const e of doc.opinions){
   const m=matchesBy.get(String(e.fixtureId)),domain=allowed[e.source];
   try{
-   const url=new URL(e.url);
-   if(!m||e.fixtureDate!==review.date||!domain||(url.hostname!==domain&&!url.hostname.endsWith("."+domain))||url.protocol!=="https:")throw Error("Fixture/source/date mismatch");
+   const host=String(e.url||"").match(/^https:\/\/([^\/]+)(?:\/|$)/i)?.[1]?.toLowerCase()||"";
+   if(!m||e.fixtureDate!==review.date||!domain||(host!==domain&&!host.endsWith("."+domain)))throw Error("Fixture/source/date mismatch");
    if(!["match_winner","btts"].includes(e.market)||e.kind!=="explicit_pre_match_prediction"||
    !({match_winner:["home","away","draw"],btts:["yes","no"]}[e.market]).includes(e.prediction))throw Error("Invalid market");
    const key=e.fixtureId+"|"+e.source+"|"+e.market;
