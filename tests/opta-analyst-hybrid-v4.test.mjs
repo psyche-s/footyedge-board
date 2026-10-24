@@ -14,7 +14,7 @@ test("exactly 10000 simulation draws, normalized WDL and coherent goal distribut
  const s=run(),m=s.fixtures[0];assert.equal(s.totalSimulations,10000);assert.equal(m.simulations,10000);
  assert.equal(Object.values(m.winDrawLossPct).reduce((a,b)=>a+b,0),100);
  assert.ok(m.marketsPct.over1_5>=m.marketsPct.over2_5);
- assert.ok(Math.abs(m.marketsPct.under3_5+(100-m.statTotals.goals.lines[2].overPct)-100)<.001);
+ assert.ok(Math.abs(m.marketsPct.under3_5+m.statTotals.goals.lines[2].overPct-100)<.001);
  assert.equal(m.mostLikelyScores[0].score,m.predictedScore);
  assert.equal(m.dataQuality.externalMatchForecastVerified,true);
 });
