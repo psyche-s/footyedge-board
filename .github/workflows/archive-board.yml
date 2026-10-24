@@ -155,6 +155,7 @@ jobs:
           # Only dated independently validated opinion snapshots count as sources checked.
           # No source-opinions file => all external votes remain missing, not "consensus".
           node scripts/audit-source-consensus.mjs
+          node scripts/build-source-coverage.mjs
           node scripts/build-consensus-reviewed.mjs
           node scripts/snapshot-slip-market-reference.mjs
           node scripts/build-odds-reviewed-slips.mjs
@@ -244,7 +245,7 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed data/source-coverage)
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           if [[ -d data/style-matchups ]]; then files+=(data/style-matchups); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
