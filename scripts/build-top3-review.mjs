@@ -3,6 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {distinctPickSet} from "./independent-picks.mjs";
 export function buildReviewedPicks({research,simulation,news,standings,editorialCrosschecks}){
  const day=research?.date;
  if(!day||!Array.isArray(research.fixtures)||simulation?.date!==day)return {error:"Date-matched research and simulation required"};
@@ -78,21 +79,21 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    });
    // Don't invent a third play from absent shots, player or booking records.
    const picked=[chooseResult,goalChoice,scoringChoice].filter(Boolean).filter(x=>x.confidenceRating>=58);
-   picked.sort((x,y)=>y.confidenceRating-x.confidenceRating||y.historicalSupportPct-x.historicalSupportPct);
-   picked.forEach((x,i)=>{x.rank=i+1;});
+   const distinct=distinctPickSet(picked,3);
+   distinct.forEach((x,i)=>{x.rank=i+1;});
    // A dated optional independent preview may ADD a verified contextual fact
    // to an already-supported selection. It never creates a pick or changes rating.
    const cross=(editorialCrosschecks?.date===day?editorialCrosschecks.matches:[]||[])
      .find(x=>String(x.fixtureId)===String(f.id));
-   for(const pick of picked){
+   for(const pick of distinct){
      const match=(cross?.context||[]).find(x=>String(x.market).toLowerCase()===String(pick.label).toLowerCase()
        &&typeof x.note==="string"&&x.note.length<=240);
      if(!match)continue;
      const cleaned=match.note.replace(/https?:\/\/\S+/g,"").replace(/\b(?:Football Whispers|Sports Mole|Forebet|Opta|ESPN|Sportskeeda|FotMob)\b/gi,"").trim();
      if(cleaned){pick.reason+=" "+cleaned;pick.contextVerified=true;out.qualifyingInputs.sourceReviewed=true;}
    }
-   out.picks=picked;
-   out.reviewStatus=picked.length===3?"three_supported_research_angles":"insufficient_independent_high_grade_market";
+   out.picks=distinct;
+   out.reviewStatus=distinct.length===3?"three_independent_verified_market_hypotheses":"no_independent_third_market_verified";
    out.qualifyingInputs.verifiedStandings=!!(ht&&at);
    out.qualifyingInputs.verifiedH2h=(sim.dataQuality?.h2hGames||0)>0;
    data.push(out);
