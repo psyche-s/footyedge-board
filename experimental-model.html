@@ -63,7 +63,8 @@ async function load(){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
  $("status").textContent="Loading…";$("cards").replaceChildren();data=null;
  try{
- let r=await fetch("/data/experimental-simulations/"+date+"-v2.json",{cache:"no-store"});
+ let r=await fetch("/data/experimental-simulations/"+date+"-v3.json",{cache:"no-store"});
+ if(!r.ok)r=await fetch("/data/experimental-simulations/"+date+"-v2.json",{cache:"no-store"});
  if(!r.ok)r=await fetch("/data/experimental-simulations/"+date+".json",{cache:"no-store"});
  if(!r.ok)throw Error("There is no published experimental simulation for this date.");
  const v=await r.json();
