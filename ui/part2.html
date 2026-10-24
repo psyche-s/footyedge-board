@@ -2200,6 +2200,100 @@ async function feOpenPlayerProfile(g,button){
  }
 }
 
+/* Lineup pitch per-player five-match stat strips; the API is already used by player profiles.
+   Missing provider stat != zero; do not synthesize last-five data. */
+const FE_PITCH_STATS=Object.freeze([
+ ["goals","Goals"],["assists","Assists"],["shotsOnTarget","Shots on Target"],["shots","Shots"],
+ ["foulsCommitted","Fouls Committed"],["foulsWon","Fouls Won"],["yellowCards","Yellow Cards"],
+ ["redCards","Red Cards"],["minutes","Minutes"]
+]);
+const fePitchHistoryCache=new Map(),fePitchHistoryQueue=[];
+let fePitchHistoryActive=0;
+function fePitchHistoryKey(g,team,player){
+ const name=typeof player==="string"?player:String(player?.name||"");
+ const id=typeof player==="object"?String(player?.id||""):"";
+ return [g.league,String(team?.id||""),id||name.toLowerCase().trim()].join("|");
+}
+function fePitchFive(history,kickoff){
+ // Never use results from the forecast fixture or any later fixture.
+ const cut=String(kickoff||"").slice(0,10);
+ const unique=new Set();
+ return (Array.isArray(history)?history:[])
+  .filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(String(r.date||""))&&(!cut||r.date<cut)
+    &&String(r.opponent||"").trim())
+  .sort((a,b)=>b.date.localeCompare(a.date))
+  .filter(r=>{const k=r.date+"|"+r.opponent;if(unique.has(k))return false;unique.add(k);return true})
+  .slice(0,5);
+}
+function fePitchValue(n){
+ if(n===null||n===undefined||n===""||!Number.isFinite(Number(n))||Number(n)<0)return "—";
+ return String(Number(n));
+}
+function fePitchCells(info,metric,kickoff){
+ const entries=info?.status==="verified"?fePitchFive(info.recent,kickoff):[];
+ return Array.from({length:5},(_,i)=>{
+  const match=entries[i],val=match?fePitchValue(match[metric]):"—";
+  const label=match?match.date+" vs "+match.opponent+" · "+metric+": "+val:"No verified appearance";
+  return '<i class="fe-pitchStatCell'+(val==="—"?' fe-pitchStatEmpty':Number(val)>0?' fe-pitchStatHit':'')+
+    '" title="'+esc(label)+'">'+esc(val)+'</i>';
+ }).join("");
+}
+function fePitchMetric(g){return FE_PITCH_STATS.some(x=>x[0]===g.fePitchMetric)?g.fePitchMetric:"goals";}
+function fePaintPitchStats(g){
+ const body=document.getElementById("modalBody");
+ if(!body||!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
+ const field=fePitchMetric(g);
+ for(const button of body.querySelectorAll(".fe-sharedPitch [data-fe-pitch-key]")){
+  const key=button.dataset.fePitchKey,strip=button.querySelector("[data-fe-pitch-strip]");
+  if(!strip)continue;
+  const result=fePitchHistoryCache.get(key);
+  strip.innerHTML=fePitchCells(result?.value,field,g.date);
+  strip.setAttribute("aria-label",FE_PITCH_STATS.find(x=>x[0]===field)[1]+": last five available appearances, newest first");
+ }
+}
+function feRunPitchHistoryQueue(){
+ while(fePitchHistoryActive<3&&fePitchHistoryQueue.length){
+  const job=fePitchHistoryQueue.shift();
+  if(!job||job.entry.state!=="queued")continue;
+  fePitchHistoryActive++;job.entry.state="loading";
+  const abort=new AbortController();
+  const timer=setTimeout(()=>abort.abort(),9500);
+  const qs=new URLSearchParams({league:job.league,teamId:job.teamId,name:job.name});
+  if(job.fallbackLeague&&job.fallbackLeague!==job.league)qs.set("fallbackLeague",job.fallbackLeague);
+  if(/^\d{1,12}$/.test(job.id))qs.set("playerId",job.id);
+  fetch("/api/player-profile?"+qs.toString(),{headers:{accept:"application/json"},signal:abort.signal})
+   .then(r=>{if(!r.ok)throw Error("Unverified player data");return r.json()})
+   .then(data=>{
+     job.entry.value=data?.schema==="footyedge-player-profile-v1"&&data.status==="verified"?data:null;
+     job.entry.state="done";
+   }).catch(()=>{job.entry.value=null;job.entry.state="done"})
+   .finally(()=>{
+     clearTimeout(timer);fePitchHistoryActive--;
+     const opened=S.games.find(x=>String(x.id)===String(S.openGameId));
+     if(opened)fePaintPitchStats(opened);
+     feRunPitchHistoryQueue();
+   });
+ }
+}
+function fePrimePitchHistory(g){
+ if(!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
+ const body=document.getElementById("modalBody");
+ if(!body)return;
+ for(const button of body.querySelectorAll(".fe-sharedPitch [data-fe-pitch-key]")){
+  const key=button.dataset.fePitchKey;
+  if(fePitchHistoryCache.has(key))continue;
+  const team=[g.home,g.away].find(t=>String(t.id)===String(button.dataset.fePlayerTeam));
+  if(!team||!/^\d{1,10}$/.test(String(team.id)))continue;
+  const name=String(button.dataset.fePlayerName||"");
+  if(!name)continue;
+  const entry={state:"queued",value:null};
+  fePitchHistoryCache.set(key,entry);
+  fePitchHistoryQueue.push({entry,league:g.league,teamId:String(team.id),
+    fallbackLeague:feRosterLeague(g,team),name,id:String(button.dataset.fePlayerId||"")});
+ }
+ fePaintPitchStats(g);feRunPitchHistoryQueue();
+}
+
 function feTeamPitchRows(x,t,g,position){
  const confirmed=Array.isArray(x?.confirmedXI)&&x.confirmedXI.length===11;
  const roster=confirmed?x.confirmedXI:Array.isArray(x?.predictedXI)?x.predictedXI:[];
@@ -2217,8 +2311,10 @@ function feTeamPitchRows(x,t,g,position){
  };
  const person=p=>'<button type="button" class="fe-fieldPlayer fe-playerOpen" aria-label="View player profile: '+esc(name(p))+'" '+
    'data-fe-player-name="'+esc(name(p))+'" data-fe-player-team="'+esc(t.id||"")+'" '+
-   'data-fe-player-id="'+esc(typeof p==="object"?(p.id||""):"")+'">'+
-   '<div class="fe-fieldAvatar">'+safeImage(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div></button>';
+   'data-fe-player-id="'+esc(typeof p==="object"?(p.id||""):"")+'" '+
+   'data-fe-pitch-key="'+esc(fePitchHistoryKey(g,t,p))+'">'+
+   '<div class="fe-fieldAvatar">'+safeImage(p)+'</div><div class="fe-fieldPlayerName">'+esc(name(p))+'</div>'+
+   '<span class="fe-pitchStatStrip" data-fe-pitch-strip></span></button>';
  const formTag=validated?formation:'Shape not verified';
  const header='<div class="fe-sharedClub">'+teamImgTag(t,"fe-historyLogo")+'<b>'+esc(teamDisplayName(g,t))+'</b>'+
    '<small>'+esc(formTag)+'</small></div>';
@@ -2254,11 +2350,15 @@ function feLineupsPanel(g){
   'Confirmed starting XIs have not been published for this fixture.';
  return '<section class="fe-panel fe-lineupPanel">'+
    '<div class="fe-panelHeading"><h3>STARTING XIs</h3><span class="fe-sourceTag">'+status+'</span></div>'+
-   '<div class="fe-lineupToolbar"><span>Both teams · matchday lineup information</span><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
+   '<div class="fe-lineupToolbar"><div class="fe-pitchMetricControl"><label for="fe-pitchMetricSelect">PLAYER STAT</label>'+
+    '<select id="fe-pitchMetricSelect" data-fe-pitch-metric aria-label="Select player statistic for the last five appearances">'+
+    FE_PITCH_STATS.map(([key,label])=>'<option value="'+key+'"'+(fePitchMetric(g)===key?' selected':'')+'>'+esc(label)+'</option>').join("")+
+    '</select></div><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
     (hasHome||hasAway?'Update XIs':'Check lineups')+'</button></div>'+
    '<div class="fe-sharedPitch" role="group" aria-label="Football pitch showing available starting XIs for '+esc(g.home.name)+' and '+esc(g.away.name)+'">'+
    '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
    feTeamPitchRows(intel.away,g.away,g,"top")+feTeamPitchRows(intel.home,g.home,g,"bottom")+'</div>'+
+   '<p class="fe-pitchStatHelp">Five most recent verified appearances, newest first · — means unavailable, not zero. Tap a player for their full profile.</p>'+
    '<p class="fe-lineupCaution">'+caution+'</p>'+
    feMatchSourceStatus(g)+'</section>';
 }
@@ -2713,7 +2813,17 @@ function renderModal(g){
     }).join('')+'</div>'+
     '<p class="modelFootnote">Historical results are a descriptive screen, not an 85–90% predicted win rate. No recalibration or new official selection is implied. Official frozen picks remain unchanged.</p></section>':'';
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+oddsExtra;
+  if(g.feTab==="lineups")fePrimePitchHistory(g);
 }
+document.getElementById("modalBody").addEventListener("change",event=>{
+  if(!event.target?.matches?.("[data-fe-pitch-metric]"))return;
+  const g=S.games.find(x=>String(x.id)===String(S.openGameId));
+  if(!g)return;
+  const v=String(event.target.value||"goals");
+  if(!FE_PITCH_STATS.some(x=>x[0]===v))return;
+  g.fePitchMetric=v;
+  fePaintPitchStats(g);
+});
 document.getElementById("modalBody").onclick=event=>{
   const action=event?.target?.closest?.("[data-fe-player-name],[data-fe-tab],[data-h2h-toggle],[data-last5-toggle],[data-refresh-match]");
   if(!action)return;
