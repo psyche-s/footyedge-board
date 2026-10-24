@@ -27,7 +27,7 @@ export function distinctPickSet(picks,max=3){
  const compatible=(a,b)=>{
   const left=marketThesis(a),right=marketThesis(b);
   if(left==="other"||right==="other"||left===right)return false;
-  const goal=x=>String(x.label||"").match(/^(.+?) 1\\+ Goal$/i)?.[1],
+  const goal=x=>String(x.label||"").match(/^(.+?) 1\+ Goal$/i)?.[1],
         result=x=>String(x.label||"").match(/^(.+?) (?:ML|or Draw)$/i)?.[1];
   if((goal(a)&&result(b)&&key(goal(a))===key(result(b)))||
      (goal(b)&&result(a)&&key(goal(b))===key(result(a))))return false;
