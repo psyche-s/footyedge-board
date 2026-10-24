@@ -145,6 +145,8 @@ jobs:
           node --test tests/experimental-simulations.test.mjs tests/advanced-matchups.test.mjs
           node scripts/simulate-fixtures.mjs
           node scripts/simulate-matchups-v3.mjs
+          node --test tests/opta-analyst-hybrid-v4.test.mjs
+          node scripts/simulate-matchups-v4-analyst.mjs
 
       - name: Build daily match-level researched Top 3 overlay without modifying frozen picks
         if: steps.gate.outputs.run == 'true'
