@@ -2519,6 +2519,26 @@ function feProjectionFormation(g){
    feTeamPitchRows(intel.away||{},g.away,g,"top")+feTeamPitchRows(intel.home||{},g.home,g,"bottom")+
    '</div></div><p class="fe-projDisclaimer">Projected players and formation are context; numerical injury or lineup adjustments apply only when an independently quantified effect is verified.</p></section>';
 }
+function feProjectionPlayerFouls(g,sim){
+ const data=sim?.playerProjections?.foulsCommitted||[];
+ const valid=data.filter(x=>x?.sourceValidated===true&&x.sample>=5&&Number.isFinite(Number(x.projected))&&
+  Number.isFinite(Number(x.onePlusPct))&&Number.isFinite(Number(x.twoPlusPct)));
+ if(!valid.length)return '<section class="fe-projExtra"><div class="fe-panelHeading"><h3>PLAYER FOUL PROJECTIONS</h3></div>'+
+  '<p class="fe-projUnavailable">Waiting for five verified prior appearances and a sourced XI before calculating individual foul lines. Missing data is not a zero.</p></section>';
+ const render=side=>{
+  const team=side==="home"?g.home:g.away;
+  const list=valid.filter(p=>p.side===side);
+  if(!list.length)return "";
+  return '<div class="fe-projPlayerTeam"><h4>'+esc(team.name)+'</h4>'+
+   '<div class="fe-projPlayerHeader"><span>PLAYER</span><span>PROJ</span><span>1+</span><span>2+</span></div>'+
+   list.map(p=>'<div class="fe-projPlayerRow"><div><strong>'+esc(p.name)+'</strong>'+
+      (p.position?'<small>'+esc(p.position)+'</small>':'')+'</div>'+
+      '<b>'+Number(p.projected).toFixed(2)+'</b><b>'+Number(p.onePlusPct)+'%</b><b>'+Number(p.twoPlusPct)+'%</b></div>').join("")+'</div>';
+ };
+ return '<section class="fe-projExtra"><div class="fe-panelHeading"><h3>PROJECTED FOULS COMMITTED</h3><span>Verified XI player samples</span></div>'+
+   render("home")+render("away")+'<p class="fe-projDisclaimer">Observed last-five hit rates, not calibrated event probabilities. Players without five verified records are excluded.</p></section>';
+}
+
 function feProjectionFactorNotes(sim){
  if(!sim?.matchupContext)return "";
  const m=sim.matchupContext,d=sim.dataQuality||{};
@@ -2565,7 +2585,7 @@ function feProjectionsPanel(g){
    '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+format(a)+'</div><div style="width:'+d+'%">'+format(d)+'</div><div style="width:'+b+'%">'+format(b)+'</div></div>'+
    '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
    '<div class="fe-simMetrics">'+p.map(q=>tile(q[0],q[1])).join("")+'</div>'+
-   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+  (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
+   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+  (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionPlayerFouls(g,sim)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
 }
 
 const feStandingsCache=new Map();
