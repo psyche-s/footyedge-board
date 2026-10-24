@@ -3,7 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
-export function runForecast({research,analytics,h2h,teamNews,asof,simulations=10000}){
+export function runForecast({research,analytics,h2h,teamNews,standings,asof,simulations=10000}){
   if(!research||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(research.date||""))||!Array.isArray(research.fixtures))throw Error("Exact-date research is required");
   if(!Number.isInteger(simulations)||simulations<1000)throw Error("Invalid simulation count");
   const minMax=(x,l,u)=>Math.max(l,Math.min(u,x));
@@ -48,8 +48,24 @@ export function runForecast({research,analytics,h2h,teamNews,asof,simulations=10
     const atkH=smooth(home.gf,home.n),defH=smooth(home.ga,home.n);
     const atkA=smooth(away.gf,away.n),defA=smooth(away.ga,away.n);
     let eH=minMax(Math.sqrt(atkH*defA)*1.10,0.35,3.6),eA=minMax(Math.sqrt(atkA*defH)*0.94,0.35,3.6);
-    const mm=metrics.get(String(g.id));
     const factors=["last_10_recency_weighted_goals_for_against","venue_home_advantage","league_sample_shrinkage"];
+    const table=standings?.leagues?.[g.league]?.table;
+    const homeStanding=Array.isArray(table)?table.find(row=>String(row.id)===String(g.home.id)):null;
+    const awayStanding=Array.isArray(table)?table.find(row=>String(row.id)===String(g.away.id)):null;
+    if(homeStanding&&awayStanding&&Number(homeStanding.played)>=4&&Number(awayStanding.played)>=4
+       &&Number.isFinite(Number(homeStanding.points))&&Number.isFinite(Number(awayStanding.points))){
+      const playedH=Number(homeStanding.played),playedA=Number(awayStanding.played);
+      const ppgH=Number(homeStanding.points)/playedH,ppgA=Number(awayStanding.points)/playedA;
+      const damp=Math.min(playedH,playedA)/(Math.min(playedH,playedA)+9);
+      let strength=(ppgH-ppgA)*0.23*damp;
+      if([homeStanding.gf,homeStanding.ga,awayStanding.gf,awayStanding.ga].every(v=>v!==null&&Number.isFinite(Number(v)))){
+        strength+=0.08*damp*((Number(homeStanding.gf)-Number(homeStanding.ga))/playedH-(Number(awayStanding.gf)-Number(awayStanding.ga))/playedA);
+      }
+      strength=minMax(strength,-0.22,0.22);
+      eH*=Math.exp(strength);eA*=Math.exp(-strength);
+      factors.push("verified_season_strength");
+    }
+    const mm=metrics.get(String(g.id));
     if(mm?.verifiedJoin&&Number(mm.homeStats?.sample)>=8&&Number(mm.awayStats?.sample)>=8){
       const sh=Number(mm.homeStats?.shotsOnTargetAvg),sa=Number(mm.awayStats?.shotsOnTargetAvg);
       if(sh>0&&sa>0&&Number.isFinite(sh)&&Number.isFinite(sa)){
@@ -101,13 +117,13 @@ export function runForecast({research,analytics,h2h,teamNews,asof,simulations=10
       predictedScore:likely[0]?.score||null,predictedScoreProbabilityPct:likely[0]?.probabilityPct||null,
       mostLikelyScores:likely,
       marketsPct:{over1_5:pct(over15),over2_5:pct(over25),under3_5:pct(under35),bttsYes:pct(btts)},
-      dataQuality:{level:home.n>=8&&away.n>=8?"limited_experimental":"insufficient_history",homeHistoryGames:home.n,awayHistoryGames:away.n,verifiedShotJoin:!!(mm?.verifiedJoin&&factors.includes("source_join_verified_team_shots_on_target")),verifiedXg:factors.includes("verified_team_xg_small_blend"),h2hGames:hs.length,datedProjectedXI:!!nr,missingInputs:["opponent_adjusted_strength","calibrated_player_absence_impact",...(factors.includes("verified_team_xg_small_blend")?[]:["verified_xg"])]},
+      dataQuality:{level:home.n>=8&&away.n>=8?"limited_experimental":"insufficient_history",homeHistoryGames:home.n,awayHistoryGames:away.n,verifiedStandings:factors.includes("verified_season_strength"),verifiedShotJoin:!!(mm?.verifiedJoin&&factors.includes("source_join_verified_team_shots_on_target")),verifiedXg:factors.includes("verified_team_xg_small_blend"),h2hGames:hs.length,datedProjectedXI:!!nr,missingInputs:[...(factors.includes("verified_season_strength")?[]:["current_season_standings_strength"]),"calibrated_player_absence_impact",...(factors.includes("verified_team_xg_small_blend")?[]:["verified_xg"])]},
       usedFactors:factors,teamNewsContext:context,
       warning:"Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."};
   }
   const fixtures=research.fixtures.filter(g=>g?.home?.name&&g?.away?.name&&!/\(w\)/i.test(g.home.name+" "+g.away.name)).map(simulateMatch);
   const total=fixtures.reduce((a,x)=>a+x.simulations,0);
-  return {schema:"footyedge-experimental-monte-carlo-v1",modelVersion:"experimental-poisson-10000-v1",date:research.date,generatedAt:asof,mode:"shadow_only",usedForOfficialPicks:false,simulationsPerFixture:simulations,totalSimulations:total,sourceDates:{research:research.generatedAt,analytics:analytics?.generatedAt||null,h2h:research.date,teamNews:teamNews?.generatedAt||null},assumptions:{goalDistribution:"independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",homeAdvantageMultiplier:1.10,awayAdjustmentMultiplier:0.94,leagueGoalBaseline:"current date-qualified prior match snapshots in research base",xgAndShots:"only verified matched team stats; xG absent for most fixtures",h2h:"3% blend when at least three verified prior meetings",playerLineups:"context-only; no invented quantitative effect",marketOdds:"excluded",scope:"men only, all archived league fixtures"},coverage:{fixtures:fixtures.length,preKickoff:fixtures.filter(x=>x.status==="pre_kickoff_experimental").length,postKickoff:fixtures.filter(x=>x.status!=="pre_kickoff_experimental").length,atLeastEightEach:fixtures.filter(x=>x.dataQuality.level==="limited_experimental").length,shotJoined:fixtures.filter(x=>x.dataQuality.verifiedShotJoin).length,realXg:fixtures.filter(x=>x.dataQuality.verifiedXg).length,projectedXI:fixtures.filter(x=>x.dataQuality.datedProjectedXI).length},note:"Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",fixtures};
+  return {schema:"footyedge-experimental-monte-carlo-v1",modelVersion:"experimental-poisson-10000-v2",date:research.date,generatedAt:asof,mode:"shadow_only",usedForOfficialPicks:false,simulationsPerFixture:simulations,totalSimulations:total,sourceDates:{research:research.generatedAt,analytics:analytics?.generatedAt||null,h2h:research.date,teamNews:teamNews?.generatedAt||null,standings:standings?.capturedAt||null},assumptions:{goalDistribution:"independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",homeAdvantageMultiplier:1.10,awayAdjustmentMultiplier:0.94,leagueGoalBaseline:"current date-qualified prior match snapshots in research base",xgAndShots:"only verified matched team stats; xG absent for most fixtures",h2h:"3% blend when at least three verified prior meetings",standingsStrength:"ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",playerLineups:"context-only; no invented quantitative effect",marketOdds:"excluded",scope:"men only, all archived league fixtures"},coverage:{fixtures:fixtures.length,preKickoff:fixtures.filter(x=>x.status==="pre_kickoff_experimental").length,postKickoff:fixtures.filter(x=>x.status!=="pre_kickoff_experimental").length,atLeastEightEach:fixtures.filter(x=>x.dataQuality.level==="limited_experimental").length,shotJoined:fixtures.filter(x=>x.dataQuality.verifiedShotJoin).length,realXg:fixtures.filter(x=>x.dataQuality.verifiedXg).length,projectedXI:fixtures.filter(x=>x.dataQuality.datedProjectedXI).length,standingsJoined:fixtures.filter(x=>x.dataQuality.verifiedStandings).length},note:"Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",fixtures};
 }
 async function main(){
  const parts=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
@@ -122,8 +138,9 @@ async function main(){
  const analytics=await read("data/analytics/"+day+".json");
  const h2h=await read("data/h2h/"+day+".json");
  const teamNews=await read("data/team-intelligence/"+day+".json");
+ const standings=await read("data/experimental-inputs/"+day+"-standings.json");
  // Run forecasts with historical observations restricted to before each kickoff.
- const result=runForecast({research,analytics,h2h,teamNews,asof:new Date().toISOString(),simulations:10000});
+ const result=runForecast({research,analytics,h2h,teamNews,standings,asof:new Date().toISOString(),simulations:10000});
  if(result.coverage.fixtures!==research.fixtures.length||result.totalSimulations!==10000*research.fixtures.length)throw Error("Simulation coverage/normalization failure");
  await fs.mkdir(path.dirname(dest),{recursive:true});
  await fs.writeFile(dest,JSON.stringify(result,null,2)+"\n");
