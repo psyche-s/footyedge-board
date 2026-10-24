@@ -18,6 +18,8 @@ export function addAuditedConsensus(review,auditDoc){
       extra=" Two distinct pre-match forecasts also favour this result direction; individual match predictions still carry draw and game-state uncertainty.";
     if(v.verdict==="conflicting_forecasts")
       extra=" The independent pre-match forecasts disagree on the result direction, so this selection does not have an external consensus.";
+    if(v.verdict==="competing_directional_forecasts")
+      extra=" Independent forecasts lean toward different sides; both protected outcomes include a draw, so the matchup has no clear directional consensus.";
     return {...p,independentForecastReview:v.verdict,
       externalSupportCount:v.support,externalOppositionCount:v.oppose,
       reason:extra&&!(p.reason||"").includes(extra.trim())?(p.reason||"")+extra:p.reason};
