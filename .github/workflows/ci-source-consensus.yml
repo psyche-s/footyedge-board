@@ -1,0 +1,37 @@
+name: Independent Source Consensus Tests
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit-source-consensus.mjs'
+      - 'scripts/build-consensus-reviewed.mjs'
+      - 'tests/source-consensus.test.mjs'
+      - 'data/source-opinions/**'
+      - 'data/consensus-audits/**'
+      - 'data/consensus-reviewed/**'
+      - '.github/workflows/ci-source-consensus.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-opinion-audit:
+    name: Source votes and conflict regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source opinion schema, vote deduplication and contrary selections
+        run: |
+          node --check scripts/audit-source-consensus.mjs
+          node --check scripts/build-consensus-reviewed.mjs
+          node --test tests/source-consensus.test.mjs
+      - name: Confirm dated snapshot has no invalid source votes
+        env:
+          SLATE_DATE: '2026-10-24'
+        run: |
+          node scripts/audit-source-consensus.mjs
+          node scripts/build-consensus-reviewed.mjs
+          node --input-type=module -e "import fs from 'node:fs'; const a=JSON.parse(fs.readFileSync('data/consensus-audits/2026-10-24.json')); if(a.summary.invalidRecords!==0 || a.summary.sourceOpinionRecords<1) process.exit(1); console.log(a.summary);"
