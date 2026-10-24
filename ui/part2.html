@@ -1589,7 +1589,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    let [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload,editorialDeskPayload]=await Promise.all([
+    let [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload,editorialDeskPayload,experimentalPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1606,7 +1606,8 @@ async function load(date=S.date){
       repoData('data/team-intelligence/'+S.date+'.json').catch(()=>null),
       repoData('data/league-tables/'+S.date+'.json').catch(()=>null),
       repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null),
-      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null)
+      ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null),
+      repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null))
     ].map((request,index)=>Promise.race([
       Promise.resolve(request).catch(()=>null),
       new Promise(resolve=>setTimeout(()=>resolve(null),index<3?6500:5500))
@@ -1623,6 +1624,8 @@ async function load(date=S.date){
     ]);
     if(S.date!==date)return;
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
+    // Separate read-only 10,000-draw forecast; never rewrites official picks or W/D/L display markup.
+    S.feSimById=new Map((experimentalPayload?.schema==='footyedge-experimental-monte-carlo-v1'&&experimentalPayload.date===S.date&&(experimentalPayload.simulationsPerFixture===10000)?experimentalPayload.fixtures:[]||[]).filter(x=>x.simulations===10000&&x.winDrawLossPct&&x.expectedGoals).map(x=>[String(x.fixtureId),x]));
     // Supplemental 1X2 trend review is never a substitute for immutable picks.
     S.resultMarketReview=marketReviewPayload?.schema==="footyedge-fulltime-market-review-v1"
       &&marketReviewPayload.date===S.date&&marketReviewPayload.officialBoardUnchanged===true
@@ -2355,22 +2358,39 @@ function feExperimentalProjection(g){
    homeShut:pct(homeshut),awayShut:pct(awayshut),last10:true};
 }
 function feProjectionsPanel(g){
- const z=feExperimentalProjection(g);
- if(!z)return '<section class="fe-panel"><h3>PROJECTIONS</h3><p class="fe-panelNote">Not enough verified match history for an experimental projection. The confidence-ranked picks above are not replaced by fabricated percentages.</p></section>';
- const [a,d,b]=z.chances;
- const tile=(score,label)=>'<div class="fe-projTile"><strong>'+score+'%</strong><span>'+label+'</span></div>';
+ const sim=S.feSimById?.get(String(g.id||g.apiFixtureId||""))||null;
+ const old=feExperimentalProjection(g);
+ if(!sim&&!old)return '<section class="fe-panel"><h3>PROJECTIONS</h3><p class="fe-panelNote">Not enough verified match data for a supported projection.</p></section>';
+ const pct=n=>Number.isFinite(Number(n))?Math.max(0,Math.min(100,Number(n))):null;
+ const goal=sim?.expectedGoals||{home:old.x,away:old.y};
+ const raw=sim?.winDrawLossPct;
+ // Keep the established W/D/L segmented bar exactly as a bar.
+ const chances=raw?[pct(raw.homeWin),pct(raw.draw),pct(raw.awayWin)]:old.chances;
+ const [a,d,b]=chances.map(n=>n??0);
+ const score=sim?.predictedScore||old.score.i+"-"+old.score.j;
+ const scorePct=sim?.predictedScoreProbabilityPct??Math.round(old.score.p*100);
+ const props=sim?.marketsPct||{};
+ const format=n=>pct(n)==null?"—":Number(n).toFixed(1).replace(/\\.0$/,"")+"%";
+ const tile=(num,label)=>'<div class="fe-simMetric"><strong>'+format(num)+'</strong><span>'+label+'</span></div>';
+ const p=sim?[
+   [props.bttsYes,'Both teams score'],[props.over1_5,'Over 1.5 goals'],[props.over2_5,'Over 2.5 goals'],
+   [props.under3_5,'Under 3.5 goals'],[a+d,esc(g.home.name)+' or draw'],[b+d,esc(g.away.name)+' or draw']
+ ]:[
+   [old.btts,'Both teams score'],[old.over15,'Over 1.5 goals'],[old.over25,'Over 2.5 goals'],
+   [100-old.over35,'Under 3.5 goals'],[a+d,esc(g.home.name)+' or draw'],[b+d,esc(g.away.name)+' or draw']
+ ];
  return '<section class="fe-panel fe-projections">'+
    '<div class="fe-panelHeading"><h3>PROJECTIONS</h3><span class="fe-xiBadge">EXPERIMENTAL MODEL</span></div>'+
-   '<div class="fe-projGoals"><span>PROJECTED GOALS</span><strong>'+z.x.toFixed(2)+' <small>–</small> '+z.y.toFixed(2)+'</strong><div class="fe-goalTeams">'+esc(g.home.name)+' <span>/</span> '+esc(g.away.name)+'</div></div>'+
-   '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+a+'%</div><div style="width:'+d+'%">'+d+'%</div><div style="width:'+b+'%">'+b+'%</div></div>'+
+   '<div class="fe-simBanner">'+(sim?'10,000 simulated matches · independently stored forecast':'Historical-model fallback · no 10,000-draw snapshot for this fixture')+'</div>'+
+   '<div class="fe-simSummary">'+
+      '<div class="fe-simScore"><span>MOST LIKELY SCORE</span><strong>'+esc(String(score).replace("-", " – "))+'</strong><em>'+format(scorePct)+' of modeled scorelines</em></div>'+
+      '<div class="fe-simExpected"><span>PROJECTED GOALS</span><strong>'+Number(goal.home).toFixed(2)+' <small>–</small> '+Number(goal.away).toFixed(2)+'</strong><em>'+esc(g.home.name)+' / '+esc(g.away.name)+'</em></div>'+
+   '</div>'+
+   '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+format(a)+'</div><div style="width:'+d+'%">'+format(d)+'</div><div style="width:'+b+'%">'+format(b)+'</div></div>'+
    '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
-   '<div class="fe-scoreMode"><span>MOST LIKELY SCORE</span><strong>'+z.score.i+' – '+z.score.j+'</strong><em>'+Math.round(z.score.p*100)+'% estimated</em></div>'+
-   '<div class="fe-projGrid">'+tile(z.btts,'Both teams score')+tile(z.over15,'Over 1.5 goals')+
-      tile(z.over25,'Over 2.5 goals')+tile(z.over35,'Over 3.5 goals')+
-      tile(z.homeShut,esc(g.home.name)+' clean sheet')+tile(z.awayShut,esc(g.away.name)+' clean sheet')+'</div>'+
-   '<p class="fe-projDisclaimer">Independent Poisson projections from both teams’ last 10 completed matches, using attack and defensive goal averages. These are uncalibrated estimates, may not account for starting XI or injuries, and are separate from FootyEdge confidence ratings.</p></section>';
+   '<div class="fe-simMetrics">'+p.map(q=>tile(q[0],q[1])).join("")+'</div>'+
+   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates using verified available history and selected match context; not guarantees, sportsbook prices, or official pick confidence. Projected scores indicate the single most common simulated exact result, not a certainty.</p></section>';
 }
-
 
 const feStandingsCache=new Map();
 async function feEnsureTable(g){
