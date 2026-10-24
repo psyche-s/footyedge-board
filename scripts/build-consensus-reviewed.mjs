@@ -3,6 +3,7 @@
 // This DOES NOT change published/frozen board archives or confidence ratings.
 import fs from "node:fs/promises";
 import path from "node:path";
+import {pathToFileURL} from "node:url";
 import {audit} from "./audit-source-consensus.mjs";
 export function addAuditedConsensus(review,auditDoc){
  if(!review||!auditDoc||review.date!==auditDoc.date)throw Error("Date-matched original research and independent forecast audit required");
@@ -50,4 +51,5 @@ async function main(){
  await fs.writeFile(dest,JSON.stringify(output,null,2)+"\n");
  console.log("Consensus reviewed matches:",output.matches.length,"two-source supported picks:",audited.summary.picksWithTwoSourceAgreement);
 }
-main().catch(e=>{console.error(e);process.exitCode=1});
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)
+ main().catch(e=>{console.error(e);process.exitCode=1});
