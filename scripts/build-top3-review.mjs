@@ -109,7 +109,7 @@ async function main(){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error("Invalid research day");
  const get=async s=>{try{return JSON.parse(await fs.readFile(path.join("data",s),"utf8"))}catch(e){if(e.code==="ENOENT")return null;throw e}};
  const research=await get("research-base-"+date+".json");
- const sim=await get("experimental-simulations/"+date+"-v2.json")||await get("experimental-simulations/"+date+".json");
+ const sim=await get("experimental-simulations/"+date+"-v3.json")||await get("experimental-simulations/"+date+"-v2.json")||await get("experimental-simulations/"+date+".json");
  const news=await get("team-intelligence/"+date+".json");
  const standings=await get("experimental-inputs/"+date+"-standings.json");
  const editorialCrosschecks=await get("research-crosschecks/"+date+".json");
