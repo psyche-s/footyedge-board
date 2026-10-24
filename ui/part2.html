@@ -1608,7 +1608,7 @@ async function load(date=S.date){
       repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null),
       repoData('data/experimental-simulations/'+S.date+'-v3.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null))),
-      repoData('data/pick-reviews/'+S.date+'.json').catch(()=>null)
+      repoData('data/consensus-reviewed/'+S.date+'.json').catch(()=>repoData('data/pick-reviews/'+S.date+'.json').catch(()=>null))
     ].map((request,index)=>Promise.race([
       Promise.resolve(request).catch(()=>null),
       new Promise(resolve=>setTimeout(()=>resolve(null),index<3?6500:5500))
