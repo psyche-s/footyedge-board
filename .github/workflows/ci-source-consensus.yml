@@ -6,6 +6,10 @@ on:
       - 'scripts/audit-source-consensus.mjs'
       - 'scripts/build-consensus-reviewed.mjs'
       - 'tests/source-consensus.test.mjs'
+      - 'tests/pick-independence-and-team-bars.test.mjs'
+      - 'scripts/independent-picks.mjs'
+      - 'scripts/build-top3-review.mjs'
+      - 'ui/part2.html'
       - 'data/source-opinions/**'
       - 'data/consensus-audits/**'
       - 'data/consensus-reviewed/**'
@@ -27,7 +31,7 @@ jobs:
         run: |
           node --check scripts/audit-source-consensus.mjs
           node --check scripts/build-consensus-reviewed.mjs
-          node --test tests/source-consensus.test.mjs
+          node --test tests/source-consensus.test.mjs tests/pick-independence-and-team-bars.test.mjs tests/top3-research-overlay.test.mjs
       - name: Confirm dated snapshot has no invalid source votes
         env:
           SLATE_DATE: '2026-10-24'
