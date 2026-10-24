@@ -134,7 +134,10 @@ jobs:
       - name: Build all-fixture 10000-draw experimental score and WDL forecast (shadow only)
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
+        env:
+          FOOTYEDGE_URL: https://footyedge-board.vercel.app
         run: |
+          node scripts/sync-experimental-standings.mjs || echo "::warning::Optional standings unavailable; run conservative history-only model."
           node --test tests/experimental-simulations.test.mjs
           node scripts/simulate-fixtures.mjs
 
@@ -223,7 +226,7 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs)
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
