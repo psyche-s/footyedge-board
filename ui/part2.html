@@ -2845,6 +2845,20 @@ function feRawReviewedReason(g,p){
 function feReviewedReason(g,p){return feCleanPublicCopy(feRawReviewedReason(g,p));}
 function fePreviewLinks(g,p){return "";}
 
+function feForecastReviewChip(p){
+ const k=String(p?.independentForecastReview||"");
+ const labels={
+  independent_agreement:"2+ FORECASTS ALIGN",
+  limited_independent_support:"ONE FORECAST ALIGNS",
+  conflicting_forecasts:"FORECASTS DISAGREE",
+  competing_directional_forecasts:"MIXED RESULT DIRECTIONS",
+  independent_forecast_opposes:"FORECAST OPPOSES",
+  not_independently_checked:"STATISTICAL MODEL ONLY",
+  not_checked:"STATISTICAL MODEL ONLY"
+ };
+ if(!labels[k])return "";
+ return '<span class="fe-sourceEvidenceTag'+(["conflicting_forecasts","competing_directional_forecasts","independent_forecast_opposes"].includes(k)?' fe-sourceEvidenceDispute':k==="independent_agreement"?' fe-sourceEvidenceAlign':'')+'">'+labels[k]+'</span>';
+}
 function renderModal(g){
   const top3=viewCandidates(g);
   const focus=viewPick(g);
@@ -2852,7 +2866,7 @@ function renderModal(g){
   const ranked=top3.length?top3.map((x,i)=>{
     return '<article class="modalPick fe-selection">'+
       '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">#'+(i+1)+'</div>'+
-      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+'</div>'+
+      '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+feForecastReviewChip(x)+'</div>'+
       '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
     '</article>';
   }).join(""):'<div class="fe-empty">No selection has enough verified support for this fixture.</div>';
