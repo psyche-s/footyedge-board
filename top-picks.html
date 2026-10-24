@@ -304,7 +304,7 @@ function renderCompetitionSlips(list){
   '<div class="fe-sgpEmpty">No additional league-specific SGP currently clears the multi-market research screen. Press Refresh for the latest active-fixture shortlist.</div>';
 }
 function renderDesk(desk,date,live=false){
- const valid=desk?.date===date&&(desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ const valid=desk?.date===date&&(desk.schema==="footyedge-odds-reviewed-slips-v1"||desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
  if(!valid){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
@@ -316,7 +316,7 @@ function renderDesk(desk,date,live=false){
  }
  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
  (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
-  (desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+  (desk.schema==="footyedge-odds-reviewed-slips-v1"?"SGP & ACCA research · Ontario quotes not verified":desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
  function drawSlip(result,id,empty){
   const isSgp=id==="sgpSlip";
   const eligible=result?.status==="qualified"&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
@@ -336,7 +336,8 @@ async function refresh(){
  document.getElementById("todayBtn").classList.toggle("active",selected===0);
  document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
  document.getElementById("refreshStatus").textContent="";
- const reviewed=await data("data/editorial-desk/"+date+".json");
+ const pricedResearch=await data("data/slips-reviewed/"+date+".json");
+ const reviewed=pricedResearch||await data("data/editorial-desk/"+date+".json");
  const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
  renderDesk(desk,date);
 }
