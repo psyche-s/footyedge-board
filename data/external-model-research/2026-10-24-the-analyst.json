@@ -1,0 +1,104 @@
+{
+  "schema": "footyedge-opta-analyst-match-research-v1",
+  "date": "2026-10-24",
+  "capturedAt": "2026-10-24T13:00:00Z",
+  "sourceId": "the_analyst",
+  "sourceName": "Opta Analyst",
+  "accessMethod": "Publicly accessible editorial article checks, not a licensed Opta feed",
+  "reuse": "Only compact factual inputs with attribution in private research and proprietary simulation output; do not reproduce or mirror source articles",
+  "noPlayerEffectWithoutQuantifiedData": true,
+  "forecastInputPolicy": {
+    "blendWithFootyEdgeBaseline": 0.25,
+    "weightReason": "Experimental conservative external outcome-distribution anchor; sensitivity not fitted and must be calibrated through chronological backtesting",
+    "whenNoForecast": "Only FootyEdge V3; source missing does not mean zero",
+    "publication": "Separate V4 shadow model, never overwrite immutable historical board"
+  },
+  "fixtures": [
+    {
+      "fixtureId": "401879256",
+      "home": "Aston Villa",
+      "away": "Manchester City",
+      "homeWin": 31.6,
+      "draw": 25.3,
+      "awayWin": 43,
+      "article": "https://theanalyst.com/articles/aston-villa-vs-man-city-prediction-premier-league-preview-10-2026",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "manCityCurrentWins": 7,
+        "manCityExpectedPoints": 13.2,
+        "manCityPoints": 21,
+        "haalandGoals": 8,
+        "haalandShots": 27,
+        "haalandShotsOnTarget": 13
+      },
+      "qualitative": [
+        "City's league record exceeds their expected points performance; do not infer 7 wins imply certainty.",
+        "Villa won four of the last six league head-to-heads.",
+        "Haaland injury concern; starting status not verified."
+      ],
+      "predictionCaveat": "Specific-match report rounds outcome probabilities; sum 99.9%"
+    },
+    {
+      "fixtureId": "401878768",
+      "home": "Arsenal",
+      "away": "Everton",
+      "homeWin": 69.5,
+      "draw": 17.1,
+      "awayWin": 13.4,
+      "article": "https://theanalyst.com/articles/arsenal-v-everton-prediction-premier-league-preview-10-2026",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "arsenalSevenMatchGoalsAgainst": 5,
+        "arsenalSevenMatchShotsOnTargetAgainst": 21,
+        "arsenalSevenMatchXGA": 5.6,
+        "evertonAwayWinlessMatches": 8
+      },
+      "qualitative": [
+        "Arsenal have the lowest Premier League xGA and shots-on-target conceded after seven games.",
+        "Everton have not won an away Premier League fixture in eight attempts.",
+        "Saka and Saliba reported injured; player-level numeric adjustment unsupported."
+      ]
+    },
+    {
+      "fixtureId": "401879255",
+      "home": "Coventry City",
+      "away": "Fulham",
+      "homeWin": 43.4,
+      "draw": 26.7,
+      "awayWin": 29.9,
+      "article": "https://theanalyst.com/articles/premier-league-match-predictions",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "fulhamWinlessAwayLeagueMatches": 8,
+        "coventrySeasonLossesAfterSeven": 5
+      },
+      "qualitative": [
+        "Coventry lost five of their opening seven league games.",
+        "Fulham winless in eight away league matches.",
+        "Recent direct top-flight meetings are too distant for significant weighting."
+      ]
+    },
+    {
+      "fixtureId": "401878767",
+      "home": "Chelsea",
+      "away": "Tottenham Hotspur",
+      "homeWin": 55,
+      "draw": 23.2,
+      "awayWin": 21.8,
+      "article": "https://theanalyst.com/articles/chelsea-vs-tottenham-prediction-premier-league-preview-10-2026",
+      "publishedOn": "2026-10-23",
+      "teamStats": {
+        "chelseaSeasonGoals": 17,
+        "chelseaSeasonXG": 9.9,
+        "spursSeasonXG": 7.5,
+        "tottenhamRecentPLLondonDerbyLosses": 6
+      },
+      "qualitative": [
+        "Chelsea's 17 goals from 9.9 xG indicate a sizeable finishing overperformance; avoid blindly extrapolating goals.",
+        "Tottenham have low underlying chance creation at 7.5 league xG.",
+        "Previews differ slightly: the weekly roundup quotes Chelsea 53.6% versus the detailed article's 55.0%; detailed article is the stored reference."
+      ],
+      "predictionCaveat": "Detailed article gives home 55.0%, away 21.8%; draw calculated as residual 23.2% and is not an explicitly quoted figure."
+    }
+  ]
+}
