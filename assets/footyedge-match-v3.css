@@ -1584,3 +1584,33 @@
  }
  :is(.fe-matchCard,.fe-dialogHero) .fe-heroTeams>.fe-side>.fe-sideName{font-size:12px!important}
 }
+
+
+/* Optional match-by-match player-stat strips on the verified lineup pitch.
+   Keep the pitch and portraits; missing ESPN event values remain dashes. */
+.fe-pitchMetricControl{display:flex;align-items:center;gap:9px;min-width:0}
+.fe-pitchMetricControl label{font-size:10px;font-weight:850;letter-spacing:.08em;color:#b9d5c4;white-space:nowrap}
+.fe-pitchMetricControl select{appearance:auto;max-width:min(210px,57vw);min-height:39px;background:#0b261a;color:#dfffea;border:1px solid #4c956b;border-radius:10px;padding:7px 9px;font:750 12px system-ui,-apple-system,sans-serif;cursor:pointer}
+.fe-pitchMetricControl select:focus-visible{outline:2px solid #78e7a2;outline-offset:2px}
+.fe-lineupPanel .fe-sharedPitch{min-height:900px}
+.fe-pitchStatStrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;width:min(100%,88px);min-height:16px;align-self:center;pointer-events:none}
+.fe-pitchStatCell{display:grid;place-items:center;min-width:0;height:16px;padding:0 1px;font-size:9px;font-style:normal;font-weight:850;line-height:1;border:1px solid #c0d9d2;border-radius:3px;background:#e0e8e5;color:#526861;font-variant-numeric:tabular-nums}
+.fe-pitchStatCell.fe-pitchStatHit{background:#c8fbe1;color:#125a35;border-color:#79dcab}
+.fe-pitchStatCell.fe-pitchStatEmpty{background:#184832;color:#a1ccb5;border-color:#4e8769}
+.fe-pitchStatHelp{font-size:10px;line-height:1.5;color:#a9d5b8;margin:9px 0 3px;text-align:center}
+.fe-lineupPanel .fe-sharedRows .fe-fieldPlayer{gap:3px!important;padding:2px 1px!important}
+@media(max-width:620px){
+ .fe-lineupPanel .fe-sharedPitch{min-height:870px}
+ .fe-pitchMetricControl{gap:5px}
+ .fe-pitchMetricControl label{font-size:9px}
+ .fe-pitchMetricControl select{font-size:11px;max-width:190px;min-height:36px;padding:6px}
+ .fe-pitchStatStrip{width:min(100%,82px);gap:2px}
+ .fe-pitchStatCell{height:15px;font-size:8px}
+}
+@media(max-width:390px){
+ .fe-lineupPanel .fe-sharedPitch{min-height:830px}
+ .fe-pitchMetricControl label{font-size:8px}
+ .fe-pitchMetricControl select{max-width:152px;font-size:10px}
+ .fe-pitchStatStrip{gap:1px;width:min(100%,71px)}
+ .fe-pitchStatCell{height:14px;font-size:7px}
+}
