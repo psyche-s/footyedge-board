@@ -167,7 +167,7 @@ async function main(){
  const dest=path.join("data","slips-reviewed",day+".json");
  try{await fs.access(dest);console.log("Existing dated slip review retained");return}catch(e){if(e.code!=="ENOENT")throw e}
  const [review,research,simulation,markets]=await Promise.all([
-  read("pick-reviews/"+day+".json"),read("research-base-"+day+".json"),
+  fs.readFile(path.join("data","consensus-reviewed",day+".json"),"utf8").then(JSON.parse).catch(e=>{if(e.code!=="ENOENT")throw e;return read("pick-reviews/"+day+".json")}),read("research-base-"+day+".json"),
   read("experimental-simulations/"+day+"-v3.json"),
   read("slip-market-snapshots/"+day+".json")
  ]);
