@@ -58,3 +58,17 @@ test("source names and fake odds never appear in public consensus reasons",()=>{
  assert.equal(r.confidenceRating,81);
  assert.equal(r.verifiedPrice,undefined);
 });
+
+test("competing opposite double-chance pick prevents misleading full consensus",()=>{
+ const e=doc([
+  opinion("windrawwin","away",win),
+  opinion("sports_mole","away",mole),
+  opinion("football_whispers","home_or_draw",whispers,"double_chance")
+ ]);
+ const awayCase=structuredClone(base);
+ awayCase.matches[0].picks[0].label="Away City or Draw";
+ const a=audit(awayCase,e);
+ assert.equal(a.summary.picksWithCompetingDirections,1);
+ assert.equal(a.summary.picksWithTwoSourceAgreement,0);
+ assert.match(addAuditedConsensus(awayCase,a).matches[0].picks[0].reason,/different sides/);
+});
