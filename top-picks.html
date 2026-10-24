@@ -152,6 +152,12 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .fe-sgpPicker select{flex:0 1 240px;min-width:170px;max-width:100%;min-height:40px;border-radius:10px;background:#113321;border:1px solid #4b8965;padding:0 12px;color:#effff3;font-size:13px;font-weight:750}
 .fe-sgpPicker span{flex:1;min-width:190px;font-size:11px;line-height:1.5;color:#a7c5b1}
 @media(max-width:540px){.fe-sgpPicker{padding:11px;gap:6px}.fe-sgpPicker label{flex-basis:100%}.fe-sgpPicker select{flex:1;min-width:0}.fe-sgpPicker span{flex-basis:100%}}
+
+/* Evidence-only price display on Top Picks receipts; not used on fixture cards. */
+.fe-priceSnapshot{display:inline-flex;gap:5px;align-items:center;margin:6px 0 0;padding:4px 7px;font-size:10px;font-weight:750;border-radius:7px;border:1px solid #d9cda7;color:#6f5836;background:#fff9ea}
+.fe-priceSnapshotUnverified{display:inline-block;margin:6px 0 0;padding:4px 7px;font-size:10px;border-radius:7px;border:1px solid #d6dcd5;color:#657368;background:#f1f4ef}
+.fe-oddsDisclaimer{margin:10px 0 0;font-size:10px;color:#b4cabb;line-height:1.6}
+
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
@@ -240,13 +246,17 @@ function slipDate(legs){if(!legs.length)return "MATCHDAY";
 function viewLeg(x){
  const parts=String(x.fixture||"").split(" vs ");
  return {p:{label:x.label,reason:x.why,evidence:x.evidence},g:{home:parts[0]||"Club",away:parts.slice(1).join(" vs ")||"Club",date:x.kickoff||null,league:x.league},
-   rating:Number(x.rating),risk:x.risk||[],evidence:x.evidence||""};
+   rating:Number(x.rating),risk:x.risk||[],evidence:x.evidence||"",
+   observedReferenceOdds:Number.isInteger(x.observedReferenceOdds)?x.observedReferenceOdds:null,
+   referenceQuoteStatus:String(x.priceStatus||""),verifiedOntarioPrice:x.verifiedPrice===true?x.odds:null};
 }
 function legHTML(x,i){
  const p=x.p,g=x.g;
  return '<div class="leg"><div class="legTop"><div class="legTitle">'+esc(p.label)+'</div>'+
   '<span class="legRating" title="Research strength grade">'+x.rating+'%<small>GRADE</small></span></div>'+
-  '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+
+  '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+ 
+  (Number.isInteger(x.observedReferenceOdds)?'<div class="fe-priceSnapshot" title="Observed US reference market; not confirmed available to bet365 Ontario">US reference '+esc((x.observedReferenceOdds>0?'+':'')+x.observedReferenceOdds)+' · not Ontario</div>':
+   '<div class="fe-priceSnapshotUnverified">Odds unavailable · verify your sportsbook</div>')+
   '<details class="legWhy"><summary>Why this leg</summary><p>'+esc(cleanReason(p.reason||"See the match analysis."))+'</p>'+
   (x.risk?.length?'<span class="legEvidence">Watch: '+esc(cleanReason(x.risk.join("; ")))+'</span>':'')+'</details></div>';
 }
