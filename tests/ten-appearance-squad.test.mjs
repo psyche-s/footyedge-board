@@ -50,7 +50,9 @@ test("Every league retains the field when lineups are still pending",()=>{
  const panel=vm.runInNewContext(source+";feLineupsPanel",{
   ...browserContext,
   feTeamPitchRows:(_intel,t)=>'<div class="fe-sharedHalf">'+t.name+'</div>',
-  feMatchSourceStatus:()=>''
+  feMatchSourceStatus:()=>'',
+  FE_PITCH_STATS:[["goals","Goals"],["assists","Assists"],["shotsOnTarget","Shots on Target"],["foulsCommitted","Fouls Committed"]],
+  fePitchMetric:g=>g.fePitchMetric||"goals"
  });
  const game={league:"esp.1",home:{name:"Levante"},away:{name:"Athletic Club"}};
  const output=panel(game);
