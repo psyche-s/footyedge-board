@@ -78,6 +78,7 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    });
    // Don't invent a third play from absent shots, player or booking records.
    const picked=[chooseResult,goalChoice,scoringChoice].filter(Boolean).filter(x=>x.confidenceRating>=58);
+   picked.sort((x,y)=>y.confidenceRating-x.confidenceRating||y.historicalSupportPct-x.historicalSupportPct);
    picked.forEach((x,i)=>{x.rank=i+1;});
    out.picks=picked;
    out.reviewStatus=picked.length===3?"three_supported_research_angles":"insufficient_independent_high_grade_market";
