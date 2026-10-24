@@ -2,7 +2,7 @@
 // Internal-only source consensus audit. No scraping, invented sources, or live-site source names.
 import fs from "node:fs/promises";
 import path from "node:path";
-export (m,p)=>{
+export const lookup=(m,p)=>{
  if(p.family==="result"){
   const label=String(p.label).toLowerCase();
   const h=String(m.home).toLowerCase(),a=String(m.away).toLowerCase();
