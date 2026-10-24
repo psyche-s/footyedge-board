@@ -188,7 +188,7 @@ export function buildAdvancedSimulations({research,analytics,h2h,teamNews,standi
      seed=Math.imul(seed^ch.charCodeAt(0),16777619)>>>0;
    if(!seed)seed=1;
    const random=()=>{seed^=seed<<13;seed^=seed>>>17;seed^=seed<<5;return(seed>>>0)/4294967296};
-   const poisson=m=>{let k=0,v=1,target=Math.exp(-clamp(m,0,350));do{k++;v*=Math.max(random(),1e-10)}while(v>target&&k<180);return k-1};
+   const poisson=m=>{if(m>=28){const z=Math.sqrt(-2*Math.log(Math.max(random(),1e-10)))*Math.cos(2*Math.PI*random());return Math.max(0,Math.round(m+Math.sqrt(m)*z));}let k=0,v=1,target=Math.exp(-clamp(m,0,27));do{k++;v*=Math.max(random(),1e-10)}while(v>target&&k<160);return k-1};
    for(let i=0;i<simulations;i++){
      const h=poisson(eh),a=poisson(ea),tot=h+a;
      if(h>a)tally.homeWin++;else if(h<a)tally.awayWin++;else tally.draw++;
