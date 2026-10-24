@@ -2553,6 +2553,14 @@ function feProjectionFactorNotes(sim){
   ((m.missingStrengthAndStyleInputs||[]).length?'<p class="fe-projDisclaimer">Unavailable factors: '+esc(m.missingStrengthAndStyleInputs.join(", ").replace(/_/g," "))+'. They were not assigned artificial values.</p>':'')+'</section>';
 }
 
+// High-contrast text on the verified kit or documented club palette color.
+function feBarTextColor(hex){
+ const s=String(hex||"").replace(/^#/,"");
+ if(!/^[0-9a-fA-F]{6}$/.test(s))return "#ffffff";
+ const [r,g,b]=[0,2,4].map(i=>parseInt(s.slice(i,i+2),16)/255).map(v=>v<=0.04045?v/12.92:((v+0.055)/1.055)**2.4);
+ return 0.2126*r+0.7152*g+0.0722*b>0.30?"#07140d":"#ffffff";
+}
+
 function feProjectionsPanel(g){
  const sim=S.feSimById?.get(String(g.id||g.apiFixtureId||""))||null;
  const old=feExperimentalProjection(g);
@@ -2582,7 +2590,7 @@ function feProjectionsPanel(g){
       '<div class="fe-simScore"><span>MOST LIKELY SCORE</span><strong>'+esc(String(score).replace("-", " – "))+'</strong><em>'+format(scorePct)+' of modeled scorelines</em></div>'+
       '<div class="fe-simExpected"><span>PROJECTED GOALS</span><strong>'+Number(goal.home).toFixed(2)+' <small>–</small> '+Number(goal.away).toFixed(2)+'</strong><em>'+esc(g.home.name)+' / '+esc(g.away.name)+'</em></div>'+
    '</div>'+
-   '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+format(a)+'</div><div style="width:'+d+'%">'+format(d)+'</div><div style="width:'+b+'%">'+format(b)+'</div></div>'+
+   '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%;background:'+esc(fePalette(g.home).primary)+';color:'+feBarTextColor(fePalette(g.home).primary)+'">'+format(a)+'</div><div style="width:'+d+'%;background:#66726f;color:#ffffff">'+format(d)+'</div><div style="width:'+b+'%;background:'+esc(fePalette(g.away).primary)+';color:'+feBarTextColor(fePalette(g.away).primary)+'">'+format(b)+'</div></div>'+
    '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
    '<div class="fe-simMetrics">'+p.map(q=>tile(q[0],q[1])).join("")+'</div>'+
    '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+  (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionPlayerFouls(g,sim)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
