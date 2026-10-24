@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FootyEdge — Experimental 10K Simulator</title><meta name="theme-color" content="#080d0a"/>
+<style>
+:root{color-scheme:dark;--bg:#080d0a;--card:#111814;--muted:#91a49a;--green:#42e58a;--border:#23422e}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f2f8f4;font:14px/1.45 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+main{max-width:1120px;padding:20px 16px 80px;margin:auto}a{color:var(--green);text-decoration:none}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-bottom:19px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.brand{font-size:23px;font-weight:900;letter-spacing:-.8px}.brand span{color:var(--green)}
+nav{display:flex;gap:18px;font-weight:650;font-size:12px}.eyebrow{margin-top:25px;letter-spacing:2.5px;text-transform:uppercase;font-size:11px;color:var(--green);font-weight:800}
+h1{font-size:clamp(25px,4vw,40px);letter-spacing:-1px;margin:7px 0 8px}.intro{color:#aec0b3;max-width:770px;line-height:1.7;font-size:13px}
+.controls{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin:23px 0}
+input,select{background:#102018;border:1px solid #315740;color:white;border-radius:10px;padding:10px 13px;font:inherit;max-width:100%}
+#status{color:var(--muted);font-size:12px}.meta{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.meta strong{color:var(--green)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.card{border-radius:17px;border:1px solid var(--border);background:var(--card);padding:17px;min-width:0}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#91a79b;font-size:10px;letter-spacing:1.4px;text-transform:uppercase}
+.teams{font-size:17px;font-weight:800;letter-spacing:-.35px;margin-top:15px;display:flex;justify-content:space-between;gap:10px;align-items:center}.teams .versus{font-size:10px;color:#67806f}
+.score{font-weight:950;font-size:26px;letter-spacing:0;color:#f7fff9;text-align:center;margin:8px 0 12px}
+.score small{display:block;font-size:10px;font-weight:550;color:var(--muted);letter-spacing:0}
+.wdl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.outcome{background:#09130d;border:1px solid #203e2a;border-radius:11px;padding:10px 6px;text-align:center;min-width:0}
+.outcome span{display:block;color:var(--muted);font-size:10px}.outcome b{display:block;font-size:20px;font-variant-numeric:tabular-nums}.outcome.lead b{color:var(--green)}
+.extras{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:14px;color:#adc1b5;font-size:11px}
+.diagnostics{color:#688171;font-size:11px;margin-top:10px;line-height:1.6}
+.note{border:1px solid var(--border);background:#0b1810;border-radius:13px;padding:14px;color:#bacabc;font-size:12px;margin:18px 0}
+.notready{color:#ffcb82;font-size:10px}
+@media(max-width:740px){.grid{grid-template-columns:1fr}main{padding:15px 12px 60px}.teams{font-size:16px}}
+</style></head><body><main>
+<header><a class="brand" href="/"><span>Footy</span>Edge</a><nav><a href="/">Fixtures</a><a href="/top-picks.html">Top Picks</a><a href="/hit-rate.html">Tracking</a></nav></header>
+<div class="eyebrow">Shadow research · Experimental only</div><h1>10,000 match simulations</h1>
+<p class="intro">Each fixture displays the simulated chance of a home win, draw or away win <strong>alongside the model's most likely exact score</strong>. These are experimental Poisson simulations, not calibrated betting probabilities or recommendations. A predicted score can have a low individual probability even when one result is favored.</p>
+<div class="controls"><input aria-label="Match date" type="date" id="date" value="2026-10-24"/>
+<select aria-label="Filter league" id="league"><option value="">All leagues</option></select>
+<input aria-label="Find a team" id="search" placeholder="Search teams…" />
+</div>
+<div id="status" role="status">Loading archived simulations…</div><div class="meta" id="meta"></div><div id="cards" class="grid"></div>
+<div class="note">How to read this: W / D / L percentages sum to 100%. The predicted exact score is the single most frequent score out of 10,000 simulated matches. Expected goals are inputs to a simplified goal distribution. The model considers past match results, limited available shots statistics, home/away advantage and verified past head-to-head results. Missing player-impact ratings, strength-of-schedule corrections and verified xG limit confidence. Official FootyEdge picks and bet slips are separate and unchanged.</div>
+</main><script>
+const $=id=>document.getElementById(id);
+const escapeHtml=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+let data=null;
+const fmt=x=>typeof x==="number"?x.toFixed(1)+"%":"—";
+function render(){
+ if(!data)return;
+ const lg=$("league").value,search=$("search").value.toLowerCase().trim();
+ const rows=data.fixtures.filter(x=>(!lg||x.league===lg)&&(!search||(x.home+" "+x.away).toLowerCase().includes(search)));
+ $("status").textContent=rows.length+" of "+data.fixtures.length+" fixtures · model snapshot "+new Date(data.generatedAt).toLocaleString();
+ $("cards").innerHTML=rows.map(x=>{
+ const w=x.winDrawLossPct,leaders=[w.homeWin,w.draw,w.awayWin],max=Math.max(...leaders);
+ const ps=x.mostLikelyScores.map(q=>escapeHtml(q.score)+" ("+fmt(q.probabilityPct)+")").join(" · ");
+ const pct=x.predictedScoreProbabilityPct,late=x.status!=="pre_kickoff_experimental";
+ return '<article class="card"><div class="top"><span>'+escapeHtml(x.league)+'</span><span>'+new Date(x.kickoff).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+'</span></div>'+
+ '<div class="teams"><span>'+escapeHtml(x.home)+'</span><span class="versus">VS</span><span style="text-align:right">'+escapeHtml(x.away)+'</span></div>'+
+ '<div class="score">'+escapeHtml(x.predictedScore)+'<small>Most likely score · '+fmt(pct)+' of simulations</small></div>'+
+ '<div class="wdl">'+[["HOME WIN",w.homeWin],["DRAW",w.draw],["AWAY WIN",w.awayWin]].map(v=>'<div class="outcome '+(v[1]===max?'lead':'')+'"><span>'+v[0]+'</span><b>'+fmt(v[1])+'</b></div>').join('')+'</div>'+
+ '<div class="extras"><span>xG estimate: '+x.expectedGoals.home.toFixed(2)+' – '+x.expectedGoals.away.toFixed(2)+'</span><span>O2.5 '+fmt(x.marketsPct.over2_5)+' · BTTS '+fmt(x.marketsPct.bttsYes)+'</span></div>'+
+ '<div class="diagnostics">Top scores: '+ps+'<br>History: '+x.dataQuality.homeHistoryGames+' / '+x.dataQuality.awayHistoryGames+' games'+(x.dataQuality.verifiedShotJoin?' · Shots verified':' · Limited shot stats')+(x.dataQuality.datedProjectedXI?' · Projected XI context':' · XI unavailable')+(late?'<br><span class="notready">Generated after kickoff — not a pre-match forecast</span>':'')+'</div></article>'
+ }).join('');
+}
+async function load(){
+ const date=$("date").value;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
+ $("status").textContent="Loading…";$("cards").replaceChildren();data=null;
+ try{
+ const r=await fetch("/data/experimental-simulations/"+date+".json",{cache:"no-store"});
+ if(!r.ok)throw Error("There is no published experimental simulation for this date.");
+ const v=await r.json();
+ if(v?.schema!=="footyedge-experimental-monte-carlo-v1"||v.date!==date||!Array.isArray(v.fixtures))throw Error("Invalid dated simulation.");
+ data=v;$("league").innerHTML='<option value="">All leagues</option>'+[...new Set(v.fixtures.map(x=>x.league))].sort().map(x=>'<option>'+escapeHtml(x)+'</option>').join('');
+ $("meta").innerHTML='<span><strong>'+v.coverage.fixtures+'</strong> men\'s fixtures</span><span><strong>'+v.totalSimulations.toLocaleString()+'</strong> total draws</span><span><strong>'+v.coverage.projectedXI+'</strong> sourced projected XIs</span>';
+ render();
+ }catch(e){$("status").textContent=e.message;$("meta").replaceChildren()}
+}
+$("date").addEventListener("change",load);$("league").addEventListener("change",render);$("search").addEventListener("input",render);load();
+</script></body></html>
