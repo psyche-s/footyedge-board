@@ -54,8 +54,8 @@ function render(){
  '<div class="teams"><span>'+escapeHtml(x.home)+'</span><span class="versus">VS</span><span style="text-align:right">'+escapeHtml(x.away)+'</span></div>'+
  '<div class="score">'+escapeHtml(x.predictedScore)+'<small>Most likely score · '+fmt(pct)+' of simulations</small></div>'+
  '<div class="wdl">'+[["HOME WIN",w.homeWin],["DRAW",w.draw],["AWAY WIN",w.awayWin]].map(v=>'<div class="outcome '+(v[1]===max?'lead':'')+'"><span>'+v[0]+'</span><b>'+fmt(v[1])+'</b></div>').join('')+'</div>'+
- '<div class="extras"><span>xG estimate: '+x.expectedGoals.home.toFixed(2)+' – '+x.expectedGoals.away.toFixed(2)+'</span><span>O2.5 '+fmt(x.marketsPct.over2_5)+' · BTTS '+fmt(x.marketsPct.bttsYes)+'</span></div>'+
- '<div class="diagnostics">Top scores: '+ps+'<br>History: '+x.dataQuality.homeHistoryGames+' / '+x.dataQuality.awayHistoryGames+' games'+(x.dataQuality.verifiedShotJoin?' · Shots verified':' · Limited shot stats')+(x.dataQuality.datedProjectedXI?' · Projected XI context':' · XI unavailable')+(late?'<br><span class="notready">Generated after kickoff — not a pre-match forecast</span>':'')+'</div></article>'
+ '<div class="extras"><span>Model goals: '+x.expectedGoals.home.toFixed(2)+' – '+x.expectedGoals.away.toFixed(2)+'</span><span>O2.5 '+fmt(x.marketsPct.over2_5)+' · BTTS '+fmt(x.marketsPct.bttsYes)+'</span></div>'+
+ '<div class="diagnostics">Top scores: '+ps+'<br>History: '+x.dataQuality.homeHistoryGames+' / '+x.dataQuality.awayHistoryGames+' games'+(x.dataQuality.verifiedStandings?' · League strength checked':' · Standings not joined')+(x.dataQuality.verifiedShotJoin?' · Shots verified':' · Limited shot stats')+(x.dataQuality.datedProjectedXI?' · Projected XI context':' · XI unavailable')+(late?'<br><span class="notready">Generated after kickoff — not a pre-match forecast</span>':'')+'</div></article>'
  }).join('');
 }
 async function load(){
@@ -63,12 +63,13 @@ async function load(){
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return;
  $("status").textContent="Loading…";$("cards").replaceChildren();data=null;
  try{
- const r=await fetch("/data/experimental-simulations/"+date+".json",{cache:"no-store"});
+ let r=await fetch("/data/experimental-simulations/"+date+"-v2.json",{cache:"no-store"});
+ if(!r.ok)r=await fetch("/data/experimental-simulations/"+date+".json",{cache:"no-store"});
  if(!r.ok)throw Error("There is no published experimental simulation for this date.");
  const v=await r.json();
  if(v?.schema!=="footyedge-experimental-monte-carlo-v1"||v.date!==date||!Array.isArray(v.fixtures))throw Error("Invalid dated simulation.");
  data=v;$("league").innerHTML='<option value="">All leagues</option>'+[...new Set(v.fixtures.map(x=>x.league))].sort().map(x=>'<option>'+escapeHtml(x)+'</option>').join('');
- $("meta").innerHTML='<span><strong>'+v.coverage.fixtures+'</strong> men\'s fixtures</span><span><strong>'+v.totalSimulations.toLocaleString()+'</strong> total draws</span><span><strong>'+v.coverage.projectedXI+'</strong> sourced projected XIs</span>';
+ $("meta").innerHTML='<span><strong>'+v.coverage.fixtures+'</strong> men\'s fixtures</span><span><strong>'+v.totalSimulations.toLocaleString()+'</strong> total draws</span><span><strong>'+v.coverage.projectedXI+'</strong> sourced projected XIs</span><span><strong>'+(v.coverage.standingsJoined||0)+'</strong> matches with standings</span>';
  render();
  }catch(e){$("status").textContent=e.message;$("meta").replaceChildren()}
 }
