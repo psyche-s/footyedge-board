@@ -66,33 +66,57 @@ function shortlistPriceCandidates(fixture,sim,quotes){
  }
  return result.sort((a,b)=>b.rating-a.rating||b.researchModelPct-a.researchModelPct);
 }
+// A risk family is not independent just because the market label differs.
+export function independentSgpPair(a,b){
+ const bucket=p=>{
+  const f=String(p.family||"").toLowerCase(),l=String(p.label||"").toLowerCase();
+  if(f==="result"||/( or draw| ml$|match result)/.test(l))return "result";
+  if(["total","team-goal","btts","goals","scorer"].includes(f)||/(btts|both teams|goal|to score)/.test(l))return "goals";
+  if(/(corner|tackle|foul|card|assist|pass|shot)/.test(f+" "+l))return "events";
+  return "unknown";
+ };
+ const x=bucket(a),y=bucket(b);
+ return x!=="unknown"&&y!=="unknown"&&x!==y;
+}
+function verifiedIndependentEvent(p){
+ const key=String(p.family||"")+" "+String(p.label||"");
+ const e=p.marketEvidence||{};
+ return /(corner|tackle|foul|card|assist|pass|shot)/i.test(key)
+  &&e.verified===true&&Number(e.playerSample||e.teamSample||0)>=5
+  &&Number(e.opponentAllowanceSample||0)>=5
+  &&(e.playerMarket!==true||e.playerAvailable===true);
+}
 function suitableSgp(m){
- if(E.includes(m.league)||m.picks?.length<3)return null;
- const picks=m.picks.filter(p=>Number.isFinite(p.confidenceRating)&&p.confidenceRating>=63
+ if(E.includes(m.league)||!Array.isArray(m.picks)||m.picks.length<3)return null;
+ const pool=m.picks.filter(p=>Number.isFinite(p.confidenceRating)&&p.confidenceRating>=65
   &&typeof p.reason==="string"&&p.reason.length>30);
- const group=[];const families=new Set();
- for(const p of picks){
-  const f=p.family||p.category;
-  if(families.has(f))continue;
-  if(f==="btts"&&p.label==="BTTS Yes"&&picks.some(x=>x.label==="Over 1.5 Goals"))continue;
-  if(f==="team-goal"&&group.some(x=>x.label===p.label.replace(/ 1\+ Goal$/," ML")))continue;
-  if(f==="result"&&group.some(x=>p.label===x.label.replace(/ 1\+ Goal$/," ML")))continue;
-  group.push(p);families.add(f);
-  if(group.length===3)break;
+ const events=pool.filter(verifiedIndependentEvent);
+ // No supported third event market? PASS, rather than stacking team 1+,
+ // Over 1.5 and double-chance to manufacture a 3-leg SGP.
+ if(!events.length)return null;
+ let chosen=null;
+ for(const event of events){
+  const rest=pool.filter(x=>x!==event);
+  for(let i=0;i<rest.length;i++)for(let j=i+1;j<rest.length;j++){
+   const combo=[event,rest[i],rest[j]];
+   if(combo.every((x,n)=>combo.slice(n+1).every(y=>independentSgpPair(x,y)))&&
+      (!chosen||Math.min(...combo.map(z=>z.confidenceRating))>Math.min(...chosen.map(z=>z.confidenceRating))))chosen=combo;
+  }
  }
- if(group.length!==3)return null;
- const legs=group.map(p=>({
+ if(!chosen)return null;
+ const legs=chosen.sort((x,y)=>y.confidenceRating-x.confidenceRating).map(p=>({
   gameId:String(m.gameId),fixture:m.home+" vs "+m.away,league:m.league,
   kickoff:m.kickoff,label:p.label,category:p.category,family:p.family,
-  rating:p.confidenceRating,why:p.reason,
-  verifiedPrice:false,odds:null,priceStatus:"bet_builder_quote_not_verified",
-  risk:["Correlated same-match events; the combined probability is not the product of research grades.",
-      "Check the exact market and displayed payout directly with your sportsbook."]}));
- const overall=clip(Math.round(Math.min(...legs.map(x=>x.rating))-10),45,84);
- return {status:"qualified",format:"Same-game parlay",gameId:String(m.gameId),fixture:m.home+" vs "+m.away,league:m.league,
-  legs,overallResearchRating:overall,
-  caution:"Research-built three-leg SGP, not an executable sportsbook ticket. Exact bet365 Ontario odds and combined bet-builder quote are unavailable; correlated legs can make the actual risk much higher."};
+  rating:p.confidenceRating,why:p.reason,verifiedPrice:false,odds:null,
+  priceStatus:"bet_builder_quote_not_verified",
+  risk:["Same-game legs may correlate; grade percentages are not joint probabilities.",
+    "An exact bet-builder market and combined Ontario payout must be verified."]}));
+ return {status:"qualified",format:"Same-game parlay",gameId:String(m.gameId),
+  fixture:m.home+" vs "+m.away,league:m.league,legs,
+  overallResearchRating:clip(Math.round(Math.min(...legs.map(x=>x.rating))-12),40,80),
+  caution:"Independent result/goals/event research screen only. No verified bet365 Ontario combined price."};
 }
+
 export function generateReviewedSlipDesk({date,review,research,simulation,markets,asof}){
  if(review?.date!==date||research?.date!==date||simulation?.date!==date||markets?.date!==date)
    throw Error("Slip sources must share the exact local date");
@@ -146,9 +170,10 @@ export function generateReviewedSlipDesk({date,review,research,simulation,market
    }
  }
  const eligibleCross=cross.length>=4?cross:[];
- const acca=eligibleCross.length?{status:"qualified",format:"Cross-game parlay",
+ const pricedInOntario=eligibleCross.length>0&&eligibleCross.every(l=>l.verifiedPrice===true&&l.odds!=null);
+ const acca=eligibleCross.length?{status:pricedInOntario?"qualified":"hold",format:"Cross-game parlay",
   legs:eligibleCross,overallResearchRating:clip(Math.min(...cross.map(x=>x.rating))-
-    4*(cross.length-1),40,80),caution:"Research-screened cross-game ACCA: one leg per fixture, with independent reference prices checked where obtainable. No verified bet365 Ontario execution or combined odds. Unpriced legs must be verified before use."}:
+    4*(cross.length-1),40,80),caution:"HOLD — this is a cross-game research watchlist, not an executable parlay. Verify each Ontario price and the combined payout."}:
   {status:"pass",format:"Cross-game parlay",legs:[],caution:"Fewer than four supported games after odds and availability checks; no fabricated parlay."};
  return {schema:"footyedge-odds-reviewed-slips-v1",date,checkedAt:asof,state:"reviewed_research",
   quotesObservedAt:markets.observations||null,priceSource:markets.source,
