@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 export function runForecast({research,analytics,h2h,teamNews,asof,simulations=10000}){
-  if(!research||research.date!=="2026-10-24"||!Array.isArray(research.fixtures))throw Error("Exact-date research is required");
+  if(!research||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(research.date||""))||!Array.isArray(research.fixtures))throw Error("Exact-date research is required");
   if(!Number.isInteger(simulations)||simulations<1000)throw Error("Invalid simulation count");
   const minMax=(x,l,u)=>Math.max(l,Math.min(u,x));
   const validScore=(x)=>Number.isInteger(x)&&x>=0&&x<=15;
