@@ -150,8 +150,12 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: |
-          node --test tests/top3-research-overlay.test.mjs tests/reviewed-slips.test.mjs
+          node --test tests/top3-research-overlay.test.mjs tests/reviewed-slips.test.mjs tests/source-consensus.test.mjs
           node scripts/build-top3-review.mjs
+          # Only dated independently validated opinion snapshots count as sources checked.
+          # No source-opinions file => all external votes remain missing, not "consensus".
+          node scripts/audit-source-consensus.mjs
+          node scripts/build-consensus-reviewed.mjs
           node scripts/snapshot-slip-market-reference.mjs
           node scripts/build-odds-reviewed-slips.mjs
 
@@ -240,7 +244,7 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed)
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           if [[ -d data/style-matchups ]]; then files+=(data/style-matchups); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
