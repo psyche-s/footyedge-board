@@ -2565,7 +2565,7 @@ function feProjectionsPanel(g){
    '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%">'+format(a)+'</div><div style="width:'+d+'%">'+format(d)+'</div><div style="width:'+b+'%">'+format(b)+'</div></div>'+
    '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
    '<div class="fe-simMetrics">'+p.map(q=>tile(q[0],q[1])).join("")+'</div>'+
-   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+  ' (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
+   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+  (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
 }
 
 const feStandingsCache=new Map();
