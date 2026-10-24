@@ -183,7 +183,7 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
     <div class="slipFooter"><span id="accaCount">Checking available legs</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span></strong></div>
   </article>
 </section>
-  <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>One supported ticket per qualifying league</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
+  <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>Only independent, verified market families qualify</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
   <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
   <p class="notice">Confidence grades are research rankings, not guaranteed hit probabilities. Confirm market prices and lineups before betting.</p>
 </main>
@@ -253,7 +253,7 @@ function viewLeg(x){
 function legHTML(x,i){
  const p=x.p,g=x.g;
  return '<div class="leg"><div class="legTop"><div class="legTitle">'+esc(p.label)+'</div>'+
-  '<span class="legRating" title="Research strength grade">'+x.rating+'%<small>GRADE</small></span></div>'+
+  '<span class="legRating" title="Research strength grade, not win probability">'+x.rating+'<small>/100 GRADE</small></span></div>'+
   '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+ 
   (Number.isInteger(x.observedReferenceOdds)?'<div class="fe-priceSnapshot" title="Observed US reference market; not confirmed available to bet365 Ontario">US reference '+esc((x.observedReferenceOdds>0?'+':'')+x.observedReferenceOdds)+' · not Ontario</div>':
    '<div class="fe-priceSnapshotUnverified">Odds unavailable · verify your sportsbook</div>')+
@@ -309,9 +309,9 @@ function renderCompetitionSlips(list){
  target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
   '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+x.legs.length+' LEGS</strong></div>'+
   '<h3>'+esc(FE_MAJOR_NAMES[x.league]||x.league)+' FLYER</h3>'+
-  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.fixture)+'</small></div><span>'+l.rating+'%</span></div>').join("")+
+  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.fixture)+'</small></div><span title="Research grade, not win probability">'+l.rating+'/100</span></div>').join("")+
   '<footer>Overall research rating · '+esc(x.overallResearchRating??"—")+'% · Not a combined win probability</footer></article>').join(""):
-  '<div class="fe-sgpEmpty">No additional league-specific SGP currently clears the multi-market research screen. Press Refresh for the latest active-fixture shortlist.</div>';
+  '<div class="fe-sgpEmpty">PASS — the existing result, team-goal and total lines repeat the same goal/result drivers. No independent, verified third event prop currently qualifies. A three-leg ticket will not be forced.</div>';
 }
 function renderDesk(desk,date,live=false){
  const valid=desk?.date===date&&(desk.schema==="footyedge-odds-reviewed-slips-v1"||desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
@@ -329,9 +329,10 @@ function renderDesk(desk,date,live=false){
   (desk.schema==="footyedge-odds-reviewed-slips-v1"?"SGP & ACCA research · Ontario quotes not verified":desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
  function drawSlip(result,id,empty){
   const isSgp=id==="sgpSlip";
-  const eligible=result?.status==="qualified"&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
+  const eligible=(result?.status==="qualified"||(result?.status==="hold"&&!isSgp))&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
   const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
   printSlip(id,legs,result?.caution||empty);
+  if(result?.status==="hold"&&legs.length){document.getElementById("accaCount").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById("accaLegBadge").textContent="NOT PRICED";}
   const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
  }
