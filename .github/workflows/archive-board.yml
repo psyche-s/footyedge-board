@@ -236,7 +236,7 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/style-matchups)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots)
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
