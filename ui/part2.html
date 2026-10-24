@@ -916,6 +916,52 @@ function feOwnerConsensusTop3(g){
  return selection.sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0)).slice(0,3);
 }
 
+// Pick cards use the same independence criteria as SGP research. No
+// fabricated third selection when only scoring/result trends are supported.
+function feDistinctTop3(picks){
+ const thesis=p=>{
+  const label=String(p?.label||"").toLowerCase(),cat=String(p?.category||"").toLowerCase();
+  if(/foul/.test(label+" "+cat))return "fouls";
+  if(/corner/.test(label+" "+cat))return "corners";
+  if(/tackle/.test(label+" "+cat))return "tackles";
+  if(/card|booking/.test(label+" "+cat))return "cards";
+  if(/shot|sot/.test(label+" "+cat))return "shots";
+  if(/pass/.test(label+" "+cat))return "passes";
+  if(/ml$|or draw|match result|double chance|handicap/.test(label+" "+cat))return "result";
+  if(/goal|btts|scor|assist/.test(label+" "+cat))return "scoring";
+  return "other";
+ };
+ const evidence=p=>{
+  const m=thesis(p),e=p.marketEvidence||{};
+  return ["fouls","corners","tackles","cards","shots","passes"].includes(m)?
+    e.verified===true&&Number(e.teamSample||e.playerSample||0)>=5&&Number(e.opponentAllowanceSample||0)>=5&&
+      (e.playerMarket!==true||e.playerAvailable===true):
+    p.sourceBackedReason===true&&String(p.reason||"").length>=30;
+ };
+ const candidates=(picks||[]).filter(p=>p?.label&&evidence(p)).sort((a,b)=>
+   Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0));
+ const same=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const compatible=(a,b)=>{
+  if(thesis(a)==="other"||thesis(a)===thesis(b)||same(a.label)===same(b.label))return false;
+  const goal=x=>String(x.label||"").match(/^(.+?) 1\+ Goal$/i)?.[1],
+    res=x=>String(x.label||"").match(/^(.+?) (?:ML|or Draw)$/i)?.[1];
+  if(goal(a)&&res(b)&&same(goal(a))===same(res(b)))return false;
+  if(goal(b)&&res(a)&&same(goal(b))===same(res(a)))return false;
+  return true;
+ };
+ let best=[];
+ const choose=(selected,start)=>{
+  if(selected.length>best.length||
+     (selected.length===best.length&&selected.reduce((n,p)=>n+Number(p.confidenceRating??p.score??0),0)>
+       best.reduce((n,p)=>n+Number(p.confidenceRating??p.score??0),0)))best=[...selected];
+  if(selected.length>=3)return;
+  for(let i=start;i<candidates.length;i++)
+   if(selected.every(p=>compatible(p,candidates[i])))choose([...selected,candidates[i]],i+1);
+ };
+ choose([],0);
+ return best.sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0));
+}
+
 function viewCandidates(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
@@ -931,12 +977,13 @@ function viewCandidates(g){
   // Current-day recommendations must actually be reviewed; archived picks
   // remain stored for historical grading but are not republished as fresh tips.
   if(!reviewed&&S.date>=etDate()&&!ARCHIVE_CAPTURE)return [];
-  return (reviewed||g.model?.top3||[]).filter(p=>{
+  const sourcePicks=(reviewed||g.model?.top3||[]).filter(p=>{
     if(!p?.label)return false;
     const key=String(p.label).toLowerCase().trim().replace(/\s+/g," ");
     if(seen.has(key))return false;
     seen.add(key);return true;
-  }).sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0)).slice(0,3)
+  }).sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0)).slice(0,3);
+  return (!ARCHIVE_CAPTURE&&S.date>=etDate())?feDistinctTop3(sourcePicks):sourcePicks;
 }
 function viewPick(g){
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
