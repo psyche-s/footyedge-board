@@ -2815,7 +2815,7 @@ function renderModal(g){
   document.getElementById("modalBody").innerHTML=renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)+oddsExtra;
   if(g.feTab==="lineups")fePrimePitchHistory(g);
 }
-document.getElementById("modalBody").addEventListener("change",event=>{
+document.getElementById("modalBody").onchange=event=>{
   if(!event.target?.matches?.("[data-fe-pitch-metric]"))return;
   const g=S.games.find(x=>String(x.id)===String(S.openGameId));
   if(!g)return;
@@ -2823,7 +2823,7 @@ document.getElementById("modalBody").addEventListener("change",event=>{
   if(!FE_PITCH_STATS.some(x=>x[0]===v))return;
   g.fePitchMetric=v;
   fePaintPitchStats(g);
-});
+};
 document.getElementById("modalBody").onclick=event=>{
   const action=event?.target?.closest?.("[data-fe-player-name],[data-fe-tab],[data-h2h-toggle],[data-last5-toggle],[data-refresh-match]");
   if(!action)return;
