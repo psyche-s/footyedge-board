@@ -13,11 +13,12 @@
   "summary": {
     "fixtures": 66,
     "fixturesWithExternalPrediction": 14,
-    "fixturesWithTwoOrMoreIndependentSources": 7,
+    "fixturesWithTwoOrMoreIndependentSources": 8,
     "picksWithTwoSourceAgreement": 4,
     "picksWithConflictingForecasts": 1,
+    "picksWithCompetingDirections": 1,
     "picksNotIndependentlyChecked": 184,
-    "sourceOpinionRecords": 23,
+    "sourceOpinionRecords": 28,
     "invalidRecords": 0
   },
   "invalid": [],
@@ -29,9 +30,10 @@
       "league": "eng.1",
       "sourcesChecked": [
         "windrawwin",
-        "sports_mole"
+        "sports_mole",
+        "football_whispers"
       ],
-      "opinionsRecorded": 2,
+      "opinionsRecorded": 3,
       "picks": [
         {
           "label": "Manchester City 1+ Goal",
@@ -54,10 +56,10 @@
         {
           "label": "Manchester City or Draw",
           "family": "result",
-          "verdict": "independent_agreement",
+          "verdict": "competing_directional_forecasts",
           "support": 2,
-          "oppose": 0,
-          "providersChecked": 2,
+          "oppose": 1,
+          "providersChecked": 3,
           "marketValidated": true
         }
       ]
@@ -69,9 +71,10 @@
       "league": "eng.1",
       "sourcesChecked": [
         "windrawwin",
-        "the_analyst"
+        "the_analyst",
+        "sports_mole"
       ],
-      "opinionsRecorded": 2,
+      "opinionsRecorded": 3,
       "picks": [
         {
           "label": "Under 4.5 Goals",
@@ -95,9 +98,9 @@
           "label": "Arsenal or Draw",
           "family": "result",
           "verdict": "independent_agreement",
-          "support": 2,
+          "support": 3,
           "oppose": 0,
-          "providersChecked": 2,
+          "providersChecked": 3,
           "marketValidated": true
         }
       ]
@@ -145,9 +148,11 @@
       "away": "Tottenham Hotspur",
       "league": "eng.1",
       "sourcesChecked": [
-        "windrawwin"
+        "windrawwin",
+        "football_whispers",
+        "sports_mole"
       ],
-      "opinionsRecorded": 1,
+      "opinionsRecorded": 4,
       "picks": [
         {
           "label": "Over 1.5 Goals",
@@ -170,10 +175,10 @@
         {
           "label": "Chelsea or Draw",
           "family": "result",
-          "verdict": "limited_independent_support",
-          "support": 1,
+          "verdict": "independent_agreement",
+          "support": 3,
           "oppose": 0,
-          "providersChecked": 1,
+          "providersChecked": 3,
           "marketValidated": true
         }
       ]
