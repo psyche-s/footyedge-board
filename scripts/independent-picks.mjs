@@ -22,23 +22,29 @@ export function selectionEvidence(p){
  return p?.sourceBackedReason===true && typeof p?.reason==="string" && p.reason.length>=30;
 }
 export function distinctPickSet(picks,max=3){
- const sorted=[...(picks||[])].filter(p=>p?.label&&selectionEvidence(p))
+ const ranked=[...(picks||[])].filter(p=>p?.label&&selectionEvidence(p))
   .sort((a,b)=>(Number(b.confidenceRating??b.rating)||0)-(Number(a.confidenceRating??a.rating)||0));
- const selected=[],theses=new Set(),labels=new Set();
- for(const p of sorted){
-  const thesis=marketThesis(p),label=key(p.label);
-  if(thesis==="other"||theses.has(thesis)||labels.has(label))continue;
-  // A team goal and result bet on that exact same side do not become independent hypotheses.
-  const sameSideGoal=String(p.label||"").match(/^(.+?) 1\+ Goal$/i)?.[1];
-  const sameSideResult=String(p.label||"").match(/^(.+?) (?:ML|or Draw)$/i)?.[1];
-  if(selected.some(q=>{
-   const gl=String(q.label||"").match(/^(.+?) 1\+ Goal$/i)?.[1],
-      re=String(q.label||"").match(/^(.+?) (?:ML|or Draw)$/i)?.[1];
-   return sameSideGoal&&re&&key(sameSideGoal)===key(re)||sameSideResult&&gl&&key(sameSideResult)===key(gl);
-  }))continue;
-  selected.push({...p,rank:selected.length+1});
-  theses.add(thesis);labels.add(label);
-  if(selected.length===max)break;
- }
- return selected;
+ const compatible=(a,b)=>{
+  const left=marketThesis(a),right=marketThesis(b);
+  if(left==="other"||right==="other"||left===right)return false;
+  const goal=x=>String(x.label||"").match(/^(.+?) 1\\+ Goal$/i)?.[1],
+        result=x=>String(x.label||"").match(/^(.+?) (?:ML|or Draw)$/i)?.[1];
+  if((goal(a)&&result(b)&&key(goal(a))===key(result(b)))||
+     (goal(b)&&result(a)&&key(goal(b))===key(result(a))))return false;
+  return key(a.label)!==key(b.label);
+ };
+ // Prefer TWO truly different edges over one high-scored correlated goal line.
+ // Then sort the chosen picks by confidence. No filler third event market.
+ let best=[];
+ const search=(chosen,next)=>{
+  if(chosen.length>best.length||(chosen.length===best.length&&
+   chosen.reduce((n,p)=>n+Number(p.confidenceRating??p.rating??0),0)>
+   best.reduce((n,p)=>n+Number(p.confidenceRating??p.rating??0),0)))best=[...chosen];
+  if(chosen.length>=max)return;
+  for(let i=next;i<ranked.length;i++)
+   if(chosen.every(p=>compatible(p,ranked[i])))search([...chosen,ranked[i]],i+1);
+ };
+ search([],0);
+ return best.sort((a,b)=>(Number(b.confidenceRating??b.rating)||0)-(Number(a.confidenceRating??a.rating)||0))
+   .map((p,i)=>({...p,rank:i+1}));
 }
