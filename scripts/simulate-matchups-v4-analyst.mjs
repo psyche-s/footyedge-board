@@ -93,7 +93,7 @@ export function generateAnalystV4({baseline,external,asof,draws=10000}){
 async function main(){
  const parts=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
  const day=process.env.SIMULATION_DATE||parts.year+"-"+parts.month+"-"+parts.day;
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(day))throw Error("Bad local date");
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(day))throw Error("Bad local date");
  const read=async p=>{try{return JSON.parse(await fs.readFile(p,"utf8"))}catch(e){if(e.code==="ENOENT")return null;throw e}};
  const baseline=await read(path.join("data","experimental-simulations",day+"-v3.json"));
  if(!baseline||baseline.date!==day)throw Error("A dated V3 forecast is required");
