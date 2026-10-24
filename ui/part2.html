@@ -1654,7 +1654,7 @@ async function load(date=S.date){
       repoData('data/league-tables/'+S.date+'.json').catch(()=>null),
       repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null),
-      repoData('data/experimental-simulations/'+S.date+'-v3.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null))),
+      repoData('data/experimental-simulations/'+S.date+'-v4.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'-v3.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null)))),
       repoData('data/consensus-reviewed/'+S.date+'.json').catch(()=>repoData('data/pick-reviews/'+S.date+'.json').catch(()=>null))
     ].map((request,index)=>Promise.race([
       Promise.resolve(request).catch(()=>null),
@@ -2632,7 +2632,7 @@ function feProjectionsPanel(g){
  ];
  return '<section class="fe-panel fe-projections">'+
    '<div class="fe-panelHeading"><h3>PROJECTIONS</h3><span class="fe-xiBadge">EXPERIMENTAL MODEL</span></div>'+
-   '<div class="fe-simBanner">'+(sim?'10,000 simulated matches · independently stored forecast':'Historical-model fallback · no 10,000-draw snapshot for this fixture')+'</div>'+
+   '<div class="fe-simBanner">'+(sim?('10,000 simulated matches · '+(sim.modelVersion?.includes('analyst-hybrid')?'opponent-adjusted research blend':'opponent-conditioned research')+(sim.status==='retrospective_rerun_not_valid_live_prematch'?' · retrospective rerun after kickoff':' · pre-match snapshot')):'Historical-model fallback · no 10,000-draw snapshot for this fixture')+'</div>'+
    '<div class="fe-simSummary">'+
       '<div class="fe-simScore"><span>MOST LIKELY SCORE</span><strong>'+esc(String(score).replace("-", " – "))+'</strong><em>'+format(scorePct)+' of modeled scorelines</em></div>'+
       '<div class="fe-simExpected"><span>PROJECTED GOALS</span><strong>'+Number(goal.home).toFixed(2)+' <small>–</small> '+Number(goal.away).toFixed(2)+'</strong><em>'+esc(g.home.name)+' / '+esc(g.away.name)+'</em></div>'+
