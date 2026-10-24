@@ -2370,7 +2370,7 @@ function feProjectionsPanel(g){
  const score=sim?.predictedScore||old.score.i+"-"+old.score.j;
  const scorePct=sim?.predictedScoreProbabilityPct??Math.round(old.score.p*100);
  const props=sim?.marketsPct||{};
- const format=n=>pct(n)==null?"—":Number(n).toFixed(1).replace(/\\.0$/,"")+"%";
+ const format=n=>pct(n)==null?"—":Number(n).toFixed(1).replace(/\.0$/,"")+"%";
  const tile=(num,label)=>'<div class="fe-simMetric"><strong>'+format(num)+'</strong><span>'+label+'</span></div>';
  const p=sim?[
    [props.bttsYes,'Both teams score'],[props.over1_5,'Over 1.5 goals'],[props.over2_5,'Over 2.5 goals'],
