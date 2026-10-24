@@ -1589,7 +1589,7 @@ async function load(date=S.date){
   document.getElementById("games").innerHTML='<div class="loading"><div class="spin"></div>Loading live games…</div>';
   try{
     const utcNext=addDate(S.date,1);
-    let [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload,editorialDeskPayload,experimentalPayload]=await Promise.all([
+    let [p,fixturesDay,fixturesNext,oddsDay,oddsNext,performancePayload,insightsPayload,researchBasePayload,archivePayload,draftPayload,modelBoardPayload,marketReviewPayload,h2hPayload,teamIntelPayload,leagueTablePayload,editorialPayload,editorialDeskPayload,experimentalPayload,reviewedPicksPayload]=await Promise.all([
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):json(`/api/espn-scoreboard?dates=${dateKey(S.date)}&limit=1000`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/scoreboard.json").catch(()=>null):repoData("data/"+S.date+"/scoreboard.json").catch(()=>null)),
       (CAPTURE_FAST||GITHUB_STATIC)?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(S.date)}`).catch(()=>S.date===etDate()?repoData("data/"+S.date+"/fixtures.json").catch(()=>null):null),
       (CAPTURE_FAST||GITHUB_STATIC)?Promise.resolve(null):json(`/api/football?endpoint=fixtures&date=${encodeURIComponent(utcNext)}`).catch(()=>null),
@@ -1607,7 +1607,8 @@ async function load(date=S.date){
       repoData('data/league-tables/'+S.date+'.json').catch(()=>null),
       repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null),
-      repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null))
+      repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null)),
+      repoData('data/pick-reviews/'+S.date+'.json').catch(()=>null)
     ].map((request,index)=>Promise.race([
       Promise.resolve(request).catch(()=>null),
       new Promise(resolve=>setTimeout(()=>resolve(null),index<3?6500:5500))
@@ -1660,6 +1661,12 @@ async function load(date=S.date){
         return !!(x.home?.name&&x.away?.name&&xi(x.home)&&xi(x.away));
       });
     }
+    // Re-reviewed current-day Top 3 are a dated overlay; preserve the immutable original picks for settlement.
+    const feReviewById=new Map((reviewedPicksPayload?.schema==="footyedge-dated-researched-top3-v1"&&
+      reviewedPicksPayload.date===S.date&&reviewedPicksPayload.archiveUnmodified===true?
+      reviewedPicksPayload.matches:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3
+        &&x.picks.every(p=>p.sourceBackedReason===true&&Number.isFinite(Number(p.confidenceRating))&&p.reason))
+      .map(x=>[String(x.gameId),x]));
     const editorPicksById=new Map((editorialDeskPayload?.schema==='footyedge-editorial-desk-v1'&&editorialDeskPayload.date===S.date?
       editorialDeskPayload.matches||[]:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3)
       .map(x=>[String(x.gameId),x]));
@@ -1672,7 +1679,10 @@ async function load(date=S.date){
           normName(verifiedXI.away?.name)===normName(game.away?.name)?verifiedXI:null;
         game.editorialPreview=previewMap.get(String(game.id))||null;
         const edited=editorPicksById.get(String(game.id));
-        game.feEditorialPicks=edited&&normName(edited.home)===normName(game.home?.name)&&normName(edited.away)===normName(game.away?.name)?edited.picks:null;
+        const currentReview=feReviewById.get(String(game.id));
+        game.feEditorialPicks=currentReview&&normName(currentReview.home)===normName(game.home?.name)&&
+          normName(currentReview.away)===normName(game.away?.name)?currentReview.picks:
+          edited&&normName(edited.home)===normName(game.home?.name)&&normName(edited.away)===normName(game.away?.name)?edited.picks:null;
         const snapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
         if(snapshot?.season===Number(game.year||S.date.slice(0,4))&&Array.isArray(snapshot.table)){
           game.feTable={...snapshot,status:'verified',source:leagueTablePayload.source?.label,sourceUrl:leagueTablePayload.source?.url,asOf:leagueTablePayload.asOf};
