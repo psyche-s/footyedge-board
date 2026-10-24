@@ -88,7 +88,7 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
      const match=(cross?.context||[]).find(x=>String(x.market).toLowerCase()===String(pick.label).toLowerCase()
        &&typeof x.note==="string"&&x.note.length<=240);
      if(!match)continue;
-     const cleaned=match.note.replace(/https?:\\/\\/\\S+/g,"").replace(/\\b(?:Football Whispers|Sports Mole|Forebet|Opta|ESPN|Sportskeeda|FotMob)\\b/gi,"").trim();
+     const cleaned=match.note.replace(/https?:\/\/\S+/g,"").replace(/\b(?:Football Whispers|Sports Mole|Forebet|Opta|ESPN|Sportskeeda|FotMob)\b/gi,"").trim();
      if(cleaned){pick.reason+=" "+cleaned;pick.contextVerified=true;out.qualifyingInputs.sourceReviewed=true;}
    }
    out.picks=picked;
