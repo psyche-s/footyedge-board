@@ -53,7 +53,7 @@ test("Lineups and projections respect source and uncertainty restrictions",()=>{
  assert.match(logic,/function feExperimentalProjection/);
  assert.match(logic,/function feProjectionsPanel/);
  assert.match(logic,/10,000 simulated matches/);
- assert.match(logic,/data\\/experimental-simulations\\//);
+ assert.ok(logic.includes("data/experimental-simulations/"));
  assert.match(logic,/fe-projBars/); // Original win/draw/loss segmented presentation is preserved.
  assert.match(markup,/fe-simScore/);
  assert.match(logic,/\["standings","Table"\]/);
