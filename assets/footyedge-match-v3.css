@@ -1614,3 +1614,43 @@
  .fe-pitchStatStrip{gap:1px;width:min(100%,71px)}
  .fe-pitchStatCell{height:14px;font-size:7px}
 }
+
+
+/* FootyEdge original: compact pitch + mirrored team/market projections.
+   Structural inspiration only; no external site assets or copied visual brand. */
+.fe-projections .fe-projExtra{border:1px solid #244a37;border-radius:16px;background:linear-gradient(145deg,#0c1c14,#0b1711);padding:13px;margin:13px 0 0;min-width:0}
+.fe-projExtra .fe-panelHeading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 13px}
+.fe-projExtra .fe-panelHeading h3{margin:0;color:#e8faed;letter-spacing:.045em;font-size:12px}
+.fe-projExtra .fe-panelHeading span{font-size:10px;color:#b3d1ba}
+.fe-projCompareHead{display:flex;justify-content:space-between;gap:12px;font-size:11px;font-weight:850;color:#e4f7e8;margin-bottom:11px}
+.fe-projCompareHead span{max-width:47%;overflow-wrap:anywhere}
+.fe-projCompareRows{display:grid;gap:9px}
+.fe-projCompareRow{display:grid;grid-template-columns:minmax(52px,1fr) minmax(115px,1.7fr) minmax(52px,1fr);gap:4px 12px;align-items:center}
+.fe-projCompareValue{font-size:16px;color:#effff4;font-variant-numeric:tabular-nums}
+.fe-projCompareValue.fe-awayValue{text-align:right}
+.fe-projCompareLabel{text-align:center;font-size:11px;font-weight:750;color:#c4dacb}
+.fe-projCompareBars{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.fe-projCompareBars>span{height:5px;min-width:0;background:#38d989;border-radius:6px 0 0 6px;justify-self:end}
+.fe-projCompareBars>span:last-child{background:#799ac9;border-radius:0 6px 6px 0;justify-self:start}
+.fe-projTotalRow{padding:12px 0 13px;border-top:1px solid rgba(156,206,165,.16)}
+.fe-projTotalHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}
+.fe-projTotalHead strong{font-size:12px;color:#edf9ed}
+.fe-projTotalHead span{font-size:11px;color:#b7cbbb;font-variant-numeric:tabular-nums}
+.fe-projTotalOptions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.fe-projTotalOptions>div{border:1px solid #335c43;border-radius:9px;background:#09291b;min-width:0;padding:8px 4px;text-align:center}
+.fe-projTotalOptions span{display:block;font-size:10px;color:#b7c9bc}
+.fe-projTotalOptions strong{display:block;font-size:18px;font-weight:900;color:#76e6a3;line-height:1.5;font-variant-numeric:tabular-nums}
+.fe-projPitchWrap{padding:0;overflow:hidden;border-radius:13px}
+.fe-projPitchWrap .fe-sharedPitch{width:100%;max-width:610px;min-height:760px;margin:0 auto}
+.fe-projPitchWrap .fe-pitchStatStrip{display:none!important}
+.fe-projPitchWrap .fe-fieldPlayerName{font-size:10px!important}
+.fe-projUnavailable{margin:0;color:#a9cbb5;font-size:11px;line-height:1.5}
+.fe-projNotes{padding-left:18px;margin:0;display:grid;gap:8px;color:#d2e9d8;font-size:11px;line-height:1.5}
+.fe-projExtra .fe-projDisclaimer{font-size:10px;margin:10px 0 0;color:#a2b9aa}
+@media(max-width:620px){
+ .fe-projections .fe-projExtra{padding:10px;margin-top:10px}
+ .fe-projCompareRow{grid-template-columns:minmax(38px,1fr) minmax(90px,1.65fr) minmax(38px,1fr);gap:4px 5px}
+ .fe-projCompareValue{font-size:14px}.fe-projCompareLabel{font-size:10px}
+ .fe-projTotalOptions{gap:4px}.fe-projTotalOptions span{font-size:9px}.fe-projTotalOptions strong{font-size:16px}
+ .fe-projPitchWrap .fe-sharedPitch{min-height:725px}
+}
