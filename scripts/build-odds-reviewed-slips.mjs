@@ -53,8 +53,7 @@ function shortlistPriceCandidates(fixture,sim,quotes){
   const rationale=fixture.home.name+" and "+fixture.away.name+" met this exact market in "+
    hist.h+"/"+fixture.last10.home.length+" and "+hist.a+"/"+fixture.last10.away.length+
    " recent matches. The opponent-conditioned research model returned "+prob.toFixed(1)+
-   "%. A "+q.book+" reference price of "+(q.odds>0?"+":"")+q.odds+
-   " was observed, but Ontario bet-builder availability and combined odds are not verified.";
+   "%. A reference market price was observed, but Ontario bet-builder availability and combined odds are not verified.";
   result.push({gameId:String(fixture.id),fixture:fixture.home.name+" vs "+fixture.away.name,
    kickoff:fixture.date,league:fixture.league,label:q.label,category:q.label.endsWith(" ML")?"Match Result":"Goals",
    family:q.label.endsWith(" ML")?"result":"total",
