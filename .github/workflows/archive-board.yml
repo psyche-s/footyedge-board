@@ -131,6 +131,13 @@ jobs:
             timeout 240s python scripts/shadow_dixon_coles.py --capture-candidate --capture-expansion || echo "::warning::Shadow forecast unavailable; official model unaffected."
           fi
 
+      - name: Build all-fixture 10000-draw experimental score and WDL forecast (shadow only)
+        if: steps.gate.outputs.run == 'true'
+        continue-on-error: true
+        run: |
+          node --test tests/experimental-simulations.test.mjs
+          node scripts/simulate-fixtures.mjs
+
       - name: Settle prior boards and ingest post-match learning before picks
         if: steps.gate.outputs.run == 'true'
         env:
@@ -216,7 +223,7 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations)
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
