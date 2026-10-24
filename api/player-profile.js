@@ -87,7 +87,9 @@ const STAT_NAMES=new Map([
  ["starts","Starts"],["gamesstarted","Starts"],["goals","Goals"],["goalscored","Goals"],["totalgoals","Goals"],
  ["assists","Assists"],["goalassists","Assists"],["shots","Shots"],["totalshots","Shots"],["shotsontarget","Shots on target"],
  ["minutes","Minutes played"],["minutesplayed","Minutes played"],["foulscommitted","Fouls committed"],["foulssuffered","Fouls won"],["foulswon","Fouls won"],["yellowcards","Yellow cards"],
- ["redcards","Red cards"],["cleansheets","Clean sheets"]
+ ["redcards","Red cards"],["cleansheets","Clean sheets"],
+ ["tackles","Tackles"],["totaltackles","Tackles"],["tacklesmade","Tackles"],
+ ["passes","Passes"],["totalpasses","Passes"],["passesattempted","Passes"]
 ]);
 const key=x=>escName(x).replace(/\s+/g,"");
 function statEntries(obj){
@@ -201,7 +203,8 @@ function parseESPNLastTen(overview,gameLogs,teamId,now=Date.now()){
     goals:v.Goals??null,assists:v.Assists??null,
     shotsOnTarget:v["Shots on target"]??null,shots:v.Shots??null,
     foulsCommitted:v["Fouls committed"]??null,foulsWon:v["Fouls won"]??null,
-    yellowCards:v["Yellow cards"]??null,redCards:v["Red cards"]??null};
+    yellowCards:v["Yellow cards"]??null,redCards:v["Red cards"]??null,
+    tackles:v.Tackles??null,passes:v.Passes??null};
   });
 }
 function parseESPNLastFive(overview,gameLog,competition){
