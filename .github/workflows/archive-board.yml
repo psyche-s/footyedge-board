@@ -136,8 +136,12 @@ jobs:
         continue-on-error: true
         env:
           FOOTYEDGE_URL: https://footyedge-board.vercel.app
+          FOOTYEDGE_STYLE_FEED_URL: ${{ secrets.FOOTYEDGE_STYLE_FEED_URL }}
+          FOOTYEDGE_STYLE_FEED_TOKEN: ${{ secrets.FOOTYEDGE_STYLE_FEED_TOKEN }}
+          FOOTYEDGE_STYLE_FEED_APPROVED: ${{ vars.FOOTYEDGE_STYLE_FEED_APPROVED }}
         run: |
           node scripts/sync-experimental-standings.mjs || echo "::warning::Optional standings unavailable; run conservative history-only model."
+          node scripts/sync-style-matchups.mjs || echo "::warning::Optional verified style-event feed unavailable."
           node --test tests/experimental-simulations.test.mjs tests/advanced-matchups.test.mjs
           node scripts/simulate-fixtures.mjs
           node scripts/simulate-matchups-v3.mjs
@@ -238,6 +242,7 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots)
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
+          if [[ -d data/style-matchups ]]; then files+=(data/style-matchups); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
           done
