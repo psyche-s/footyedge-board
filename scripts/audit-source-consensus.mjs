@@ -2,6 +2,7 @@
 // Internal-only source consensus audit. No scraping, invented sources, or live-site source names.
 import fs from "node:fs/promises";
 import path from "node:path";
+import {pathToFileURL} from "node:url";
 export const lookup=(m,p)=>{
  if(p.family==="result"){
   const label=String(p.label).toLowerCase();
@@ -80,4 +81,5 @@ async function main(){
  console.log("Independent source consensus audit:",JSON.stringify(out.summary));
  if(out.summary.invalidRecords)process.exitCode=1;
 }
-main().catch(e=>{console.error(e);process.exitCode=1});
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)
+ main().catch(e=>{console.error(e);process.exitCode=1});
