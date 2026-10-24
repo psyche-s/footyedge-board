@@ -92,6 +92,36 @@ function formulateTeamProjections(home,away){
  }
  return {output,availability};
 }
+function sourcedPlayerFouls(f,teamNews,kickoff){
+ const candidates=Array.isArray(f.playerPropResearch)?f.playerPropResearch:[];
+ const normal=n=>String(n||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+     .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ const sides=["home","away"],out=[];
+ for(const side of sides){
+   const xi=teamNews?.[side]?.confirmedXI?.length===11?teamNews[side].confirmedXI:
+     teamNews?.[side]?.predictedXI?.length===11?teamNews[side].predictedXI:[];
+   const starters=xi.map(x=>normal(typeof x==="string"?x:x?.name)).filter(Boolean);
+   if(!starters.length)continue;
+   for(const item of candidates){
+     if(String(item?.teamSide)!==side||!item?.sourceUrl||!/^https:\/\//.test(item.sourceUrl)||
+       !Array.isArray(item.lastFive))continue;
+     const asked=normal(item.name),matched=starters.filter(n=>n===asked||
+        (asked.length>=4&&n.endsWith(" "+asked))||(n.length>=4&&asked.endsWith(" "+n)));
+     if(matched.length!==1)continue;
+     const games=item.lastFive.filter(x=>Number.isFinite(Date.parse(x.date))&&Date.parse(x.date)<kickoff&&
+       x.foulsCommitted!==null&&Number.isInteger(x.foulsCommitted)&&
+       x.foulsCommitted>=0&&x.foulsCommitted<=12).slice(0,5);
+     const ids=new Set(games.map(x=>String(x.id||x.date+"-"+x.opponent)));
+     if(games.length<5||ids.size<5)continue;
+     const sum=games.reduce((v,x)=>v+x.foulsCommitted,0),mean=sum/games.length;
+     const one=games.filter(x=>x.foulsCommitted>=1).length,two=games.filter(x=>x.foulsCommitted>=2).length;
+     out.push({name:item.name,side,position:item.position||null,
+       projected:Math.round(mean*100)/100,onePlusPct:one*20,twoPlusPct:two*20,
+       sample:5,sourceValidated:true,modelBasis:"recorded pre-kickoff last five, descriptive frequencies with no calibration"});
+   }
+ }
+ return out.sort((a,b)=>b.projected-a.projected);
+}
 export function buildAdvancedSimulations({research,analytics,h2h,teamNews,standings,styleEvents,
   asof,simulations=10000}){
  if(!research?.fixtures?.length||!/^20\d\d-\d\d-\d\d$/.test(research.date)||
@@ -227,6 +257,7 @@ export function buildAdvancedSimulations({research,analytics,h2h,teamNews,standi
      marketsPct:{over1_5:pct(tally.over15/simulations),over2_5:pct(tally.over25/simulations),
        under3_5:pct(tally.under35/simulations),bttsYes:pct(tally.bttsYes/simulations)},
      statTotals,teamProjections:fs.output,statInputCoverage:fs.availability,
+     playerProjections:{foulsCommitted:sourcedPlayerFouls(f,formation,kick)},
      factorsV3:adjustments,
      matchupContext:{recent12MonthH2H:yearH2H.length,analogHome:analogH,analogAway:analogA,
        opponentAdjustedHome:adjH,opponentAdjustedAway:adjA,
