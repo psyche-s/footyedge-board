@@ -1,0 +1,2686 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-10-25",
+  "generatedAt": "2026-10-25T06:05:31.506Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 420000,
+  "sourceDates": {
+    "research": "2026-10-25T06:05:01.196Z",
+    "analytics": "2026-10-25T06:05:28.559488+00:00",
+    "h2h": "2026-10-25",
+    "teamNews": null,
+    "standings": "2026-10-25T06:05:30.252Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 42,
+    "preKickoff": 39,
+    "postKickoff": 3,
+    "atLeastEightEach": 42,
+    "shotJoined": 8,
+    "realXg": 0,
+    "projectedXI": 0,
+    "standingsJoined": 39
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401879254",
+      "league": "eng.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "Crystal Palace",
+      "away": "Newcastle United",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.908,
+        "away": 1.692
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.39,
+        "draw": 21.21,
+        "awayWin": 34.4
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.82,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.82
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.15
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.45
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.1,
+        "over2_5": 70.34,
+        "under3_5": 51.25,
+        "bttsYes": 69.56
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401878766",
+      "league": "eng.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "Hull City",
+      "away": "Brentford",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.367,
+        "away": 1.756
+      },
+      "winDrawLossPct": {
+        "homeWin": 30.34,
+        "draw": 22.67,
+        "awayWin": 46.99
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.55,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.55
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.52
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.13
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.28,
+        "over2_5": 61.12,
+        "under3_5": 61.7,
+        "bttsYes": 62.76
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401878765",
+      "league": "eng.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "Liverpool",
+      "away": "Brighton & Hove Albion",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.419,
+        "away": 2.217
+      },
+      "winDrawLossPct": {
+        "homeWin": 24.08,
+        "draw": 19.36,
+        "awayWin": 56.56
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 9.4,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 9.4
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.85
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 6.68
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.82,
+        "over2_5": 70.65,
+        "under3_5": 50.36,
+        "bttsYes": 67.46
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401879252",
+      "league": "eng.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "Manchester United",
+      "away": "AFC Bournemouth",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.766,
+        "away": 1.702
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.1,
+        "draw": 22.81,
+        "awayWin": 37.09
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.41,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.41
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.03
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.93
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.24,
+        "over2_5": 66.66,
+        "under3_5": 54.47,
+        "bttsYes": 67.38
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401878764",
+      "league": "eng.1",
+      "kickoff": "2026-10-25T16:30Z",
+      "home": "Sunderland",
+      "away": "Leeds United",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.331,
+        "away": 1.858
+      },
+      "winDrawLossPct": {
+        "homeWin": 28.57,
+        "draw": 22.14,
+        "awayWin": 49.29
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.78
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 7.59
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.74,
+        "over2_5": 61.73,
+        "under3_5": 60.34,
+        "bttsYes": 61.87
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401882835",
+      "league": "esp.1",
+      "kickoff": "2026-10-25T13:00Z",
+      "home": "Athletic Club",
+      "away": "Getafe",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.661,
+        "away": 1.181
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.07,
+        "draw": 23.82,
+        "awayWin": 28.11
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.19,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.19
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.92
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.44
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.99,
+        "over2_5": 54.33,
+        "under3_5": 68.25,
+        "bttsYes": 56.47
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401882833",
+      "league": "esp.1",
+      "kickoff": "2026-10-25T15:15Z",
+      "home": "Celta Vigo",
+      "away": "Real Betis",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.68,
+        "away": 1.652
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.3,
+        "draw": 22.76,
+        "awayWin": 38.94
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.46,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.46
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.37
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.07
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 83.86,
+        "over2_5": 64.75,
+        "under3_5": 57.19,
+        "bttsYes": 65.62
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401882829",
+      "league": "esp.1",
+      "kickoff": "2026-10-25T17:30Z",
+      "home": "Real Sociedad",
+      "away": "Levante",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.495,
+        "away": 1.481
+      },
+      "winDrawLossPct": {
+        "homeWin": 58.67,
+        "draw": 18.92,
+        "awayWin": 22.41
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.09,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.09
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.61
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.03
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 90.84,
+        "over2_5": 76.06,
+        "under3_5": 43.21,
+        "bttsYes": 70.67
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401882832",
+      "league": "esp.1",
+      "kickoff": "2026-10-25T20:00Z",
+      "home": "Barcelona",
+      "away": "Real Madrid",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.949,
+        "away": 1.694
+      },
+      "winDrawLossPct": {
+        "homeWin": 63.53,
+        "draw": 16.72,
+        "awayWin": 19.75
+      },
+      "predictedScore": "3-1",
+      "predictedScoreProbabilityPct": 7.27,
+      "mostLikelyScores": [
+        {
+          "score": "3-1",
+          "probabilityPct": 7.27
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.03
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.14
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 94.87,
+        "over2_5": 84.59,
+        "under3_5": 31.37,
+        "bttsYes": 78.09
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761904",
+      "league": "usa.1",
+      "kickoff": "2026-10-26T01:00Z",
+      "home": "LAFC",
+      "away": "LA Galaxy",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.946,
+        "away": 1.302
+      },
+      "winDrawLossPct": {
+        "homeWin": 52.9,
+        "draw": 21.94,
+        "awayWin": 25.16
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.72,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.72
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.55
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 7.53
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 83.25,
+        "over2_5": 63.38,
+        "under3_5": 58.65,
+        "bttsYes": 62.29
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401875036",
+      "league": "ita.1",
+      "kickoff": "2026-10-25T11:30Z",
+      "home": "Internazionale",
+      "away": "Fiorentina",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.562,
+        "away": 1.338
+      },
+      "winDrawLossPct": {
+        "homeWin": 64.16,
+        "draw": 17.26,
+        "awayWin": 18.58
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.84,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.84
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.32
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 6.72
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.87,
+        "over2_5": 74.59,
+        "under3_5": 45.68,
+        "bttsYes": 67.6
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874972",
+      "league": "ita.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "Atalanta",
+      "away": "Frosinone",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.526,
+        "away": 1.681
+      },
+      "winDrawLossPct": {
+        "homeWin": 34.95,
+        "draw": 23.12,
+        "awayWin": 41.93
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.96,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.96
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.42
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.18
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.66,
+        "over2_5": 62.24,
+        "under3_5": 59.95,
+        "bttsYes": 63.4
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874952",
+      "league": "ita.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "Genoa",
+      "away": "Venezia",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.744,
+        "away": 1.323
+      },
+      "winDrawLossPct": {
+        "homeWin": 47.25,
+        "draw": 23.09,
+        "awayWin": 29.66
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.01,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.01
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.53
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.23
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.87,
+        "over2_5": 58.46,
+        "under3_5": 64.23,
+        "bttsYes": 60.18
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874772",
+      "league": "ita.1",
+      "kickoff": "2026-10-25T17:00Z",
+      "home": "Lecce",
+      "away": "Juventus",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.393,
+        "away": 1.569
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.91,
+        "draw": 24.9,
+        "awayWin": 41.19
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.72,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.72
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.42
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 7.99
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.7,
+        "over2_5": 56.47,
+        "under3_5": 64.82,
+        "bttsYes": 59.77
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874779",
+      "league": "ita.1",
+      "kickoff": "2026-10-25T19:45Z",
+      "home": "Udinese",
+      "away": "AC Milan",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.174,
+        "away": 2.129
+      },
+      "winDrawLossPct": {
+        "homeWin": 20.23,
+        "draw": 20.55,
+        "awayWin": 59.22
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 9.89,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 9.89
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 9.39
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 8.09
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.3,
+        "over2_5": 64.27,
+        "under3_5": 58,
+        "bttsYes": 60.94
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401884760",
+      "league": "ger.1",
+      "kickoff": "2026-10-25T14:30Z",
+      "home": "TSG Hoffenheim",
+      "away": "Bayer Leverkusen",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.41,
+        "away": 2.497
+      },
+      "winDrawLossPct": {
+        "homeWin": 19.71,
+        "draw": 17.96,
+        "awayWin": 62.33
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 9.4,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 9.4
+        },
+        {
+          "score": "1-3",
+          "probabilityPct": 7.82
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 6.51
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 90.34,
+        "over2_5": 75.84,
+        "under3_5": 44.04,
+        "bttsYes": 69.67
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401884759",
+      "league": "ger.1",
+      "kickoff": "2026-10-25T16:30Z",
+      "home": "SC Freiburg",
+      "away": "Bayern Munich",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.875,
+        "away": 2.371
+      },
+      "winDrawLossPct": {
+        "homeWin": 31.19,
+        "draw": 19.49,
+        "awayWin": 49.32
+      },
+      "predictedScore": "2-2",
+      "predictedScoreProbabilityPct": 7.44,
+      "mostLikelyScores": [
+        {
+          "score": "2-2",
+          "probabilityPct": 7.44
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.4
+        },
+        {
+          "score": "1-3",
+          "probabilityPct": 6.43
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 92.26,
+        "over2_5": 79.63,
+        "under3_5": 38.69,
+        "bttsYes": 76.27
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876425",
+      "league": "fra.1",
+      "kickoff": "2026-10-25T14:00Z",
+      "home": "AS Monaco",
+      "away": "Lille",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.787,
+        "away": 1.105
+      },
+      "winDrawLossPct": {
+        "homeWin": 53.79,
+        "draw": 23.17,
+        "awayWin": 23.04
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.31,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.31
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.3
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.95
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.23,
+        "over2_5": 55.07,
+        "under3_5": 66.74,
+        "bttsYes": 55.58
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876429",
+      "league": "fra.1",
+      "kickoff": "2026-10-25T16:15Z",
+      "home": "AJ Auxerre",
+      "away": "Le Mans",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.931,
+        "away": 1.35
+      },
+      "winDrawLossPct": {
+        "homeWin": 50.88,
+        "draw": 22.57,
+        "awayWin": 26.55
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.06,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.06
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.85
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 7.03
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.47,
+        "over2_5": 63.78,
+        "under3_5": 59.08,
+        "bttsYes": 63.28
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876430",
+      "league": "fra.1",
+      "kickoff": "2026-10-25T16:15Z",
+      "home": "Angers",
+      "away": "Lorient",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.318,
+        "away": 1.499
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.86,
+        "draw": 24.99,
+        "awayWin": 41.15
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.06,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.06
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.72
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.58
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.01,
+        "over2_5": 53.57,
+        "under3_5": 68.76,
+        "bttsYes": 57.22
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876426",
+      "league": "fra.1",
+      "kickoff": "2026-10-25T16:15Z",
+      "home": "Marseille",
+      "away": "Le Havre AC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.777,
+        "away": 1.2
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.51,
+        "draw": 22.7,
+        "awayWin": 25.79
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.56,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.56
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.84
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.25
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.2,
+        "over2_5": 58.09,
+        "under3_5": 64.95,
+        "bttsYes": 58.12
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876424",
+      "league": "fra.1",
+      "kickoff": "2026-10-25T16:15Z",
+      "home": "Stade Rennais",
+      "away": "Strasbourg",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.225,
+        "away": 1.333
+      },
+      "winDrawLossPct": {
+        "homeWin": 57.04,
+        "draw": 20.16,
+        "awayWin": 22.8
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.45,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.45
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.69
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 6.95
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.85,
+        "over2_5": 68.48,
+        "under3_5": 52.98,
+        "bttsYes": 65.65
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876423",
+      "league": "fra.1",
+      "kickoff": "2026-10-25T16:15Z",
+      "home": "Toulouse",
+      "away": "Troyes",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.12,
+        "away": 1.085
+      },
+      "winDrawLossPct": {
+        "homeWin": 59.84,
+        "draw": 20.95,
+        "awayWin": 19.21
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.96,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.96
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.74
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.72
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 83.43,
+        "over2_5": 62.33,
+        "under3_5": 60.38,
+        "bttsYes": 58.91
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401875570",
+      "league": "ned.1",
+      "kickoff": "2026-10-25T11:15Z",
+      "home": "Fortuna Sittard",
+      "away": "Excelsior",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.228,
+        "away": 1.63
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.24,
+        "draw": 20.37,
+        "awayWin": 28.39
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.05,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.05
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.85
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.79
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.7,
+        "over2_5": 73.86,
+        "under3_5": 46.45,
+        "bttsYes": 72.49
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401875569",
+      "league": "ned.1",
+      "kickoff": "2026-10-25T13:30Z",
+      "home": "NEC Nijmegen",
+      "away": "FC Groningen",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.884,
+        "away": 2.021
+      },
+      "winDrawLossPct": {
+        "homeWin": 37.39,
+        "draw": 20.85,
+        "awayWin": 41.76
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 8.49,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 8.49
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.62
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.48
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 90.6,
+        "over2_5": 75.8,
+        "under3_5": 44.17,
+        "bttsYes": 74.86
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401875568",
+      "league": "ned.1",
+      "kickoff": "2026-10-25T13:30Z",
+      "home": "PSV Eindhoven",
+      "away": "Feyenoord Rotterdam",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.947,
+        "away": 1.927
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.48,
+        "draw": 21.01,
+        "awayWin": 38.51
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 7.73,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 7.73
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.51
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.35
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.97,
+        "over2_5": 73.88,
+        "under3_5": 46,
+        "bttsYes": 72.85
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401875567",
+      "league": "ned.1",
+      "kickoff": "2026-10-25T15:45Z",
+      "home": "Sparta Rotterdam",
+      "away": "Ajax Amsterdam",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.529,
+        "away": 2.844
+      },
+      "winDrawLossPct": {
+        "homeWin": 18.4,
+        "draw": 16.82,
+        "awayWin": 64.78
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 7.86,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 7.86
+        },
+        {
+          "score": "1-3",
+          "probabilityPct": 7.09
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 5.99
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 93.08,
+        "over2_5": 81.37,
+        "under3_5": 36.03,
+        "bttsYes": 73.92
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401875566",
+      "league": "ned.1",
+      "kickoff": "2026-10-25T19:00Z",
+      "home": "AZ Alkmaar",
+      "away": "FC Twente",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.861,
+        "away": 1.514
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.12,
+        "draw": 23.05,
+        "awayWin": 30.83
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.59,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.59
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.73
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.17
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.67,
+        "over2_5": 65.17,
+        "under3_5": 55.99,
+        "bttsYes": 65.35
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401885418",
+      "league": "por.1",
+      "kickoff": "2026-10-25T15:30Z",
+      "home": "Estoril",
+      "away": "Moreirense",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.095,
+        "away": 1.144
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.77,
+        "draw": 29.4,
+        "awayWin": 36.83
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.2,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.2
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 12.21
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.32
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 65.47,
+        "over2_5": 39.55,
+        "under3_5": 80.76,
+        "bttsYes": 46.01
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401885416",
+      "league": "por.1",
+      "kickoff": "2026-10-25T18:00Z",
+      "home": "C.D. Nacional",
+      "away": "Braga",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.065,
+        "away": 1.412
+      },
+      "winDrawLossPct": {
+        "homeWin": 27.5,
+        "draw": 27,
+        "awayWin": 45.5
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.73,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.73
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 11.73
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.08
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 70.97,
+        "over2_5": 45.5,
+        "under3_5": 75.88,
+        "bttsYes": 50.04
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401885415",
+      "league": "por.1",
+      "kickoff": "2026-10-25T18:00Z",
+      "home": "Rio Ave",
+      "away": "FC Famalicao",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.209,
+        "away": 1.321
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.47,
+        "draw": 27.04,
+        "awayWin": 39.49
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.79,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.79
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.15
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.45
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 72.25,
+        "over2_5": 46.27,
+        "under3_5": 75.2,
+        "bttsYes": 51.3
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401885413",
+      "league": "por.1",
+      "kickoff": "2026-10-25T20:30Z",
+      "home": "Sporting CP",
+      "away": "Académico de Viseu",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.772,
+        "away": 0.979
+      },
+      "winDrawLossPct": {
+        "homeWin": 56.05,
+        "draw": 23.41,
+        "awayWin": 20.54
+      },
+      "predictedScore": "1-0",
+      "predictedScoreProbabilityPct": 11.94,
+      "mostLikelyScores": [
+        {
+          "score": "1-0",
+          "probabilityPct": 11.94
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 10.82
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 10.41
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.37,
+        "over2_5": 51.12,
+        "under3_5": 70.39,
+        "bttsYes": 51.04
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401888266",
+      "league": "tur.1",
+      "kickoff": "2026-10-25T13:00Z",
+      "home": "Konyaspor",
+      "away": "Genclerbirligi",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.217,
+        "away": 1.219
+      },
+      "winDrawLossPct": {
+        "homeWin": 35.59,
+        "draw": 28.36,
+        "awayWin": 36.05
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.6,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.6
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.54
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.53
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 69.99,
+        "over2_5": 43.15,
+        "under3_5": 76.5,
+        "bttsYes": 49.93
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401888376",
+      "league": "tur.1",
+      "kickoff": "2026-10-25T16:00Z",
+      "home": "Goztepe",
+      "away": "Çorum FK",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.648,
+        "away": 1.914
+      },
+      "winDrawLossPct": {
+        "homeWin": 34.11,
+        "draw": 22.19,
+        "awayWin": 43.7
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.69,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.69
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.69
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.42
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.96,
+        "over2_5": 67.78,
+        "under3_5": 53.79,
+        "bttsYes": 68.6
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 8,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877568",
+      "league": "jpn.1",
+      "kickoff": "2026-10-25T05:00Z",
+      "home": "Nagoya Grampus",
+      "away": "Yokohama F. Marinos",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.146,
+        "away": 1.385
+      },
+      "winDrawLossPct": {
+        "homeWin": 30.97,
+        "draw": 26.3,
+        "awayWin": 42.73
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.88,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.88
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 11.25
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.49
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 71.44,
+        "over2_5": 45.79,
+        "under3_5": 75.11,
+        "bttsYes": 50.82
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877566",
+      "league": "jpn.1",
+      "kickoff": "2026-10-25T06:00Z",
+      "home": "Cerezo Osaka",
+      "away": "JEF United Ichihara-Chiba",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.595,
+        "away": 1.148
+      },
+      "winDrawLossPct": {
+        "homeWin": 47.16,
+        "draw": 25.26,
+        "awayWin": 27.58
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.55,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.55
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.48
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.61
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.63,
+        "over2_5": 51.63,
+        "under3_5": 70.54,
+        "bttsYes": 54.28
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877586",
+      "league": "jpn.1",
+      "kickoff": "2026-10-25T06:00Z",
+      "home": "Urawa Red Diamonds",
+      "away": "V-Varen Nagasaki",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.824,
+        "away": 1.349
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.24,
+        "draw": 23.41,
+        "awayWin": 28.35
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.65,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.65
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.68
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 7.24
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.87,
+        "over2_5": 61.93,
+        "under3_5": 60.44,
+        "bttsYes": 63.1
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877585",
+      "league": "jpn.1",
+      "kickoff": "2026-10-25T07:00Z",
+      "home": "FC Tokyo",
+      "away": "Mito Hollyhock",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.19,
+        "away": 0.631
+      },
+      "winDrawLossPct": {
+        "homeWin": 74.36,
+        "draw": 16.77,
+        "awayWin": 8.87
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 14.75,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 14.75
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 13.08
+        },
+        {
+          "score": "3-0",
+          "probabilityPct": 10.43
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.86,
+        "over2_5": 54.15,
+        "under3_5": 68.35,
+        "bttsYes": 41.33
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877569",
+      "league": "jpn.1",
+      "kickoff": "2026-10-25T07:00Z",
+      "home": "Kawasaki Frontale",
+      "away": "Fagiano Okayama",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.909,
+        "away": 1.262
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.81,
+        "draw": 22.57,
+        "awayWin": 25.62
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.28,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.28
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.47
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 7.94
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.04,
+        "over2_5": 60.7,
+        "under3_5": 61,
+        "bttsYes": 60.52
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "cz1-20261025-hradec-kralove-fk-jablonec",
+      "league": "cze.1",
+      "kickoff": "2026-10-25T12:00:00.000Z",
+      "home": "Hradec Kralove",
+      "away": "FK Jablonec",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.203,
+        "away": 1.124
+      },
+      "winDrawLossPct": {
+        "homeWin": 37.47,
+        "draw": 28.4,
+        "awayWin": 34.13
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.57,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.57
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.91
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 11.3
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 66.87,
+        "over2_5": 40.1,
+        "under3_5": 80.2,
+        "bttsYes": 46.9
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 9,
+        "awayHistoryGames": 9,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "cz1-20261025-sparta-praha-1-fc-slovacko",
+      "league": "cze.1",
+      "kickoff": "2026-10-25T14:00:00.000Z",
+      "home": "Sparta Praha",
+      "away": "1.FC Slovácko",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.832,
+        "away": 1.065
+      },
+      "winDrawLossPct": {
+        "homeWin": 55.2,
+        "draw": 22.65,
+        "awayWin": 22.15
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.63,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.63
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.1
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.65
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.34,
+        "over2_5": 55.69,
+        "under3_5": 66.51,
+        "bttsYes": 55.25
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 9,
+        "awayHistoryGames": 9,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "cz1-20261025-viktoria-plzen-fk-pardubice",
+      "league": "cze.1",
+      "kickoff": "2026-10-25T17:00:00.000Z",
+      "home": "Viktoria Plzeň",
+      "away": "FK Pardubice",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.7,
+        "away": 1.282
+      },
+      "winDrawLossPct": {
+        "homeWin": 47.1,
+        "draw": 23.71,
+        "awayWin": 29.19
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.93,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.93
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.37
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.49
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.06,
+        "over2_5": 57.66,
+        "under3_5": 65.25,
+        "bttsYes": 58.95
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 9,
+        "awayHistoryGames": 9,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
