@@ -11,8 +11,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 
-const safeDate = v => /^\\d{4}-\\d{2}-\\d{2}$/.test(String(v||""));
-const norm = s => String(s||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"")
+const safeDate = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v||""));
+const norm = s => String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
  .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const validXI = list => Array.isArray(list) && list.length===11 &&
  list.every(x=>typeof x==="string" && x.trim().length>=2 && x.trim().length<=100) &&
@@ -20,7 +20,7 @@ const validXI = list => Array.isArray(list) && list.length===11 &&
 const freshUrl = url => {
  try {
   const u=new URL(url);
-  return u.protocol==="https:" && /(^|\\.)sportsmole\\.co\\.uk$/.test(u.hostname);
+  return u.protocol==="https:" && /(^|\.)sportsmole\.co\.uk$/.test(u.hostname);
  } catch {return false;}
 };
 const recent = (when, now) => {
@@ -99,7 +99,7 @@ async function main(){
  const {document,added,rejected}=importAuditedPredictions({date,audit,base,existing});
  if(!added.length){console.log("Audited XI import: nothing additional. Rejected:",rejected.length);return}
  await fs.mkdir(path.dirname(destination),{recursive:true});
- await fs.writeFile(destination,JSON.stringify(document,null,2)+"\\n");
+ await fs.writeFile(destination,JSON.stringify(document,null,2)+"\n");
  console.log("Audited predicted XIs added:",added.length,"total:",document.fixtures.length,
  "rejected:",rejected.length,"date:",date);
 }
