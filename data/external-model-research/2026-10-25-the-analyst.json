@@ -1,0 +1,135 @@
+{
+  "schema": "footyedge-opta-analyst-match-research-v1",
+  "date": "2026-10-25",
+  "capturedAt": "2026-10-25T04:04:00Z",
+  "sourceId": "the_analyst",
+  "sourceName": "Opta Analyst",
+  "accessMethod": "Manual inspection of public dated Opta Analyst articles; NOT a licensed feed",
+  "reuse": "Only short attributed numerical facts and original qualitative research, no article text mirrored",
+  "noPlayerEffectWithoutQuantifiedData": true,
+  "forecastInputPolicy": {
+    "blendWithFootyEdgeBaseline": 0.25,
+    "weightReason": "Conservative experimental 25% external-outcome mixture; not calibrated or independently backtested",
+    "whenNoForecast": "Retain V3-only draws; missing external prediction is not zero",
+    "publication": "Separate V4 shadow output; do not rewrite immutable historical board"
+  },
+  "fixtures": [
+    {
+      "fixtureId": "401879254",
+      "home": "Crystal Palace",
+      "away": "Newcastle United",
+      "homeWin": 40.5,
+      "draw": 26.7,
+      "awayWin": 32.8,
+      "article": "https://theanalyst.com/articles/premier-league-match-predictions",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "newcastleWinsInLast11PLAwayAtPalace": 1
+      },
+      "qualitative": [
+        "Palace 40.5% and Newcastle 32.8% are explicitly published; draw is the 26.7% residual, not directly quoted.",
+        "Newcastle won only one of their last 11 Premier League trips to Palace.",
+        "Palace conceded five at Brighton the previous weekend."
+      ],
+      "predictionCaveat": "Draw percentage calculated as 100 minus both explicitly quoted win percentages; not explicitly published."
+    },
+    {
+      "fixtureId": "401878766",
+      "home": "Hull City",
+      "away": "Brentford",
+      "homeWin": 35.8,
+      "draw": 26.1,
+      "awayWin": 38.1,
+      "article": "https://theanalyst.com/articles/premier-league-match-predictions",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "brentfordDroppedPointsFromWinningPositions": 11
+      },
+      "qualitative": [
+        "Brentford 38.1% and Hull 35.8% are published; 26.1% draw is calculated residual.",
+        "Hull unbeaten in their three home league games this season.",
+        "Brentford dropped 11 points from winning positions."
+      ],
+      "predictionCaveat": "Draw percentage calculated as 100 minus both explicitly quoted win percentages; not explicitly published."
+    },
+    {
+      "fixtureId": "401878765",
+      "home": "Liverpool",
+      "away": "Brighton & Hove Albion",
+      "homeWin": 46.8,
+      "draw": 26.4,
+      "awayWin": 26.8,
+      "article": "https://theanalyst.com/articles/liverpool-vs-brighton-prediction-premier-league-preview-10-2026",
+      "publishedOn": "2026-10-23",
+      "teamStats": {
+        "brightonLeagueGoalsFirst7": 23,
+        "liverpoolPLHomeWinless": 5
+      },
+      "qualitative": [
+        "All three outcome percentages explicitly stated.",
+        "Liverpool winless in five recent Premier League home games.",
+        "Brighton scored 23 goals in seven league games, but injury and rotation concerns require lineup checks."
+      ],
+      "predictionCaveat": "Published pre-match outcome percentages, not sportsbook probabilities."
+    },
+    {
+      "fixtureId": "401879252",
+      "home": "Manchester United",
+      "away": "AFC Bournemouth",
+      "homeWin": 48.5,
+      "draw": 25.8,
+      "awayWin": 25.7,
+      "article": "https://theanalyst.com/articles/premier-league-match-predictions",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "manUnitedPointsFirst7": 7,
+        "manUnitedConsecutivePLDraws": 3
+      },
+      "qualitative": [
+        "All three outcome percentages explicitly stated.",
+        "United have seven points from seven league games and three straight draws.",
+        "Bournemouth unbeaten on three most recent Premier League trips to Old Trafford."
+      ],
+      "predictionCaveat": "Published pre-match outcome percentages, not sportsbook probabilities."
+    },
+    {
+      "fixtureId": "401878764",
+      "home": "Sunderland",
+      "away": "Leeds United",
+      "homeWin": 38.8,
+      "draw": 26.5,
+      "awayWin": 34.7,
+      "article": "https://theanalyst.com/articles/premier-league-match-predictions",
+      "publishedOn": "2026-10-22",
+      "teamStats": {
+        "sunderlandConsecutivePLLosses": 4
+      },
+      "qualitative": [
+        "All three outcome percentages explicitly stated.",
+        "Sunderland lost four straight Premier League games.",
+        "Leeds lost only one of their last eight top-flight visits to Sunderland."
+      ],
+      "predictionCaveat": "Published pre-match outcome percentages, not sportsbook probabilities."
+    },
+    {
+      "fixtureId": "401882832",
+      "home": "Barcelona",
+      "away": "Real Madrid",
+      "homeWin": 54.4,
+      "draw": 19.5,
+      "awayWin": 26.1,
+      "article": "https://theanalyst.com/articles/barcelona-vs-real-madrid-prediction-la-liga-el-clasico-preview-10-2026",
+      "publishedOn": "2026-10-24",
+      "teamStats": {
+        "barcelonaLeagueWinsFirst9": 9,
+        "barcelonaLeagueGoalsFirst9": 39
+      },
+      "qualitative": [
+        "All three outcome percentages explicitly stated in the pre-match article.",
+        "Barcelona won their first nine league games and scored 39 goals.",
+        "Vinicius Junior reported suspended; no unsupported numeric effect on xG applied."
+      ],
+      "predictionCaveat": "Published pre-match outcome percentages, not sportsbook probabilities."
+    }
+  ]
+}
