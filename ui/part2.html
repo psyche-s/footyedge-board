@@ -963,6 +963,20 @@ function feDistinctTop3(picks){
 }
 
 function viewCandidates(g){
+  // When the dated source-market desk exists, show ONLY the match-specific
+  // independently published tips it verified. Do not pad with the repetitive
+  // archived Over/Under 4.5 and 1+ goals generator.
+  if(S.sourceLed?.date===S.date && !ARCHIVE_CAPTURE){
+    const picks=(g.feEditorialPicks||[]).filter(p=>p?.sourceBackedReason===true&&
+      p?.marketEvidence?.explicitEditorialTip===true&&
+      Array.isArray(p.sourceProvenance)&&p.sourceProvenance.length>=1);
+    if(S.filter==="result"||S.filter==="ml")return picks.filter(p=>p.family==="result"&&
+       (S.filter!=="ml"||String(p.label).endsWith(" ML"))).slice(0,3);
+    if(S.filter==="goals")return picks.filter(p=>p.family==="total"||p.family==="teamtotal"||p.family==="firsthalf").slice(0,3);
+    if(S.filter==="btts")return picks.filter(p=>p.family==="btts").slice(0,3);
+    if(S.filter==="atgs"||S.filter==="soa")return [];
+    return picks.slice(0,3);
+  }
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
   if(S.filter==="ml")return moneylineCandidates(g).slice(0,3);
@@ -986,14 +1000,26 @@ function viewCandidates(g){
   return (!ARCHIVE_CAPTURE&&S.date>=etDate())?feDistinctTop3(sourcePicks):sourcePicks;
 }
 function viewPick(g){
+  if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE)return viewCandidates(g)[0]||null;
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter)[0]||null;
   if(S.filter==="result")return resultMarketCandidates(g)[0]||null;
   if(S.filter==="ml")return moneylineCandidates(g)[0]||null;
   return viewCandidates(g)[0]||null;
 }
-function filterOK(g){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
+function filterOK(g){if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search&&!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(String(S.search).toLowerCase()))return false;return S.filter==="all"||viewCandidates(g).length>0;}if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
+  if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE){
+    const refs=S.sourceLed.top5||[];
+    return refs.map(x=>{
+      const g=S.games.find(g=>String(g.id)===String(x.gameId));
+      return g?{...g,archiveTopPick:restoreArchivedPick(x.pick)}:null;
+    }).filter(g=>g&&(S.league==="all"||g.league===S.league)&&statusOK(g) &&
+      (S.filter==="all"||S.filter==="result"&&g.archiveTopPick.family==="result"||
+       S.filter==="ml"&&String(g.archiveTopPick.label).endsWith(" ML")||
+       S.filter==="goals"&&["total","teamtotal","firsthalf"].includes(g.archiveTopPick.family)||
+       S.filter==="btts"&&g.archiveTopPick.family==="btts"));
+  }
   if((S.filter==="result"||S.filter==="ml")&&S.archive?.date===S.date){
     return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&statusOK(g)&&(S.filter==="ml"?moneylineCandidates(g):resultMarketCandidates(g)).length).map(g=>({...g,archiveTopPick:(S.filter==="ml"?moneylineCandidates(g):resultMarketCandidates(g))[0]})).sort((a,b)=>Number(b.archiveTopPick.confidenceRating??b.archiveTopPick.score??-1)-Number(a.archiveTopPick.confidenceRating??a.archiveTopPick.score??-1)).slice(0,5);
   }
@@ -1620,6 +1646,7 @@ function render(){
 }
 async function load(date=S.date){
   S.date=date||etDate();
+  S.sourceLed=null;
   // A late provider must not leave an indefinite spinner. Keep date-scoped
   // loading state so switching days never paints another day's data.
   const loadingDate=S.date;
@@ -1684,6 +1711,16 @@ async function load(date=S.date){
     const validCorrection=approvedCorrection?.schema==="footyedge-owner-approved-research-correction-v1"&&approvedCorrection.date===S.date&&approvedCorrection.ownerApproved===true&&approvedCorrection.immutableOriginalPreserved===true&&archivePayload?.immutable===true;
     const displayArchive=validCorrection?{...archivePayload,top5:approvedCorrection.top5,leagueTop5:Object.fromEntries([...new Set(approvedCorrection.games.map(g=>g.league))].map(l=>[l,approvedCorrection.top5.filter(x=>approvedCorrection.games.some(g=>g.id===x.gameId&&g.league===l)).map((x,i)=>({...x,rank:i+1}))])),games:approvedCorrection.games.map(correction=>{const g=archivePayload.games.find(x=>String(x.id)===String(correction.id))||correction;return {...g,...correction,top:correction.top,top3:correction.top3,model:{...(g.model||{}),...(correction.model||{}),top:correction.top,top3:correction.top3}}}),displayCorrection:"v1-unpriced-research-only"}:archivePayload;
     S.archive=displayArchive;S.draft=draftPayload;
+    // Read-only owner-requested publisher-market review. Never edit the
+    // frozen historical Top 5 or the original daily board JSON.
+    const independentMarketPicks=ARCHIVE_CAPTURE?null:await repoData('data/source-led/'+S.date+'.json').catch(()=>null);
+    if(independentMarketPicks?.schema==='footyedge-dated-researched-top3-v1'&&
+       independentMarketPicks.mode==='independent_publisher_market_tips'&&
+       independentMarketPicks.sourceLedDisplayOnly===true&&independentMarketPicks.archiveUnmodified===true&&
+       independentMarketPicks.date===S.date&&Array.isArray(independentMarketPicks.matches)){
+      S.sourceLed=independentMarketPicks;
+      reviewedPicksPayload=independentMarketPicks;
+    }
     const analyticsOverlay=await repoData('data/analytics/'+S.date+'.json').catch(()=>null);
     if(S.date!==date)return;
     const advancedById=new Map(analyticsOverlay?.date===S.date?(analyticsOverlay.matches||[]).filter(x=>x.verifiedJoin===true).map(x=>[String(x.fixtureId),x]):[]);
@@ -1714,7 +1751,7 @@ async function load(date=S.date){
       reviewedPicksPayload.matches:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3
         &&x.picks.every(p=>p.sourceBackedReason===true&&Number.isFinite(Number(p.confidenceRating))&&p.reason))
       .map(x=>[String(x.gameId),x]));
-    const editorPicksById=new Map((editorialDeskPayload?.schema==='footyedge-editorial-desk-v1'&&editorialDeskPayload.date===S.date?
+    const editorPicksById=new Map((!S.sourceLed&&editorialDeskPayload?.schema==='footyedge-editorial-desk-v1'&&editorialDeskPayload.date===S.date?
       editorialDeskPayload.matches||[]:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3)
       .map(x=>[String(x.gameId),x]));
     const verifiedIntel=new Map(feVerifiedLineupRows(teamIntelPayload,S.date)
