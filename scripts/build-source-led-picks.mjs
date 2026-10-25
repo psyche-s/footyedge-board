@@ -236,11 +236,14 @@ async function main(){
  const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
  const date=process.env.REVIEW_DATE||p.year+"-"+p.month+"-"+p.day;
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error("Invalid date");
- const [research,curated,opinions]=await Promise.all([
+ const [research,curatedPayload,opinions]=await Promise.all([
   read(path.join("data","research-base-"+date+".json")),
   read(path.join("data","source-market-picks",date+".json")),
   read(path.join("data","source-opinions",date+".json"))]);
- if(!research||!curated||!opinions){console.log("Source-led review has no complete independent research inputs; PASS.");return}
+ if(!research||!opinions){console.log("No dated independent publisher opinions; source-led picks PASS.");return}
+ // An absent market-level file is NOT permission to infer extra publisher bets.
+ // A result-only opinion can support one result thesis, not three model tips.
+ const curated=curatedPayload?.date===date?curatedPayload:{date,fixtures:[]};
  const doc=generate({date,research,curated,opinions});
  const target=path.join("data","source-led",date+".json");
  await fs.mkdir(path.dirname(target),{recursive:true});
