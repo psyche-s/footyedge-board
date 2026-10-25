@@ -131,13 +131,17 @@ function generate({date,research,curated,opinions}){
  if(research?.date!==date||curated?.date!==date||opinions?.date!==date)throw Error("Exact-date matched research and source captures required");
  const fixtures=research.fixtures||[],byId=new Map(fixtures.map(f=>[String(f.id),f]));
  const votes=new Map(),rejected=[];
- function add(id,key,source,url,mode){
+ function add(id,key,source,url,mode,fact=null){
   const f=byId.get(String(id)),spec=definitions[key];
   if(!f||!spec||!hostOk(url,source)){rejected.push({id,key,source,reason:"unknown fixture, market, or source"});return}
   const k=String(id)+"|"+key;
-  const v=votes.get(k)||{key,fixtureId:String(id),support:new Map(),mode:new Set()};
+  const v=votes.get(k)||{key,fixtureId:String(id),support:new Map(),mode:new Set(),facts:[]};
   if(v.support.has(source))return;
-  v.support.set(source,url);v.mode.add(mode);votes.set(k,v);
+  v.support.set(source,url);v.mode.add(mode);
+  if(typeof fact==="string"&&fact.length>=15&&fact.length<=140&&
+    !/https?:|sports.?mole|football.?whispers|forebet/i.test(fact)&&
+    !v.facts.includes(fact))v.facts.push(fact.trim());
+  votes.set(k,v);
  }
  for(const item of curated.fixtures||[]){
   const f=byId.get(String(item.fixtureId));
@@ -146,7 +150,7 @@ function generate({date,research,curated,opinions}){
   for(const p of item.marketPicks||[]){
    if(!p.explicitPreMatchTip)continue;
    if(skipped(p.market)){rejected.push({id:item.fixtureId,key:p.market,reason:"unverified player/event precision or exact score"});continue}
-   add(item.fixtureId,p.market,item.source,item.url,"direct_markets");
+   add(item.fixtureId,p.market,item.source,item.url,"direct_markets",p.fact);
   }
  }
  const translated={home:"home_win",away:"away_win",draw:"draw",yes:"btts_yes",no:"btts_no",home_or_draw:"home_or_draw",away_or_draw:"away_or_draw"};
@@ -172,6 +176,7 @@ function generate({date,research,curated,opinions}){
    const grade=Math.max(50,Math.min(80,Math.round(55+8*(count-1)+(nums?Math.max(-5,Math.min(9,(nums.combined-.5)*21)):0)-(event?3:0)-Math.min(14,opposed*5))));
    const basis=count>=2?count+" independently recorded pre-match predictions support this market.":"A dated match-specific preview explicitly recommends this market.";
    const numbers=nums?" Recent verified results match the selection in "+nums.homeHits+"/"+nums.homeGames+" "+f.home.name+" games and "+nums.awayHits+"/"+nums.awayGames+" "+f.away.name+" games.":"";
+   const particular=v.facts?.length?" Match-specific research: "+v.facts[0]:"";
    const disagreement=opposed?" "+opposed+" independent opposing outcome forecast"+(opposed===1?" was":"s were")+" also recorded; there is no unanimous result consensus.":"";
    const caveat=event?" The selection is editorially sourced; matching event-level hit rates or confirmed player roles were not available for independent verification.":"";
    return {key:v.key,label:name,category:spec[1],family:spec[0],confidenceRating:grade,
@@ -181,7 +186,7 @@ function generate({date,research,curated,opinions}){
     editorialSupport:count,editorialOpposition:opposed,
     marketEvidence:{explicitEditorialTip:true,verifiedPublisherCount:count,verified:event===false&&!!nums,sourceCheckedAt:date},
     sourceProvenance:[...v.support].map(([source,url])=>({source,url,fixtureDate:date})),
-    reason:basis+numbers+disagreement+caveat
+    reason:basis+particular+numbers+disagreement+caveat
    };
   }).filter(Boolean).sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
   // A competing winner forecast is an important signal, not a second independent leg.
