@@ -99,7 +99,7 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    data.push(out);
  }
  return {schema:"footyedge-dated-researched-top3-v1",date:day,generatedAt:new Date().toISOString(),sourceNamesOnUi:false,archiveUnmodified:true,
-   method:"Three market theses (protected result, one match total, one distinct scoring outcome); backed by both teams' date-filtered last 10 games and the separate 10,000-draw experiment; unsupported markets omitted rather than guessed.",
+   method:"Up to three nonredundant, supported market theses: one result, one scoring/total thesis and only a separately verified non-goal event where available; date-gated last-ten records and 10,000-draw shadow model; do not invent a third pick.",
    calibration:"These ratings are graded research strengths, not calibrated probabilities.",
    totals:{fixtures:data.length,three:data.filter(x=>x.picks.length===3).length,two:data.filter(x=>x.picks.length===2).length,one:data.filter(x=>x.picks.length===1).length,zero:data.filter(x=>x.picks.length===0).length},
    matches:data};
