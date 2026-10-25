@@ -107,6 +107,10 @@ jobs:
           fi
           node --test tests/sync-team-news.test.mjs
           node scripts/sync-team-news.mjs
+          # Restore verified, dated editorial XIs already archived in research
+          # when no licensed live feed is configured; never invent starters.
+          node --test tests/import-audited-predicted-xi.test.mjs
+          node scripts/import-audited-predicted-xi.mjs
           if [[ -s "data/team-intelligence/$TODAY.json" ]]; then
             jq -e --arg day "$TODAY" '.date==$day and (.fixtures|type=="array")' "data/team-intelligence/$TODAY.json" >/dev/null
             echo "Dated predicted-lineup/news file available; predictions are not confirmed starting XIs."
