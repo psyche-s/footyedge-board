@@ -119,6 +119,23 @@ jobs:
           fi
 
 
+      # Optional independent source validation: no public raw API exports.
+      # BBS_API_KEY is a GitHub Actions secret, never embedded in source.
+      - name: Corroborate EPL fixtures with BigBallsData (optional)
+        if: steps.gate.outputs.run == 'true'
+        continue-on-error: true
+        shell: bash
+        env:
+          BBS_API_KEY: ${{ secrets.BBS_API_KEY }}
+        run: |
+          if [[ -z "${BBS_API_KEY:-}" ]]; then
+            echo "BigBallsData secret absent; keep existing research unchanged."
+            exit 0
+          fi
+          npm install --no-save --no-package-lock --ignore-scripts --no-audit --no-fund @bigballsdata/sdk@0.1.1
+          node --test tests/bigballsdata-research.test.mjs
+          node scripts/bigballsdata-research.mjs
+
       - name: Prepare sourced H2H, match statistics, market review and shadow model
         if: steps.gate.outputs.run == 'true'
         shell: bash
