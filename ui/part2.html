@@ -979,7 +979,7 @@ function viewCandidates(g){
   }
   // No independently matched publisher snapshot => current-day PASS.
   // Do not silently revive synthetic archived Over 4.5 / team 1+ trends.
-  if(S.date>=etDate()&&!ARCHIVE_CAPTURE)return [];
+  if(S.date>='2026-10-25'&&S.date>=etDate()&&!ARCHIVE_CAPTURE)return [];
   if(S.filter==="atgs"||S.filter==="soa")return playerCandidates(g,S.filter).slice(0,3);
   if(S.filter==="result")return resultMarketCandidates(g).slice(0,3);
   if(S.filter==="ml")return moneylineCandidates(g).slice(0,3);
@@ -1023,7 +1023,7 @@ function topPicks(){
        S.filter==="goals"&&["total","teamtotal","firsthalf"].includes(g.archiveTopPick.family)||
        S.filter==="btts"&&g.archiveTopPick.family==="btts"));
   }
-  if(S.date>=etDate()&&!ARCHIVE_CAPTURE)return [];
+  if(S.date>='2026-10-25'&&S.date>=etDate()&&!ARCHIVE_CAPTURE)return [];
   if((S.filter==="result"||S.filter==="ml")&&S.archive?.date===S.date){
     return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&statusOK(g)&&(S.filter==="ml"?moneylineCandidates(g):resultMarketCandidates(g)).length).map(g=>({...g,archiveTopPick:(S.filter==="ml"?moneylineCandidates(g):resultMarketCandidates(g))[0]})).sort((a,b)=>Number(b.archiveTopPick.confidenceRating??b.archiveTopPick.score??-1)-Number(a.archiveTopPick.confidenceRating??a.archiveTopPick.score??-1)).slice(0,5);
   }
