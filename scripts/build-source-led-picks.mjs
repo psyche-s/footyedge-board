@@ -91,10 +91,41 @@ function compatible(a,b){
  if(a.family===b.family)return false;
  const x=a.key,y=b.key;
  if((x==="over_1_5"&&y==="btts_yes")||(y==="over_1_5"&&x==="btts_yes"))return false;
+ // BTTS + Under 2.5 requires exactly 1-1: too narrow and redundant as
+ // independent recommendations, even though that score is mathematically possible.
+ if((x==="under_2_5"&&y==="btts_yes")||(y==="under_2_5"&&x==="btts_yes"))return false;
  if((a.family==="combo"&&["result","btts"].includes(b.family))||(b.family==="combo"&&["result","btts"].includes(a.family)))return false;
  if((a.family==="firstgoal"&&b.family==="firsthalf")||(b.family==="firstgoal"&&a.family==="firsthalf"))return false;
  if((x==="away_win"&&y==="away_win_btts_yes")||(x==="away_win_btts_yes"&&y==="away_win"))return false;
  return true;
+}
+// Reject jointly impossible Top 3 sets, not just incompatible pairs.
+// Example: BTTS Yes + Under 2.5 + Away ML cannot all settle successfully.
+function scoreFeasible(picks){
+ for(let home=0;home<=9;home++)for(let away=0;away<=9;away++){
+  const accepted=picks.every(p=>{
+   const key=p.key;
+   if(key==="home_win")return home>away;
+   if(key==="away_win")return away>home;
+   if(key==="draw")return home===away;
+   if(key==="home_or_draw")return home>=away;
+   if(key==="away_or_draw")return away>=home;
+   if(key==="btts_yes")return home>0&&away>0;
+   if(key==="btts_no")return home===0||away===0;
+   if(key==="liverpool_over_2_5")return home>=3;
+   if(key==="away_win_btts_yes")return away>home&&away>0&&home>0;
+   const total=key.match(/^(over|under)_(\d+)_(\d+)$/);
+   if(total){
+    const line=Number(total[2]+"."+total[3]);
+    return total[1]==="over"?home+away>line:home+away<line;
+   }
+   if(key==="home_first_goal"||key==="home_first_half_goal")return home>=1;
+   if(key==="away_first_goal"||key==="brighton_first_goal")return away>=1;
+   return true;
+  });
+  if(accepted)return true;
+ }
+ return false;
 }
 function generate({date,research,curated,opinions}){
  if(research?.date!==date||curated?.date!==date||opinions?.date!==date)throw Error("Exact-date matched research and source captures required");
@@ -160,7 +191,7 @@ function generate({date,research,curated,opinions}){
    const score=xs=>xs.reduce((n,x)=>n+x.editorialSupport*10+x.confidenceRating+(x.editorialOpposition? -8:0),0);
    if(selected.length>best.length||(selected.length===best.length&&score(selected)>score(best)))best=[...selected];
    if(selected.length===3)return;
-   for(let i=start;i<picks.length;i++)if(selected.every(x=>compatible(x,picks[i])))choose([...selected,picks[i]],i+1);
+   for(let i=start;i<picks.length;i++)if(selected.every(x=>compatible(x,picks[i]))&&scoreFeasible([...selected,picks[i]]))choose([...selected,picks[i]],i+1);
   };
   choose([],0);
   best.sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
@@ -175,8 +206,21 @@ function generate({date,research,curated,opinions}){
  const ranked=output.flatMap(m=>m.picks.map(p=>({gameId:m.gameId,home:m.home,away:m.away,league:m.league,kickoff:m.kickoff,pick:p})))
   .sort((a,b)=>b.pick.editorialSupport-a.pick.editorialSupport||
     a.pick.editorialOpposition-b.pick.editorialOpposition||b.pick.confidenceRating-a.pick.confidenceRating);
- const top5=[],seen=new Set();
- for(const x of ranked)if(!seen.has(x.gameId)){seen.add(x.gameId);top5.push({...x,rank:top5.length+1});if(top5.length===5)break}
+ const top5=[],seen=new Set(),familyCount=new Map();
+ // Avoid an entire global Top 5 consisting of the same 1X2 thesis.
+ // Keep result consensus prominent, but reserve two slots for independent
+ // scoring or event markets when those were explicitly published.
+ const quotas={result:3,total:1,btts:1};
+ const addTop=x=>{
+  if(seen.has(x.gameId)||top5.length===5)return false;
+  seen.add(x.gameId);top5.push({...x,rank:top5.length+1});
+  familyCount.set(x.pick.family,(familyCount.get(x.pick.family)||0)+1);
+  return true;
+ };
+ for(const [family,quota] of Object.entries(quotas)){
+  for(const x of ranked)if(x.pick.family===family&&(familyCount.get(family)||0)<quota)addTop(x);
+ }
+ for(const x of ranked)if(top5.length<5)addTop(x);
  return {schema:"footyedge-dated-researched-top3-v1",mode:"independent_publisher_market_tips",
   date,generatedAt:new Date().toISOString(),archiveUnmodified:true,sourceNamesOnUi:false,sourceLedDisplayOnly:true,
   researchGradeNotProbability:true,method:"Verified match-specific publisher tips first; exact market votes and dissent retained, distinct market screening; verified last-ten form used as a cross-check, not as a source prediction.",
