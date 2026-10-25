@@ -1,23 +1,16 @@
-name: One-time original FootyEdge 2026-10-25 manual refresh dispatch
+name: One Time Original Refresh Dispatch
 on:
   push:
-    branches: [main]
     paths:
       - '.github/workflows/dispatch-original-once-2026-10-25.yml'
 permissions:
-  actions: write
   contents: read
+  actions: write
 jobs:
-  dispatch:
-    if: github.event.head_commit.message == 'ops: dispatch original FootyEdge October 25 refresh'
+  run:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
     steps:
-      - name: Trigger existing canonical daily workflow only; no V2 or UI writes
+      - name: Request one canonical run
         env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          gh workflow run archive-board.yml --repo "$GH_REPO" --ref main
-          echo "Canonical daily workflow dispatched once by owner's explicit request."
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run archive-board.yml -R psyche-s/footyedge-board --ref main
