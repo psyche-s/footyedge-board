@@ -1,0 +1,642 @@
+{
+  "schema": "footyedge-internal-dated-source-provenance-v1",
+  "date": "2026-10-26",
+  "recordedAt": "2026-10-26T04:08:55.922Z",
+  "visibility": "Internal research audit; not intended for public match-card copy.",
+  "providersActuallyUsed": [
+    "sports_mole",
+    "forebet",
+    "parisunited",
+    "footyedge-dated-results"
+  ],
+  "providersSearchedButNoMatchForecast": [
+    "the_analyst"
+  ],
+  "notClaimedChecked": [
+    "windrawwin",
+    "football_whispers",
+    "sportskeeda",
+    "fotmob",
+    "fbref",
+    "understat",
+    "espn",
+    "transfermarkt",
+    "onefootball",
+    "wyscout",
+    "statsbomb"
+  ],
+  "sourceVotePolicy": "One publisher = one independent vote per fixture and market. Secondary articles and dynamic stats pages are not extra votes.",
+  "notes": [
+    "Sources verified against publication date and kickoff date; editorial and algorithmic forecasts are distinct and may disagree.",
+    "Opta Analyst match-specific WDL unavailable for all six; no V4 blend authorized.",
+    "Unverified xG/event stats and lineup photos are missing, not zero. Research strength is not calibrated win probability.",
+    "The public site must omit these source names and links."
+  ],
+  "fixtures": [
+    {
+      "fixtureId": "401882828",
+      "league": "esp.1",
+      "home": "Sevilla",
+      "away": "Osasuna",
+      "kickoff": "2026-10-26T20:00Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/sevilla/preview/sevilla-vs-osasuna-prediction-team-news-lineups_607645.html",
+          "publishedOn": "2026-10-24",
+          "market": "match_winner",
+          "prediction": "draw",
+          "explanation": "Editorial predicted 1-1; not the same as its dynamic statistical model favouring Sevilla."
+        },
+        {
+          "publisher": "forebet",
+          "url": "https://www.forebet.com/en/football-match-previews/31539-sevilla-eye-upper-table-push-as-arrasates-osasuna-seek-away-reset-in-la-liga-clash",
+          "publishedOn": "2026-10-20",
+          "market": "match_winner",
+          "prediction": "home",
+          "explanation": "Explicit Sevilla 3-1 prediction; disagrees with Sports Mole editorial draw."
+        }
+      ],
+      "publisherAgreement": "explicit_conflict",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false,
+        "reason": "No pre-match Opta supercomputer W/D/L publication found for this fixture. Do not use old match forecasts."
+      },
+      "preKickoffHistory": {
+        "homeLast10": 10,
+        "awayLast10": 10,
+        "homeAwaySplitsAvailable": true,
+        "recencyWeightedTeamGoals": true,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchFacts": [
+        {
+          "fact": "Sevilla are winless in their last 4 matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "winless",
+            "games": 4
+          }
+        },
+        {
+          "fact": "7 of Sevilla's last 10 matches produced over 2.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 7,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Sevilla have conceded in 4 straight matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "conceded",
+            "games": 4
+          }
+        },
+        {
+          "fact": "Both teams scored in 8 of Sevilla's last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "btts",
+            "hits": 8,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "8 of Osasuna's last 10 matches produced at least two goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_1_5",
+            "hits": 8,
+            "sample": 10
+          }
+        }
+      ],
+      "teamNews": {
+        "sourceUrl": "https://www.sportsmole.co.uk/football/sevilla/preview/sevilla-vs-osasuna-prediction-team-news-lineups_607645.html",
+        "sourcePublishedOn": "2026-10-24",
+        "projectedXIs": true,
+        "confirmedXIs": false,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false,
+        "availabilityUncertainty": true
+      }
+    },
+    {
+      "fixtureId": "401876422",
+      "league": "fra.1",
+      "home": "Paris Saint-Germain",
+      "away": "Lyon",
+      "kickoff": "2026-10-26T19:30Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [
+        {
+          "publisher": "forebet",
+          "url": "https://www.forebet.com/en/football/matches/psg-lyon-2496253",
+          "publishedOn": "2026-10-19",
+          "market": "match_winner",
+          "prediction": "draw",
+          "explanation": "Explicit 2-2 score forecast; not an Opta forecast."
+        }
+      ],
+      "publisherAgreement": "insufficient_independent_votes",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false,
+        "reason": "No pre-match Opta supercomputer W/D/L publication found for this fixture. Do not use old match forecasts."
+      },
+      "preKickoffHistory": {
+        "homeLast10": 10,
+        "awayLast10": 10,
+        "homeAwaySplitsAvailable": true,
+        "recencyWeightedTeamGoals": true,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchFacts": [
+        {
+          "fact": "Paris Saint-Germain are unbeaten in their last 7 matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "unbeaten",
+            "games": 7
+          }
+        },
+        {
+          "fact": "9 of Paris Saint-Germain's last 10 matches produced over 2.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 9,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "8 of Lyon's last 10 matches produced over 2.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 8,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Paris Saint-Germain have conceded in 5 straight matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "conceded",
+            "games": 5
+          }
+        },
+        {
+          "fact": "Both teams scored in 9 of Paris Saint-Germain's last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "btts",
+            "hits": 9,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Paris Saint-Germain won 3 of their last 4 home matches in this sample.",
+          "evidence": {
+            "type": "split",
+            "venue": "home",
+            "w": 3,
+            "d": 0,
+            "l": 1,
+            "sample": 4
+          }
+        },
+        {
+          "fact": "Lyon have conceded in 4 straight matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "conceded",
+            "games": 4
+          }
+        },
+        {
+          "fact": "Both teams scored in 7 of Lyon's last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "btts",
+            "hits": 7,
+            "sample": 10
+          }
+        }
+      ],
+      "teamNews": {
+        "sourceUrl": "https://parisunited.fr/articles/psg-ol-compositions-probables-8e-journee-26-octobre/",
+        "sourcePublishedOn": "2026-10-25",
+        "projectedXIs": true,
+        "confirmedXIs": false,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false,
+        "availabilityUncertainty": true
+      }
+    },
+    {
+      "fixtureId": "401885414",
+      "league": "por.1",
+      "home": "Santa Clara",
+      "away": "Benfica",
+      "kickoff": "2026-10-26T18:45Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/benfica/preview/santa-clara-vs-benfica-prediction-team-news-lineups_607629.html",
+          "publishedOn": "2026-10-24",
+          "market": "match_winner",
+          "prediction": "away",
+          "explanation": "Editorial predicted Santa Clara 1-2 Benfica; Santa Clara home unbeaten and strong defensive form noted."
+        }
+      ],
+      "publisherAgreement": "insufficient_independent_votes",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false,
+        "reason": "No pre-match Opta supercomputer W/D/L publication found for this fixture. Do not use old match forecasts."
+      },
+      "preKickoffHistory": {
+        "homeLast10": 10,
+        "awayLast10": 10,
+        "homeAwaySplitsAvailable": true,
+        "recencyWeightedTeamGoals": true,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchFacts": [
+        {
+          "fact": "8 of Benfica's last 10 matches produced over 2.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 8,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Santa Clara kept a clean sheet in 5 of their last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "clean_sheet",
+            "hits": 5,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Benfica won 5 of their last 6 away matches in this sample.",
+          "evidence": {
+            "type": "split",
+            "venue": "away",
+            "w": 5,
+            "d": 0,
+            "l": 1,
+            "sample": 6
+          }
+        }
+      ],
+      "teamNews": {
+        "sourceUrl": "https://www.sportsmole.co.uk/football/benfica/preview/santa-clara-vs-benfica-prediction-team-news-lineups_607629.html",
+        "sourcePublishedOn": "2026-10-24",
+        "projectedXIs": true,
+        "confirmedXIs": false,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false,
+        "availabilityUncertainty": true
+      }
+    },
+    {
+      "fixtureId": "401888264",
+      "league": "tur.1",
+      "home": "Besiktas",
+      "away": "Istanbul Basaksehir",
+      "kickoff": "2026-10-26T16:00Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/besiktas/preview/besiktas-vs-istanbul-prediction-team-news-lineups_607618.html",
+          "publishedOn": "2026-10-24",
+          "market": "match_winner",
+          "prediction": "home",
+          "explanation": "Editorial predicted Besiktas 2-1 Basaksehir."
+        },
+        {
+          "publisher": "forebet",
+          "url": "https://www.forebet.com/en/football/matches/besiktas-basaksehir-2494933",
+          "publishedOn": "2026-10-20",
+          "market": "match_winner",
+          "prediction": "home",
+          "explanation": "Explicit Besiktas 2-1 model prediction; one vote for Forebet."
+        }
+      ],
+      "publisherAgreement": "independent_directional_agreement",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false,
+        "reason": "No pre-match Opta supercomputer W/D/L publication found for this fixture. Do not use old match forecasts."
+      },
+      "preKickoffHistory": {
+        "homeLast10": 10,
+        "awayLast10": 10,
+        "homeAwaySplitsAvailable": true,
+        "recencyWeightedTeamGoals": true,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchFacts": [
+        {
+          "fact": "8 of Besiktas's last 10 matches produced over 2.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 8,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Besiktas have conceded in 6 straight matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "conceded",
+            "games": 6
+          }
+        },
+        {
+          "fact": "Both teams scored in 7 of Besiktas's last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "btts",
+            "hits": 7,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Besiktas won 4 of their last 5 home matches in this sample.",
+          "evidence": {
+            "type": "split",
+            "venue": "home",
+            "w": 4,
+            "d": 1,
+            "l": 0,
+            "sample": 5
+          }
+        },
+        {
+          "fact": "9 of Istanbul Basaksehir's last 10 matches produced at least two goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_1_5",
+            "hits": 9,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Istanbul Basaksehir are winless across their last 4 away matches in this sample.",
+          "evidence": {
+            "type": "split",
+            "venue": "away",
+            "w": 0,
+            "d": 1,
+            "l": 3,
+            "sample": 4
+          }
+        }
+      ],
+      "teamNews": {
+        "sourceUrl": "https://www.sportsmole.co.uk/football/besiktas/preview/besiktas-vs-istanbul-prediction-team-news-lineups_607618.html",
+        "sourcePublishedOn": "2026-10-24",
+        "projectedXIs": true,
+        "confirmedXIs": false,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false,
+        "availabilityUncertainty": true
+      }
+    },
+    {
+      "fixtureId": "401888267",
+      "league": "tur.1",
+      "home": "Caykur Rizespor",
+      "away": "Trabzonspor",
+      "kickoff": "2026-10-26T16:00Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/caykur-rizespor/preview/caykur-rizespor-vs-trabzonspor-prediction-team-news-lineups_607617.html",
+          "publishedOn": "2026-10-24",
+          "market": "match_winner",
+          "prediction": "away",
+          "explanation": "Editorial predicted Rizespor 1-2 Trabzonspor."
+        },
+        {
+          "publisher": "forebet",
+          "url": "https://www.forebet.com/en/football-match-previews/31557-trabzonspor-aim-to-extend-hot-streak-at-rizespor",
+          "publishedOn": "2026-10-20",
+          "market": "match_winner",
+          "prediction": "away",
+          "explanation": "Explicit Trabzonspor win at 62%; not a calibrated FootyEdge probability."
+        }
+      ],
+      "publisherAgreement": "independent_directional_agreement",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false,
+        "reason": "No pre-match Opta supercomputer W/D/L publication found for this fixture. Do not use old match forecasts."
+      },
+      "preKickoffHistory": {
+        "homeLast10": 10,
+        "awayLast10": 10,
+        "homeAwaySplitsAvailable": true,
+        "recencyWeightedTeamGoals": true,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchFacts": [
+        {
+          "fact": "Trabzonspor are unbeaten in their last 4 matches.",
+          "evidence": {
+            "type": "streak",
+            "metric": "unbeaten",
+            "games": 4
+          }
+        },
+        {
+          "fact": "9 of Caykur Rizespor's last 10 matches finished under 3.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "under_3_5",
+            "hits": 9,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "8 of Caykur Rizespor's last 10 matches produced at least two goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_1_5",
+            "hits": 8,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Trabzonspor kept a clean sheet in 5 of their last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "clean_sheet",
+            "hits": 5,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "8 of Trabzonspor's last 10 matches produced at least two goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_1_5",
+            "hits": 8,
+            "sample": 10
+          }
+        }
+      ],
+      "teamNews": {
+        "sourceUrl": "https://www.sportsmole.co.uk/football/caykur-rizespor/preview/caykur-rizespor-vs-trabzonspor-prediction-team-news-lineups_607617.html",
+        "sourcePublishedOn": "2026-10-24",
+        "projectedXIs": true,
+        "confirmedXIs": false,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false,
+        "availabilityUncertainty": true
+      }
+    },
+    {
+      "fixtureId": "401888265",
+      "league": "tur.1",
+      "home": "Galatasaray",
+      "away": "Fenerbahce",
+      "kickoff": "2026-10-26T18:30Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/galatasaray/preview/galatasaray-vs-fenerbahce-prediction-team-news-lineups_607632.html",
+          "publishedOn": "2026-10-24",
+          "market": "match_winner",
+          "prediction": "home",
+          "explanation": "Editorial predicted Galatasaray 2-0; last page update October 25 before kickoff."
+        },
+        {
+          "publisher": "forebet",
+          "url": "https://www.forebet.com/en/football-match-previews/31558-galatasaray-vs-fenerbahce-istanbul-rivals-meet-in-rams-park-title-test",
+          "publishedOn": "2026-10-20",
+          "market": "match_winner",
+          "prediction": "away",
+          "explanation": "Explicit Fenerbahce win at 35%; strong disagreement with Sports Mole editorial home win."
+        }
+      ],
+      "publisherAgreement": "explicit_conflict",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false,
+        "reason": "No pre-match Opta supercomputer W/D/L publication found for this fixture. Do not use old match forecasts."
+      },
+      "preKickoffHistory": {
+        "homeLast10": 10,
+        "awayLast10": 10,
+        "homeAwaySplitsAvailable": true,
+        "recencyWeightedTeamGoals": true,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchFacts": [
+        {
+          "fact": "8 of Galatasaray's last 10 matches produced over 2.5 goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_2_5",
+            "hits": 8,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Both teams scored in 7 of Galatasaray's last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "btts",
+            "hits": 7,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "Galatasaray won 3 of their last 4 home matches in this sample.",
+          "evidence": {
+            "type": "split",
+            "venue": "home",
+            "w": 3,
+            "d": 0,
+            "l": 1,
+            "sample": 4
+          }
+        },
+        {
+          "fact": "Fenerbahce kept a clean sheet in 6 of their last 10 matches.",
+          "evidence": {
+            "type": "rate",
+            "metric": "clean_sheet",
+            "hits": 6,
+            "sample": 10
+          }
+        },
+        {
+          "fact": "9 of Fenerbahce's last 10 matches produced at least two goals.",
+          "evidence": {
+            "type": "rate",
+            "metric": "over_1_5",
+            "hits": 9,
+            "sample": 10
+          }
+        }
+      ],
+      "teamNews": {
+        "sourceUrl": "https://www.sportsmole.co.uk/football/galatasaray/preview/galatasaray-vs-fenerbahce-prediction-team-news-lineups_607632.html",
+        "sourcePublishedOn": "2026-10-24",
+        "projectedXIs": true,
+        "confirmedXIs": false,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false,
+        "availabilityUncertainty": true
+      }
+    }
+  ]
+}
