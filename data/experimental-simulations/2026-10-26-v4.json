@@ -1,0 +1,1450 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+  "date": "2026-10-26",
+  "generatedAt": "2026-10-26T10:02:26.426Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 60000,
+  "sourceDates": {
+    "research": "2026-10-26T10:02:01.068Z",
+    "analytics": "2026-10-26T10:02:23.810451+00:00",
+    "standings": "2026-10-26T10:02:24.886Z",
+    "h2h": "2026-10-26T10:02:02.496Z",
+    "teamNews": "2026-10-26T04:08:20.929Z",
+    "styleEvents": null,
+    "externalAnalyst": null,
+    "v3Baseline": "2026-10-26T10:02:26.065Z"
+  },
+  "methodology": {
+    "last10": "exp-decayed recent form and opponent defensive normalization",
+    "comparableOpponents": "verified same-league season PPG and defensive goals allowed, min 2 meaningful comparables",
+    "h2h": "only prior 366 days, capped 1.5% goal mix on top of baseline",
+    "venue": "last 10 home/away results, min 3 each",
+    "lineup": "only quantitative player delta supported by dated verified sample and XI; otherwise coverage flag",
+    "possessions": "passes/tackles/fouls/shots allowed affect stat projection only with verified histories",
+    "simulation": "10,000 independent goal count draws per fixture; non-goal event totals independently modeled where data exists",
+    "noDoubleCounting": "factor shrinkage and small caps; goal outputs are uncalibrated; side market correlation still requires joint calibration",
+    "externalForecast": "Only pre-match date-verified outcome percentages from specific public Opta Analyst articles. For each affected match, 25% of simulations draw an outcome according to the external distribution and sample a score conditionally from the original V3 Poisson score distribution; the other 75% remain independent V3 score draws. Does not imply statistical independence of forecasts.",
+    "independentEventData": "V3 non-goal event forecasts preserved, no invented pass/foul/card/shots statistics",
+    "outcomeCoherence": "All WDL and goal-total frequencies recomputed from the same 10,000 score draws."
+  },
+  "coverage": {
+    "fixtures": 6,
+    "withAnalogBoth": 3,
+    "withStyle": 3,
+    "with12MonthH2H": 6,
+    "withQuantifiedLineups": 0,
+    "withExternalAnalystForecast": 0,
+    "withoutExternalForecast": 6,
+    "retrospectiveAtRun": 0
+  },
+  "limitations": [
+    "0 date-verified published external fixture forecasts; 6 other fixtures use V3-only outcome distributions.",
+    "Heuristic 25% blend has not been backtested or statistically calibrated.",
+    "Some source views show small internal forecast rounding or update discrepancies; fixture-specific article numbers are used.",
+    "Analyst reported team stats are recorded as provenance and qualitative diagnostics, not fabricated match-log xG or lineup effect.",
+    "Generated after kickoff for some fixtures; retrospective snapshots are not fair real-time previews."
+  ],
+  "fixtures": [
+    {
+      "fixtureId": "401882828",
+      "league": "esp.1",
+      "kickoff": "2026-10-26T20:00Z",
+      "home": "Sevilla",
+      "away": "Osasuna",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.88,
+        "away": 1.29
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.23,
+        "draw": 22.4,
+        "awayWin": 26.37
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.85,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.85
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.74
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.26
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 7.06
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 6.84
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.29,
+        "over2_5": 61.93,
+        "under3_5": 60.95,
+        "bttsYes": 61.27
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ],
+        "analogGamesHome": 6,
+        "analogGamesAway": 7,
+        "eligibleRecentH2H": 2,
+        "verifiedStyleSample": true,
+        "usedVerifiedLineupDelta": false,
+        "externalMatchForecastVerified": false,
+        "externalLineupNumericalAdjustment": false
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Research-only 10k seeded rerun. External outcome predictions are a 25% experimental mixture, not verified xG features or calibrated outcome probabilities. Never use as independent statistical confirmation of the same forecast.",
+      "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+      "statTotals": {
+        "goals": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 3.17,
+          "lines": [
+            {
+              "line": 1.5,
+              "overPct": 82.29
+            },
+            {
+              "line": 2.5,
+              "overPct": 61.93
+            },
+            {
+              "line": 3.5,
+              "overPct": 39.05
+            }
+          ],
+          "source": "FootyEdge V3 opponent-conditioned goal model"
+        },
+        "corners": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 6.59,
+          "lines": [
+            {
+              "line": 8.5,
+              "overPct": 21.77
+            },
+            {
+              "line": 9.5,
+              "overPct": 12.84
+            },
+            {
+              "line": 10.5,
+              "overPct": 7.5
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "shots": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 22.24,
+          "lines": [
+            {
+              "line": 22.5,
+              "overPct": 46.43
+            },
+            {
+              "line": 24.5,
+              "overPct": 30.62
+            },
+            {
+              "line": 26.5,
+              "overPct": 17.92
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "shotsOnTarget": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 8.46,
+          "lines": [
+            {
+              "line": 7.5,
+              "overPct": 61.36
+            },
+            {
+              "line": 8.5,
+              "overPct": 47.06
+            },
+            {
+              "line": 9.5,
+              "overPct": 33.96
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "yellowCards": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "fouls": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 30.4,
+          "lines": [
+            {
+              "line": 19.5,
+              "overPct": 98.02
+            },
+            {
+              "line": 21.5,
+              "overPct": 94.99
+            },
+            {
+              "line": 23.5,
+              "overPct": 89.75
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "tackles": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "passes": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        }
+      },
+      "teamProjections": {
+        "home": {
+          "corners": 3,
+          "shots": 11.5,
+          "shotsOnTarget": 4.1,
+          "fouls": 15.2,
+          "goals": 1.88
+        },
+        "away": {
+          "corners": 3.6,
+          "shots": 10.8,
+          "shotsOnTarget": 4.4,
+          "fouls": 15.2,
+          "goals": 1.29
+        }
+      },
+      "statInputCoverage": {
+        "corners": "verified_sample_available",
+        "shots": "observed_own_volume_only_opponent_allowance_missing",
+        "shotsOnTarget": "observed_own_volume_only_opponent_allowance_missing",
+        "yellowCards": "no_both_side_verified_samples",
+        "fouls": "verified_sample_available",
+        "tackles": "no_both_side_verified_samples",
+        "passes": "no_both_side_verified_samples"
+      },
+      "playerProjections": {
+        "foulsCommitted": []
+      },
+      "factorsV3": [
+        "opponent_defensive_strength_normalization",
+        "analog_opponents_verified_strength_bin",
+        "last10_actual_venue_split",
+        "past_12_months_h2h_small_modifier",
+        "verified_recent_shots_on_target_matchup"
+      ],
+      "matchupContext": {
+        "recent12MonthH2H": 2,
+        "analogHome": {
+          "sample": 6,
+          "goalsFor": 2.071367337880512,
+          "goalsAgainst": 1.4078724363218007,
+          "matches": [
+            "401882852",
+            "401882873",
+            "401882878",
+            "401882892",
+            "401882916",
+            "401882918"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "analogAway": {
+          "sample": 7,
+          "goalsFor": 1.583974408402474,
+          "goalsAgainst": 2.130498400410227,
+          "matches": [
+            "401882840",
+            "401882855",
+            "401882860",
+            "401882896",
+            "401882901",
+            "401882924",
+            "401882909"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "opponentAdjustedHome": {
+          "sample": 9,
+          "attackIndex": 0.8123660183085285
+        },
+        "opponentAdjustedAway": {
+          "sample": 9,
+          "attackIndex": 0.6125752369440443
+        },
+        "formations": {},
+        "missingStrengthAndStyleInputs": [
+          "opponent_shots_allowed",
+          "tackles",
+          "passes",
+          "quantified_lineup_impact"
+        ]
+      },
+      "externalOpinion": null
+    },
+    {
+      "fixtureId": "401876422",
+      "league": "fra.1",
+      "kickoff": "2026-10-26T19:30Z",
+      "home": "Paris Saint-Germain",
+      "away": "Lyon",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.99,
+        "away": 1.42
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.13,
+        "draw": 21.56,
+        "awayWin": 27.31
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.43,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.43
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.74
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 7.08
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.82
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 6.66
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.47,
+        "over2_5": 66.27,
+        "under3_5": 55.52,
+        "bttsYes": 65.03
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ],
+        "analogGamesHome": 4,
+        "analogGamesAway": 4,
+        "eligibleRecentH2H": 2,
+        "verifiedStyleSample": false,
+        "usedVerifiedLineupDelta": false,
+        "externalMatchForecastVerified": false,
+        "externalLineupNumericalAdjustment": false
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Research-only 10k seeded rerun. External outcome predictions are a 25% experimental mixture, not verified xG features or calibrated outcome probabilities. Never use as independent statistical confirmation of the same forecast.",
+      "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+      "statTotals": {
+        "goals": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 3.41,
+          "lines": [
+            {
+              "line": 1.5,
+              "overPct": 85.47
+            },
+            {
+              "line": 2.5,
+              "overPct": 66.27
+            },
+            {
+              "line": 3.5,
+              "overPct": 44.48
+            }
+          ],
+          "source": "FootyEdge V3 opponent-conditioned goal model"
+        },
+        "corners": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "shots": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "shotsOnTarget": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "yellowCards": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "fouls": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "tackles": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "passes": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        }
+      },
+      "teamProjections": {
+        "home": {
+          "goals": 1.99
+        },
+        "away": {
+          "goals": 1.42
+        }
+      },
+      "statInputCoverage": {
+        "corners": "no_both_side_verified_samples",
+        "shots": "no_both_side_verified_samples",
+        "shotsOnTarget": "no_both_side_verified_samples",
+        "yellowCards": "no_both_side_verified_samples",
+        "fouls": "no_both_side_verified_samples",
+        "tackles": "no_both_side_verified_samples",
+        "passes": "no_both_side_verified_samples"
+      },
+      "playerProjections": {
+        "foulsCommitted": []
+      },
+      "factorsV3": [
+        "opponent_defensive_strength_normalization",
+        "analog_opponents_verified_strength_bin",
+        "last10_actual_venue_split",
+        "past_12_months_h2h_small_modifier"
+      ],
+      "matchupContext": {
+        "recent12MonthH2H": 2,
+        "analogHome": {
+          "sample": 4,
+          "goalsFor": 1.6703175701482047,
+          "goalsAgainst": 1.8514004866561797,
+          "matches": [
+            "401876449",
+            "401876469",
+            "401876476",
+            "401876487"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "analogAway": {
+          "sample": 4,
+          "goalsFor": 2.12381217963878,
+          "goalsAgainst": 0.6380815106775605,
+          "matches": [
+            "401876434",
+            "401876447",
+            "401876454",
+            "401876460"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "opponentAdjustedHome": {
+          "sample": 7,
+          "attackIndex": 1.0637344362220065
+        },
+        "opponentAdjustedAway": {
+          "sample": 6,
+          "attackIndex": 0.9499426431076708
+        },
+        "formations": {},
+        "missingStrengthAndStyleInputs": [
+          "opponent_shots_allowed",
+          "tackles",
+          "passes",
+          "quantified_lineup_impact"
+        ]
+      },
+      "externalOpinion": null
+    },
+    {
+      "fixtureId": "401885414",
+      "league": "por.1",
+      "kickoff": "2026-10-26T18:45Z",
+      "home": "Santa Clara",
+      "away": "Benfica",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.12,
+        "away": 1.72
+      },
+      "winDrawLossPct": {
+        "homeWin": 24.74,
+        "draw": 24.28,
+        "awayWin": 50.98
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.41,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.41
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.29
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.29
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 8.4
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 6.82
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.66,
+        "over2_5": 54.13,
+        "under3_5": 68.24,
+        "bttsYes": 55.66
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ],
+        "analogGamesHome": 0,
+        "analogGamesAway": 0,
+        "eligibleRecentH2H": 1,
+        "verifiedStyleSample": true,
+        "usedVerifiedLineupDelta": false,
+        "externalMatchForecastVerified": false,
+        "externalLineupNumericalAdjustment": false
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Research-only 10k seeded rerun. External outcome predictions are a 25% experimental mixture, not verified xG features or calibrated outcome probabilities. Never use as independent statistical confirmation of the same forecast.",
+      "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+      "statTotals": {
+        "goals": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 2.84,
+          "lines": [
+            {
+              "line": 1.5,
+              "overPct": 77.66
+            },
+            {
+              "line": 2.5,
+              "overPct": 54.13
+            },
+            {
+              "line": 3.5,
+              "overPct": 31.76
+            }
+          ],
+          "source": "FootyEdge V3 opponent-conditioned goal model"
+        },
+        "corners": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 12.1,
+          "lines": [
+            {
+              "line": 8.5,
+              "overPct": 85.18
+            },
+            {
+              "line": 9.5,
+              "overPct": 76.57
+            },
+            {
+              "line": 10.5,
+              "overPct": 66.5
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "shots": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 32.93,
+          "lines": [
+            {
+              "line": 22.5,
+              "overPct": 97.13
+            },
+            {
+              "line": 24.5,
+              "overPct": 93.18
+            },
+            {
+              "line": 26.5,
+              "overPct": 87.08
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "shotsOnTarget": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 10.12,
+          "lines": [
+            {
+              "line": 7.5,
+              "overPct": 78.76
+            },
+            {
+              "line": 8.5,
+              "overPct": 67.88
+            },
+            {
+              "line": 9.5,
+              "overPct": 55.65
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "yellowCards": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "fouls": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 24.08,
+          "lines": [
+            {
+              "line": 19.5,
+              "overPct": 82.32
+            },
+            {
+              "line": 21.5,
+              "overPct": 69.14
+            },
+            {
+              "line": 23.5,
+              "overPct": 53.1
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "tackles": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "passes": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        }
+      },
+      "teamProjections": {
+        "home": {
+          "corners": 4.2,
+          "shots": 12.9,
+          "shotsOnTarget": 3,
+          "fouls": 12.5,
+          "goals": 1.12
+        },
+        "away": {
+          "corners": 7.9,
+          "shots": 20,
+          "shotsOnTarget": 7.1,
+          "fouls": 11.5,
+          "goals": 1.72
+        }
+      },
+      "statInputCoverage": {
+        "corners": "verified_sample_available",
+        "shots": "observed_own_volume_only_opponent_allowance_missing",
+        "shotsOnTarget": "observed_own_volume_only_opponent_allowance_missing",
+        "yellowCards": "no_both_side_verified_samples",
+        "fouls": "verified_sample_available",
+        "tackles": "no_both_side_verified_samples",
+        "passes": "no_both_side_verified_samples"
+      },
+      "playerProjections": {
+        "foulsCommitted": []
+      },
+      "factorsV3": [
+        "opponent_defensive_strength_normalization",
+        "last10_actual_venue_split",
+        "past_12_months_h2h_small_modifier",
+        "verified_recent_shots_on_target_matchup"
+      ],
+      "matchupContext": {
+        "recent12MonthH2H": 1,
+        "analogHome": null,
+        "analogAway": null,
+        "opponentAdjustedHome": {
+          "sample": 9,
+          "attackIndex": 0.6788958889772063
+        },
+        "opponentAdjustedAway": {
+          "sample": 6,
+          "attackIndex": 1.3073157526779646
+        },
+        "formations": {},
+        "missingStrengthAndStyleInputs": [
+          "opponent_shots_allowed",
+          "tackles",
+          "passes",
+          "quantified_lineup_impact"
+        ]
+      },
+      "externalOpinion": null
+    },
+    {
+      "fixtureId": "401888264",
+      "league": "tur.1",
+      "kickoff": "2026-10-26T16:00Z",
+      "home": "Besiktas",
+      "away": "Istanbul Basaksehir",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.43,
+        "away": 1.3
+      },
+      "winDrawLossPct": {
+        "homeWin": 62.67,
+        "draw": 18.2,
+        "awayWin": 19.13
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.02,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.02
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.77
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.38
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 7.25
+        },
+        {
+          "score": "3-0",
+          "probabilityPct": 6.16
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.78,
+        "over2_5": 71.54,
+        "under3_5": 49.21,
+        "bttsYes": 66.22
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ],
+        "analogGamesHome": 3,
+        "analogGamesAway": 5,
+        "eligibleRecentH2H": 1,
+        "verifiedStyleSample": false,
+        "usedVerifiedLineupDelta": false,
+        "externalMatchForecastVerified": false,
+        "externalLineupNumericalAdjustment": false
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Research-only 10k seeded rerun. External outcome predictions are a 25% experimental mixture, not verified xG features or calibrated outcome probabilities. Never use as independent statistical confirmation of the same forecast.",
+      "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+      "statTotals": {
+        "goals": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 3.72,
+          "lines": [
+            {
+              "line": 1.5,
+              "overPct": 88.78
+            },
+            {
+              "line": 2.5,
+              "overPct": 71.54
+            },
+            {
+              "line": 3.5,
+              "overPct": 50.79
+            }
+          ],
+          "source": "FootyEdge V3 opponent-conditioned goal model"
+        },
+        "corners": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "shots": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "shotsOnTarget": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "yellowCards": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "fouls": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "tackles": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "passes": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        }
+      },
+      "teamProjections": {
+        "home": {
+          "goals": 2.43
+        },
+        "away": {
+          "goals": 1.3
+        }
+      },
+      "statInputCoverage": {
+        "corners": "no_both_side_verified_samples",
+        "shots": "no_both_side_verified_samples",
+        "shotsOnTarget": "no_both_side_verified_samples",
+        "yellowCards": "no_both_side_verified_samples",
+        "fouls": "no_both_side_verified_samples",
+        "tackles": "no_both_side_verified_samples",
+        "passes": "no_both_side_verified_samples"
+      },
+      "playerProjections": {
+        "foulsCommitted": []
+      },
+      "factorsV3": [
+        "opponent_defensive_strength_normalization",
+        "analog_opponents_verified_strength_bin",
+        "last10_actual_venue_split",
+        "past_12_months_h2h_small_modifier"
+      ],
+      "matchupContext": {
+        "recent12MonthH2H": 1,
+        "analogHome": {
+          "sample": 3,
+          "goalsFor": 3.668900723894058,
+          "goalsAgainst": 0.9937845334624901,
+          "matches": [
+            "401888279",
+            "401888292",
+            "401888387"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "analogAway": {
+          "sample": 5,
+          "goalsFor": 1.0914327635744276,
+          "goalsAgainst": 2.195772778217156,
+          "matches": [
+            "401888384",
+            "401888304",
+            "401888310",
+            "401888319",
+            "401888324"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "opponentAdjustedHome": {
+          "sample": 6,
+          "attackIndex": 1.1137248920046043
+        },
+        "opponentAdjustedAway": {
+          "sample": 8,
+          "attackIndex": 0.7805583151204514
+        },
+        "formations": {},
+        "missingStrengthAndStyleInputs": [
+          "opponent_shots_allowed",
+          "tackles",
+          "passes",
+          "quantified_lineup_impact"
+        ]
+      },
+      "externalOpinion": null
+    },
+    {
+      "fixtureId": "401888267",
+      "league": "tur.1",
+      "kickoff": "2026-10-26T16:00Z",
+      "home": "Caykur Rizespor",
+      "away": "Trabzonspor",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.14,
+        "away": 1.93
+      },
+      "winDrawLossPct": {
+        "homeWin": 22.67,
+        "draw": 21.41,
+        "awayWin": 55.92
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 10.37,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 10.37
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 9.64
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.84
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 8.53
+        },
+        {
+          "score": "0-3",
+          "probabilityPct": 5.85
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.12,
+        "over2_5": 59.79,
+        "under3_5": 63.44,
+        "bttsYes": 57.57
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ],
+        "analogGamesHome": 0,
+        "analogGamesAway": 0,
+        "eligibleRecentH2H": 1,
+        "verifiedStyleSample": false,
+        "usedVerifiedLineupDelta": false,
+        "externalMatchForecastVerified": false,
+        "externalLineupNumericalAdjustment": false
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Research-only 10k seeded rerun. External outcome predictions are a 25% experimental mixture, not verified xG features or calibrated outcome probabilities. Never use as independent statistical confirmation of the same forecast.",
+      "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+      "statTotals": {
+        "goals": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 3.08,
+          "lines": [
+            {
+              "line": 1.5,
+              "overPct": 81.12
+            },
+            {
+              "line": 2.5,
+              "overPct": 59.79
+            },
+            {
+              "line": 3.5,
+              "overPct": 36.56
+            }
+          ],
+          "source": "FootyEdge V3 opponent-conditioned goal model"
+        },
+        "corners": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "shots": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "shotsOnTarget": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "yellowCards": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "fouls": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "tackles": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "passes": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        }
+      },
+      "teamProjections": {
+        "home": {
+          "goals": 1.14
+        },
+        "away": {
+          "goals": 1.93
+        }
+      },
+      "statInputCoverage": {
+        "corners": "no_both_side_verified_samples",
+        "shots": "no_both_side_verified_samples",
+        "shotsOnTarget": "no_both_side_verified_samples",
+        "yellowCards": "no_both_side_verified_samples",
+        "fouls": "no_both_side_verified_samples",
+        "tackles": "no_both_side_verified_samples",
+        "passes": "no_both_side_verified_samples"
+      },
+      "playerProjections": {
+        "foulsCommitted": []
+      },
+      "factorsV3": [
+        "opponent_defensive_strength_normalization",
+        "last10_actual_venue_split",
+        "past_12_months_h2h_small_modifier"
+      ],
+      "matchupContext": {
+        "recent12MonthH2H": 1,
+        "analogHome": null,
+        "analogAway": null,
+        "opponentAdjustedHome": {
+          "sample": 8,
+          "attackIndex": 0.4680708446850605
+        },
+        "opponentAdjustedAway": {
+          "sample": 6,
+          "attackIndex": 1.2391056103456601
+        },
+        "formations": {},
+        "missingStrengthAndStyleInputs": [
+          "opponent_shots_allowed",
+          "tackles",
+          "passes",
+          "quantified_lineup_impact"
+        ]
+      },
+      "externalOpinion": null
+    },
+    {
+      "fixtureId": "401888265",
+      "league": "tur.1",
+      "kickoff": "2026-10-26T18:30Z",
+      "home": "Galatasaray",
+      "away": "Fenerbahce",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.84,
+        "away": 1.95
+      },
+      "winDrawLossPct": {
+        "homeWin": 36.94,
+        "draw": 21.81,
+        "awayWin": 41.25
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 8.39,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 8.39
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.94
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.49
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.28
+        },
+        {
+          "score": "1-3",
+          "probabilityPct": 5.02
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.48,
+        "over2_5": 72.88,
+        "under3_5": 47.57,
+        "bttsYes": 72.22
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ],
+        "analogGamesHome": 3,
+        "analogGamesAway": 0,
+        "eligibleRecentH2H": 2,
+        "verifiedStyleSample": true,
+        "usedVerifiedLineupDelta": false,
+        "externalMatchForecastVerified": false,
+        "externalLineupNumericalAdjustment": false
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Research-only 10k seeded rerun. External outcome predictions are a 25% experimental mixture, not verified xG features or calibrated outcome probabilities. Never use as independent statistical confirmation of the same forecast.",
+      "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+      "statTotals": {
+        "goals": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 3.79,
+          "lines": [
+            {
+              "line": 1.5,
+              "overPct": 89.48
+            },
+            {
+              "line": 2.5,
+              "overPct": 72.88
+            },
+            {
+              "line": 3.5,
+              "overPct": 52.43
+            }
+          ],
+          "source": "FootyEdge V3 opponent-conditioned goal model"
+        },
+        "corners": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 13.06,
+          "lines": [
+            {
+              "line": 8.5,
+              "overPct": 90.44
+            },
+            {
+              "line": 9.5,
+              "overPct": 84.26
+            },
+            {
+              "line": 10.5,
+              "overPct": 75.96
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "shots": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 40.37,
+          "lines": [
+            {
+              "line": 22.5,
+              "overPct": 99.92
+            },
+            {
+              "line": 24.5,
+              "overPct": 99.71
+            },
+            {
+              "line": 26.5,
+              "overPct": 99.06
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "shotsOnTarget": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 15.09,
+          "lines": [
+            {
+              "line": 7.5,
+              "overPct": 98.34
+            },
+            {
+              "line": 8.5,
+              "overPct": 96.55
+            },
+            {
+              "line": 9.5,
+              "overPct": 93.41
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "yellowCards": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "fouls": {
+          "status": "modeled_from_verified_inputs",
+          "projection": 22.96,
+          "lines": [
+            {
+              "line": 19.5,
+              "overPct": 76.48
+            },
+            {
+              "line": 21.5,
+              "overPct": 61.04
+            },
+            {
+              "line": 23.5,
+              "overPct": 43.85
+            }
+          ],
+          "source": "verified source-specific team match samples"
+        },
+        "tackles": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        },
+        "passes": {
+          "status": "not_verified",
+          "projection": null,
+          "lines": null,
+          "source": null
+        }
+      },
+      "teamProjections": {
+        "home": {
+          "corners": 7.3,
+          "shots": 21.4,
+          "shotsOnTarget": 7.5,
+          "fouls": 11.2,
+          "goals": 1.84
+        },
+        "away": {
+          "corners": 5.8,
+          "shots": 18.9,
+          "shotsOnTarget": 7.6,
+          "fouls": 11.7,
+          "goals": 1.95
+        }
+      },
+      "statInputCoverage": {
+        "corners": "verified_sample_available",
+        "shots": "observed_own_volume_only_opponent_allowance_missing",
+        "shotsOnTarget": "observed_own_volume_only_opponent_allowance_missing",
+        "yellowCards": "no_both_side_verified_samples",
+        "fouls": "verified_sample_available",
+        "tackles": "no_both_side_verified_samples",
+        "passes": "no_both_side_verified_samples"
+      },
+      "playerProjections": {
+        "foulsCommitted": []
+      },
+      "factorsV3": [
+        "opponent_defensive_strength_normalization",
+        "last10_actual_venue_split",
+        "past_12_months_h2h_small_modifier",
+        "verified_recent_shots_on_target_matchup"
+      ],
+      "matchupContext": {
+        "recent12MonthH2H": 2,
+        "analogHome": {
+          "sample": 3,
+          "goalsFor": 1.237077069800711,
+          "goalsAgainst": 2.1921312661332957,
+          "matches": [
+            "401888280",
+            "401888291",
+            "401888293"
+          ],
+          "method": "recent league-opponents matched by verified PPG and defensive output"
+        },
+        "analogAway": null,
+        "opponentAdjustedHome": {
+          "sample": 6,
+          "attackIndex": 0.8997311735900646
+        },
+        "opponentAdjustedAway": {
+          "sample": 6,
+          "attackIndex": 1.4854415501788774
+        },
+        "formations": {},
+        "missingStrengthAndStyleInputs": [
+          "opponent_shots_allowed",
+          "tackles",
+          "passes",
+          "quantified_lineup_impact"
+        ]
+      },
+      "externalOpinion": null
+    }
+  ]
+}

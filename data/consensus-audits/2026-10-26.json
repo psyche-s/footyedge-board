@@ -1,0 +1,211 @@
+{
+  "schema": "footyedge-source-consensus-audit-v1",
+  "date": "2026-10-26",
+  "generatedAt": "2026-10-26T04:08:02.791Z",
+  "notes": [
+    "A site's market odds are not an editorial prediction.",
+    "A home-win prediction supports home-or-draw as a weaker directional opinion; it does not establish a direct double-chance pick.",
+    "No approval to bulk ingest a commercial reference site is assumed.",
+    "Independent agreement is only awarded for two or more distinct forecast publishers supporting the same selection with no recorded contrary direction.",
+    "Goal-total and player-prop picks are not considered independently checked by winner-only forecasts.",
+    "Ratings are unchanged; recorded external opinions are not calibrated probabilities."
+  ],
+  "summary": {
+    "fixtures": 6,
+    "fixturesWithExternalPrediction": 6,
+    "fixturesWithTwoOrMoreIndependentSources": 4,
+    "picksWithTwoSourceAgreement": 3,
+    "picksWithConflictingForecasts": 1,
+    "picksWithCompetingDirections": 0,
+    "picksNotIndependentlyChecked": 6,
+    "sourceOpinionRecords": 10,
+    "invalidRecords": 0
+  },
+  "invalid": [],
+  "matches": [
+    {
+      "gameId": "401882828",
+      "home": "Sevilla",
+      "away": "Osasuna",
+      "league": "esp.1",
+      "sourcesChecked": [
+        "sports_mole",
+        "forebet"
+      ],
+      "opinionsRecorded": 2,
+      "picks": [
+        {
+          "label": "Over 1.5 Goals",
+          "family": "total",
+          "verdict": "not_independently_checked",
+          "support": 0,
+          "oppose": 0,
+          "providersChecked": 0,
+          "marketValidated": false
+        },
+        {
+          "label": "Sevilla or Draw",
+          "family": "result",
+          "verdict": "independent_agreement",
+          "support": 2,
+          "oppose": 0,
+          "providersChecked": 2,
+          "marketValidated": true
+        }
+      ]
+    },
+    {
+      "gameId": "401876422",
+      "home": "Paris Saint-Germain",
+      "away": "Lyon",
+      "league": "fra.1",
+      "sourcesChecked": [
+        "forebet"
+      ],
+      "opinionsRecorded": 1,
+      "picks": [
+        {
+          "label": "Over 1.5 Goals",
+          "family": "total",
+          "verdict": "not_independently_checked",
+          "support": 0,
+          "oppose": 0,
+          "providersChecked": 0,
+          "marketValidated": false
+        },
+        {
+          "label": "Paris Saint-Germain or Draw",
+          "family": "result",
+          "verdict": "limited_independent_support",
+          "support": 1,
+          "oppose": 0,
+          "providersChecked": 1,
+          "marketValidated": true
+        }
+      ]
+    },
+    {
+      "gameId": "401885414",
+      "home": "Santa Clara",
+      "away": "Benfica",
+      "league": "por.1",
+      "sourcesChecked": [
+        "sports_mole"
+      ],
+      "opinionsRecorded": 1,
+      "picks": [
+        {
+          "label": "Under 4.5 Goals",
+          "family": "total",
+          "verdict": "not_independently_checked",
+          "support": 0,
+          "oppose": 0,
+          "providersChecked": 0,
+          "marketValidated": false
+        },
+        {
+          "label": "Benfica or Draw",
+          "family": "result",
+          "verdict": "limited_independent_support",
+          "support": 1,
+          "oppose": 0,
+          "providersChecked": 1,
+          "marketValidated": true
+        }
+      ]
+    },
+    {
+      "gameId": "401888264",
+      "home": "Besiktas",
+      "away": "Istanbul Basaksehir",
+      "league": "tur.1",
+      "sourcesChecked": [
+        "sports_mole",
+        "forebet"
+      ],
+      "opinionsRecorded": 2,
+      "picks": [
+        {
+          "label": "Over 1.5 Goals",
+          "family": "total",
+          "verdict": "not_independently_checked",
+          "support": 0,
+          "oppose": 0,
+          "providersChecked": 0,
+          "marketValidated": false
+        },
+        {
+          "label": "Besiktas or Draw",
+          "family": "result",
+          "verdict": "independent_agreement",
+          "support": 2,
+          "oppose": 0,
+          "providersChecked": 2,
+          "marketValidated": true
+        }
+      ]
+    },
+    {
+      "gameId": "401888267",
+      "home": "Caykur Rizespor",
+      "away": "Trabzonspor",
+      "league": "tur.1",
+      "sourcesChecked": [
+        "sports_mole",
+        "forebet"
+      ],
+      "opinionsRecorded": 2,
+      "picks": [
+        {
+          "label": "Over 1.5 Goals",
+          "family": "total",
+          "verdict": "not_independently_checked",
+          "support": 0,
+          "oppose": 0,
+          "providersChecked": 0,
+          "marketValidated": false
+        },
+        {
+          "label": "Trabzonspor or Draw",
+          "family": "result",
+          "verdict": "independent_agreement",
+          "support": 2,
+          "oppose": 0,
+          "providersChecked": 2,
+          "marketValidated": true
+        }
+      ]
+    },
+    {
+      "gameId": "401888265",
+      "home": "Galatasaray",
+      "away": "Fenerbahce",
+      "league": "tur.1",
+      "sourcesChecked": [
+        "sports_mole",
+        "forebet"
+      ],
+      "opinionsRecorded": 2,
+      "picks": [
+        {
+          "label": "Over 1.5 Goals",
+          "family": "total",
+          "verdict": "not_independently_checked",
+          "support": 0,
+          "oppose": 0,
+          "providersChecked": 0,
+          "marketValidated": false
+        },
+        {
+          "label": "Fenerbahce or Draw",
+          "family": "result",
+          "verdict": "conflicting_forecasts",
+          "support": 1,
+          "oppose": 1,
+          "providersChecked": 2,
+          "marketValidated": true
+        }
+      ]
+    }
+  ]
+}
