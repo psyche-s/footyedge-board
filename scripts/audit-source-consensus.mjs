@@ -16,7 +16,7 @@ export const lookup=(m,p)=>{
 }
 export function audit(review,doc){
  if(!review||!doc||review.date!==doc.date||!Array.isArray(review.matches)||!Array.isArray(doc.opinions))throw Error("Date match required");
- const allowed={windrawwin:"windrawwin.com",sports_mole:"sportsmole.co.uk",football_whispers:"footballwhispers.com",the_analyst:"theanalyst.com"};
+ const allowed={windrawwin:"windrawwin.com",sports_mole:"sportsmole.co.uk",football_whispers:"footballwhispers.com",the_analyst:"theanalyst.com",forebet:"forebet.com"};
  const matchesBy=new Map(review.matches.map(x=>[String(x.gameId),x]));
  const seen=new Set(),eligible=[],invalid=[];
  for(const e of doc.opinions){
