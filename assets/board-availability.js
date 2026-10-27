@@ -24,7 +24,15 @@
     const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(event.date));
     const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));return p.year+'-'+p.month+'-'+p.day;
   }
-  function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&eventDay(e)===date&&!excludedTaggedEvent(e)&&!/CANCEL/i.test(e.status?.type?.name||''))}
+  function isExcludedSecondTier(id,name){
+    const code=String(id||"").trim().toLowerCase();
+    if(code==="eng.2")return false;
+    if(/^[a-z]{2,8}\.2$/.test(code))return true;
+    const title=String(name||"").trim().toLowerCase();
+    if(/championship/.test(title)&&/(efl|english|england)/.test(title))return false;
+    return /^(ita 2|ger 2|fra 2|esp 2|serie b|2\\.? bundesliga|bundesliga 2|ligue 2|laliga 2|laliga hypermotion|segunda divisi[oó]n|serie bkt)$/.test(title);
+  }
+  function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&!isExcludedSecondTier(leagueOf(e),e?.league?.name)&&eventDay(e)===date&&!excludedTaggedEvent(e)&&!/CANCEL/i.test(e.status?.type?.name||''))}
   function formatDate(date){return new Date(date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})}
   function message(info,today,hasBoard=false){
     if(!info||info.kind==='loading')return 'Checking the game schedule…';
@@ -75,5 +83,5 @@
     }
     return {kind:'empty',date,count:0,nextGameDate:null,searchComplete:true};
   }
-  root.FootyEdgeAvailability={uidLeague,leagueOf,eventDay,excludedTaggedEvent,excludedArchivedGame,eventsForDay,formatDate,message,load,loadNext};
+  root.FootyEdgeAvailability={isExcludedSecondTier,uidLeague,leagueOf,eventDay,excludedTaggedEvent,excludedArchivedGame,eventsForDay,formatDate,message,load,loadNext};
 })(globalThis);
