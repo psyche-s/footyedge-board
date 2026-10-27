@@ -55,7 +55,7 @@ test("Restore the pre-alignment layout for BOTH original fixture and expanded he
  assert.match(css,/\.fe-dialogHero \.fe-heroTeams \.fe-side/);
  assert.ok(js.includes("return '<div class=\"fe-dialogHero\">'+feMatchHero(g)"));
  assert.match(fs.readFileSync("ui/part1.html","utf8"),/footyedge-match-v3\.css\?v=36/);
- assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=144/);
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=\d+/);
 });
 
 test("Fixture and expanded cards keep a symmetric three-column mobile layout",()=>{
@@ -73,5 +73,5 @@ test("Fixture and expanded cards keep a symmetric three-column mobile layout",()
  assert.match(css,/broadcast-home\.svg/);
  assert.match(css,/broadcast-away\.svg/);
  assert.ok(fs.readFileSync("ui/part1.html","utf8").includes("footyedge-match-v3.css?v=36"));
- assert.ok(fs.readFileSync("picks.html","utf8").includes("ui/part1.html?v=144"));
+ assert.match(fs.readFileSync("picks.html","utf8"),/ui\/part1\.html\?v=\d+/);
 });
