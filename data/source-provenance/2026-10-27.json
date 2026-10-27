@@ -29,7 +29,8 @@
     "Five of the verified fixtures have sourced projected XIs; all unconfirmed.",
     "No published match-specific Opta W/D/L for these fixtures was verified; V4 external blend prohibited.",
     "Source-specific win percentages are not calibrated FootyEdge probabilities.",
-    "Missing xG, shots/SOT allowances, event logs, odds and player images are missing, never zero."
+    "Missing xG, shots/SOT allowances, event logs, odds and player images are missing, never zero.",
+    "Abha–Al Faisaly: ESPN scheduled versus Forebet postponed marker at 2026-10-27T04:25:29.647Z; no unsupported result selection or lineup published."
   ],
   "fixtures": [
     {
@@ -598,6 +599,54 @@
         "playerLast5Last10Verified": false,
         "availabilityUncertainty": true
       }
+    },
+    {
+      "fixtureId": "401900914",
+      "league": "ksa.1",
+      "home": "Abha",
+      "away": "Al Faisaly",
+      "kickoff": "2026-10-27T12:40Z",
+      "recordedBeforeKickoff": true,
+      "publisherOpinions": [],
+      "publisherAgreement": "no_qualified_current_pre_match_consensus",
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "matchStatusCrossCheck": {
+        "checkedAt": "2026-10-27T04:25:29.647Z",
+        "espn": {
+          "status": "scheduled",
+          "url": "https://site.api.espn.com/apis/site/v2/sports/soccer/ksa.1/scoreboard?dates=20261027"
+        },
+        "forebet": {
+          "status": "postponed_marker_on_dynamic_match_page",
+          "url": "https://www.forebet.com/en/football/matches/abha-club-al-faisaly-%28ksa%29-2494625"
+        },
+        "statusVerifiedConsistent": false,
+        "action": "HOLD; do not infer cancellation or kickoff confirmation from conflicting feeds"
+      },
+      "teamNews": {
+        "status": "unverified",
+        "predictedXI": null,
+        "confirmedXIs": false,
+        "injuryAndSuspensionContext": null,
+        "photosVerified": false,
+        "playerLast5Last10Verified": false
+      },
+      "decision": "PASS until match status and pre-match inputs are independently reconciled"
     }
   ]
 }
