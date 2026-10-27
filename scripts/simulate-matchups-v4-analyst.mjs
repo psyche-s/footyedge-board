@@ -2,6 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {summarizeEventLedger} from "./event-ledger-projections.mjs";
 export function generateAnalystV4({baseline,external,asof,draws=10000}){
  if(!baseline||!external||baseline.date!==external.date||!Array.isArray(baseline.fixtures)||!Number.isInteger(draws)||draws!==10000)throw Error("Invalid dated input or draw requirement");
  const eBy=new Map(external.fixtures.map(f=>[String(f.fixtureId),f]));
@@ -44,6 +45,7 @@ export function generateAnalystV4({baseline,external,asof,draws=10000}){
   for(const x of full)x.cdf/=acc;
   const alpha=source?Math.max(0,Math.min(.35,Number(external.forecastInputPolicy.blendWithFootyEdgeBaseline))):0;
   let wins=[0,0,0],gf=[0,0],btts=0,over15=0,over25=0,under35=0,over35=0,scoreCounts=new Map();
+  const matchLedger=[];
   for(let i=0;i<draws;i++){
    let pair;
    if(source&&rand()<alpha){
@@ -51,17 +53,19 @@ export function generateAnalystV4({baseline,external,asof,draws=10000}){
      pair=drawFrom(pools[cat]);
    }else pair=drawFrom(full);
    const h=pair.h,a=pair.a,t=h+a;
+   matchLedger.push({homeGoals:h,awayGoals:a});
    gf[0]+=h;gf[1]+=a;
    wins[h>a?0:h===a?1:2]++;
    if(h&&a)btts++;if(t>=2)over15++;if(t>=3)over25++;if(t<=3)under35++;if(t>=4)over35++;
    const score=h+"-"+a;scoreCounts.set(score,(scoreCounts.get(score)||0)+1);
   }
   if(wins.reduce((a,b)=>a+b,0)!==draws)throw Error("Draw mismatch");
+  const coherent=summarizeEventLedger(matchLedger,{seed,coverage:{externalForecastVerified:!!source,playerHeatmapsVerified:false,minuteByMinuteEventsSimulated:false}});
   const pct=n=>digits(n*100/draws);
   const likely=[...scoreCounts.entries()].sort((x,y)=>y[1]-x[1]||x[0].localeCompare(y[0])).slice(0,5).map(([score,n])=>({score,probabilityPct:pct(n)}));
   const modelWDL={homeWin:pct(wins[0]),draw:pct(wins[1]),awayWin:pct(wins[2])};
   const eh=digits(gf[0]/draws),ea=digits(gf[1]/draws);
-  const newBase={...base,modelVersion:"opponent-conditioned-analyst-hybrid-v4",simulations:draws,
+  const newBase={...base,coherentProjection:coherent,modelVersion:"opponent-conditioned-analyst-hybrid-v4",simulations:draws,
    status:Date.parse(base.kickoff)<=Date.parse(asof)?"retrospective_rerun_not_valid_live_prematch":"pre_kickoff_experimental",
    expectedGoals:{home:eh,away:ea},
    winDrawLossPct:modelWDL,predictedScore:likely[0].score,
