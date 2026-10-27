@@ -1934,7 +1934,7 @@ async function load(date=S.date){
           existing.add(String(c.id));
         }
       }
-      S.games=applyBoardArchive(games,displayArchive);attachSavedH2H(S.games);
+      S.games=applyBoardArchive(games,displayArchive).filter(g=>!FootyEdgeAvailability.isExcludedSecondTier(g.league,g.leagueName));attachSavedH2H(S.games);
       const dcById=new Map((modelBoardPayload?.date===S.date&&modelBoardPayload?.kind==="experimental_dixon_coles_crosscheck"?modelBoardPayload.matchups:[]||[]).map(x=>[String(x.fixtureId),x]));
       for(const g of S.games)g.dcResearch=dcById.get(String(g.id))||null;
       S.boardReady=true;S.dataSource=archivePayload.immutable===false?"Published today · refreshable":"Historical board";
