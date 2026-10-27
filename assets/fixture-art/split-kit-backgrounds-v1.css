@@ -1,0 +1,60 @@
+/* FootyEdge Original · approved 27 Oct 2026 split-colour fixture backgrounds.
+   Background artwork only: never touch card structure, alignment, font sizing,
+   crests, status, rankings, forms, projections or frozen fixture data.
+   Uses per-fixture --fe-home / --fe-away and accent values from feKitPalette().
+   New and future fixtures inherit this styling without asset generation. */
+
+.fe-matchCard .fe-hero.fe-kitHero,
+.fe-matchCard .fe-hero.fe-kitHero[data-featured-art] {
+  background:
+    radial-gradient(ellipse at 50% 44%, #00110b 0%, #00160e 29%, rgba(0,19,12,.94) 43%, transparent 77%),
+    #061711 !important;
+  background-image:
+    radial-gradient(ellipse at 50% 44%, #00110b 0%, #00160e 29%, rgba(0,19,12,.94) 43%, transparent 77%) !important;
+}
+
+/* Fine kit fabric, diagonal stadium embossing, side illumination and a dark
+   centre. The team-specific colour gradient is always the lowest layer. */
+.fe-matchCard .fe-hero.fe-kitHero::before,
+.fe-matchCard .fe-hero.fe-kitHero[data-featured-art]::before {
+  content:"" !important;
+  opacity:1 !important;
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.065),transparent 38%,rgba(0,0,0,.17)),
+    url("/assets/fixture-art/stadium.svg"),
+    repeating-linear-gradient(133deg,rgba(255,255,255,.065) 0 1px,transparent 2px 27px),
+    radial-gradient(ellipse at 12% 28%,color-mix(in srgb,var(--fe-home-accent,#9CC1E4) 22%,transparent),transparent 64%),
+    linear-gradient(90deg,
+      color-mix(in srgb,var(--fe-home,#235B92) 91%,#071712) 0%,
+      color-mix(in srgb,var(--fe-home,#235B92) 82%,#071712) 37%,
+      color-mix(in srgb,var(--fe-home,#235B92) 44%,#071712) 67%,
+      #061711 100%) !important;
+  background-size:100% 100%,100% 100%,100% 100%,100% 100%,100% 100% !important;
+  background-position:left center !important;
+  background-repeat:no-repeat !important;
+  background-blend-mode:normal,soft-light,soft-light,screen,normal !important;
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 34%,rgba(0,0,0,.89) 54%,rgba(0,0,0,.31) 80%,transparent 100%) !important;
+  mask-image:linear-gradient(90deg,#000 0%,#000 34%,rgba(0,0,0,.89) 54%,rgba(0,0,0,.31) 80%,transparent 100%) !important;
+}
+
+.fe-matchCard .fe-hero.fe-kitHero::after,
+.fe-matchCard .fe-hero.fe-kitHero[data-featured-art]::after {
+  content:"" !important;
+  opacity:1 !important;
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.06),transparent 40%,rgba(0,0,0,.17)),
+    url("/assets/fixture-art/stadium.svg"),
+    repeating-linear-gradient(47deg,rgba(255,255,255,.06) 0 1px,transparent 2px 29px),
+    radial-gradient(ellipse at 88% 30%,color-mix(in srgb,var(--fe-away-accent,#C6D6E2) 22%,transparent),transparent 62%),
+    linear-gradient(270deg,
+      color-mix(in srgb,var(--fe-away,#334D74) 90%,#071712) 0%,
+      color-mix(in srgb,var(--fe-away,#334D74) 81%,#071712) 38%,
+      color-mix(in srgb,var(--fe-away,#334D74) 43%,#071712) 68%,
+      #061711 100%) !important;
+  background-size:100% 100%,100% 100%,100% 100%,100% 100%,100% 100% !important;
+  background-position:right center !important;
+  background-repeat:no-repeat !important;
+  background-blend-mode:normal,soft-light,soft-light,screen,normal !important;
+  -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 34%,rgba(0,0,0,.89) 54%,rgba(0,0,0,.31) 80%,transparent 100%) !important;
+  mask-image:linear-gradient(270deg,#000 0%,#000 34%,rgba(0,0,0,.89) 54%,rgba(0,0,0,.31) 80%,transparent 100%) !important;
+}
