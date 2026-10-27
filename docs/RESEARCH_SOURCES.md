@@ -68,6 +68,12 @@ This is the research/reference source inventory for the **original FootyEdge**. 
 8. **Data rights:** a reference website is not automatically a legal data feed. Respect robots/ToS, rate limits, copyrights, licensing and provider requirements; no speculative scraping or paid-data bypasses.
 9. **Missing source/data:** fall back to other credible evidence and explicitly track gaps internally; do not label a source as checked when it wasn't accessed.
 
+### Squawka — supplementary football analytics
+- **Website:** https://www.squawka.com/
+- **Use:** Player and team comparisons, match statistics, role and form context, and editorial tactical analysis where publicly available.
+- **Priority:** Cross-check against primary match feeds and official lineup information; distinguish editorial claims from verified numerical data.
+- **Availability:** Research reference only. No Squawka API, scraper, licensed feed, or automated integration is enabled by this entry. Follow access and reuse terms.
+
 ## 6. Integration boundaries
 
 - This is a **research inventory and operational guidance**, not an enabled scraper or refresh workflow.
