@@ -1,0 +1,39 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-10-27",
+  "generatedAt": "2026-10-27T04:09:41.571Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 40000,
+  "sourceDates": {
+    "research": "2026-10-27T04:08:58.152Z",
+    "analytics": null,
+    "h2h": "2026-10-27",
+    "teamNews": "2026-10-27T04:04:38.378Z",
+    "standings": "2026-10-27T04:09:40.637Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 4,
+    "preKickoff": 4,
+    "postKickoff": 0,
+    "atLeastEightEach": 4,
+    "shotJoined": 0,
+    "realXg": 0,
+    "projectedXI": 3,
+    "standingsJoined": 4
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated ¶»§q«^
