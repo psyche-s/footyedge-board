@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 import {summarizeEventLedger} from "./event-ledger-projections.mjs";
+import {simulateMinuteMatch} from "./minute-state-engine.mjs";
 export function generateAnalystV4({baseline,external,asof,draws=10000}){
  if(!baseline||!external||baseline.date!==external.date||!Array.isArray(baseline.fixtures)||!Number.isInteger(draws)||draws!==10000)throw Error("Invalid dated input or draw requirement");
  const eBy=new Map(external.fixtures.map(f=>[String(f.fixtureId),f]));
@@ -46,9 +47,15 @@ export function generateAnalystV4({baseline,external,asof,draws=10000}){
   const alpha=source?Math.max(0,Math.min(.35,Number(external.forecastInputPolicy.blendWithFootyEdgeBaseline))):0;
   let wins=[0,0,0],gf=[0,0],btts=0,over15=0,over25=0,under35=0,over35=0,scoreCounts=new Map();
   const matchLedger=[];
+  // Only switch to the minute engine when both teams have independently verified event profiles.
+  const profiles=base.verifiedMinuteProfiles;
+  const useMinuteEngine=!!(profiles?.home?.verified&&profiles?.away?.verified&&!source);
   for(let i=0;i<draws;i++){
    let pair;
-   if(source&&rand()<alpha){
+   if(useMinuteEngine){
+     const simulated=simulateMinuteMatch({home:{...profiles.home,goalRate:lamH},away:{...profiles.away,goalRate:lamA},rand});
+     pair={h:simulated.homeGoals,a:simulated.awayGoals};
+   }else if(source&&rand()<alpha){
      const u=rand();const cat=u<fractions[0]?0:u<fractions[0]+fractions[1]?1:2;
      pair=drawFrom(pools[cat]);
    }else pair=drawFrom(full);
@@ -60,12 +67,12 @@ export function generateAnalystV4({baseline,external,asof,draws=10000}){
    const score=h+"-"+a;scoreCounts.set(score,(scoreCounts.get(score)||0)+1);
   }
   if(wins.reduce((a,b)=>a+b,0)!==draws)throw Error("Draw mismatch");
-  const coherent=summarizeEventLedger(matchLedger,{seed,coverage:{externalForecastVerified:!!source,playerHeatmapsVerified:false,minuteByMinuteEventsSimulated:false}});
+  const coherent=summarizeEventLedger(matchLedger,{seed,coverage:{externalForecastVerified:!!source,playerHeatmapsVerified:useMinuteEngine&&!!(profiles.home.heatmapVerified&&profiles.away.heatmapVerified),minuteByMinuteEventsSimulated:useMinuteEngine}});
   const pct=n=>digits(n*100/draws);
   const likely=[...scoreCounts.entries()].sort((x,y)=>y[1]-x[1]||x[0].localeCompare(y[0])).slice(0,5).map(([score,n])=>({score,probabilityPct:pct(n)}));
   const modelWDL={homeWin:pct(wins[0]),draw:pct(wins[1]),awayWin:pct(wins[2])};
   const eh=digits(gf[0]/draws),ea=digits(gf[1]/draws);
-  const newBase={...base,coherentProjection:coherent,modelVersion:"opponent-conditioned-analyst-hybrid-v4",simulations:draws,
+  const newBase={...base,coherentProjection:coherent,minuteEngineUsed:useMinuteEngine,modelVersion:"opponent-conditioned-analyst-hybrid-v4",simulations:draws,
    status:Date.parse(base.kickoff)<=Date.parse(asof)?"retrospective_rerun_not_valid_live_prematch":"pre_kickoff_experimental",
    expectedGoals:{home:eh,away:ea},
    winDrawLossPct:modelWDL,predictedScore:likely[0].score,
