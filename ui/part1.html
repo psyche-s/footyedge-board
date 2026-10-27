@@ -1660,6 +1660,7 @@ body{background:#031008}
 </style>
 <link rel="stylesheet" href="assets/footyedge-match-v3.css?v=36">
 <link rel="stylesheet" href="assets/fixture-art/split-kit-backgrounds-v2.css?v=2">
+<link rel="stylesheet" href="assets/fixture-controls-v1.css?v=1">
 </head>
 <body>
 <div class="wrap">
@@ -1671,9 +1672,9 @@ body{background:#031008}
 
   <section class="datebar"><button class="navBtn" id="prev">‹</button><div class="dateCenter"><strong id="dayTitle">Today</strong><small id="dateTitle">Loading…</small></div><button class="todayBtn" id="todayShortcut">Today</button><button class="navBtn gameSearchBtn" id="searchBtn" aria-label="Search games" aria-controls="searchBar" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button><button class="navBtn" id="next">›</button></section>
   <section class="filters" id="filters">
-    <div class="filterGroup fe-leagueGroup"><div class="filterTitle">League</div><div class="filterRow filterScroll" id="leagueRow" hidden><button class="filterPill active" data-league="all">All Leagues</button></div><select id="feLeagueSelect" aria-label="Choose league"><option value="all">All leagues</option></select></div>
-    <div class="filterGroup fe-searchGroup"><div class="filterTitle">Search</div><div class="searchBar on" id="searchBar"><span class="fe-searchGlyph" aria-hidden="true">⌕</span><input id="searchInput" aria-label="Search clubs and fixtures" type="search" placeholder="Search clubs or fixtures…"></div></div>
-    <div class="filterGroup fe-statusGroup"><div class="filterTitle">Status</div><div class="filterRow filterScroll" id="statusRow"><button class="filterPill active" data-status="all">Today</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="completed">Final</button></div></div>
+    <div class="filterGroup fe-leagueGroup"><div class="filterRow filterScroll" id="leagueRow" hidden><button class="filterPill active" data-league="all">All Leagues</button></div><select id="feLeagueSelect" aria-label="Choose league"><option value="all">All leagues</option></select></div>
+    <div class="filterGroup fe-searchGroup"><div class="searchBar on" id="searchBar"><span class="fe-searchGlyph" aria-hidden="true">⌕</span><input id="searchInput" aria-label="Search clubs and fixtures" type="search" placeholder="Search fixtures…" autocomplete="off"><button type="button" id="searchClear" aria-label="Clear search" title="Clear search" hidden>×</button></div></div>
+    <div class="filterGroup fe-statusGroup"><div class="filterRow filterScroll" id="statusRow"><button class="filterPill active" data-status="all">Today</button><button class="filterPill" data-status="live">Live</button><button class="filterPill" data-status="upcoming">Upcoming</button><button class="filterPill" data-status="completed">Final</button></div></div>
     <div class="filterGroup fe-hiddenMarket"><div class="filterTitle">Market</div><div class="filterRow filterScroll marketRow"><button class="filterPill active" data-filter="all">All Games</button><button class="filterPill" data-filter="goals">Goals</button><button class="filterPill" data-filter="btts">BTTS</button><button class="filterPill" data-filter="ml">ML</button><button class="filterPill" data-filter="result">ML / Double Chance</button><button class="filterPill" data-filter="atgs">ATGS</button><button class="filterPill" data-filter="soa" title="Score or Assist" aria-label="Score or Assist">SOA</button></div></div>
   </section>
 
@@ -1700,9 +1701,20 @@ const leagueNames={
   "fifa.world":"FIFA World Cup","fifa.worldq.uefa":"World Cup Qualifying","fifa.worldq.conmebol":"World Cup Qualifying","fifa.worldq.concacaf":"World Cup Qualifying",
   "fifa.friendly":"International Friendlies","concacaf.nations.league":"CONCACAF Nations League","conmebol.copa_america":"Copa América"
 };
+/* Display-only additional fixture competitions: not included in MAJOR_LEAGUES,
+   so the fixture feed and immutable prediction-selection rules remain unchanged. */
+const FE_FIXTURE_LEAGUE_LABELS=Object.freeze({
+ "ita.2":"Serie B",
+ "esp.2":"LaLiga Hypermotion",
+ "ger.2":"2. Bundesliga",
+ "fra.2":"Ligue 2",
+ "sco.1":"Scottish Premiership"
+});
 function displayLeagueName(id,raw){
   const key=String(id||"").trim(),source=String(raw||"").trim();
+  if(FE_FIXTURE_LEAGUE_LABELS[key])return FE_FIXTURE_LEAGUE_LABELS[key];
   if(leagueNames[key])return leagueNames[key];
+  if(FE_FIXTURE_LEAGUE_LABELS[source.toLowerCase()])return FE_FIXTURE_LEAGUE_LABELS[source.toLowerCase()];
   if(leagueNames[source])return leagueNames[source];
   const slug=source||key;
   if(!slug)return"Soccer";
