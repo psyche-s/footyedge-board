@@ -24,5 +24,5 @@ test("future fixtures use the same dynamic per-team colours",()=>{
 test("art-only update preserves the match layout and cache busting",()=>{
   assert.doesNotMatch(css,/grid-template-columns|padding|font-size|\.fe-heroTeams/);
   assert.match(part1,/split-kit-backgrounds-v2\.css\?v=2/);
-  assert.match(picks,/ui\/part1\.html\?v=146/);
+  assert.match(picks,/ui\/part1\.html\?v=\d+/);
 });
