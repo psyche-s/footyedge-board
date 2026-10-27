@@ -1,6 +1,3 @@
-import {loadCzechSeason,eventsForCzechDate} from "../assets/czech-first-league.mjs";
-
-
 // A previously captured ESPN-derived fixture snapshot is a labelled FALLBACK,
 // never a fresh/live scoreboard or proof of confirmed lineups, results or odds.
 const VERIFIED_CLUB_LEAGUES=new Map([[750,"jpn.1"],[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"],[2310,"uefa.europa.conf"]]);
@@ -50,9 +47,14 @@ export default async function handler(req,res){
     // ESPN's all-league scoreboard omits the men's Czech top flight.
     // Supplement using a published public-domain fixture/results feed.
     // If that source fails, preserve all ESPN matches and report a partial source.
+    // Keep ESM Czech data out of the CommonJS serverless entry bundle.
+    // A Czech module failure must not take the ESPN scoreboard offline.
+    const czechTask=import("../assets/czech-first-league.mjs").then(async mod=>({
+      data:await mod.loadCzechSeason(day),eventsForCzechDate:mod.eventsForCzechDate
+    }));
     const [espn,czech]=await Promise.allSettled([
       fetch(url,{headers:{"accept":"application/json","user-agent":"FootyEdge/1.0"}}),
-      loadCzechSeason(day),
+      czechTask,
     ]);
     let payload=null;
     if(espn.status==="fulfilled"&&espn.value.ok){
@@ -85,7 +87,7 @@ export default async function handler(req,res){
     let supplemented=0;
     if(czech.status==="fulfilled"){
       const known=new Set(payload.events.map(e=>String(e.id)));
-      for(const e of eventsForCzechDate(czech.value.matches,day)){
+      for(const e of czech.value.eventsForCzechDate(czech.value.data.matches,day)){
         if(known.has(String(e.id)))continue;
         payload.events.push(e);known.add(String(e.id));supplemented++;
       }
@@ -94,7 +96,7 @@ export default async function handler(req,res){
       ...payload.footyedgeSources,j1League:{source:"dated ESPN-derived fixture snapshot",addedFixtures:j1SnapshotCount,liveScoresFromSnapshot:false},czechFirstLeague:{
         available:czech.status==="fulfilled",
         addedFixtures:supplemented,
-        source:czech.status==="fulfilled"?czech.value.url:null,
+        source:czech.status==="fulfilled"?czech.value.data.url:null,
         note:"Delayed public-domain schedule/results, not a live Czech scoreboard",
       }
     };
