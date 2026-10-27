@@ -1,0 +1,22 @@
+name: Original simulation coherence tests
+on:
+  push:
+    paths:
+      - 'scripts/event-ledger-projections.mjs'
+      - 'scripts/minute-state-engine.mjs'
+      - 'scripts/simulate-matchups-v4-analyst.mjs'
+      - 'tests/event-ledger-projections.test.mjs'
+      - 'tests/minute-state-engine.test.mjs'
+      - '.github/workflows/original-simulation-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/event-ledger-projections.test.mjs tests/minute-state-engine.test.mjs
