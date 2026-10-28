@@ -1,0 +1,91 @@
+name: FootyEdge Original Owner-Authorized Full Slate Recovery
+on:
+  push:
+    paths:
+      - "data/refresh-requests/owner-overwrite-2026-10-28.txt"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: footyedge-original-owner-recovery-2026-10-28
+  cancel-in-progress: false
+jobs:
+  overwrite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      OWNER_OVERRIDE_DATE: "2026-10-28"
+      FOOTYEDGE_URL: https://footyedge-board.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Verify owner-authorized date and JavaScript syntax
+        run: |
+          set -euo pipefail
+          test "$(TZ=America/Toronto date +%F)" = "$OWNER_OVERRIDE_DATE"
+          node --check scripts/build-research-base.mjs
+          node --check scripts/build-evidence-only-board.mjs
+          node --check scripts/import-audited-predicted-xi.mjs
+          node --check scripts/publish-owner-recovery.mjs
+          node --test tests/import-audited-predicted-xi.test.mjs tests/experimental-simulations.test.mjs tests/h2h-score-cache.test.mjs
+      - name: Rebuild all current-date fixtures, form, match results and market evidence
+        run: |
+          set -euo pipefail
+          FORCE_RESEARCH=1 RESEARCH_DATE="$OWNER_OVERRIDE_DATE" node scripts/build-research-base.mjs
+          node -e 'const r=require("./data/research-base-2026-10-28.json");if(r.fixtures.length<19)process.exit(1);console.log("Rebuilt fixtures:",r.fixtures.length,"leagues:",[...new Set(r.fixtures.map(f=>f.league))])'
+      - name: Import dated independently sourced projected lineups and historical H2H
+        env:
+          TEAM_NEWS_DATE: "2026-10-28"
+          H2H_DATE: "2026-10-28"
+        run: |
+          set -euo pipefail
+          node scripts/import-audited-predicted-xi.mjs
+          node scripts/build-h2h-cache.mjs
+      - name: Recompute experimental 10000-draw projections
+        run: |
+          set -euo pipefail
+          node scripts/simulate-fixtures.mjs
+          node scripts/simulate-matchups-v3.mjs || echo "::warning::Optional v3 projected-matchups unavailable."
+          node scripts/simulate-matchups-v4-analyst.mjs || echo "::warning::Optional v4 analytical refinement unavailable."
+      - name: Recalculate researched picks and available publisher consensus
+        env:
+          PREVIEW_DATE: "2026-10-28"
+          REVIEW_DATE: "2026-10-28"
+          OWNER_RESEARCH_PICKS: "1"
+        run: |
+          set -euo pipefail
+          node scripts/build-evidence-only-board.mjs
+          node scripts/build-top3-review.mjs || echo "::warning::Some researched picks are evidence-limited."
+          node scripts/audit-source-consensus.mjs || echo "::warning::Publisher votes incomplete."
+          node scripts/build-source-coverage.mjs || true
+          node scripts/build-consensus-reviewed.mjs || true
+          node scripts/build-source-led-picks.mjs || echo "::warning::Direct source opinions not fully available."
+          test -s "data/board-drafts/$OWNER_OVERRIDE_DATE.json"
+      - name: Overwrite incomplete owner-designated board with audited before-copy
+        run: |
+          set -euo pipefail
+          node scripts/publish-owner-recovery.mjs
+          node scripts/validate-published-boards.mjs --base origin/main
+          node scripts/validate-public-metrics.mjs
+          node scripts/audit-daily-refresh.mjs
+          node -e 'const b=require("./data/boards/2026-10-28.json");if(!b.ownerOverride||b.games.length<19)process.exit(1);console.log(JSON.stringify(b.coverageAudit,null,2))'
+      - name: Publish generated board and research to Original main
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge Original Recovery Bot"
+          git config user.email "actions@users.noreply.github.com"
+          for f in "data/boards/2026-10-28.json" "data/research-base-2026-10-28.json" "data/board-drafts/2026-10-28.json" "data/h2h/2026-10-28.json" "data/team-intelligence/2026-10-28.json" "data/experimental-simulations/2026-10-28.json" "data/experimental-simulations/2026-10-28-v3.json" "data/experimental-simulations/2026-10-28-v4.json" "data/refresh-health/2026-10-28.json" "data/board-revisions/2026-10-28" "data/top3-reviewed/2026-10-28.json" "data/consensus-reviewed/2026-10-28.json" "data/source-led-picks/2026-10-28.json"; do
+            if [[ -e "$f" ]]; then git add -A -- "$f"; fi
+          done
+          if git diff --cached --quiet; then echo "::error::No corrected data generated";exit 1;fi
+          git commit -m "data(original): owner-approved Oct 28 full research and pick rebuild [skip ci]"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
