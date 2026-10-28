@@ -84,7 +84,14 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    // Three different and individually source-supported market hypotheses;
    // a third is optional when the samples/markets cannot support it.
    const picked=[chooseResult,goalChoice,scoringChoice].filter(Boolean).filter(x=>x.confidenceRating>=58);
-   const distinct=ownerReviewed?takeOwnerTop3(picked,3):distinctPickSet(picked,3);
+   // The old algorithm considered only a fixed trio, then removed redundant
+   // picks. Evaluate the WHOLE verified candidate pool so a supported BTTS
+   // outcome can replace a logically overlapping scoring/total choice.
+   const meaningfulGoals=goals.filter(candidate=>candidate.label!=="Under 4.5 Goals"||
+     !goals.some(other=>other.label!=="Under 4.5 Goals"&&other.confidenceRating>=70&&
+       other.confidenceRating>=candidate.confidenceRating-8));
+   const ownerPool=[...result,...meaningfulGoals,...scoring].filter(x=>x.confidenceRating>=58);
+   const distinct=ownerReviewed?takeOwnerTop3(ownerPool,3):distinctPickSet(picked,3);
    distinct.forEach((x,i)=>{x.rank=i+1;});
    // A dated optional independent preview may ADD a verified contextual fact
    // to an already-supported selection. It never creates a pick or changes rating.
