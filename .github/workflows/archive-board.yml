@@ -6,6 +6,9 @@ on:
     - cron: "5 0 * * *"
       timezone: "America/Toronto"
   workflow_dispatch:
+  push:
+    paths:
+      - "data/refresh-requests/original-2026-10-28.txt"
 
 permissions:
   contents: write
