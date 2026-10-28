@@ -144,7 +144,7 @@ function topRefs(rows){
 }
 async function main(){
   const existing=await read(LOCK).catch(()=>null);
-  if(existing?.date===DATE&&existing.immutable===true){console.log('Preserve immutable published board');return;}
+  if(existing?.date===DATE&&existing.immutable===true&&process.env.OWNER_OVERRIDE_DATE!==DATE){console.log('Preserve immutable published board');return;}
   // No pricing lookup: confidence-only publication does not depend on any sportsbook.
   const editorial=await read(path.join('data','editorial-previews',DATE+'.json')).catch(()=>null);
   editorialById=new Map(editorial?.schema==='footyedge-editorial-crosscheck-v1'&&editorial.date===DATE?
