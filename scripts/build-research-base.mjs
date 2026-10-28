@@ -398,7 +398,11 @@ async function main(){
              globalThis.FootyEdgeAvailability.eventDay({date:old.date})!==DATE)continue;
           if(knownIds.has(String(old.id))||knownPairs.has(names(old)))continue;
           if(globalThis.FootyEdgeAvailability.isExcludedSecondTier?.(old.league,old.leagueName))continue;
-          fixtures.push({...old,retainedFromEarlierVerifiedSameDayResearch:true});
+          const refreshed=(Number(old.history?.home)<5||Number(old.history?.away)<5)
+            ?await buildFixture(old):null;
+          const quality=x=>Math.min(10,Number(x?.history?.home)||0)+Math.min(10,Number(x?.history?.away)||0);
+          const chosen=refreshed&&quality(refreshed)>quality(old)?refreshed:old;
+          fixtures.push({...chosen,retainedFromEarlierVerifiedSameDayResearch:true});
           knownIds.add(String(old.id));knownPairs.add(names(old));retained++;
         }
         if(retained)console.log("Retained date-verified missing fixtures from prior research:",retained);
