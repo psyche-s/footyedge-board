@@ -1,0 +1,31 @@
+name: Verify Original Production Top 3
+on:
+  push:
+    paths:
+      - data/refresh-requests/check-original-live-2026-10-28.txt
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch actual production content and verify today’s City Top 3
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://footyedge-board.vercel.app"
+          stamp="$(date +%s)"
+          curl -fSL --retry 2 --max-time 25 --connect-timeout 8 \
+             -H 'Cache-Control: no-cache' "$base/data/boards-lite/2026-10-28.json?v=$stamp" -o /tmp/top3-live.json
+          curl -fSL --retry 2 --max-time 25 --connect-timeout 8 \
+             -H 'Cache-Control: no-cache' "$base/ui/part2.html?v=$stamp" -o /tmp/parts-live.html
+          jq -e '.date=="2026-10-28" and .ownerOverride==true and ([.games[]|select(.home=="Manchester City" and .away=="Brighton & Hove Albion")|.top3[0].label]|first)=="BTTS Yes"' /tmp/top3-live.json
+          jq -e '([.games[]|select(.home=="Manchester City")|.top3[].label]|index("Manchester City ML"))!=null' /tmp/top3-live.json
+          jq -e '([.games[]|select(.top3|length==3)]|length)>=35' /tmp/top3-live.json
+          grep -q 'function feOwnerBoardPublished' /tmp/parts-live.html
+          echo "PRODUCTION_CITY_TOP3:"
+          jq -r '.games[]|select(.home=="Manchester City")|.top3|map(.label)|join(" > ")' /tmp/top3-live.json
+          echo "PRODUCTION_FIXTURES_AND_TOP3:"
+          jq -r '{fixtures:(.games|length),fullTop3:([.games[]|select(.top3|length==3)]|length)}' /tmp/top3-live.json
