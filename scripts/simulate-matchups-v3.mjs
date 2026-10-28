@@ -304,7 +304,7 @@ async function main(){
  const research=await read("research-base-"+date+".json");
  if(!research||research.date!==date)throw Error("Current-date research required");
  const target=path.join("data","experimental-simulations",date+"-v3.json");
- try{await fs.access(target);console.log("Retained write-once v3 snapshot");return}catch(e){if(e.code!=="ENOENT")throw e}
+ if(process.env.OWNER_OVERRIDE_DATE!==date){try{await fs.access(target);console.log("Retained write-once v3 snapshot");return}catch(e){if(e.code!=="ENOENT")throw e}}
  const [analytics,h2h,teamNews,standings,styleEvents]=await Promise.all([
   read("analytics/"+date+".json"),read("h2h/"+date+".json"),
   read("team-intelligence/"+date+".json"),read("experimental-inputs/"+date+"-standings.json"),
