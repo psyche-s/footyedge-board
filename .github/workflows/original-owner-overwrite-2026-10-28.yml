@@ -86,6 +86,8 @@ jobs:
           done
           if git diff --cached --quiet; then echo "::error::No corrected data generated";exit 1;fi
           git commit -m "data(original): owner-approved Oct 28 full research and pick rebuild [skip ci]"
+          # Keep non-public supplemental scratch artifacts from blocking rebase.
+          git stash push --include-untracked -m "Unstaged owner recovery scratch" || true
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
