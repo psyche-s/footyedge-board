@@ -4,6 +4,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
 import {distinctPickSet} from "./independent-picks.mjs";
+import {takeOwnerTop3,ownerPickCompatible} from "./owner-top3-ranking.mjs";
 export function buildReviewedPicks({research,simulation,news,standings,editorialCrosschecks}){
  const day=research?.date;
  if(!day||!Array.isArray(research.fixtures)||simulation?.date!==day)return {error:"Date-matched research and simulation required"};
@@ -71,15 +72,19 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    scMarket("BTTS Yes","btts",x=>x.gf>=1&&x.ga>=1,x=>x.gf>=1&&x.ga>=1,sim.marketsPct.bttsYes);
    scMarket("BTTS No","btts",x=>x.gf===0||x.ga===0,x=>x.gf===0||x.ga===0,100-sim.marketsPct.bttsYes);
    scoring.sort((x,y)=>y.confidenceRating-x.confidenceRating);
+   const ownerReviewed=process.env.OWNER_OVERRIDE_DATE===day;
+   const firstTwo=[chooseResult,goalChoice].filter(x=>x?.confidenceRating>=58);
    let scoringChoice=scoring.find(x=>{
      if(x.confidenceRating<58)return false;
+     if(ownerReviewed)return firstTwo.every(y=>ownerPickCompatible(y,x));
      if(goalChoice.label==="Over 1.5 Goals"&&x.label==="BTTS Yes")return false;
      if(chooseResult.label.endsWith(" ML")&&x.label===chooseResult.label.slice(0,-3)+" 1+ Goal")return false;
      return true;
    });
-   // Don't invent a third play from absent shots, player or booking records.
+   // Three different and individually source-supported market hypotheses;
+   // a third is optional when the samples/markets cannot support it.
    const picked=[chooseResult,goalChoice,scoringChoice].filter(Boolean).filter(x=>x.confidenceRating>=58);
-   const distinct=distinctPickSet(picked,3);
+   const distinct=ownerReviewed?takeOwnerTop3(picked,3):distinctPickSet(picked,3);
    distinct.forEach((x,i)=>{x.rank=i+1;});
    // A dated optional independent preview may ADD a verified contextual fact
    // to an already-supported selection. It never creates a pick or changes rating.
@@ -99,7 +104,7 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    data.push(out);
  }
  return {schema:"footyedge-dated-researched-top3-v1",date:day,generatedAt:new Date().toISOString(),sourceNamesOnUi:false,archiveUnmodified:true,
-   method:"Up to three nonredundant, supported market theses: one result, one scoring/total thesis and only a separately verified non-goal event where available; date-gated last-ten records and 10,000-draw shadow model; do not invent a third pick.",
+   method:"Up to three evidence-supported, logically nonredundant markets; owner-authorized slate allows distinct result, goal-total and BTTS theses where neither outcome implies another. Date-gated match history and 10,000-draw exploratory forecast; never force an unsupported third pick.",
    calibration:"These ratings are graded research strengths, not calibrated probabilities.",
    totals:{fixtures:data.length,three:data.filter(x=>x.picks.length===3).length,two:data.filter(x=>x.picks.length===2).length,one:data.filter(x=>x.picks.length===1).length,zero:data.filter(x=>x.picks.length===0).length},
    matches:data};
@@ -118,7 +123,7 @@ async function main(){
  const out=buildReviewedPicks({research,simulation:sim,news,standings,editorialCrosschecks});
  if(out.error||out.totals.fixtures!==research.fixtures.length)throw Error("Review mismatch");
  const dest=path.join("data","pick-reviews",date+".json");
- try{await fs.access(dest);console.log("Date-scoped picks already published; unchanged");return}catch(e){if(e.code!=="ENOENT")throw e}
+ if(process.env.OWNER_OVERRIDE_DATE!==date){try{await fs.access(dest);console.log("Date-scoped picks already published; unchanged");return}catch(e){if(e.code!=="ENOENT")throw e}}
  await fs.mkdir(path.dirname(dest),{recursive:true});
  await fs.writeFile(dest,JSON.stringify(out,null,2)+"\n");
  console.log("Picks research overlay:",JSON.stringify(out.totals));
