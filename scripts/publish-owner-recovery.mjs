@@ -40,7 +40,10 @@ const enriched=draft.games.map(g=>{
   if(verifiedMeetings.length)h2hCount++;
   const x=xiById.get(String(g.id));
   if(x?.home?.predictedXI?.length===11&&x?.away?.predictedXI?.length===11)xiCount++;
-  const pr=simById.get(String(g.id));
+  const candidateProjection=simById.get(String(g.id));
+  // Publish quantitative forecasts only where five verified prior games exist on EACH side.
+  // The simulator may still archive a low-evidence exploratory placeholder internally.
+  const pr=Number(candidateProjection?.dataQuality?.homeHistoryGames)>=5&&Number(candidateProjection?.dataQuality?.awayHistoryGames)>=5?candidateProjection:null;
   if(Number.isFinite(pr?.expectedGoals?.home)&&Number.isFinite(pr?.expectedGoals?.away))projectionCount++;
   const sourced=byName.get(g.league+"|"+norm(g.home)+"|"+norm(g.away));
   const note=sourced?.teamNews;
