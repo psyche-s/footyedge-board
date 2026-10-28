@@ -23,11 +23,17 @@ const idRows=(x)=>new Set((x?.fixtures||[]).map(f=>String(f.fixtureId||f.id)).fi
 const predicted=(news?.fixtures||[]).filter(f=>ids.has(String(f.fixtureId))&&f.home?.predictedXI?.length===11&&f.away?.predictedXI?.length===11);
 const leagueIds=[...new Set(all.map(g=>g.league).filter(Boolean))].sort();
 const slipLeagues=[...new Set((desk?.sgpsByLeague||[]).filter(x=>x.status==="qualified"&&x.legs?.length>=3).map(x=>x.league))].sort();
+const requiredCupIds=["eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.tennents","sco.cis"];
+const provenance=get("data/source-provenance/"+date+".json");
+const scheduledCups=(provenance?.fixtures||[]).filter(f=>requiredCupIds.includes(f.league)&&f.verifiedFixtureSchedule?.url);
+const publishedCupKeys=new Set(all.filter(g=>requiredCupIds.includes(g.league)).map(g=>g.league+"|"+String(g.home||"").toLowerCase()+"|"+String(g.away||"").toLowerCase()));
+const absentCupFixtures=scheduledCups.filter(f=>!publishedCupKeys.has(f.league+"|"+String(f.home||"").toLowerCase()+"|"+String(f.away||"").toLowerCase()));
 const obj={
  schema:"footyedge-original-refresh-audit-v1",date,generatedAt:new Date().toISOString(),
  auditedPublishedBoard:board.immutable===true||board.state==="published",
  noUiChanges:true,top5Entries:(board.top5||[]).length,
  fixtureTotal:all.length,leaguesOnSlate:leagueIds,
+ cupCoverage:{sourceVerified:scheduledCups.length,absentFromBoard:absentCupFixtures.map(f=>({league:f.league,home:f.home,away:f.away}))},
  picks:{threePerMatch:qualified.length,unqualified:missed.map(g=>({id:String(g.id),league:g.league,reason:g.recoveryStatus||"insufficient verified research"})),
   incompleteCount:missed.length},
  research:{available:research?.date===date,verifiedFixtureIds:idRows(research).size,h2hFixtures:idRows(h2h).size,
@@ -37,6 +43,9 @@ const obj={
   globalSgpStatus:desk?.sgp?.status||"unavailable",crossGameStatus:desk?.acca?.status||"unavailable"},
  warnings:[
   ...(!research||research.date!==date?["Dated research file missing"]:[]),
+  ...(absentCupFixtures.length?["Verified scheduled cup fixtures absent from board: "+absentCupFixtures.length]:[]),
+  ...((news?.fixtures||[]).length===0?["No dated team intelligence file with verified lineup/news rows"]:[]),
+  ...(all.some(g=>!Array.isArray(g.h2h)||!g.h2h.length)?["One or more board fixtures lack attached H2H; do not represent missing as zero meetings"]:[]),
   ...(missed.length?["Not all games have 3 source-supported picks"]:[]),
   ...(slipLeagues.length<leagueIds.length?["Not every league has a sourced compatible 3+ leg SGP"]:[]),
   ...(predicted.length<all.length?["Predicted starting XIs are incomplete or unverified"]:[]),
