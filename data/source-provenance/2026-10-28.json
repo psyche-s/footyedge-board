@@ -1,0 +1,1499 @@
+{
+  "schema": "footyedge-internal-dated-source-provenance-v1",
+  "date": "2026-10-28",
+  "recordedAt": "2026-10-28T04:07:00Z",
+  "visibility": "Internal source audit only. Do not show source names or links on match cards.",
+  "kind": "partial_verified_source_collection_not_published_predictions",
+  "fixtureCount": 29,
+  "providersActuallyUsed": [
+    "the_analyst",
+    "sports_mole",
+    "windrawwin",
+    "efl",
+    "dfb",
+    "fotmob",
+    "fbref",
+    "sky_sports",
+    "vi_nl",
+    "kickly"
+  ],
+  "providersSearchedButNoMatchForecast": [
+    "the_analyst_for_other_28_listed_fixtures",
+    "espn_api_inaccessible"
+  ],
+  "notClaimedChecked": [
+    "football_whispers",
+    "sportskeeda",
+    "forebet",
+    "understat",
+    "transfermarkt",
+    "onefootball",
+    "squawka",
+    "statsbomb",
+    "wyscout",
+    "bet365_ontario"
+  ],
+  "sourceVotePolicy": "One provider per fixture per market; same-provider articles are not independent votes. Undated dynamically updated tips have verified observation before kickoff but not verified publication date.",
+  "notes": [
+    "Only Liverpool-Chelsea has a verified dated fixture-specific Opta WDL forecast. No other Opta WDL numbers invented.",
+    "29 match schedules cross-checked; Spanish Copa del Rey and other cups still require official fixture reconciliation and are not falsely counted complete.",
+    "Sports Mole five match previews were dated October 26; WinDrawWin dynamic tip pages observed before kickoff but lacked independently verified publication timestamps.",
+    "No verified provider fixture IDs for these entries; matchKey is a local string, not an ESPN/API-Football ID. Do not use to generate or attach official picks.",
+    "Missing last-ten structured data, xG/xGA, shots and foul allowances, player logs, licensed lineups, sportsbook exact lines and 10,000 FootyEdge simulations remain null/unverified.",
+    "This file does not alter frozen official boards or assert that publisher workflow ran."
+  ],
+  "fixtures": [
+    {
+      "matchKey": "eng.league_cup|manchester-city|brighton-hove-albion",
+      "fixtureId": null,
+      "league": "eng.league_cup",
+      "home": "Manchester City",
+      "away": "Brighton & Hove Albion",
+      "kickoff": "2026-10-28T19:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.efl.com/competitions/carabao-cup/",
+        "provider": "efl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/man-city/league-cup/preview/man-city-vs-brighton-prediction-team-news-lineups_607717.html",
+          "publishedOn": "2026-10-26",
+          "prediction90min": "home",
+          "predictedScore": "3-2",
+          "sourceKind": "dated_editorial_preview"
+        },
+        {
+          "publisher": "windrawwin",
+          "url": "https://www.windrawwin.com/tips/england-efl-cup/man-city-v-brighton/900374/",
+          "publishedOn": null,
+          "observedAt": "2026-10-28T04:07:00Z",
+          "observedBeforeKickoff": true,
+          "prediction90min": "home",
+          "predictedScore": "3-1",
+          "sourceKind": "undated_dynamic_tip_observed_pre_kickoff",
+          "publicationDateVerified": false
+        }
+      ],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "dated_editorial_predicted_XI_unconfirmed",
+        "confirmedXI": false,
+        "projectedXI": true,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false,
+        "sourceUrl": "https://www.sportsmole.co.uk/football/man-city/league-cup/preview/man-city-vs-brighton-prediction-team-news-lineups_607717.html"
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": [
+        "No confirmed starting XI; rotation may materially change cup markets."
+      ],
+      "publisherAgreement": "agreement"
+    },
+    {
+      "matchKey": "eng.league_cup|bournemouth|aston-villa",
+      "fixtureId": null,
+      "league": "eng.league_cup",
+      "home": "Bournemouth",
+      "away": "Aston Villa",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.efl.com/competitions/carabao-cup/",
+        "provider": "efl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/aston-villa/league-cup/preview/bournemouth-vs-aston-villa-prediction-team-news-lineups_607724.html",
+          "publishedOn": "2026-10-26",
+          "prediction90min": "away",
+          "predictedScore": "2-3",
+          "sourceKind": "dated_editorial_preview"
+        },
+        {
+          "publisher": "windrawwin",
+          "url": "https://www.windrawwin.com/tips/england-efl-cup/bournemouth-v-aston-villa/900114/",
+          "publishedOn": null,
+          "observedAt": "2026-10-28T04:07:00Z",
+          "observedBeforeKickoff": true,
+          "prediction90min": "draw",
+          "predictedScore": "1-1",
+          "sourceKind": "undated_dynamic_tip_observed_pre_kickoff",
+          "publicationDateVerified": false
+        }
+      ],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "dated_editorial_predicted_XI_unconfirmed",
+        "confirmedXI": false,
+        "projectedXI": true,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false,
+        "sourceUrl": "https://www.sportsmole.co.uk/football/aston-villa/league-cup/preview/bournemouth-vs-aston-villa-prediction-team-news-lineups_607724.html"
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": [
+        "No confirmed starting XI; rotation may materially change cup markets."
+      ],
+      "publisherAgreement": "conflict"
+    },
+    {
+      "matchKey": "eng.league_cup|fulham|crystal-palace",
+      "fixtureId": null,
+      "league": "eng.league_cup",
+      "home": "Fulham",
+      "away": "Crystal Palace",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.efl.com/competitions/carabao-cup/",
+        "provider": "efl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/fulham/league-cup/preview/fulham-vs-crystal-palace-prediction-team-news-lineups_607720.html",
+          "publishedOn": "2026-10-26",
+          "prediction90min": "draw",
+          "predictedScore": "1-1",
+          "sourceKind": "dated_editorial_preview"
+        },
+        {
+          "publisher": "windrawwin",
+          "url": "https://www.windrawwin.com/tips/england-efl-cup/fulham-v-crystal-palace/900110/",
+          "publishedOn": null,
+          "observedAt": "2026-10-28T04:07:00Z",
+          "observedBeforeKickoff": true,
+          "prediction90min": "home",
+          "predictedScore": "1-0",
+          "sourceKind": "undated_dynamic_tip_observed_pre_kickoff",
+          "publicationDateVerified": false
+        }
+      ],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "dated_editorial_predicted_XI_unconfirmed",
+        "confirmedXI": false,
+        "projectedXI": true,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false,
+        "sourceUrl": "https://www.sportsmole.co.uk/football/fulham/league-cup/preview/fulham-vs-crystal-palace-prediction-team-news-lineups_607720.html"
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": [
+        "No confirmed starting XI; rotation may materially change cup markets."
+      ],
+      "publisherAgreement": "conflict"
+    },
+    {
+      "matchKey": "eng.league_cup|sunderland|brentford",
+      "fixtureId": null,
+      "league": "eng.league_cup",
+      "home": "Sunderland",
+      "away": "Brentford",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.efl.com/competitions/carabao-cup/",
+        "provider": "efl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/sunderland/league-cup/preview/sunderland-vs-brentford-prediction-team-news-lineups_607721.html",
+          "publishedOn": "2026-10-26",
+          "prediction90min": "away",
+          "predictedScore": "0-2",
+          "sourceKind": "dated_editorial_preview"
+        },
+        {
+          "publisher": "windrawwin",
+          "url": "https://www.windrawwin.com/tips/england-efl-cup/sunderland-v-brentford/900108/",
+          "publishedOn": null,
+          "observedAt": "2026-10-28T04:07:00Z",
+          "observedBeforeKickoff": true,
+          "prediction90min": "away",
+          "predictedScore": "1-2",
+          "sourceKind": "undated_dynamic_tip_observed_pre_kickoff",
+          "publicationDateVerified": false
+        }
+      ],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "dated_editorial_predicted_XI_unconfirmed",
+        "confirmedXI": false,
+        "projectedXI": true,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false,
+        "sourceUrl": "https://www.sportsmole.co.uk/football/sunderland/league-cup/preview/sunderland-vs-brentford-prediction-team-news-lineups_607721.html"
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": [
+        "No confirmed starting XI; rotation may materially change cup markets."
+      ],
+      "publisherAgreement": "agreement"
+    },
+    {
+      "matchKey": "eng.league_cup|liverpool|chelsea",
+      "fixtureId": null,
+      "league": "eng.league_cup",
+      "home": "Liverpool",
+      "away": "Chelsea",
+      "kickoff": "2026-10-28T20:00:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.efl.com/competitions/carabao-cup/",
+        "provider": "efl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [
+        {
+          "publisher": "sports_mole",
+          "url": "https://www.sportsmole.co.uk/football/liverpool/league-cup/preview/liverpool-vs-chelsea-prediction-team-news-lineups_607729.html",
+          "publishedOn": "2026-10-26",
+          "prediction90min": "home",
+          "predictedScore": "3-2",
+          "sourceKind": "dated_editorial_preview"
+        },
+        {
+          "publisher": "windrawwin",
+          "url": "https://www.windrawwin.com/tips/england-efl-cup/liverpool-v-chelsea/900109/",
+          "publishedOn": null,
+          "observedAt": "2026-10-28T04:07:00Z",
+          "observedBeforeKickoff": true,
+          "prediction90min": "home",
+          "predictedScore": "2-1",
+          "sourceKind": "undated_dynamic_tip_observed_pre_kickoff",
+          "publicationDateVerified": false
+        },
+        {
+          "publisher": "the_analyst",
+          "url": "https://theanalyst.com/articles/liverpool-vs-chelsea-prediction-efl-cup-fourth-round-preview-10-2026",
+          "publishedOn": "2026-10-27",
+          "prediction90min": "home",
+          "sourceKind": "published_10000_simulation_wdl",
+          "wdl": {
+            "homeWin": 52.6,
+            "draw": 24.2,
+            "awayWin": 23.2
+          }
+        }
+      ],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": true,
+        "wdl": {
+          "homeWin": 52.6,
+          "draw": 24.2,
+          "awayWin": 23.2
+        },
+        "publishedOn": "2026-10-27",
+        "url": "https://theanalyst.com/articles/liverpool-vs-chelsea-prediction-efl-cup-fourth-round-preview-10-2026",
+        "preKickoffPublicationVerified": true,
+        "hybridV4Allowed": "only_after_provider_fixture_id_and_verified_v3_baseline_are_available",
+        "blendCap": 0.25,
+        "simulationCountReportedByPublisher": 10000,
+        "sourceFacts": [
+          "Chelsea Palmer suspension reported; multiple attackers and defenders unavailable",
+          "Chelsea unbeaten in three previous meetings with Liverpool",
+          "Liverpool scoring two or more in four of six recent games per dated article"
+        ]
+      },
+      "teamNews": {
+        "status": "dated_editorial_predicted_XI_unconfirmed",
+        "confirmedXI": false,
+        "projectedXI": true,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false,
+        "sourceUrl": "https://www.sportsmole.co.uk/football/liverpool/league-cup/preview/liverpool-vs-chelsea-prediction-team-news-lineups_607729.html"
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": [
+        "No confirmed starting XI; rotation may materially change cup markets.",
+        "Opta published WDL is external, not an independent FootyEdge simulation. No fixture ID verified for safe automatic blend."
+      ],
+      "publisherAgreement": "agreement"
+    },
+    {
+      "matchKey": "ger.dfb_pokal|sc-freiburg|vfl-wolfsburg",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "SC Freiburg",
+      "away": "VfL Wolfsburg",
+      "kickoff": "2026-10-28T17:00:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|dynamo-dresden|fc-schalke-04",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "Dynamo Dresden",
+      "away": "FC Schalke 04",
+      "kickoff": "2026-10-28T17:00:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|sc-paderborn|vfb-stuttgart",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "SC Paderborn",
+      "away": "VfB Stuttgart",
+      "kickoff": "2026-10-28T17:00:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|ssv-jeddeloh-ii|hertha-bsc",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "SSV Jeddeloh II",
+      "away": "Hertha BSC",
+      "kickoff": "2026-10-28T17:00:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|holstein-kiel|tsg-hoffenheim",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "Holstein Kiel",
+      "away": "TSG Hoffenheim",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|hannover-96|1-fc-kaiserslautern",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "Hannover 96",
+      "away": "1. FC Kaiserslautern",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|bayer-leverkusen|1-fc-n-rnberg",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "Bayer Leverkusen",
+      "away": "1. FC Nürnberg",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ger.dfb_pokal|bayern-munich|1-fc-magdeburg",
+      "fixtureId": null,
+      "league": "ger.dfb_pokal",
+      "home": "Bayern Munich",
+      "away": "1. FC Magdeburg",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.dfb.de/news/four-all-bundesliga-ties-in-dfb-pokal-second-round",
+        "provider": "dfb",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ita.1|ac-milan|bologna",
+      "fixtureId": null,
+      "league": "ita.1",
+      "home": "AC Milan",
+      "away": "Bologna",
+      "kickoff": "2026-10-28T17:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.skysports.com/serie-a-scores-fixtures/2026-10-01",
+        "provider": "sky_sports",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ita.1|parma|udinese",
+      "fixtureId": null,
+      "league": "ita.1",
+      "home": "Parma",
+      "away": "Udinese",
+      "kickoff": "2026-10-28T17:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.skysports.com/serie-a-scores-fixtures/2026-10-01",
+        "provider": "sky_sports",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ita.1|venezia|inter-milan",
+      "fixtureId": null,
+      "league": "ita.1",
+      "home": "Venezia",
+      "away": "Inter Milan",
+      "kickoff": "2026-10-28T17:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.skysports.com/serie-a-scores-fixtures/2026-10-01",
+        "provider": "sky_sports",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ita.1|genoa|juventus",
+      "fixtureId": null,
+      "league": "ita.1",
+      "home": "Genoa",
+      "away": "Juventus",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.skysports.com/serie-a-scores-fixtures/2026-10-01",
+        "provider": "sky_sports",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "ita.1|monza|napoli",
+      "fixtureId": null,
+      "league": "ita.1",
+      "home": "Monza",
+      "away": "Napoli",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.skysports.com/serie-a-scores-fixtures/2026-10-01",
+        "provider": "sky_sports",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "sco.1|aberdeen|falkirk",
+      "fixtureId": null,
+      "league": "sco.1",
+      "home": "Aberdeen",
+      "away": "Falkirk",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.vi.nl/wedstrijden/2026-10-28",
+        "provider": "vi_nl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "sco.1|st-johnstone|motherwell",
+      "fixtureId": null,
+      "league": "sco.1",
+      "home": "St. Johnstone",
+      "away": "Motherwell",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.vi.nl/wedstrijden/2026-10-28",
+        "provider": "vi_nl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "sco.1|celtic|dundee-united",
+      "fixtureId": null,
+      "league": "sco.1",
+      "home": "Celtic",
+      "away": "Dundee United",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.vi.nl/wedstrijden/2026-10-28",
+        "provider": "vi_nl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "sco.1|st-mirren|hibernian",
+      "fixtureId": null,
+      "league": "sco.1",
+      "home": "St. Mirren",
+      "away": "Hibernian",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.vi.nl/wedstrijden/2026-10-28",
+        "provider": "vi_nl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "sco.1|dundee|kilmarnock",
+      "fixtureId": null,
+      "league": "sco.1",
+      "home": "Dundee",
+      "away": "Kilmarnock",
+      "kickoff": "2026-10-28T19:45:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.vi.nl/wedstrijden/2026-10-28",
+        "provider": "vi_nl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "sco.1|hearts|rangers",
+      "fixtureId": null,
+      "league": "sco.1",
+      "home": "Hearts",
+      "away": "Rangers",
+      "kickoff": "2026-10-28T20:00:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://www.vi.nl/wedstrijden/2026-10-28",
+        "provider": "vi_nl",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "usa.1|toronto-fc|dc-united",
+      "fixtureId": null,
+      "league": "usa.1",
+      "home": "Toronto FC",
+      "away": "DC United",
+      "kickoff": "2026-10-28T23:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://kicklyapp.com/en/matches/2026-10-28",
+        "provider": "kickly",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "usa.1|new-york-city-fc|atlanta-united",
+      "fixtureId": null,
+      "league": "usa.1",
+      "home": "New York City FC",
+      "away": "Atlanta United",
+      "kickoff": "2026-10-28T23:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://kicklyapp.com/en/matches/2026-10-28",
+        "provider": "kickly",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "usa.1|new-england-revolution|new-york-red-bulls",
+      "fixtureId": null,
+      "league": "usa.1",
+      "home": "New England Revolution",
+      "away": "New York Red Bulls",
+      "kickoff": "2026-10-28T23:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://kicklyapp.com/en/matches/2026-10-28",
+        "provider": "kickly",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "usa.1|inter-miami|fc-cincinnati",
+      "fixtureId": null,
+      "league": "usa.1",
+      "home": "Inter Miami",
+      "away": "FC Cincinnati",
+      "kickoff": "2026-10-28T23:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://kicklyapp.com/en/matches/2026-10-28",
+        "provider": "kickly",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    },
+    {
+      "matchKey": "usa.1|charlotte-fc|cf-montreal",
+      "fixtureId": null,
+      "league": "usa.1",
+      "home": "Charlotte FC",
+      "away": "CF Montreal",
+      "kickoff": "2026-10-28T23:30:00Z",
+      "verifiedFixtureSchedule": {
+        "url": "https://kicklyapp.com/en/matches/2026-10-28",
+        "provider": "kickly",
+        "checkedAt": "2026-10-28T04:07:00Z"
+      },
+      "publisherOpinions": [],
+      "optaAnalyst": {
+        "matchSpecificForecastVerified": false,
+        "wdl": null,
+        "hybridV4Allowed": false
+      },
+      "teamNews": {
+        "status": "not_verified",
+        "confirmedXI": false,
+        "projectedXI": false,
+        "injuryImpactQuantified": false,
+        "playerLast5Last10Verified": false,
+        "photosVerified": false
+      },
+      "preKickoffHistory": {
+        "homeLast10": null,
+        "awayLast10": null,
+        "homeAwaySplitsAvailable": null,
+        "recencyWeightedTeamGoals": null,
+        "verifiedH2H": null,
+        "opponentStrengthSimilarityVerified": false,
+        "verifiedXG_XGA": false,
+        "shotsSOTForAllowedVerified": false,
+        "foulsTacklesPassesCardsCornersVerified": false
+      },
+      "researchGrade": "insufficient_for_independent_top3",
+      "bet365Ontario": {
+        "exactLineVerified": false,
+        "sgpVerified": false,
+        "status": "HOLD"
+      },
+      "notes": []
+    }
+  ]
+}
