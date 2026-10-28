@@ -74,6 +74,15 @@ This is the research/reference source inventory for the **original FootyEdge**. 
 - **Priority:** Cross-check against primary match feeds and official lineup information; distinguish editorial claims from verified numerical data.
 - **Availability:** Research reference only. No Squawka API, scraper, licensed feed, or automated integration is enabled by this entry. Follow access and reuse terms.
 
+### Major domestic cup coverage (men's first-team competitions)
+- **Include fixture coverage when provider records exist:** EFL Cup / Carabao Cup, FA Cup, DFB-Pokal, Copa del Rey, Coppa Italia, Coupe de France, KNVB Beker, Taça de Portugal, Scottish Cup and Scottish League Cup.
+- **Fixture identity:** match the actual competition and dated provider fixture; do not treat domestic cups as second-division leagues. Exclude women's and youth/U21 cup events.
+- **Research:** official cup organizers, team news, verified lineup status, injury/rotation news, recent domestic form, opponent quality, venue, rest and available cup-specific team/player statistics. Use source consensus only after cross-checking evidence.
+- **Picks:** provide up to three distinct picks and concise, evidence-led reasoning only where current source-backed match research and supported markets exist. Never fill missing cup matches with invented predictions, fabricated percentages, implied odds or unverified player props.
+- **Cup-specific caution:** early rounds often feature heavy squad rotation and opponents from different divisions; lower confidence or withhold player markets until minutes and roles are supported.
+- **Published-board integrity:** adding competitions to fixture discovery must not rewrite already frozen same-day picks.
+- **Implementation:** fixture discovery and competition labels are supported; this inventory alone does not guarantee every cup match has a researched prediction, sportsbook market or lineup.
+
 ## 6. Integration boundaries
 
 - This is a **research inventory and operational guidance**, not an enabled scraper or refresh workflow.
