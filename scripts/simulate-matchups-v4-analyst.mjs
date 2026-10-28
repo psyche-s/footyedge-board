@@ -111,7 +111,7 @@ async function main(){
  const input=await read(path.join("data","external-model-research",day+"-the-analyst.json"))||
  {date:day,capturedAt:null,forecastInputPolicy:{blendWithFootyEdgeBaseline:0.25},fixtures:[]};
  const dest=path.join("data","experimental-simulations",day+"-v4.json");
- try{await fs.access(dest);console.log("Previously published V4 retained (no rerun overwrites)");return}catch(e){if(e.code!=="ENOENT")throw e}
+ if(process.env.OWNER_OVERRIDE_DATE!==day){try{await fs.access(dest);console.log("Previously published V4 retained (no rerun overwrites)");return}catch(e){if(e.code!=="ENOENT")throw e}}
  const output=generateAnalystV4({baseline,external:input,asof:new Date().toISOString(),draws:10000});
  if(output.totalSimulations!==10000*baseline.fixtures.length)throw Error("Simulation count mismatch");
  await fs.mkdir(path.dirname(dest),{recursive:true});
