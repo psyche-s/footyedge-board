@@ -1,7 +1,7 @@
 (function(root){
   // ESPN competition identities are available even before sportsbook prices.
   const uidLeague={750:'jpn.1',700:'eng.1',3914:'eng.2',3946:'tur.1',21231:'ksa.1',740:'esp.1',730:'ita.1',720:'ger.1',710:'fra.1',725:'ned.1',715:'por.1',770:'usa.1',775:'uefa.champions',776:'uefa.europa',20296:'uefa.europa.conf',2310:'uefa.europa.conf',2395:'uefa.nations',3922:'fifa.friendly',3923:'fifa.friendly',19267:'concacaf.nations.league',4:'fifa.world'};
-  const tracked=new Set(['cze.1','jpn.1','kor.1','eng.1','eng.2','eng.league_cup','tur.1','ksa.1','esp.1','ita.1','ger.1','fra.1','ned.1','por.1','usa.1','uefa.champions','uefa.europa','uefa.europa.conf','uefa.nations','uefa.euro','uefa.euroq','fifa.world','fifa.worldq.uefa','fifa.worldq.conmebol','fifa.worldq.concacaf','fifa.friendly','concacaf.nations.league','conmebol.copa_america']);
+  const tracked=new Set(['cze.1','jpn.1','kor.1','eng.1','eng.2','eng.league_cup','eng.fa_cup','ger.dfb_pokal','esp.copa_del_rey','ita.coppa_italia','fra.coupe_de_france','ned.cup','por.taca.portugal','sco.tennents','sco.cis','tur.1','ksa.1','esp.1','ita.1','ger.1','fra.1','ned.1','por.1','usa.1','uefa.champions','uefa.europa','uefa.europa.conf','uefa.nations','uefa.euro','uefa.euroq','fifa.world','fifa.worldq.uefa','fifa.worldq.conmebol','fifa.worldq.concacaf','fifa.friendly','concacaf.nations.league','conmebol.copa_america']);
   const cache=new Map();
   function addDate(date,n){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)}
   function leagueOf(event){
@@ -30,7 +30,7 @@
     if(/^[a-z]{2,8}\.2$/.test(code))return true;
     const title=String(name||"").trim().toLowerCase();
     if(/championship/.test(title)&&/(efl|english|england)/.test(title))return false;
-    return /^(ita 2|ger 2|fra 2|esp 2|serie b|2\\.? bundesliga|bundesliga 2|ligue 2|laliga 2|laliga hypermotion|segunda divisi[oó]n|serie bkt)$/.test(title);
+    return /^(ita 2|ger 2|fra 2|esp 2|serie b|2\.? bundesliga|bundesliga 2|ligue 2|laliga 2|laliga hypermotion|segunda divisi[oó]n|serie bkt)$/.test(title);
   }
   function eventsForDay(payload,date){return (payload?.events||[]).filter(e=>tracked.has(leagueOf(e))&&!isExcludedSecondTier(leagueOf(e),e?.league?.name)&&eventDay(e)===date&&!excludedTaggedEvent(e)&&!/CANCEL/i.test(e.status?.type?.name||''))}
   function formatDate(date){return new Date(date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'})}
