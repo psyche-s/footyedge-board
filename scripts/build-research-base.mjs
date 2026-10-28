@@ -10,6 +10,7 @@ const TZ="America/Toronto";
 const TRACKED=new Set([
   "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
   "cze.1","jpn.1","kor.1","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
+  "eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.tennents","sco.cis",
   "uefa.euro","uefa.euroq","fifa.world","fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf"
 ]);
 
