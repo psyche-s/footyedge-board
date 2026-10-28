@@ -9,6 +9,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import {validateBoard} from "./validate-published-boards.mjs";
+import {canonicalFixtureKey} from "./owner-fixture-identity.mjs";
 const date=process.env.OWNER_OVERRIDE_DATE;
 const today=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
 const localDate=today.year+"-"+today.month+"-"+today.day;
@@ -24,7 +25,14 @@ const [old,draft,research,h2h,intel,simulation,provenance]=await Promise.all([
 ]);
 if(!draft||!research||draft.date!==date||research.date!==date||!Array.isArray(draft.games))throw Error("Missing exact-day rebuilt draft and research");
 if(!old||old.date!==date||!Array.isArray(old.games))throw Error("Expected existing current-day original board");
-if(draft.games.length<old.games.length)throw Error("Recovery would drop existing fixtures: "+draft.games.length+" < "+old.games.length);
+// Removing verified duplicate fixture aliases is an approved correction, but
+// losing any UNIQUE previously published matchup is not.
+if(draft.games.length<old.games.length){
+ const unique=new Set(draft.games.map(g=>canonicalFixtureKey(g)));
+ const missing=[...new Set(old.games.map(g=>canonicalFixtureKey(g)))].filter(k=>!unique.has(k));
+ if(missing.length)throw Error("Recovery would drop verified matchups: "+missing.join(", "));
+ console.log("Corrected duplicate fixture aliases:",old.games.length-draft.games.length);
+}
 const byId=rows=>new Map((rows||[]).map(x=>[String(x.fixtureId||x.id),x]));
 const researchById=byId(research.fixtures),h2hById=byId(h2h?.fixtures),xiById=byId(intel?.fixtures),simById=byId(simulation?.fixtures);
 const byName=new Map((provenance?.fixtures||[]).map(x=>[x.league+"|"+norm(x.home)+"|"+norm(x.away),x]));
