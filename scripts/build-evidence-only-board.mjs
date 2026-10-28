@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import {validateBoard} from './validate-published-boards.mjs';
 import {takeDistinctTopPicks} from './market-diversity.mjs';
+import {buildReviewedPicks} from './build-top3-review.mjs';
 
 // Audited last-resort delivery of evidence-only research after an upstream
 // sportsbook quota outage. No sportsbook odds, EV, or forward win probability
@@ -76,7 +77,7 @@ function generate(g){
     const reason=description+recent+venue;
     candidates.push({label,category,family,score:researchGrade,modelScore:null,baseScore:null,modelProb:null,marketProb:null,ev:null,
       odds:null,displayOdds:null,provider:null,bookKey:null,bookExact:false,verifiedPrice:false,priceEligible:false,
-      confidenceType:'multi_window_research_grade',researchOnly:true,archivedCommentary:reason,
+      confidenceType:'multi_window_research_grade',researchOnly:true,sourceBackedReason:true,archivedCommentary:reason,
       archivedSupportFacts:facts,reason,stars:star(researchGrade),historicalHits:h+a,historicalSample:n,homeHits:h,homeSample:H.length,awayHits:a,awaySample:A.length,crossSources:0});
   }
   angle('Over 1.5 Goals','Goals',x=>x.gf+x.ga>=2,x=>x.gf+x.ga>=2,'total-over');
@@ -152,20 +153,51 @@ async function main(){
   const research=await read(R);
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
   const games=research.fixtures.map(generate);
+  const ownerOverride=process.env.OWNER_OVERRIDE_DATE===DATE&&DATE===TODAY;
+  // Move dated 10k research and verified last-ten trends into the ACTUAL board.
+  // Previously the richer reviewed picks existed only in unused overlays.
+  let reviewedById=new Map();
+  if(ownerOverride){
+    const sim=await read(path.join('data','experimental-simulations',DATE+'-v4.json')).catch(()=>null)
+      ||await read(path.join('data','experimental-simulations',DATE+'-v3.json')).catch(()=>null)
+      ||await read(path.join('data','experimental-simulations',DATE+'.json')).catch(()=>null);
+    if(sim?.date===DATE&&Array.isArray(sim.fixtures)&&sim.fixtures.length===research.fixtures.length){
+      const teamNews=await read(path.join('data','team-intelligence',DATE+'.json')).catch(()=>null);
+      const standings=await read(path.join('data','experimental-inputs',DATE+'-standings.json')).catch(()=>null);
+      const reviews=buildReviewedPicks({research,simulation:sim,news:teamNews,standings});
+      if(!reviews.error){
+        reviewedById=new Map(reviews.matches.filter(x=>x.reviewed&&x.picks?.length).map(x=>[String(x.gameId),x.picks]));
+        console.log('Integrated dated Top 3 reviews:',JSON.stringify(reviews.totals));
+      }
+    }
+  }
   // Owner-authorized same-day recovery may publish clearly labelled research
   // angles while calibrated confidence, EV and unavailable prices remain N/A.
   if(OWNER_RESEARCH_PICKS){
     for(const game of games){
       const source=research.fixtures.find(f=>String(f.id)===String(game.id));
-      if(Number(source?.history?.home)<10||Number(source?.history?.away)<10||!game.top3.length){
+      if(Number(source?.history?.home)<5||Number(source?.history?.away)<5||!game.top3.length){
         game.top=null;game.top3=[];
         game.model={...game.model,top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
-        game.recoveryStatus=Number(source?.history?.home)<10||Number(source?.history?.away)<10
-          ?'pass-incomplete-last-10'
+        game.recoveryStatus=Number(source?.history?.home)<5||Number(source?.history?.away)<5
+          ?'pass-insufficient-verified-last-5'
           :'pass-no-supported-market';
         continue;
       }
+      const simReviewed=reviewedById.get(String(game.id));
+      if(simReviewed?.length>=game.top3.length){
+        game.top3=simReviewed;
+        game.model={...game.model,top:game.top3[0],top3:game.top3,candidates:game.top3,
+          rankedCandidates:game.top3,researchCandidates:game.top3};
+        game.recoveryStatus='owner-researched-simulation-and-history-top3';
+      }
       for(const pick of game.top3){
+      if(pick.confidenceType==='researched_strength_not_calibrated_win_probability'&&
+         Number.isFinite(pick.confidenceRating)){
+        pick.probabilityCalibrated=false;pick.odds=null;pick.ev=null;
+        pick.priceStatus='not_verified';pick.verifiedPrice=false;pick.sourceBackedReason=true;
+        continue;
+      }
       const weaker=Math.min(pick.homeHits/pick.homeSample,pick.awayHits/pick.awaySample)*100;
       pick.trendHitRate=pick.score;
       pick.researchStrength=pick.score;
