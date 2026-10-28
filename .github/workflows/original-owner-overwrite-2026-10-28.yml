@@ -93,7 +93,7 @@ jobs:
             if [[ -e "$f" ]]; then git add -A -- "$f"; fi
           done
           if git diff --cached --quiet; then echo "::error::No corrected data generated";exit 1;fi
-          git commit -m "data(original): owner-approved Oct 28 full research and pick rebuild [skip ci]"
+          git commit -m "data(original): owner-approved Oct 28 Top 3 publication"
           # Keep non-public supplemental scratch artifacts from blocking rebase.
           git stash push --include-untracked -m "Unstaged owner recovery scratch" || true
           git pull --rebase origin main
