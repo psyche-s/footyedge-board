@@ -10,6 +10,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {canonicalTeamName} from "./owner-fixture-identity.mjs";
 
 const safeDate = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v||""));
 const norm = s => String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -35,16 +36,19 @@ export function importAuditedPredictions({date,audit,base,existing=null,now=Date
  if(!recent(checkedAt,now))return {document:existing,added:[],rejected:["stale-audit"]};
  const known=new Map(base.fixtures.map(f=>[String(f.id),f]));
  const byTeams=new Map();
- for(const g of base.fixtures){const k=norm(g.home?.name)+"|"+norm(g.away?.name);if(!byTeams.has(k))byTeams.set(k,[]);byTeams.get(k).push(g)}
+ const pairing=(home,away)=>canonicalTeamName(home)+"|"+canonicalTeamName(away);
+ for(const g of base.fixtures){const k=pairing(g.home?.name,g.away?.name);if(!byTeams.has(k))byTeams.set(k,[]);byTeams.get(k).push(g)}
  const previous=existing?.schema==="footyedge-sourced-team-intelligence-v1" &&
-  existing.date===date && Array.isArray(existing.fixtures)?existing.fixtures:[];
+  existing.date===date && Array.isArray(existing.fixtures)?
+    existing.fixtures.filter(x=>known.has(String(x.fixtureId))):[];
  const byId=new Map(previous.map(row=>[String(row.fixtureId),row]));
  const added=[], rejected=[];
  for(const f of audit.fixtures){
-  const teamMatches=byTeams.get(norm(f.home)+"|"+norm(f.away))||[];
+  const teamMatches=byTeams.get(pairing(f.home,f.away))||[];
   const matched=f?.fixtureId?known.get(String(f.fixtureId)):(teamMatches.length===1?teamMatches[0]:null);
   const id=String(matched?.id||f?.fixtureId||""),g=matched,news=f?.teamNews;
-  if(!g || norm(g.home?.name)!==norm(f.home) || norm(g.away?.name)!==norm(f.away)){
+  if(!g || canonicalTeamName(g.home?.name)!==canonicalTeamName(f.home) ||
+     canonicalTeamName(g.away?.name)!==canonicalTeamName(f.away)){
    rejected.push(id+":fixture-mismatch");continue;
   }
   const home=news?.predictedXI?.home||news?.homeProjectedXI,away=news?.predictedXI?.away||news?.awayProjectedXI;
