@@ -34,6 +34,10 @@ jobs:
           node --check scripts/build-evidence-only-board.mjs
           node --check scripts/import-audited-predicted-xi.mjs
           node --check scripts/publish-owner-recovery.mjs
+          node --check scripts/owner-top3-ranking.mjs
+          node --check scripts/build-top3-review.mjs
+          node --check scripts/build-owner-picks-lite.mjs
+          node --test tests/owner-top3-ranking.test.mjs tests/top3-research-overlay.test.mjs
           node --test tests/import-audited-predicted-xi.test.mjs tests/experimental-simulations.test.mjs tests/h2h-score-cache.test.mjs
       - name: Rebuild all current-date fixtures, form, match results and market evidence
         run: |
@@ -72,6 +76,8 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/publish-owner-recovery.mjs
+          node scripts/build-owner-picks-lite.mjs
+          node -e 'const b=require("./data/boards/2026-10-28.json");const h=[0,0,0,0];for(const g of b.games)h[g.top3.length]++;console.log("OWNER_TOP3_DISTRIBUTION",JSON.stringify({fixtures:b.games.length,zero:h[0],one:h[1],two:h[2],three:h[3],leagues:[...new Set(b.games.map(g=>g.league))]}));if(h[3]<15)process.exit(1)'
           node scripts/validate-published-boards.mjs --base origin/main
           node scripts/validate-public-metrics.mjs
           node scripts/audit-daily-refresh.mjs
@@ -81,7 +87,7 @@ jobs:
           set -euo pipefail
           git config user.name "FootyEdge Original Recovery Bot"
           git config user.email "actions@users.noreply.github.com"
-          for f in "data/boards/2026-10-28.json" "data/research-base-2026-10-28.json" "data/board-drafts/2026-10-28.json" "data/h2h/2026-10-28.json" "data/team-intelligence/2026-10-28.json" "data/experimental-simulations/2026-10-28.json" "data/experimental-simulations/2026-10-28-v3.json" "data/experimental-simulations/2026-10-28-v4.json" "data/refresh-health/2026-10-28.json" "data/board-revisions/2026-10-28" "data/top3-reviewed/2026-10-28.json" "data/consensus-reviewed/2026-10-28.json" "data/source-led-picks/2026-10-28.json"; do
+          for f in "data/boards/2026-10-28.json" "data/boards-lite/2026-10-28.json" "data/pick-reviews/2026-10-28.json" "data/research-base-2026-10-28.json" "data/board-drafts/2026-10-28.json" "data/h2h/2026-10-28.json" "data/team-intelligence/2026-10-28.json" "data/experimental-simulations/2026-10-28.json" "data/experimental-simulations/2026-10-28-v3.json" "data/experimental-simulations/2026-10-28-v4.json" "data/refresh-health/2026-10-28.json" "data/board-revisions/2026-10-28" "data/top3-reviewed/2026-10-28.json" "data/consensus-reviewed/2026-10-28.json" "data/source-led-picks/2026-10-28.json"; do
             if [[ -e "$f" ]]; then git add -A -- "$f"; fi
           done
           if git diff --cached --quiet; then echo "::error::No corrected data generated";exit 1;fi
