@@ -10,7 +10,7 @@ const TZ="America/Toronto";
 const TRACKED=new Set([
   "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
   "cze.1","jpn.1","kor.1","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
-  "eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.tennents","sco.cis",
+  "sco.1","eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.tennents","sco.cis",
   "uefa.euro","uefa.euroq","fifa.world","fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf"
 ]);
 
@@ -301,6 +301,56 @@ async function main(){
   }catch(error){
     console.warn("Czech public-domain results unavailable; do not invent this league's form or fixtures",String(error));
   }
+  // Merge additional competition-specific fixture coverage before researching.
+  // The normal aggregate scoreboard excludes multiple official domestic cups.
+  // Editorial schedule fallback has no bookmaker odds or official ESPN IDs.
+  const normalizeFixtureName=name=>key(name).replace(/\\b(fc|afc|sc|cf|club|football)\\b/g," ").replace(/\\s+/g," ").trim();
+  const fixtureKey=(league,home,away)=>[league,normalizeFixtureName(home),normalizeFixtureName(away)].join("|");
+  if(!Array.isArray(board.events))board.events=[];
+  const seenFixtureKeys=new Set();
+  for(const e of board.events){
+    const c=e.competitions?.[0]?.competitors||[],h=c.find(t=>t.homeAway==="home"),a=c.find(t=>t.homeAway==="away");
+    if(h&&a)seenFixtureKeys.add(fixtureKey(leagueOf(e),h.team?.displayName||h.team?.name,a.team?.displayName||a.team?.name));
+  }
+  const cupCodes=["eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.1"];
+  for(const code of cupCodes){
+    try{
+      const response=await json("https://site.api.espn.com/apis/site/v2/sports/soccer/"+encodeURIComponent(code)+"/scoreboard?dates="+DATE.replaceAll("-","")+"&limit=250");
+      let count=0;
+      for(const e of response.events||[]){
+        if(globalThis.FootyEdgeAvailability.eventDay(e)!==DATE||globalThis.FootyEdgeAvailability.excludedTaggedEvent(e))continue;
+        const c=e.competitions?.[0]?.competitors||[],h=c.find(t=>t.homeAway==="home"),a=c.find(t=>t.homeAway==="away");
+        if(!h||!a)continue;
+        const k=fixtureKey(code,h.team?.displayName||h.team?.name,a.team?.displayName||a.team?.name);
+        if(seenFixtureKeys.has(k))continue;
+        board.events.push({...e,footyedgeLeague:code});seenFixtureKeys.add(k);count++;
+      }
+      if(count)console.log("Competition-specific ESPN fixtures:",code,count);
+    }catch(error){console.warn("ESPN competition scoreboard unavailable:",code,String(error).slice(0,120))}
+  }
+  try{
+    const provenance=JSON.parse(await fs.readFile(path.join("data","source-provenance",DATE+".json"),"utf8"));
+    if(provenance?.date===DATE&&Array.isArray(provenance.fixtures)){
+      const allowed=new Set([...cupCodes,"ita.1","usa.1"]);
+      let count=0;
+      for(const f of provenance.fixtures){
+        if(!allowed.has(f.league)||!f.home||!f.away||!f.kickoff||!f.verifiedFixtureSchedule?.url)continue;
+        if(globalThis.FootyEdgeAvailability.eventDay({date:f.kickoff})!==DATE)continue;
+        const k=fixtureKey(f.league,f.home,f.away);
+        if(seenFixtureKeys.has(k))continue;
+        const slug=v=>normalizeFixtureName(v).replace(/\\s+/g,"-");
+        const id="verified-"+f.league+"-"+slug(f.home)+"-"+slug(f.away);
+        const make=(name,side)=>({id:"source-"+slug(name),homeAway:side,team:{id:"source-"+slug(name),displayName:name}});
+        board.events.push({id,date:f.kickoff,footyedgeLeague:f.league,sourceFixtureVerification:{
+          url:f.verifiedFixtureSchedule.url,provider:f.verifiedFixtureSchedule.provider,
+          checkedAt:f.verifiedFixtureSchedule.checkedAt,providerIdUnavailable:true
+        },season:{year:Number(DATE.slice(0,4))},status:{type:{state:"pre",completed:false}},
+        competitions:[{competitors:[make(f.home,"home"),make(f.away,"away")]}]});
+        seenFixtureKeys.add(k);count++;
+      }
+      console.log("Additional official-schedule-verified fixtures without provider IDs:",count);
+    }
+  }catch(error){if(error.code!=="ENOENT")console.warn("Dated source schedule unavailable:",String(error))}
   const games=globalThis.FootyEdgeAvailability.eventsForDay(board,DATE).map(fixtureInfo).filter(Boolean);
   const fixtures=[];
   for(let i=0;i<games.length;i+=4){
