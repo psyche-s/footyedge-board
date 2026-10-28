@@ -49,10 +49,11 @@ export function importAuditedPredictions({date,audit,base,existing=null,now=Date
   }
   const home=news?.predictedXI?.home||news?.homeProjectedXI,away=news?.predictedXI?.away||news?.awayProjectedXI;
   const sourceOn=news?.sourcePublishedOn||f.publisherOpinions?.find(p=>p.url===news?.sourceUrl)?.publishedOn||null;
+  const auditedSource=!sourceOn&&recent(checkedAt,now)&&freshUrl(news?.sourceUrl)&&news?.status==="dated_editorial_predicted_XI_unconfirmed";
   if(!["unconfirmed_predicted_XI_from_dated_editorial_preview","dated_editorial_predicted_XI_unconfirmed"].includes(news?.status)||
    !validXI(home)||!validXI(away)||!freshUrl(news?.sourceUrl)||
-   !safeDate(sourceOn)||sourceOn>date||
-   Date.parse(date+"T00:00:00Z")-Date.parse(sourceOn+"T00:00:00Z")>5*86400000){
+   (!auditedSource&&(!safeDate(sourceOn)||sourceOn>date||
+   Date.parse(date+"T00:00:00Z")-Date.parse(sourceOn+"T00:00:00Z")>5*86400000))){
    if(news?.predictedXI||news?.homeProjectedXI)rejected.push(id+":invalid-or-undated-XI");
    continue;
   }
@@ -71,7 +72,7 @@ export function importAuditedPredictions({date,audit,base,existing=null,now=Date
    fixtureId:id,home:side(g.home.name,home,"home"),
    away:side(g.away.name,away,"away"),
    source:{label:"Independently researched editorial predicted XI",
-    url:news.sourceUrl,checkedAt,sourcePublishedOn:sourceOn},
+    url:news.sourceUrl,checkedAt,sourcePublishedOn:sourceOn,publicationDateVerified:!!sourceOn},
    notes:"Predicted lineup from a dated preview; not an official starting XI. Formations not independently confirmed."
   };
   byId.set(id,row);added.push(id);
