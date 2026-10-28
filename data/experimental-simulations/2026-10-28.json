@@ -1,0 +1,1243 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-10-28",
+  "generatedAt": "2026-10-28T05:07:21.629Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 190000,
+  "sourceDates": {
+    "research": "2026-10-28T05:06:49.308Z",
+    "analytics": "2026-10-28T05:07:20.122551+00:00",
+    "h2h": "2026-10-28",
+    "teamNews": null,
+    "standings": "2026-10-28T05:07:20.827Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 19,
+    "preKickoff": 19,
+    "postKickoff": 0,
+    "atLeastEightEach": 19,
+    "shotJoined": 4,
+    "realXg": 0,
+    "projectedXI": 0,
+    "standingsJoined": 19
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "761907",
+      "league": "usa.1",
+      "kickoff": "2026-10-28T23:30Z",
+      "home": "Charlotte FC",
+      "away": "CF Montréal",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.417,
+        "away": 1.041
+      },
+      "winDrawLossPct": {
+        "homeWin": 67.61,
+        "draw": 18.13,
+        "awayWin": 14.26
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 10.1,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 10.1
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.89
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.31,
+        "over2_5": 67.05,
+        "under3_5": 55.92,
+        "bttsYes": 57.96
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761908",
+      "league": "usa.1",
+      "kickoff": "2026-10-28T23:30Z",
+      "home": "Inter Miami CF",
+      "away": "FC Cincinnati",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.418,
+        "away": 1.197
+      },
+      "winDrawLossPct": {
+        "homeWin": 64.58,
+        "draw": 18.77,
+        "awayWin": 16.65
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.19,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.19
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.13
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.84
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.16,
+        "over2_5": 69.93,
+        "under3_5": 51.34,
+        "bttsYes": 63.59
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761909",
+      "league": "usa.1",
+      "kickoff": "2026-10-28T23:30Z",
+      "home": "New England Revolution",
+      "away": "Red Bull New York",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.971,
+        "away": 1.211
+      },
+      "winDrawLossPct": {
+        "homeWin": 55.85,
+        "draw": 20.7,
+        "awayWin": 23.45
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.98,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.98
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 9.07
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.32
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 83.09,
+        "over2_5": 62.57,
+        "under3_5": 60.08,
+        "bttsYes": 60.44
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761905",
+      "league": "usa.1",
+      "kickoff": "2026-10-28T23:30Z",
+      "home": "New York City FC",
+      "away": "Atlanta United FC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.773,
+        "away": 1.336
+      },
+      "winDrawLossPct": {
+        "homeWin": 47.57,
+        "draw": 23.47,
+        "awayWin": 28.96
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.69,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.69
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.1
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 7.64
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.57,
+        "over2_5": 59.99,
+        "under3_5": 62.04,
+        "bttsYes": 61.01
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761906",
+      "league": "usa.1",
+      "kickoff": "2026-10-28T23:30Z",
+      "home": "Toronto FC",
+      "away": "D.C. United",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.044,
+        "away": 1.419
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.85,
+        "draw": 21.05,
+        "awayWin": 27.1
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.93,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.93
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.49
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 6.69
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.24,
+        "over2_5": 67.55,
+        "under3_5": 53.67,
+        "bttsYes": 66.12
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761910",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T00:30Z",
+      "home": "Austin FC",
+      "away": "Real Salt Lake",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.527,
+        "away": 1.712
+      },
+      "winDrawLossPct": {
+        "homeWin": 35.05,
+        "draw": 23,
+        "awayWin": 41.95
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.02,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.02
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.12
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.38
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.25,
+        "over2_5": 63.79,
+        "under3_5": 59.19,
+        "bttsYes": 64.92
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761911",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T00:30Z",
+      "home": "Chicago Fire FC",
+      "away": "Orlando City SC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.133,
+        "away": 1.66
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.28,
+        "draw": 20.84,
+        "awayWin": 30.88
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.63,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.63
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.1
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.23
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89,
+        "over2_5": 73.03,
+        "under3_5": 47.22,
+        "bttsYes": 71.77
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761912",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T00:30Z",
+      "home": "FC Dallas",
+      "away": "Columbus Crew",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.872,
+        "away": 1.307
+      },
+      "winDrawLossPct": {
+        "homeWin": 49.74,
+        "draw": 23.19,
+        "awayWin": 27.07
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.45,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.45
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.19
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.17
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.3,
+        "over2_5": 61.7,
+        "under3_5": 60.03,
+        "bttsYes": 61.97
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761913",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T00:30Z",
+      "home": "Minnesota United FC",
+      "away": "Sporting Kansas City",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.603,
+        "away": 1.539
+      },
+      "winDrawLossPct": {
+        "homeWin": 61.19,
+        "draw": 17.7,
+        "awayWin": 21.11
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.3,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.3
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 6.97
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.25
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 92,
+        "over2_5": 78.58,
+        "under3_5": 40.34,
+        "bttsYes": 73.15
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761914",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T00:30Z",
+      "home": "Nashville SC",
+      "away": "Philadelphia Union",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.292,
+        "away": 1.168
+      },
+      "winDrawLossPct": {
+        "homeWin": 62.61,
+        "draw": 19.07,
+        "awayWin": 18.32
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.63,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.63
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.58
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.28
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.31,
+        "over2_5": 67.38,
+        "under3_5": 53.83,
+        "bttsYes": 62.15
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761915",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T00:30Z",
+      "home": "St. Louis CITY SC",
+      "away": "Portland Timbers",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.434,
+        "away": 1.301
+      },
+      "winDrawLossPct": {
+        "homeWin": 61.75,
+        "draw": 18.53,
+        "awayWin": 19.72
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.94,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.94
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.78
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.23
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.35,
+        "over2_5": 71.77,
+        "under3_5": 48.26,
+        "bttsYes": 66.65
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761917",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T02:30Z",
+      "home": "San Jose Earthquakes",
+      "away": "Colorado Rapids",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.709,
+        "away": 1.204
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.77,
+        "draw": 24.45,
+        "awayWin": 26.78
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.47,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.47
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.32
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.85
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.37,
+        "over2_5": 55.76,
+        "under3_5": 66.55,
+        "bttsYes": 57.77
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761916",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T02:30Z",
+      "home": "Seattle Sounders FC",
+      "away": "Houston Dynamo FC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.654,
+        "away": 1.195
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.46,
+        "draw": 23.96,
+        "awayWin": 27.58
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.13,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.13
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.8
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.51
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.14,
+        "over2_5": 53.91,
+        "under3_5": 68.15,
+        "bttsYes": 55.98
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "761918",
+      "league": "usa.1",
+      "kickoff": "2026-10-29T02:30Z",
+      "home": "Vancouver Whitecaps",
+      "away": "San Diego FC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.454,
+        "away": 1.304
+      },
+      "winDrawLossPct": {
+        "homeWin": 62.92,
+        "draw": 17.99,
+        "awayWin": 19.09
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.06,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.06
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.73
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 7.34
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.73,
+        "over2_5": 72.15,
+        "under3_5": 48.25,
+        "bttsYes": 66.37
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874993",
+      "league": "ita.1",
+      "kickoff": "2026-10-28T17:30Z",
+      "home": "AC Milan",
+      "away": "Bologna",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.95,
+        "away": 0.884
+      },
+      "winDrawLossPct": {
+        "homeWin": 61.14,
+        "draw": 21.73,
+        "awayWin": 17.13
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 11.42,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 11.42
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.38
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 9.95
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.97,
+        "over2_5": 53.26,
+        "under3_5": 68.77,
+        "bttsYes": 49.92
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874965",
+      "league": "ita.1",
+      "kickoff": "2026-10-28T17:30Z",
+      "home": "Parma",
+      "away": "Udinese",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.329,
+        "away": 1.308
+      },
+      "winDrawLossPct": {
+        "homeWin": 37.3,
+        "draw": 25.71,
+        "awayWin": 36.99
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.73,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.73
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.37
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.31
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 74,
+        "over2_5": 49.86,
+        "under3_5": 71.97,
+        "bttsYes": 53.68
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874773",
+      "league": "ita.1",
+      "kickoff": "2026-10-28T17:30Z",
+      "home": "Venezia",
+      "away": "Internazionale",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.092,
+        "away": 2.32
+      },
+      "winDrawLossPct": {
+        "homeWin": 17.51,
+        "draw": 18.48,
+        "awayWin": 64.01
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 9.49,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 9.49
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 8.14
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.14
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.49,
+        "over2_5": 66.99,
+        "under3_5": 55.37,
+        "bttsYes": 60.47
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874988",
+      "league": "ita.1",
+      "kickoff": "2026-10-28T19:45Z",
+      "home": "Genoa",
+      "away": "Juventus",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 0.984,
+        "away": 1.65
+      },
+      "winDrawLossPct": {
+        "homeWin": 23.09,
+        "draw": 24.37,
+        "awayWin": 52.54
+      },
+      "predictedScore": "0-1",
+      "predictedScoreProbabilityPct": 11.99,
+      "mostLikelyScores": [
+        {
+          "score": "0-1",
+          "probabilityPct": 11.99
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 11.48
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.59
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 73.7,
+        "over2_5": 49.25,
+        "under3_5": 72.44,
+        "bttsYes": 51.04
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874799",
+      "league": "ita.1",
+      "kickoff": "2026-10-28T19:45Z",
+      "home": "Monza",
+      "away": "Napoli",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.724,
+        "away": 1.746
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.69,
+        "draw": 22.29,
+        "awayWin": 39.02
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 8.88,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 8.88
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.25
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.11
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.08,
+        "over2_5": 67.48,
+        "under3_5": 54.07,
+        "bttsYes": 67.69
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
