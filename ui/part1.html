@@ -1992,6 +1992,10 @@ function applyBoardArchive(games,archive){
     // removed picks from stale model candidate pools.
     const safePicks=(a.top3||[]).map(restoreArchivedPick).filter(Boolean).filter(p=>{
       if(!/^BTTS No$/i.test(String(p.label||"")))return true;
+      // Owner-approved researched BTTS No has verified recent matches on both
+      // teams. A missing H2H lookup is not proof that the pick lacks support.
+      if(archive.ownerOverride===true&&p.sourceBackedReason===true&&
+         Number(p.homeSample)>=5&&Number(p.awaySample)>=5)return true;
       const h=(a.h2h||[]).filter(x=>Number.isFinite(Number(x.homeScore))&&Number.isFinite(Number(x.awayScore)));
       return h.length>=3&&h.filter(x=>Number(x.homeScore)>0&&Number(x.awayScore)>0).length/h.length<0.6;
     }).map(p=>{
