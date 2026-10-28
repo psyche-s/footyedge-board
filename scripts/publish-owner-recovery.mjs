@@ -79,7 +79,7 @@ const enriched=draft.games.map(g=>{
     projections:pr?{status:"experimental-not-calibrated",predictedScore:pr.predictedScore,
       expectedGoals:pr.expectedGoals,winDrawLossPct:pr.winDrawLossPct,simulations:pr.simulations,
       quality:pr.dataQuality,warning:pr.warning}:null,
-    recoveryStatus:g.top3?.length===3?"researched-top3":"limited-evidence-do-not-force-picks",
+    recoveryStatus:g.recoveryStatus==="multi-publisher-source-reviewed-top3"?g.recoveryStatus:(g.top3?.length===3?"researched-top3":"limited-evidence-do-not-force-picks"),
     dataCompleteness:{lastFiveHome:recentHome.length,lastFiveAway:recentAway.length,
       previousMeetings:verifiedMeetings.length,historyVerified:!!hh,
       lineupStatus:x?"editorial-predicted-not-confirmed":"not-independently-verified",
