@@ -21,7 +21,7 @@ const OWNER_RESEARCH_PICKS=process.env.OWNER_RESEARCH_PICKS==='1';
 let editorialById=new Map();
 const read=async f=>JSON.parse(await fs.readFile(f,'utf8'));
 const exists=async f=>fs.access(f).then(()=>true).catch(()=>false);
-const LEAGUES={'eng.1':'Premier League','eng.2':'EFL Championship','tur.1':'Turkish Süper Lig','ksa.1':'Saudi Pro League','cze.1':'Czech First League','jpn.1':'J1 League','kor.1':'K League 1','esp.1':'LaLiga','ita.1':'Serie A','ger.1':'Bundesliga','fra.1':'Ligue 1','ned.1':'Eredivisie','por.1':'Liga Portugal','uefa.champions':'UEFA Champions League','uefa.europa':'UEFA Europa League','uefa.europa.conf':'UEFA Conference League','usa.1':'MLS','fifa.friendly':'International Friendly','uefa.nations':'UEFA Nations League'};
+const LEAGUES={'sco.1':'Scottish Premiership','eng.league_cup':'EFL Cup','eng.fa_cup':'FA Cup','ger.dfb_pokal':'DFB-Pokal','esp.copa_del_rey':'Copa del Rey','ita.coppa_italia':'Coppa Italia','fra.coupe_de_france':'Coupe de France','ned.cup':'KNVB Cup','por.taca.portugal':'Taça de Portugal','eng.1':'Premier League','eng.2':'EFL Championship','tur.1':'Turkish Süper Lig','ksa.1':'Saudi Pro League','cze.1':'Czech First League','jpn.1':'J1 League','kor.1':'K League 1','esp.1':'LaLiga','ita.1':'Serie A','ger.1':'Bundesliga','fra.1':'Ligue 1','ned.1':'Eredivisie','por.1':'Liga Portugal','uefa.champions':'UEFA Champions League','uefa.europa':'UEFA Europa League','uefa.europa.conf':'UEFA Conference League','usa.1':'MLS','fifa.friendly':'International Friendly','uefa.nations':'UEFA Nations League'};
 const rates=hist=>{
   const n=hist.length;
   const rate=fn=>n?hist.filter(fn).length/n:null;
