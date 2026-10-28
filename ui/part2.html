@@ -970,7 +970,32 @@ function feDistinctTop3(picks){
  return best.sort((a,b)=>Number(b.confidenceRating??b.score??0)-Number(a.confidenceRating??a.score??0));
 }
 
+function feOwnerBoardPublished(){
+ return S.archive?.date===S.date && S.archive?.ownerOverride===true && S.archive?.state==="published" && !ARCHIVE_CAPTURE;
+}
+function feOwnerBoardPicks(g){
+ const picks=(g.model?.top3||[]).filter(p=>p?.sourceBackedReason===true&&
+   p?.label&&String(p.reason||"").length>=30&&
+   Number.isFinite(Number(p.confidenceRating))&&Number(p.confidenceRating)>=58&&
+   Number(p.homeSample)>=5&&Number(p.awaySample)>=5);
+ const unique=new Set();
+ return picks.filter(p=>{const key=normName(p.label);if(unique.has(key))return false;unique.add(key);return true})
+   .sort((a,b)=>Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
+}
 function viewCandidates(g){
+  // Explicit owner-approved published Top 3 take precedence over the older
+  // current-day editorial-only gate, which wrongly hid saved predictions.
+  if(feOwnerBoardPublished()){
+    const picks=feOwnerBoardPicks(g);
+    if(S.filter==="result"||S.filter==="ml")return picks.filter(p=>
+      ["Match Result","Double Chance"].includes(p.category) &&
+      (S.filter!=="ml"||p.category==="Match Result"));
+    if(S.filter==="goals")return picks.filter(p=>
+      ["Goals","Team Goals"].includes(p.category));
+    if(S.filter==="btts")return picks.filter(p=>p.category==="BTTS");
+    if(S.filter==="atgs"||S.filter==="soa")return [];
+    return picks;
+  }
   // When the dated source-market desk exists, show ONLY the match-specific
   // independently published tips it verified. Do not pad with the repetitive
   // archived Over/Under 4.5 and 1+ goals generator.
@@ -1017,9 +1042,18 @@ function viewPick(g){
   if(S.filter==="ml")return moneylineCandidates(g)[0]||null;
   return viewCandidates(g)[0]||null;
 }
-function filterOK(g){if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search&&!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(String(S.search).toLowerCase()))return false;return S.filter==="all"||viewCandidates(g).length>0;}if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
+function filterOK(g){if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE&&!feOwnerBoardPublished()){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search&&!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(String(S.search).toLowerCase()))return false;return S.filter==="all"||viewCandidates(g).length>0;}if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
+  if(feOwnerBoardPublished()){
+    const refs=S.league!=="all"&&S.archive.leagueTop5?.[S.league]
+      ?S.archive.leagueTop5[S.league]:S.archive.top5||[];
+    return refs.map(x=>{
+      const g=S.games.find(g=>String(g.id)===String(x.gameId)||
+        fixtureMatchKey(g.home.name,g.away.name)===fixtureMatchKey(x.home,x.away));
+      return g?{...g,archiveTopPick:restoreArchivedPick(x.pick)}:null;
+    }).filter(g=>g&&(S.league==="all"||g.league===S.league)&&statusOK(g));
+  }
   if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE){
     const refs=S.sourceLed.top5||[];
     return refs.map(x=>{
