@@ -37,7 +37,7 @@ jobs:
           node --check scripts/owner-top3-ranking.mjs
           node --check scripts/build-top3-review.mjs
           node --check scripts/build-owner-picks-lite.mjs
-          node --test tests/owner-top3-ranking.test.mjs tests/top3-research-overlay.test.mjs
+          node --test tests/owner-top3-ranking.test.mjs tests/owner-fixture-identity.test.mjs tests/top3-research-overlay.test.mjs
           node --test tests/import-audited-predicted-xi.test.mjs tests/experimental-simulations.test.mjs tests/h2h-score-cache.test.mjs
       - name: Rebuild all current-date fixtures, form, match results and market evidence
         run: |
