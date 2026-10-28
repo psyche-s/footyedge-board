@@ -225,9 +225,21 @@ async function buildFixture(g){
       hh=history(hp,g.home.id,g.date);
       ah=history(ap,g.away.id,g.date);
     }
+    const hub=await hubEvidence(g);
+    // When a cup fixture has a verified official schedule but ESPN's team
+    // identifier is unavailable, use *completed domestic-league CC0 results*
+    // to fill last-five form rather than manufacturing match data.
+    const asRecent=rows=>(rows||[]).map(m=>{
+      const oppName=m.venue==="home"?m.away:m.home;
+      return {id:"hub:"+m.league+":"+m.date+":"+key(m.home)+":"+key(m.away),
+        date:m.date+"T12:00:00Z",venue:m.venue,gf:m.gf,ga:m.ga,
+        league:m.league,result:m.result,oppName,oppId:null,
+        source:"Verified domestic-league results (CC0 public history)"};
+    });
+    if(hh.length<5&&hub?.homeLast10?.length>=5)hh=asRecent(hub.homeLast10);
+    if(ah.length<5&&hub?.awayLast10?.length>=5)ah=asRecent(hub.awayLast10);
     const facts=[...teamFacts(g.home.name,hh,"home"),...teamFacts(g.away.name,ah,"away"),...h2hFacts(g,hh)]
       .sort((a,b)=>b.priority-a.priority).slice(0,12);
-    const hub=await hubEvidence(g);
     const hubDerived=await derivedHubMetrics(g);
     return{...g,hubHistory:hub,hubDerived,history:{home:hh.length,away:ah.length},last10:{home:hh,away:ah},last5:{home:hh.slice(0,5),away:ah.slice(0,5)},facts,marketSignals:marketSignals(facts,g),generatedAt:new Date().toISOString()};
   }catch(error){
