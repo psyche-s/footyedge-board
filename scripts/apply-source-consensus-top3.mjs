@@ -167,7 +167,14 @@ const city=draft.games.find(x=>x.league==="eng.league_cup"&&x.home==="Manchester
 if(city?.top3?.[0]?.label!=="BTTS Yes"||!city.top3.some(x=>x.label==="Manchester City ML"))throw Error("Manchester City required research review not applied");
 const byId=new Map(draft.games.map(x=>[String(x.id),x]));
 const rankRefs=games=>games.filter(g=>g.top&&Number.isFinite(g.top.confidenceRating))
- .sort((a,b)=>Number(b.top.confidenceRating)-Number(a.top.confidenceRating)||String(a.date).localeCompare(String(b.date)))
+ .sort((a,b)=>{
+  // Publicly researched match consensus beats unsupported default high-floor
+  // thresholds, particularly repeated Under 4.5 goal suggestions.
+  const score=g=>Number(g.top.confidenceRating)+
+    (g.recoveryStatus==="multi-publisher-source-reviewed-top3"?12:0)+
+    Math.min(3,Math.max(0,Number(g.top.editorialSourceSupport||0))*0.5);
+  return score(b)-score(a)||String(a.date).localeCompare(String(b.date));
+ })
  .slice(0,5).map((g,i)=>({rank:i+1,gameId:g.id,home:g.home,away:g.away,pick:g.top}));
 draft.top5=rankRefs(draft.games);
 draft.leagueTop5=Object.fromEntries([...new Set(draft.games.map(g=>g.league))]
