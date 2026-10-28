@@ -1761,6 +1761,20 @@ async function load(date=S.date){
       new Promise(resolve=>setTimeout(()=>resolve(null),1800))
     ]);
     if(S.date!==date)return;
+    // The enriched 80-fixture archive can be large enough to exceed the
+    // startup budget on mobile. Fall back to the small owner-validated pick
+    // snapshot instead of silently showing zero Top 3 recommendations.
+    if(S.date==="2026-10-28"&&!ARCHIVE_CAPTURE){
+      const compact=await Promise.race([
+        repoData("data/boards-lite/"+S.date+".json").catch(()=>null),
+        new Promise(resolve=>setTimeout(()=>resolve(null),2800))
+      ]);
+      if(compact?.date===S.date&&compact.ownerOverride===true&&
+         Array.isArray(compact.games)&&compact.games.length>0&&
+         (!archivePayload||!archivePayload.ownerOverride||compact.games.length>archivePayload.games?.length)){
+        archivePayload=compact;
+      }
+    }
     S.performance=performancePayload;S.insights=insightsPayload;S.researchBase=researchBasePayload;
     // Separate read-only 10,000-draw forecast; never rewrites official picks or W/D/L display markup.
     S.feSimById=new Map((experimentalPayload?.schema==='footyedge-experimental-monte-carlo-v1'&&experimentalPayload.date===S.date&&(experimentalPayload.simulationsPerFixture===10000)?experimentalPayload.fixtures:[]||[]).filter(x=>x.simulations===10000&&x.winDrawLossPct&&x.expectedGoals).map(x=>[String(x.fixtureId),x]));
