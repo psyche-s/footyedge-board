@@ -8,17 +8,18 @@ const read=async f=>{try{return JSON.parse(await fs.readFile(f,'utf8'))}catch(e)
 async function main(){
  if(DATE!==TODAY)throw Error('Cannot publish to previous or future dates');
  const existing=await read(target),draft=await read(draftPath);
- if(existing){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}
+ const ownerOverride=process.env.OWNER_OVERRIDE_DATE===DATE&&DATE===TODAY;
+ if(existing&&!ownerOverride){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}
  if(!draft){console.log('No candidate draft; preserve current Top 5');return}
  if(draft.date!==DATE||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw Error('Incomplete current-day draft');
  if(!Array.isArray(draft.top5))throw Error('Current-day draft has no Top 5 array');
- if(existing?.top5?.length>draft.top5.length){console.log('Do not replace populated Top 5 with partial refresh.');return}
+ if(existing&&!ownerOverride&&existing?.top5?.length>draft.top5.length){console.log('Do not replace populated Top 5 with partial refresh.');return}
  const board=JSON.parse(JSON.stringify(draft));board.immutable=true;board.state='locked';board.frozenAt=new Date().toISOString();
  delete board.mutableUntil;board.lastPublishedAt=board.frozenAt;
  board.source='FootyEdge rolling same-day published board';
  board.lockedAtToronto=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',dateStyle:'short',timeStyle:'medium'}).format(new Date());
  validateBoard(board,{requireFull:true});
- if(existing&&JSON.stringify(existing.top5)===JSON.stringify(board.top5)){console.log('Picks unchanged');return}
+ if(existing&&!ownerOverride&&JSON.stringify(existing.top5)===JSON.stringify(board.top5)){console.log('Picks unchanged');return}
  validateIntegrity('HEAD');
  await fs.mkdir(path.dirname(target),{recursive:true});
  const tmp=target+'.tmp';await fs.writeFile(tmp,JSON.stringify(board,null,2)+'\n');await fs.rename(tmp,target);
