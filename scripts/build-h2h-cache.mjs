@@ -58,6 +58,17 @@ async function fetchSchedule(game,year){
 }
 async function build(game,previous){
  if(!game?.id||!game?.date||!game.home?.id||!game.away?.id)return null;
+ const hubMeetings=(game.hubHistory?.h2h||[]).filter(m=>/^\\d{4}-\\d{2}-\\d{2}$/.test(m.date)&&
+   m.date<String(game.date).slice(0,10)&&Number.isInteger(m.homeScore)&&Number.isInteger(m.awayScore))
+   .slice(0,5).map(m=>({id:m.sourceId||"hub:"+m.date+":"+m.home+":"+m.away,
+     date:m.date+"T12:00:00Z",home:m.home,away:m.away,
+     homeScore:m.homeScore,awayScore:m.awayScore,source:"CC0 verified domestic-league results"}));
+ if(String(game.home.id).startsWith("source-")||String(game.away.id).startsWith("source-")){
+   return {fixtureId:str(game.id),league:game.league,homeId:str(game.home.id),
+     awayId:str(game.away.id),home:game.home.name,away:game.away.name,
+     h2h:hubMeetings,checkedSeasons:[],failedSeasons:[],
+     status:hubMeetings.length?"verified-hub-domestic-history":"no-cross-competition-h2h-verified"};
+ }
  const limitYear=Math.min(Number(game.season||String(game.date).slice(0,4)),Number(String(game.date).slice(0,4)));
  const years=Array.from({length:9},(_,i)=>limitYear-i).filter(y=>y>=2017);
  const payloads=[],checked=[],failed=[];
