@@ -381,6 +381,29 @@ async function main(){
       }
     }
   }catch(e){if(e.code!=="ENOENT")throw e}
+  // An intermittent live fixture feed must not erase already verified
+  // same-date fixtures during an explicit owner correction. Keep prior
+  // research rows verbatim (and pre-kickoff) when absent in the fresh pull.
+  if(ownerOverride){
+    try{
+      const prior=JSON.parse(await fs.readFile(path.join("data","research-base-"+DATE+".json"),"utf8"));
+      if(prior.date===DATE&&Array.isArray(prior.fixtures)){
+        const names=x=>[x.league,key(x.home?.name),key(x.away?.name)].join("|");
+        const knownIds=new Set(fixtures.map(x=>String(x.id)));
+        const knownPairs=new Set(fixtures.map(names));
+        let retained=0;
+        for(const old of prior.fixtures){
+          if(!old?.id||!old?.date||!old?.home?.name||!old?.away?.name||
+             globalThis.FootyEdgeAvailability.eventDay({date:old.date})!==DATE)continue;
+          if(knownIds.has(String(old.id))||knownPairs.has(names(old)))continue;
+          if(globalThis.FootyEdgeAvailability.isExcludedSecondTier?.(old.league,old.leagueName))continue;
+          fixtures.push({...old,retainedFromEarlierVerifiedSameDayResearch:true});
+          knownIds.add(String(old.id));knownPairs.add(names(old));retained++;
+        }
+        if(retained)console.log("Retained date-verified missing fixtures from prior research:",retained);
+      }
+    }catch(error){if(error.code!=="ENOENT")console.warn("Prior same-day research cannot supplement:",String(error).slice(0,120))}
+  }
   let learningIngested=null;try{const x=JSON.parse(await fs.readFile(path.join("data","postmortems","diagnostics.json"),"utf8"));learningIngested={generatedAt:x.generatedAt,decision:x.decision,modelChange:x.modelChange}}catch(e){if(e.code!=="ENOENT")throw e}
   // Player props require their own sourced event-level goals/assists and confirmed starters.
   // The domestic scores hub has neither, so no player is inferred from team trends.
