@@ -254,7 +254,8 @@ async function main(){
   // Explicit owner-specified October 9 league expansion: write a NEW research
   // source, never modify the frozen original deterministic research base.
   const correction=process.env.OWNER_SCOPE_EXPANSION==="2026-10-09"&&DATE==="2026-10-09";
-  if(!correction){
+  const ownerOverride=process.env.OWNER_OVERRIDE_DATE===DATE&&DATE===torontoDate();
+  if(!correction&&!ownerOverride){
     try{await fs.access(path.join('data','boards',DATE+'.json'));console.log('Published research remains frozen:',DATE);return}catch(e){if(e.code!=='ENOENT')throw e}
   }
   if(!FORCE&&torontoHour()!=="06"){console.log("Skip: Toronto hour is",torontoHour(),"not 06");return}
