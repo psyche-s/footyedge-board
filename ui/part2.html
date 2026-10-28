@@ -1837,8 +1837,11 @@ async function load(date=S.date){
       "Premier League":"eng.1","La Liga":"esp.1","Serie A":"ita.1",
       "Bundesliga":"ger.1","Ligue 1":"fra.1","Eredivisie":"ned.1",
       "eng.2":"eng.2","tur.1":"tur.1","ksa.1":"ksa.1",
-      "sco.1":"sco.1","esp.2":"esp.2","ger.2":"ger.2","ita.2":"ita.2",
-      "fra.2":"fra.2","por.1":"por.1","cze.1":"cze.1","jpn.1":"jpn.1","J1 League":"jpn.1","kor.1":"kor.1","K League 1":"kor.1"
+      "sco.1":"sco.1","EFL Cup":"eng.league_cup","League Cup":"eng.league_cup","Carabao Cup":"eng.league_cup",
+      "FA Cup":"eng.fa_cup","DFB Pokal":"ger.dfb_pokal","DFB-Pokal":"ger.dfb_pokal","Copa del Rey":"esp.copa_del_rey",
+      "Coppa Italia":"ita.coppa_italia","Coupe de France":"fra.coupe_de_france","KNVB Beker":"ned.cup",
+      "Taça de Portugal":"por.taca.portugal","Taca de Portugal":"por.taca.portugal",
+      "Scottish Cup":"sco.tennents","Scottish League Cup":"sco.cis","FA Cup (Scotland)":"sco.tennents","por.1":"por.1","cze.1":"cze.1","jpn.1":"jpn.1","J1 League":"jpn.1","kor.1":"kor.1","K League 1":"kor.1"
     };
     const knownFixtureIds=new Set(games.map(g=>String(g.apiFixtureId||g.id)));
     const knownFixtureKeys=new Set(games.map(g=>fixtureMatchKey(g.home.name,g.away.name)));
