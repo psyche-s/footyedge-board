@@ -17,7 +17,8 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    const sim=simById.get(String(f.id)),H=(f.last10?.home||[]).filter(x=>Number.isInteger(x.gf)&&Number.isInteger(x.ga)&&x.gf>=0&&x.ga>=0).slice(0,10),A=(f.last10?.away||[]).filter(x=>Number.isInteger(x.gf)&&Number.isInteger(x.ga)&&x.gf>=0&&x.ga>=0).slice(0,10);
    const nh=H.length,na=A.length;
    const out={gameId:String(f.id),league:f.league,home:f.home.name,away:f.away.name,kickoff:f.date,reviewed:true,picks:[],qualifyingInputs:{homeLast10:nh,awayLast10:na,simulation:!!sim,sourceReviewed:false,news:newsById.has(String(f.id))}};
-   if(!sim||nh<8||na<8){out.reviewed=false;out.reason="Historical match samples or model snapshot incomplete";data.push(out);continue}
+   const minHistory=process.env.OWNER_OVERRIDE_DATE===day?5:8;
+   if(!sim||nh<minHistory||na<minHistory){out.reviewed=false;out.reason="Historical match samples or model snapshot incomplete";data.push(out);continue}
    const h=f.home.name,a=f.away.name;const c=(arr,fn)=>arr.filter(fn).length;
    const last5=x=>x.slice(0,5);
    const score=x=>Math.round(x);
@@ -26,7 +27,9 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    const pct=n=>trim(Number(n),0,100);
    const both=(lh,la)=>.5*(lh/nh+la/na)*100;
    const q=(mode,modelRate,lh,la,stat,reason)=>({
-     label:mode.label,category:mode.category,family:mode.family,confidenceRating:score(trim(.55*modelRate+.45*both(lh,la),45,94)),researchStrength:score(trim(.55*modelRate+.45*both(lh,la),45,94)),
+     label:mode.label,category:mode.category,family:mode.family,
+      confidenceRating:score(trim(.55*modelRate+.45*both(lh,la),45,(nh<8||na<8)?76:94)),
+      researchStrength:score(trim(.55*modelRate+.45*both(lh,la),45,(nh<8||na<8)?76:94)),limitedSample:nh<8||na<8,
      historicalSupportPct:score(both(lh,la)),experimentalFrequencyPct:Number(modelRate.toFixed(2)),homeHits:lh,homeSample:nh,awayHits:la,awaySample:na,
      reason,rank:null,sourceBackedReason:true,probabilityCalibrated:false,confidenceType:"researched_strength_not_calibrated_win_probability",score:null,odds:null,ev:null,verifiedPrice:false,researchOnly:true,marketEvidence:stat
    });
