@@ -153,6 +153,16 @@ repoJson("data/performance/summary.json").then(p=>{
 (async()=>{
   const date=todayToronto();
   let board=null;
+  // Show the actual owner-approved published board before a stale frozen
+  // release-tag snapshot. Releases are historical fallbacks for older days.
+  try{
+    board=await repoJson("data/boards/"+date+".json");
+    if(board?.date===date&&board.ownerOverride===true&&board.state==="published"&&
+       Array.isArray(board.top5)&&board.top5.length){
+      renderTop5(board.top5,"",board);
+      return;
+    }
+  }catch{}
   // Explicit owner-approved versioned research correction takes precedence
   // for its date only; the frozen original and release remain unchanged.
   try{
@@ -176,7 +186,7 @@ repoJson("data/performance/summary.json").then(p=>{
     }
   }catch{}
   try{
-    board=await repoJson("data/boards/"+date+".json");
+    board=board||await repoJson("data/boards/"+date+".json");
     if(board?.top5?.length){renderTop5(board.top5,"",board);return}
     if(Array.isArray(board?.games)&&board.games.length===0&&board?.nextGameDate){
       renderTop5([],FootyEdgeAvailability.message({kind:"empty",date,count:0,nextGameDate:board.nextGameDate,searchComplete:true},true,true),board);
