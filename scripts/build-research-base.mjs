@@ -2,6 +2,7 @@ import '../assets/board-availability.js';
 import fs from "node:fs/promises";
 import path from "node:path";
 import {evaluatePlayerProps} from "./player-prop-research.mjs";
+import {canonicalFixtureKey} from "./owner-fixture-identity.mjs";
 import {loadCzechSeason,eventsForCzechDate} from "../assets/czech-first-league.mjs";
 
 const SITE=(process.env.FOOTYEDGE_URL||"https://footyedge-board.vercel.app").replace(/\/$/,"");
@@ -403,6 +404,29 @@ async function main(){
         if(retained)console.log("Retained date-verified missing fixtures from prior research:",retained);
       }
     }catch(error){if(error.code!=="ENOENT")console.warn("Prior same-day research cannot supplement:",String(error).slice(0,120))}
+  }
+  // Prefer the fully researched ESPN match when the date-scoped official
+  // schedule uses a shorter club alias. Duplicate fixture twins were causing
+  // empty Top 3 cards even when an equivalent match had three real picks.
+  if(ownerOverride){
+    const byIdentity=new Map();
+    const quality=row=>(
+      (/^\\d+$/.test(String(row.id))?100:0)+
+      Math.min(10,Number(row.history?.home)||0)*3+
+      Math.min(10,Number(row.history?.away)||0)*3+
+      (row.hubHistory?.h2h?.length||0)
+    );
+    let removed=0;
+    for(const row of fixtures){
+      const identity=canonicalFixtureKey({league:row.league,home:row.home,away:row.away,date:row.date});
+      const prior=byIdentity.get(identity);
+      if(!prior)byIdentity.set(identity,row);
+      else {removed++;if(quality(row)>quality(prior))byIdentity.set(identity,row)}
+    }
+    if(removed){
+      fixtures.splice(0,fixtures.length,...byIdentity.values());
+      console.log("Deduplicated same-date match aliases to preserve researched picks:",removed);
+    }
   }
   let learningIngested=null;try{const x=JSON.parse(await fs.readFile(path.join("data","postmortems","diagnostics.json"),"utf8"));learningIngested={generatedAt:x.generatedAt,decision:x.decision,modelChange:x.modelChange}}catch(e){if(e.code!=="ENOENT")throw e}
   // Player props require their own sourced event-level goals/assists and confirmed starters.
