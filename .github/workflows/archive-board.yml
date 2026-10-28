@@ -284,7 +284,7 @@ jobs:
             echo "No board changes."
             exit 0
           fi
-          git commit -m "chore(board): freeze same-day Top 5 $TODAY [skip ci]"
+          git commit -m "data(original): publish same-day Top 5 $TODAY"
           # Park unrelated generated model files so publication can rebase cleanly.
           git stash push --include-untracked -m "FootyEdge daily auxiliary files" || true
           git pull --rebase origin main
