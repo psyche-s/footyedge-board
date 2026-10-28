@@ -2,13 +2,13 @@
   "schema": "footyedge-experimental-monte-carlo-v1",
   "modelVersion": "experimental-poisson-10000-v2",
   "date": "2026-10-28",
-  "generatedAt": "2026-10-28T14:25:49.927Z",
+  "generatedAt": "2026-10-28T17:57:36.031Z",
   "mode": "shadow_only",
   "usedForOfficialPicks": false,
   "simulationsPerFixture": 10000,
   "totalSimulations": 800000,
   "sourceDates": {
-    "research": "2026-10-28T14:25:39.980Z",
+    "research": "2026-10-28T17:57:26.288Z",
     "analytics": "2026-10-28T05:07:20.122551+00:00",
     "h2h": "2026-10-28",
     "teamNews": "2026-10-28T14:25:40.105Z",
@@ -28,9 +28,9 @@
   },
   "coverage": {
     "fixtures": 80,
-    "preKickoff": 80,
-    "postKickoff": 0,
-    "atLeastEightEach": 42,
+    "preKickoff": 68,
+    "postKickoff": 12,
+    "atLeastEightEach": 41,
     "shotJoined": 4,
     "realXg": 0,
     "projectedXI": 7,
@@ -1241,7 +1241,7 @@
       "kickoff": "2026-10-28T17:30Z",
       "home": "AC Milan",
       "away": "Bologna",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 1.95,
@@ -1305,7 +1305,7 @@
       "kickoff": "2026-10-28T17:30Z",
       "home": "Parma",
       "away": "Udinese",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 1.329,
@@ -1369,7 +1369,7 @@
       "kickoff": "2026-10-28T17:30Z",
       "home": "Venezia",
       "away": "Internazionale",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 1.092,
@@ -1550,256 +1550,6 @@
         "verified_season_strength",
         "source_join_verified_team_shots_on_target",
         "last_5_h2h_small_weight"
-      ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
-      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
-    },
-    {
-      "fixtureId": "401916921",
-      "league": "ger.dfb_pokal",
-      "kickoff": "2026-10-28T17:00Z",
-      "home": "Dynamo Dresden",
-      "away": "Schalke 04",
-      "status": "pre_kickoff_experimental",
-      "simulations": 10000,
-      "expectedGoals": {
-        "home": 1.619,
-        "away": 1.584
-      },
-      "winDrawLossPct": {
-        "homeWin": 38.72,
-        "draw": 23.82,
-        "awayWin": 37.46
-      },
-      "predictedScore": "1-1",
-      "predictedScoreProbabilityPct": 10.53,
-      "mostLikelyScores": [
-        {
-          "score": "1-1",
-          "probabilityPct": 10.53
-        },
-        {
-          "score": "1-2",
-          "probabilityPct": 8.12
-        },
-        {
-          "score": "2-1",
-          "probabilityPct": 8.03
-        }
-      ],
-      "marketsPct": {
-        "over1_5": 82.86,
-        "over2_5": 62.12,
-        "under3_5": 59.5,
-        "bttsYes": 63.81
-      },
-      "dataQuality": {
-        "level": "limited_experimental",
-        "homeHistoryGames": 10,
-        "awayHistoryGames": 10,
-        "verifiedStandings": false,
-        "verifiedShotJoin": false,
-        "verifiedXg": false,
-        "h2hGames": 4,
-        "datedProjectedXI": false,
-        "missingInputs": [
-          "current_season_standings_strength",
-          "calibrated_player_absence_impact",
-          "verified_xg"
-        ]
-      },
-      "usedFactors": [
-        "last_10_recency_weighted_goals_for_against",
-        "venue_home_advantage",
-        "league_sample_shrinkage",
-        "last_5_h2h_small_weight"
-      ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
-      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
-    },
-    {
-      "fixtureId": "401917036",
-      "league": "ger.dfb_pokal",
-      "kickoff": "2026-10-28T17:00Z",
-      "home": "SC Freiburg",
-      "away": "VfL Wolfsburg",
-      "status": "pre_kickoff_experimental",
-      "simulations": 10000,
-      "expectedGoals": {
-        "home": 2.133,
-        "away": 2.036
-      },
-      "winDrawLossPct": {
-        "homeWin": 41.69,
-        "draw": 19.45,
-        "awayWin": 38.86
-      },
-      "predictedScore": "2-2",
-      "predictedScoreProbabilityPct": 7.21,
-      "mostLikelyScores": [
-        {
-          "score": "2-2",
-          "probabilityPct": 7.21
-        },
-        {
-          "score": "2-1",
-          "probabilityPct": 7.06
-        },
-        {
-          "score": "1-2",
-          "probabilityPct": 6.6
-        }
-      ],
-      "marketsPct": {
-        "over1_5": 92.06,
-        "over2_5": 78.85,
-        "under3_5": 39.26,
-        "bttsYes": 76.19
-      },
-      "dataQuality": {
-        "level": "limited_experimental",
-        "homeHistoryGames": 10,
-        "awayHistoryGames": 10,
-        "verifiedStandings": false,
-        "verifiedShotJoin": false,
-        "verifiedXg": false,
-        "h2hGames": 5,
-        "datedProjectedXI": false,
-        "missingInputs": [
-          "current_season_standings_strength",
-          "calibrated_player_absence_impact",
-          "verified_xg"
-        ]
-      },
-      "usedFactors": [
-        "last_10_recency_weighted_goals_for_against",
-        "venue_home_advantage",
-        "league_sample_shrinkage",
-        "last_5_h2h_small_weight"
-      ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
-      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
-    },
-    {
-      "fixtureId": "401917032",
-      "league": "ger.dfb_pokal",
-      "kickoff": "2026-10-28T17:00Z",
-      "home": "SC Paderborn 07",
-      "away": "VfB Stuttgart",
-      "status": "pre_kickoff_experimental",
-      "simulations": 10000,
-      "expectedGoals": {
-        "home": 1.509,
-        "away": 1.579
-      },
-      "winDrawLossPct": {
-        "homeWin": 36.81,
-        "draw": 23.72,
-        "awayWin": 39.47
-      },
-      "predictedScore": "1-1",
-      "predictedScoreProbabilityPct": 10.41,
-      "mostLikelyScores": [
-        {
-          "score": "1-1",
-          "probabilityPct": 10.41
-        },
-        {
-          "score": "2-1",
-          "probabilityPct": 8.6
-        },
-        {
-          "score": "1-2",
-          "probabilityPct": 8.32
-        }
-      ],
-      "marketsPct": {
-        "over1_5": 80.87,
-        "over2_5": 59.28,
-        "under3_5": 63.17,
-        "bttsYes": 61.01
-      },
-      "dataQuality": {
-        "level": "limited_experimental",
-        "homeHistoryGames": 10,
-        "awayHistoryGames": 10,
-        "verifiedStandings": false,
-        "verifiedShotJoin": false,
-        "verifiedXg": false,
-        "h2hGames": 2,
-        "datedProjectedXI": false,
-        "missingInputs": [
-          "current_season_standings_strength",
-          "calibrated_player_absence_impact",
-          "verified_xg"
-        ]
-      },
-      "usedFactors": [
-        "last_10_recency_weighted_goals_for_against",
-        "venue_home_advantage",
-        "league_sample_shrinkage"
-      ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
-      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
-    },
-    {
-      "fixtureId": "401916919",
-      "league": "ger.dfb_pokal",
-      "kickoff": "2026-10-28T17:00Z",
-      "home": "SSV Jeddeloh II",
-      "away": "Hertha Berlin",
-      "status": "pre_kickoff_experimental",
-      "simulations": 10000,
-      "expectedGoals": {
-        "home": 1.97,
-        "away": 1.828
-      },
-      "winDrawLossPct": {
-        "homeWin": 42.75,
-        "draw": 21.12,
-        "awayWin": 36.13
-      },
-      "predictedScore": "2-1",
-      "predictedScoreProbabilityPct": 8.19,
-      "mostLikelyScores": [
-        {
-          "score": "2-1",
-          "probabilityPct": 8.19
-        },
-        {
-          "score": "2-2",
-          "probabilityPct": 7.48
-        },
-        {
-          "score": "1-1",
-          "probabilityPct": 7.45
-        }
-      ],
-      "marketsPct": {
-        "over1_5": 89.24,
-        "over2_5": 73.77,
-        "under3_5": 46.59,
-        "bttsYes": 72.5
-      },
-      "dataQuality": {
-        "level": "insufficient_history",
-        "homeHistoryGames": 1,
-        "awayHistoryGames": 10,
-        "verifiedStandings": false,
-        "verifiedShotJoin": false,
-        "verifiedXg": false,
-        "h2hGames": 0,
-        "datedProjectedXI": false,
-        "missingInputs": [
-          "current_season_standings_strength",
-          "calibrated_player_absence_impact",
-          "verified_xg"
-        ]
-      },
-      "usedFactors": [
-        "last_10_recency_weighted_goals_for_against",
-        "venue_home_advantage",
-        "league_sample_shrinkage"
       ],
       "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
@@ -2038,69 +1788,6 @@
         "verifiedShotJoin": false,
         "verifiedXg": false,
         "h2hGames": 3,
-        "datedProjectedXI": false,
-        "missingInputs": [
-          "current_season_standings_strength",
-          "calibrated_player_absence_impact",
-          "verified_xg"
-        ]
-      },
-      "usedFactors": [
-        "last_10_recency_weighted_goals_for_against",
-        "venue_home_advantage",
-        "league_sample_shrinkage",
-        "last_5_h2h_small_weight"
-      ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
-      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
-    },
-    {
-      "fixtureId": "401925177",
-      "league": "ned.cup",
-      "kickoff": "2026-10-28T17:45Z",
-      "home": "Sparta Rotterdam",
-      "away": "Fortuna Sittard",
-      "status": "pre_kickoff_experimental",
-      "simulations": 10000,
-      "expectedGoals": {
-        "home": 1.78,
-        "away": 1.769
-      },
-      "winDrawLossPct": {
-        "homeWin": 38.56,
-        "draw": 22.51,
-        "awayWin": 38.93
-      },
-      "predictedScore": "1-1",
-      "predictedScoreProbabilityPct": 9.33,
-      "mostLikelyScores": [
-        {
-          "score": "1-1",
-          "probabilityPct": 9.33
-        },
-        {
-          "score": "2-1",
-          "probabilityPct": 8.01
-        },
-        {
-          "score": "1-2",
-          "probabilityPct": 7.95
-        }
-      ],
-      "marketsPct": {
-        "over1_5": 86.4,
-        "over2_5": 68.58,
-        "under3_5": 52.47,
-        "bttsYes": 69.31
-      },
-      "dataQuality": {
-        "level": "limited_experimental",
-        "homeHistoryGames": 10,
-        "awayHistoryGames": 10,
-        "verifiedStandings": false,
-        "verifiedShotJoin": false,
-        "verifiedXg": false,
-        "h2hGames": 5,
         "datedProjectedXI": false,
         "missingInputs": [
           "current_season_standings_strength",
@@ -2932,12 +2619,74 @@
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
     },
     {
+      "fixtureId": "verified-ger.dfb_pokal-sc freiburg-vfl wolfsburg",
+      "league": "ger.dfb_pokal",
+      "kickoff": "2026-10-28T17:00:00Z",
+      "home": "SC Freiburg",
+      "away": "VfL Wolfsburg",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.09,
+        "away": 1.786
+      },
+      "winDrawLossPct": {
+        "homeWin": 45.5,
+        "draw": 20.8,
+        "awayWin": 33.7
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 7.95,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 7.95
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.74
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.05
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.67,
+        "over2_5": 74.38,
+        "under3_5": 45.78,
+        "bttsYes": 73.01
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 0,
+        "awayHistoryGames": 0,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
       "fixtureId": "verified-ger.dfb_pokal-dynamo dresden-fc schalke 04",
       "league": "ger.dfb_pokal",
       "kickoff": "2026-10-28T17:00:00Z",
       "home": "Dynamo Dresden",
       "away": "FC Schalke 04",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 2.09,
@@ -2999,7 +2748,7 @@
       "kickoff": "2026-10-28T17:00:00Z",
       "home": "SC Paderborn",
       "away": "VfB Stuttgart",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 2.09,
@@ -3061,7 +2810,7 @@
       "kickoff": "2026-10-28T17:00:00Z",
       "home": "SSV Jeddeloh II",
       "away": "Hertha BSC",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 2.09,
@@ -3185,7 +2934,7 @@
       "kickoff": "2026-10-28T17:30:00Z",
       "home": "Venezia",
       "away": "Inter Milan",
-      "status": "pre_kickoff_experimental",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
       "simulations": 10000,
       "expectedGoals": {
         "home": 1.533,
@@ -5035,6 +4784,256 @@
         "last_10_recency_weighted_goals_for_against",
         "venue_home_advantage",
         "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401916921",
+      "league": "ger.dfb_pokal",
+      "kickoff": "2026-10-28T17:00Z",
+      "home": "Dynamo Dresden",
+      "away": "Schalke 04",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.619,
+        "away": 1.584
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.72,
+        "draw": 23.82,
+        "awayWin": 37.46
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.53,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.53
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.12
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.03
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.86,
+        "over2_5": 62.12,
+        "under3_5": 59.5,
+        "bttsYes": 63.81
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401917032",
+      "league": "ger.dfb_pokal",
+      "kickoff": "2026-10-28T17:00Z",
+      "home": "SC Paderborn 07",
+      "away": "VfB Stuttgart",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.509,
+        "away": 1.579
+      },
+      "winDrawLossPct": {
+        "homeWin": 36.81,
+        "draw": 23.72,
+        "awayWin": 39.47
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.41,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.41
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.6
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.32
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.87,
+        "over2_5": 59.28,
+        "under3_5": 63.17,
+        "bttsYes": 61.01
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401916919",
+      "league": "ger.dfb_pokal",
+      "kickoff": "2026-10-28T17:00Z",
+      "home": "SSV Jeddeloh II",
+      "away": "Hertha Berlin",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.97,
+        "away": 1.828
+      },
+      "winDrawLossPct": {
+        "homeWin": 42.75,
+        "draw": 21.12,
+        "awayWin": 36.13
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.19,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.19
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.48
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.45
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.24,
+        "over2_5": 73.77,
+        "under3_5": 46.59,
+        "bttsYes": 72.5
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 1,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925177",
+      "league": "ned.cup",
+      "kickoff": "2026-10-28T17:45Z",
+      "home": "Sparta Rotterdam",
+      "away": "Fortuna Sittard",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.78,
+        "away": 1.769
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.56,
+        "draw": 22.51,
+        "awayWin": 38.93
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.33,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.33
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.01
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.95
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.4,
+        "over2_5": 68.58,
+        "under3_5": 52.47,
+        "bttsYes": 69.31
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
       ],
       "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
