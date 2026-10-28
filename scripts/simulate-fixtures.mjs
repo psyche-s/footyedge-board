@@ -134,7 +134,7 @@ async function main(){
  const research=await read("data/research-base-"+day+".json");
  if(!research||research.date!==day)throw Error("Exact-date research required");
  const dest=path.join(root,"data/experimental-simulations",day+".json");
- try{await fs.access(dest);console.log("Existing experimental snapshot preserved:",dest);return}catch(e){if(e.code!=="ENOENT")throw e}
+ if(process.env.OWNER_OVERRIDE_DATE!==day){try{await fs.access(dest);console.log("Existing experimental snapshot preserved:",dest);return}catch(e){if(e.code!=="ENOENT")throw e}}
  const analytics=await read("data/analytics/"+day+".json");
  const h2h=await read("data/h2h/"+day+".json");
  const teamNews=await read("data/team-intelligence/"+day+".json");
