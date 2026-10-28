@@ -4,12 +4,16 @@ import fs from "node:fs";
 const ui=fs.readFileSync("ui/part1.html","utf8");
 const runtime=fs.readFileSync("ui/part2.html","utf8");
 const css=fs.readFileSync("assets/fixture-controls-v1.css","utf8");
-test("fixture competitions show meaningful league names, not raw ITA 2",()=>{
- assert.match(ui,/"ita\.2":"Serie B"/);
- assert.match(ui,/"esp\.2":"LaLiga Hypermotion"/);
- assert.match(ui,/"ger\.2":"2\. Bundesliga"/);
+test("excluded second-tier fixture competitions stay hidden, while EFL Championship remains",()=>{
+ for(const id of ["ita.2","esp.2","ger.2","fra.2"])
+   assert.doesNotMatch(ui,new RegExp('"'+id.replaceAll(".","\\.")+'":'));
+ assert.match(ui,/"eng\.2":"EFL Championship"/);
  assert.match(ui,/FE_FIXTURE_LEAGUE_LABELS\[key\]/);
  assert.match(ui,/const MAJOR_LEAGUES=new Set\(Object\.keys\(leagueNames\)\)/);
+ assert.match(runtime,/FootyEdgeAvailability\.isExcludedSecondTier\(g\.league,g\.leagueName\)/);
+ const availability=fs.readFileSync("assets/board-availability.js","utf8");
+ assert.match(availability,/function isExcludedSecondTier\(/);
+ assert.match(availability,/if\(code==="eng\.2"\)return false/);
 });
 test("previously missing competitions have image sources, not only a ball fallback",()=>{
  for(const id of ["ita.2","esp.2","ger.2","fra.2","sco.1"])
