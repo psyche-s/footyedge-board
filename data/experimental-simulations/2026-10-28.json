@@ -2,16 +2,16 @@
   "schema": "footyedge-experimental-monte-carlo-v1",
   "modelVersion": "experimental-poisson-10000-v2",
   "date": "2026-10-28",
-  "generatedAt": "2026-10-28T14:22:28.018Z",
+  "generatedAt": "2026-10-28T14:25:49.927Z",
   "mode": "shadow_only",
   "usedForOfficialPicks": false,
   "simulationsPerFixture": 10000,
   "totalSimulations": 800000,
   "sourceDates": {
-    "research": "2026-10-28T14:22:20.610Z",
+    "research": "2026-10-28T14:25:39.980Z",
     "analytics": "2026-10-28T05:07:20.122551+00:00",
     "h2h": "2026-10-28",
-    "teamNews": "2026-10-28T14:18:11.300Z",
+    "teamNews": "2026-10-28T14:25:40.105Z",
     "standings": "2026-10-28T05:07:20.827Z"
   },
   "assumptions": {
@@ -33,7 +33,7 @@
     "atLeastEightEach": 42,
     "shotJoined": 4,
     "realXg": 0,
-    "projectedXI": 2,
+    "projectedXI": 7,
     "standingsJoined": 19
   },
   "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
@@ -85,7 +85,7 @@
         "verifiedShotJoin": false,
         "verifiedXg": false,
         "h2hGames": 5,
-        "datedProjectedXI": false,
+        "datedProjectedXI": true,
         "missingInputs": [
           "current_season_standings_strength",
           "calibrated_player_absence_impact",
@@ -98,7 +98,7 @@
         "league_sample_shrinkage",
         "last_5_h2h_small_weight"
       ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
     },
     {
@@ -211,7 +211,7 @@
         "verifiedShotJoin": false,
         "verifiedXg": false,
         "h2hGames": 5,
-        "datedProjectedXI": false,
+        "datedProjectedXI": true,
         "missingInputs": [
           "current_season_standings_strength",
           "calibrated_player_absence_impact",
@@ -224,7 +224,7 @@
         "league_sample_shrinkage",
         "last_5_h2h_small_weight"
       ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
     },
     {
@@ -274,7 +274,7 @@
         "verifiedShotJoin": false,
         "verifiedXg": false,
         "h2hGames": 3,
-        "datedProjectedXI": false,
+        "datedProjectedXI": true,
         "missingInputs": [
           "current_season_standings_strength",
           "calibrated_player_absence_impact",
@@ -287,7 +287,7 @@
         "league_sample_shrinkage",
         "last_5_h2h_small_weight"
       ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
     },
     {
@@ -337,7 +337,7 @@
         "verifiedShotJoin": false,
         "verifiedXg": false,
         "h2hGames": 5,
-        "datedProjectedXI": false,
+        "datedProjectedXI": true,
         "missingInputs": [
           "current_season_standings_strength",
           "calibrated_player_absence_impact",
@@ -350,7 +350,7 @@
         "league_sample_shrinkage",
         "last_5_h2h_small_weight"
       ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
     },
     {
@@ -2916,7 +2916,7 @@
         "verifiedShotJoin": false,
         "verifiedXg": false,
         "h2hGames": 0,
-        "datedProjectedXI": false,
+        "datedProjectedXI": true,
         "missingInputs": [
           "current_season_standings_strength",
           "calibrated_player_absence_impact",
@@ -2928,7 +2928,7 @@
         "venue_home_advantage",
         "league_sample_shrinkage"
       ],
-      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
       "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
     },
     {
