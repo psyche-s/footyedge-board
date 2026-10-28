@@ -20,7 +20,7 @@ const validXI = list => Array.isArray(list) && list.length===11 &&
 const freshUrl = url => {
  try {
   const u=new URL(url);
-  return u.protocol==="https:" && /(^|\.)sportsmole\.co\.uk$/.test(u.hostname);
+  return u.protocol==="https:" && /(^|\.)(sportsmole\.co\.uk|bulinews\.com)$/.test(u.hostname);
  } catch {return false;}
 };
 const recent = (when, now) => {
@@ -31,25 +31,29 @@ export function importAuditedPredictions({date,audit,base,existing=null,now=Date
  if(!safeDate(date) || audit?.date!==date || base?.date!==date ||
   !Array.isArray(audit.fixtures) || !Array.isArray(base.fixtures))
    throw Error("A dated provenance ledger and matching researched fixtures are required.");
- const checkedAt=audit.checkedAt;
+ const checkedAt=audit.checkedAt||audit.recordedAt;
  if(!recent(checkedAt,now))return {document:existing,added:[],rejected:["stale-audit"]};
  const known=new Map(base.fixtures.map(f=>[String(f.id),f]));
+ const byTeams=new Map();
+ for(const g of base.fixtures){const k=norm(g.home?.name)+"|"+norm(g.away?.name);if(!byTeams.has(k))byTeams.set(k,[]);byTeams.get(k).push(g)}
  const previous=existing?.schema==="footyedge-sourced-team-intelligence-v1" &&
   existing.date===date && Array.isArray(existing.fixtures)?existing.fixtures:[];
  const byId=new Map(previous.map(row=>[String(row.fixtureId),row]));
  const added=[], rejected=[];
  for(const f of audit.fixtures){
-  const id=String(f?.fixtureId||""),g=known.get(id),news=f?.teamNews;
+  const teamMatches=byTeams.get(norm(f.home)+"|"+norm(f.away))||[];
+  const matched=f?.fixtureId?known.get(String(f.fixtureId)):(teamMatches.length===1?teamMatches[0]:null);
+  const id=String(matched?.id||f?.fixtureId||""),g=matched,news=f?.teamNews;
   if(!g || norm(g.home?.name)!==norm(f.home) || norm(g.away?.name)!==norm(f.away)){
    rejected.push(id+":fixture-mismatch");continue;
   }
-  const home=news?.predictedXI?.home,away=news?.predictedXI?.away;
-  const sourceOn=news?.sourcePublishedOn;
-  if(news?.status!=="unconfirmed_predicted_XI_from_dated_editorial_preview"||
+  const home=news?.predictedXI?.home||news?.homeProjectedXI,away=news?.predictedXI?.away||news?.awayProjectedXI;
+  const sourceOn=news?.sourcePublishedOn||f.publisherOpinions?.find(p=>p.url===news?.sourceUrl)?.publishedOn||null;
+  if(!["unconfirmed_predicted_XI_from_dated_editorial_preview","dated_editorial_predicted_XI_unconfirmed"].includes(news?.status)||
    !validXI(home)||!validXI(away)||!freshUrl(news?.sourceUrl)||
    !safeDate(sourceOn)||sourceOn>date||
    Date.parse(date+"T00:00:00Z")-Date.parse(sourceOn+"T00:00:00Z")>5*86400000){
-   if(news?.predictedXI)rejected.push(id+":invalid-or-undated-XI");
+   if(news?.predictedXI||news?.homeProjectedXI)rejected.push(id+":invalid-or-undated-XI");
    continue;
   }
   // Preserve any prior full predicted pair, including from a licensed feed.
