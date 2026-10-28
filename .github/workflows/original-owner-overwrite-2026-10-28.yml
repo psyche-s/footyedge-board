@@ -37,7 +37,8 @@ jobs:
           node --check scripts/owner-top3-ranking.mjs
           node --check scripts/build-top3-review.mjs
           node --check scripts/build-owner-picks-lite.mjs
-          node --test tests/owner-top3-ranking.test.mjs tests/owner-fixture-identity.test.mjs tests/top3-research-overlay.test.mjs
+          node --check scripts/apply-source-consensus-top3.mjs
+          node --test tests/owner-top3-ranking.test.mjs tests/owner-fixture-identity.test.mjs tests/top3-research-overlay.test.mjs tests/source-ledger-top3.test.mjs
           node --test tests/import-audited-predicted-xi.test.mjs tests/experimental-simulations.test.mjs tests/h2h-score-cache.test.mjs
       - name: Rebuild all current-date fixtures, form, match results and market evidence
         run: |
@@ -66,6 +67,7 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/build-evidence-only-board.mjs
+          node scripts/apply-source-consensus-top3.mjs
           node scripts/build-top3-review.mjs || echo "::warning::Some researched picks are evidence-limited."
           node scripts/audit-source-consensus.mjs || echo "::warning::Publisher votes incomplete."
           node scripts/build-source-coverage.mjs || true
@@ -77,7 +79,7 @@ jobs:
           set -euo pipefail
           node scripts/publish-owner-recovery.mjs
           node scripts/build-owner-picks-lite.mjs
-          node -e 'const b=require("./data/boards/2026-10-28.json");const h=[0,0,0,0];for(const g of b.games)h[g.top3.length]++;console.log("OWNER_TOP3_DISTRIBUTION",JSON.stringify({fixtures:b.games.length,zero:h[0],one:h[1],two:h[2],three:h[3],leagues:[...new Set(b.games.map(g=>g.league))]}));if(h[3]<15)process.exit(1)'
+          node -e 'const b=require("./data/boards/2026-10-28.json");const h=[0,0,0,0];for(const g of b.games)h[g.top3.length]++;const city=b.games.find(g=>g.home==="Manchester City");const ml=b.games.flatMap(g=>g.top3).filter(p=>p.category==="Match Result").length;const editorial=b.games.filter(g=>g.recoveryStatus==="multi-publisher-source-reviewed-top3").length;console.log("EDITORIAL_TOP3_DISTRIBUTION",JSON.stringify({fixtures:b.games.length,zero:h[0],one:h[1],two:h[2],three:h[3],sourceReviewed:editorial,ml,cityTop3:city?.top3.map(p=>p.label)}));if(h[3]<35||editorial<13||ml<5||city?.top3[0]?.label!=="BTTS Yes")process.exit(1)'
           node scripts/validate-published-boards.mjs --base origin/main
           node scripts/validate-public-metrics.mjs
           node scripts/audit-daily-refresh.mjs
