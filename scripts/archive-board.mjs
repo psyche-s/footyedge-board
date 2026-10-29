@@ -9,7 +9,9 @@ async function main(){
  if(DATE!==TODAY)throw Error('Cannot publish to previous or future dates');
  const existing=await read(target),draft=await read(draftPath);
  const ownerOverride=process.env.OWNER_OVERRIDE_DATE===DATE&&DATE===TODAY;
- if(existing&&!ownerOverride){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}
+ if(existing){
+  if(!ownerOverride){console.log('Existing official board is immutable; skip duplicate publication for '+DATE);return}
+ }
  if(!draft){console.log('No candidate draft; preserve current Top 5');return}
  if(draft.date!==DATE||draft.coverage!=='full-board'||!Array.isArray(draft.games)||!draft.games.length)throw Error('Incomplete current-day draft');
  if(!Array.isArray(draft.top5))throw Error('Current-day draft has no Top 5 array');
