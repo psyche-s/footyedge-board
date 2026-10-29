@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-29",
+  "asOf": "2026-10-29T10:51:23.079863+00:00",
+  "modelVersion": "dc-shadow-v0.7",
+  "mode": "shadow_only",
+  "promotedToPicks": false,
+  "assumptions": {
+    "decayXiPerDay": 0.001,
+    "minTrainingMatches": 90,
+    "minTeamMatches": 4,
+    "maxDataAgeDays": 30
+  },
+  "source": "OpenFootball public-domain league results + verified completed prior-day ESPN board scores (not xG or live odds)",
+  "fixtures": [
+    {
+      "fixtureId": "401874976",
+      "league": "ita.1",
+      "kickoff": "2026-10-29T17:30Z",
+      "home": "Frosinone",
+      "away": "Lecce",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401874969",
+      "league": "ita.1",
+      "kickoff": "2026-10-29T19:45Z",
+      "home": "Fiorentina",
+      "away": "Atalanta",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900882",
+      "league": "ksa.1",
+      "kickoff": "2026-10-29T14:35Z",
+      "home": "Al Khaleej",
+      "away": "Al Hazem",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900881",
+      "league": "ksa.1",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Al Nassr",
+      "away": "Al Kholood",
+      "status": "insufficient_or_stale_data"
+    },
+    {
+      "fixtureId": "401900880",
+      "league": "ksa.1",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Al Riyadh",
+      "away": "Al Qadsiah",
+      "status": "insufficient_or_stale_data"
+    }
+  ],
+  "leagueDiagnostics": {
+    "ita.1": {
+      "trainingMatches": 430,
+      "latestResultDate": "2026-09-20",
+      "resultAgeDays": 39,
+      "sourceUrls": [
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2025-26/it.1.json",
+        "https://raw.githubusercontent.com/openfootball/football.json/master/2026-27/it.1.json"
+      ],
+      "sourceErrors": [],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    },
+    "ksa.1": {
+      "trainingMatches": 0,
+      "latestResultDate": null,
+      "resultAgeDays": null,
+      "sourceUrls": [],
+      "sourceErrors": [
+        "2025-26: HTTPError",
+        "2026-27: HTTPError"
+      ],
+      "supplementalCompletedESPN": [],
+      "sourceConflictCount": 0,
+      "status": "insufficient_or_stale_data"
+    }
+  },
+  "researchInputSha256": "562611d7866d89dfc490753ee89f740801fa9f7ba81eb0422e9665658db0e8e9",
+  "researchGeneratedAt": "2026-10-29T10:50:59.095Z",
+  "researchAgeHours": 0.007,
+  "status": "completed",
+  "unmodeledFixtureCount": 32,
+  "coverage": {
+    "inputFixtures": 37,
+    "eligibleLeagueFixtures": 5,
+    "predicted": 0
+  }
+}

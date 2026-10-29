@@ -1,0 +1,2348 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-10-29",
+  "generatedAt": "2026-10-29T10:51:24.663Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 370000,
+  "sourceDates": {
+    "research": "2026-10-29T10:50:59.095Z",
+    "analytics": "2026-10-29T10:51:22.929745+00:00",
+    "h2h": "2026-10-29",
+    "teamNews": "2026-10-29T10:50:59.423Z",
+    "standings": "2026-10-29T10:51:23.474Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 37,
+    "preKickoff": 37,
+    "postKickoff": 0,
+    "atLeastEightEach": 10,
+    "shotJoined": 2,
+    "realXg": 0,
+    "projectedXI": 4,
+    "standingsJoined": 5
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401921844",
+      "league": "eng.league_cup",
+      "kickoff": "2026-10-29T19:45Z",
+      "home": "Everton",
+      "away": "Newcastle United",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.56,
+        "away": 1.208
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.51,
+        "draw": 25.2,
+        "awayWin": 28.29
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.92,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.92
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.98
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.94
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.1,
+        "over2_5": 52.6,
+        "under3_5": 69,
+        "bttsYes": 55.61
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928490",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T17:00Z",
+      "home": "Numancia",
+      "away": "Real Oviedo",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.587,
+        "away": 1.35
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.62,
+        "draw": 24.36,
+        "awayWin": 32.02
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.42,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.42
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.23
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.86
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.87,
+        "over2_5": 56,
+        "under3_5": 66.9,
+        "bttsYes": 58.29
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928515",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T17:00Z",
+      "home": "Peña Sport",
+      "away": "Huesca",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.422,
+        "away": 1.179
+      },
+      "winDrawLossPct": {
+        "homeWin": 41.52,
+        "draw": 26.89,
+        "awayWin": 31.59
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.87,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.87
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.51
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.34
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 72.48,
+        "over2_5": 46.75,
+        "under3_5": 74.26,
+        "bttsYes": 51.83
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928529",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Atlético Baleares",
+      "away": "Eldense",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.569,
+        "away": 1.2
+      },
+      "winDrawLossPct": {
+        "homeWin": 45.31,
+        "draw": 24.88,
+        "awayWin": 29.81
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.59,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.59
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.3
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.03
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.85,
+        "over2_5": 52.88,
+        "under3_5": 69.21,
+        "bttsYes": 55.92
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 6,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928496",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Atlético Calatayud",
+      "away": "Osasuna",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.679,
+        "away": 1.265
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.76,
+        "draw": 24.4,
+        "awayWin": 28.84
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.53,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.53
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.17
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.76
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.24,
+        "over2_5": 55.67,
+        "under3_5": 66.06,
+        "bttsYes": 58.54
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 4,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928494",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Coruxo",
+      "away": "Zamora CF",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.474,
+        "away": 1.203
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.25,
+        "draw": 25.09,
+        "awayWin": 31.66
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.72,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.72
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.22
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.3
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 74.09,
+        "over2_5": 49.67,
+        "under3_5": 72.56,
+        "bttsYes": 53.13
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 1,
+        "awayHistoryGames": 1,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928525",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Poblense",
+      "away": "Ceuta",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.62,
+        "away": 1.1
+      },
+      "winDrawLossPct": {
+        "homeWin": 49.25,
+        "draw": 25.02,
+        "awayWin": 25.73
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.19,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.19
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.55
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.5
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.91,
+        "over2_5": 51,
+        "under3_5": 71.07,
+        "bttsYes": 53.58
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928535",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "San Sebastián de los Reyes",
+      "away": "Coria",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.422,
+        "away": 1.342
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.51,
+        "draw": 25.85,
+        "awayWin": 35.64
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.05,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.05
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.66
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.59
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.87,
+        "over2_5": 52.88,
+        "under3_5": 69.09,
+        "bttsYes": 56.77
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 0,
+        "awayHistoryGames": 2,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928526",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "UB Lebrijana",
+      "away": "Getafe",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.043,
+        "away": 0.95
+      },
+      "winDrawLossPct": {
+        "homeWin": 62.98,
+        "draw": 20.25,
+        "awayWin": 16.77
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 10.42,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 10.42
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.2
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 10.16
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.86,
+        "over2_5": 58.12,
+        "under3_5": 63.87,
+        "bttsYes": 53.5
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928530",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T18:30Z",
+      "home": "Cieza",
+      "away": "Granada",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.377,
+        "away": 1.194
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.86,
+        "draw": 26.55,
+        "awayWin": 32.59
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.28,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.28
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.15
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.18
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 72.8,
+        "over2_5": 48.02,
+        "under3_5": 73.95,
+        "bttsYes": 51.86
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 5,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928523",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Antequera CF",
+      "away": "Aguilas",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.063,
+        "away": 1.332
+      },
+      "winDrawLossPct": {
+        "homeWin": 29.79,
+        "draw": 27.69,
+        "awayWin": 42.52
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.44,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.44
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 12.18
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.58
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 69.54,
+        "over2_5": 43.13,
+        "under3_5": 77.68,
+        "bttsYes": 48.53
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 4,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928491",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "CD Laredo",
+      "away": "Burgos",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.078,
+        "away": 1.299
+      },
+      "winDrawLossPct": {
+        "homeWin": 30,
+        "draw": 27.33,
+        "awayWin": 42.67
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.99,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.99
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 12.75
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.49
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 68.7,
+        "over2_5": 42.17,
+        "under3_5": 78.43,
+        "bttsYes": 47.67
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 5,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928498",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "CD Varea",
+      "away": "FC Andorra",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.638,
+        "away": 1.158
+      },
+      "winDrawLossPct": {
+        "homeWin": 49.01,
+        "draw": 24.5,
+        "awayWin": 26.49
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.38,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.38
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.06
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.59
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.31,
+        "over2_5": 53.25,
+        "under3_5": 68.88,
+        "bttsYes": 55.64
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 0,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928531",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Conquense",
+      "away": "Castellón",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.07,
+        "away": 1.475
+      },
+      "winDrawLossPct": {
+        "homeWin": 26.74,
+        "draw": 26.67,
+        "awayWin": 46.59
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.77,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.77
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 11.43
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.19
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 72.67,
+        "over2_5": 46.93,
+        "under3_5": 74.34,
+        "bttsYes": 50.98
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 0,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928511",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Covadonga",
+      "away": "Real Valladolid",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.373,
+        "away": 1.27
+      },
+      "winDrawLossPct": {
+        "homeWin": 37.49,
+        "draw": 27.47,
+        "awayWin": 35.04
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.02,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.02
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.16
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.66
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 74.62,
+        "over2_5": 49.18,
+        "under3_5": 72.15,
+        "bttsYes": 54.89
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 1,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928492",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Guijuelo",
+      "away": "Sporting Gijón",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.454,
+        "away": 1.163
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.4,
+        "draw": 25.65,
+        "awayWin": 30.95
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.36,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.36
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.38
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.23
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 73.17,
+        "over2_5": 47.74,
+        "under3_5": 73.42,
+        "bttsYes": 51.85
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 1,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928528",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Mijas Las Lagunas",
+      "away": "Real Jaen CF",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.608,
+        "away": 1.105
+      },
+      "winDrawLossPct": {
+        "homeWin": 50.74,
+        "draw": 23.64,
+        "awayWin": 25.62
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.12,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.12
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.77
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.44
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.82,
+        "over2_5": 51.67,
+        "under3_5": 71.08,
+        "bttsYes": 53.07
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 1,
+        "awayHistoryGames": 2,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928512",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Real Ávila",
+      "away": "Unionistas de Salamanca",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.627,
+        "away": 0.903
+      },
+      "winDrawLossPct": {
+        "homeWin": 55.25,
+        "draw": 23.88,
+        "awayWin": 20.87
+      },
+      "predictedScore": "1-0",
+      "predictedScoreProbabilityPct": 12.98,
+      "mostLikelyScores": [
+        {
+          "score": "1-0",
+          "probabilityPct": 12.98
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 11.22
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 10.63
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 71.87,
+        "over2_5": 46.88,
+        "under3_5": 75.09,
+        "bttsYes": 47.8
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 4,
+        "awayHistoryGames": 3,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928517",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T19:30Z",
+      "home": "Gimnástica Torrelavega",
+      "away": "UD Ourense",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.396,
+        "away": 1.07
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.67,
+        "draw": 26.73,
+        "awayWin": 29.6
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.48,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.48
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.43
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.33
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 70.74,
+        "over2_5": 45.04,
+        "under3_5": 76.63,
+        "bttsYes": 49.86
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 5,
+        "awayHistoryGames": 2,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928513",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T20:00Z",
+      "home": "AE Prat",
+      "away": "Athletic Club",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.768,
+        "away": 1.102
+      },
+      "winDrawLossPct": {
+        "homeWin": 52.46,
+        "draw": 23.59,
+        "awayWin": 23.95
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.13,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.13
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.93
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.84
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.66,
+        "over2_5": 53.91,
+        "under3_5": 67.81,
+        "bttsYes": 55.07
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928507",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T20:00Z",
+      "home": "Auriense Cented Academy",
+      "away": "Deportivo",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.411,
+        "away": 1.1
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.83,
+        "draw": 27.14,
+        "awayWin": 29.03
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.94,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.94
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.51
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.03
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 72.7,
+        "over2_5": 47.02,
+        "under3_5": 74.67,
+        "bttsYes": 51.83
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928489",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T20:00Z",
+      "home": "Ribadesella",
+      "away": "Racing Santander",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.834,
+        "away": 1.174
+      },
+      "winDrawLossPct": {
+        "homeWin": 52.79,
+        "draw": 22.51,
+        "awayWin": 24.7
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.49,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.49
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.67
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.29
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.2,
+        "over2_5": 58.6,
+        "under3_5": 64.41,
+        "bttsYes": 58.34
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928552",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T20:00Z",
+      "home": "Sporting Hortaleza",
+      "away": "Sevilla",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.783,
+        "away": 1.324
+      },
+      "winDrawLossPct": {
+        "homeWin": 47.98,
+        "draw": 22.99,
+        "awayWin": 29.03
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.1,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.1
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.68
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.11
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.46,
+        "over2_5": 60.58,
+        "under3_5": 61.27,
+        "bttsYes": 61.17
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928548",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-10-29T20:00Z",
+      "home": "Xerez",
+      "away": "Cádiz",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.318,
+        "away": 1.092
+      },
+      "winDrawLossPct": {
+        "homeWin": 42.16,
+        "draw": 27.13,
+        "awayWin": 30.71
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.94,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.94
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.68
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.04
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 69.54,
+        "over2_5": 43.67,
+        "under3_5": 77.79,
+        "bttsYes": 48.84
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 3,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874976",
+      "league": "ita.1",
+      "kickoff": "2026-10-29T17:30Z",
+      "home": "Frosinone",
+      "away": "Lecce",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.201,
+        "away": 1.212
+      },
+      "winDrawLossPct": {
+        "homeWin": 60.34,
+        "draw": 19.55,
+        "awayWin": 20.11
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.3,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.3
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.49
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 7.85
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.83,
+        "over2_5": 66.32,
+        "under3_5": 55.04,
+        "bttsYes": 62.1
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401874969",
+      "league": "ita.1",
+      "kickoff": "2026-10-29T19:45Z",
+      "home": "Fiorentina",
+      "away": "Atalanta",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.825,
+        "away": 1.87
+      },
+      "winDrawLossPct": {
+        "homeWin": 39.15,
+        "draw": 21.66,
+        "awayWin": 39.19
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 8.54,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 8.54
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.12
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.77
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.69,
+        "over2_5": 71.69,
+        "under3_5": 49.65,
+        "bttsYes": 71.1
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925224",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T17:45Z",
+      "home": "Kozakken Boys",
+      "away": "FC Utrecht",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.528,
+        "away": 1.678
+      },
+      "winDrawLossPct": {
+        "homeWin": 56.59,
+        "draw": 18.24,
+        "awayWin": 25.17
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.08,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.08
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 6.66
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.54
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 92.02,
+        "over2_5": 79.51,
+        "under3_5": 39.61,
+        "bttsYes": 74.5
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925231",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "ACV",
+      "away": "AFC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.079,
+        "away": 1.826
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.17,
+        "draw": 20.73,
+        "awayWin": 35.1
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.21,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.21
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.64
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.5
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 90.03,
+        "over2_5": 74.81,
+        "under3_5": 46.3,
+        "bttsYes": 72.97
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925238",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "De Treffers",
+      "away": "Heracles Almelo",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.84,
+        "away": 1.726
+      },
+      "winDrawLossPct": {
+        "homeWin": 41.89,
+        "draw": 21.65,
+        "awayWin": 36.46
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.15,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.15
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.34
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.12
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.35,
+        "over2_5": 68.58,
+        "under3_5": 52.73,
+        "bttsYes": 68.11
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925232",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "GVVV",
+      "away": "Noordwijk",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.941,
+        "away": 1.671
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.39,
+        "draw": 21.93,
+        "awayWin": 33.68
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 8.64,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 8.64
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.3
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.43
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.61,
+        "over2_5": 70.54,
+        "under3_5": 50.27,
+        "bttsYes": 70.01
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 3,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925234",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "HSV Hoek",
+      "away": "Sparta Nijkerk",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.175,
+        "away": 1.431
+      },
+      "winDrawLossPct": {
+        "homeWin": 54.6,
+        "draw": 20.06,
+        "awayWin": 25.34
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.23,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.23
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.22
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 6.6
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.12,
+        "over2_5": 70.43,
+        "under3_5": 50.93,
+        "bttsYes": 67.53
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 5,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925227",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "Purmersteijn",
+      "away": "Gemert",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.824,
+        "away": 1.691
+      },
+      "winDrawLossPct": {
+        "homeWin": 41.09,
+        "draw": 21.64,
+        "awayWin": 37.27
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 8.95,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 8.95
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.14
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.85
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.9,
+        "over2_5": 67.6,
+        "under3_5": 53.79,
+        "bttsYes": 67.14
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 2,
+        "awayHistoryGames": 3,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925229",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T19:00Z",
+      "home": "RKAV Volendam",
+      "away": "ROHDA Raalte",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.057,
+        "away": 2.112
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.09,
+        "draw": 20.31,
+        "awayWin": 39.6
+      },
+      "predictedScore": "2-2",
+      "predictedScoreProbabilityPct": 7.4,
+      "mostLikelyScores": [
+        {
+          "score": "2-2",
+          "probabilityPct": 7.4
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.15
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 6.91
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 91.71,
+        "over2_5": 78.27,
+        "under3_5": 40.43,
+        "bttsYes": 76.19
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 2,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401925237",
+      "league": "ned.cup",
+      "kickoff": "2026-10-29T20:00Z",
+      "home": "FC Groningen",
+      "away": "FC Emmen",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.015,
+        "away": 1.784
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.74,
+        "draw": 20.45,
+        "awayWin": 35.81
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.35,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.35
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.6
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.44
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.18,
+        "over2_5": 73.76,
+        "under3_5": 47.25,
+        "bttsYes": 72.03
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401900882",
+      "league": "ksa.1",
+      "kickoff": "2026-10-29T14:35Z",
+      "home": "Al Khaleej",
+      "away": "Al Hazem",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.562,
+        "away": 1.291
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.87,
+        "draw": 24.87,
+        "awayWin": 31.26
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.48,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.48
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.31
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.53
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.73,
+        "over2_5": 55.46,
+        "under3_5": 67.13,
+        "bttsYes": 58.13
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401900881",
+      "league": "ksa.1",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Al Nassr",
+      "away": "Al Kholood",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.566,
+        "away": 1.104
+      },
+      "winDrawLossPct": {
+        "homeWin": 69.1,
+        "draw": 16.84,
+        "awayWin": 14.06
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.5,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.5
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 8.42
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.15
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.19,
+        "over2_5": 71.48,
+        "under3_5": 50.1,
+        "bttsYes": 62.47
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401900880",
+      "league": "ksa.1",
+      "kickoff": "2026-10-29T18:00Z",
+      "home": "Al Riyadh",
+      "away": "Al Qadsiah",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.116,
+        "away": 1.923
+      },
+      "winDrawLossPct": {
+        "homeWin": 21.22,
+        "draw": 22.89,
+        "awayWin": 55.89
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.83,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.83
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 10.32
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.36
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.62,
+        "over2_5": 57.99,
+        "under3_5": 64.57,
+        "bttsYes": 57.67
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
