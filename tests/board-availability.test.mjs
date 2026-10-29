@@ -19,6 +19,15 @@ test('Scheduled matches without odds are games awaiting publication',async()=>{
   assert.equal(h.leagueOf(event('2026-10-09T18:30:00Z','g2',720)),'ger.1');
   assert.equal(h.leagueOf(event('2026-10-07T15:00:00Z','g3',3923)),'fifa.friendly');
 });
+test('ESPN cup competition IDs remain visible without sportsbook odds',()=>{
+  const h=helper();
+  const examples=[[3920,'eng.league_cup'],[3951,'esp.copa_del_rey'],[3957,'ned.cup']];
+  for(const [id,league] of examples){
+    const e=event('2026-10-29T19:45:00Z','cup-'+id,id);
+    assert.equal(h.leagueOf(e),league);
+    assert.equal(h.eventsForDay({events:[e]},'2026-10-29').length,1);
+  }
+});
 test('Failed and restricted schedule responses cannot claim no games',async()=>{
   for(const read of [async()=>{throw new Error('offline')},async()=>({errors:{plan:'restricted'}})]){
     const h=helper();const info=await h.load('2026-10-07',read);
