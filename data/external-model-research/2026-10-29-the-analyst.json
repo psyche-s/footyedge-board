@@ -1,0 +1,39 @@
+{
+  "schema": "footyedge-opta-analyst-match-research-v1",
+  "date": "2026-10-29",
+  "capturedAt": "2026-10-29T04:07:58.385Z",
+  "sourceId": "the_analyst",
+  "sourceName": "Opta Analyst",
+  "accessMethod": "Manually verified public match-specific pre-kickoff article; not a licensed Opta data feed",
+  "reuse": "Only short original factual notes and explicitly reported numerical forecast; no copyrighted article reproduction",
+  "noPlayerEffectWithoutQuantifiedData": true,
+  "forecastInputPolicy": {
+    "blendWithFootyEdgeBaseline": 0.25,
+    "weightReason": "Experimental conservative 25% external-outcome mixture, uncalibrated and not independently backtested",
+    "whenNoForecast": "V3-only for other fixtures; missing forecast is not zero",
+    "publication": "V4 shadow only, never modify frozen official historical board"
+  },
+  "fixtures": [
+    {
+      "fixtureId": "401921844",
+      "home": "Everton",
+      "away": "Newcastle United",
+      "homeWin": 44.1,
+      "draw": 26.8,
+      "awayWin": 29.1,
+      "article": "https://theanalyst.com/articles/everton-vs-newcastle-prediction-efl-cup-preview-10-2026",
+      "publishedOn": "2026-10-28",
+      "teamStats": {
+        "newcastleEflCupTiesWonSince2022_23": 18,
+        "newcastleConsecutiveEflCupFourthRoundWins": 7,
+        "evertonEflCupCleanSheetsThisSeason": 2
+      },
+      "qualitative": [
+        "All three 90-minute outcome percentages explicitly stated in Oct 28 13:03 UTC Opta Analyst article.",
+        "Everton have yet to concede in two EFL Cup games this season; Newcastle won 18 cup ties since 2022-23.",
+        "Grealish and Branthwaite availability uncertain; Newcastle Livramento and Jaouen unavailable; no numerical xG injury adjustments."
+      ],
+      "predictionCaveat": "Everton 44.1%, draw 26.8%, Newcastle 29.1% refer to normal-time WDL; a draw sends tie to penalties. Not match-winning/qualification probability or sportsbook odds."
+    }
+  ]
+}
