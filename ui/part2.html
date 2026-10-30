@@ -974,13 +974,17 @@ function feOwnerBoardPublished(){
  return S.archive?.date===S.date && S.archive?.immutable===true && ["locked","published"].includes(S.archive?.state) && !ARCHIVE_CAPTURE;
 }
 function feOwnerBoardPicks(g){
- const picks=(g.model?.top3||[]).filter(p=>p?.sourceBackedReason===true&&
+ const explicitOwnerSelection=S.archive?.ownerEditorialOverride?.ownerAuthorized===true &&
+   g.editorialConsensus?.ownerSelection===true;
+ const picks=(g.model?.top3||[]).filter(p=>
+   (explicitOwnerSelection||p?.sourceBackedReason===true)&&
    p?.label&&String(p.reason||"").length>=30&&
-   Number.isFinite(Number(p.confidenceRating))&&Number(p.confidenceRating)>=58&&
+   (explicitOwnerSelection||(Number.isFinite(Number(p.confidenceRating))&&Number(p.confidenceRating)>=58))&&
    (p.homeSample==null||Number(p.homeSample)>=5)&&(p.awaySample==null||Number(p.awaySample)>=5));
  const unique=new Set();
  return picks.filter(p=>{const key=normName(p.label);if(unique.has(key))return false;unique.add(key);return true})
-   .sort((a,b)=>Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
+   .sort((a,b)=>explicitOwnerSelection?Number(a.rank||99)-Number(b.rank||99):
+     Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
 }
 function viewCandidates(g){
   // Explicit owner-approved published Top 3 take precedence over the older
