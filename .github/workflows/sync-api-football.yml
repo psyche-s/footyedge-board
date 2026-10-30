@@ -73,6 +73,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ ! -d data/github-api-football ]]; then
+            echo "No verified source snapshot to commit."
+            exit 0
+          fi
           git add -- data/github-api-football/
           if git diff --cached --quiet; then
             echo "No verified snapshot changes; original boards and picks untouched."
