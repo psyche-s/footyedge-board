@@ -1724,7 +1724,7 @@ async function load(date=S.date){
     if(S.date!==loadingDate||payload?.schema!=="footyedge-api-football-github-v1"||
        payload.date!==loadingDate||!Array.isArray(payload.matches))return;
     S.feGithubApiSnapshot=payload;
-    const open=S.games.find(g=>String(g.id)===String(S.openGameId));
+    const open=Array.isArray(S.games)?S.games.find(g=>String(g.id)===String(S.openGameId)):null;
     if(open?.feTab==="lineups"&&document.getElementById("drawer")?.classList.contains("on"))
       renderModal(open);
   }).catch(()=>{});
