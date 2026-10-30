@@ -2197,6 +2197,9 @@ function feRosterLeague(g,team){
  "getafe":"esp.1","celta vigo":"esp.1","real sociedad":"esp.1","braga":"por.1","benfica":"por.1","besiktas":"tur.1","trabzonspor":"tur.1"};
  return fallback[name]||"";
 }
+const feLiveRosterPhotos=new Map();
+const feLineupPhotoRequests=new Map();
+function fePhotoNameKey(name){return String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
 function feCachedPlayerPhoto(g,team,player){
  const src=window.FE_PLAYER_PHOTOS||{},teamId=String(team?.id||"");
  const league=String(g?.league||"");
@@ -2217,6 +2220,9 @@ function feCachedPlayerPhoto(g,team,player){
  const unique=[...new Map(candidates.map(r=>[String(r[0]),r])).values()];
  const match=id?unique.find(r=>String(r[0])===id):unique.length===1?unique[0]:null;
  const url=String(match?.[2]||"");
+ const rosterKey=league+":"+teamId+":"+fePhotoNameKey(name);
+ const live=String(feLiveRosterPhotos.get(rosterKey)||"");
+ if(/^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(live))return live;
  return /^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(url)?url:"";
 }
 function fePlayerSafePhoto(src){
@@ -2465,6 +2471,74 @@ function feRunPitchHistoryQueue(){
    });
  }
 }
+/* Expand verified photo coverage only for the XI that is actively open.
+ * A roster name match must be unique within the exact club. Missing images
+ * remain initials instead of displaying images from a different footballer.
+ */
+function feApplyLineupHeadshots(g,teamId,players){
+ if(!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
+ const body=document.getElementById("modalBody");
+ if(!body)return;
+ for(const item of players){
+  const url=String(item?.photoUrl||"");
+  if(!/^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(url))continue;
+  const key=String(g.league)+":"+String(teamId)+":"+fePhotoNameKey(item.name);
+  feLiveRosterPhotos.set(key,url);
+  for(const button of body.querySelectorAll(".fe-sharedPitch [data-fe-player-name]")){
+   if(String(button.dataset.fePlayerTeam)!==String(teamId)||
+     fePhotoNameKey(button.dataset.fePlayerName)!==fePhotoNameKey(item.name))continue;
+   const avatar=button.querySelector(".fe-fieldAvatar");
+   if(!avatar)continue;
+   const existing=avatar.querySelector("img");
+   if(existing?.getAttribute("src")===url&&!existing.hidden)continue;
+   let initials=avatar.querySelector("span");
+   if(!initials){
+    initials=document.createElement("span");
+    initials.textContent=String(item.name||"").trim().split(/\s+/).slice(0,2)
+     .map(x=>x.slice(0,1)).join("").toUpperCase();
+    avatar.appendChild(initials);
+   }
+   initials.hidden=true;
+   const img=document.createElement("img");
+   img.src=url;img.alt="";img.loading="lazy";img.decoding="async";
+   img.onerror=()=>{img.hidden=true;initials.hidden=false};
+   if(existing)existing.remove();
+   avatar.prepend(img);
+  }
+ }
+}
+function feHydrateLineupHeadshots(g){
+ if(!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
+ const body=document.getElementById("modalBody");
+ if(!body)return;
+ for(const team of [g.home,g.away]){
+  const teamId=String(team?.id||"");
+  if(!/^\d{1,10}$/.test(teamId))continue;
+  const buttons=[...body.querySelectorAll(".fe-sharedPitch [data-fe-player-name]")]
+   .filter(b=>String(b.dataset.fePlayerTeam)===teamId);
+  if(!buttons.length)continue;
+  const names=buttons.map(b=>({name:String(b.dataset.fePlayerName||""),
+    id:/^\d{1,12}$/.test(String(b.dataset.fePlayerId||""))?String(b.dataset.fePlayerId):""}))
+   .filter(p=>p.name.length>=2).slice(0,11);
+  if(!names.length)continue;
+  const cacheKey=String(g.league)+":"+teamId+":"+names.map(p=>fePhotoNameKey(p.name)).join("|");
+  const apply=players=>feApplyLineupHeadshots(g,teamId,players);
+  const cached=feLineupPhotoRequests.get(cacheKey);
+  if(cached){cached.then(apply).catch(()=>{});continue}
+  const qs=new URLSearchParams({league:String(g.league),teamId,names:JSON.stringify(names)});
+  const fallback=feRosterLeague(g,team);
+  if(fallback&&fallback!==g.league)qs.set("fallbackLeague",fallback);
+  const promise=fetch("/api/lineup-headshots?"+qs.toString(),
+   {headers:{accept:"application/json"}})
+   .then(r=>{if(!r.ok)throw Error("Headshots unavailable");return r.json()})
+   .then(data=>data?.schema==="footyedge-lineup-headshots-v1"&&
+     data.status==="verified_roster"&&String(data.teamId)===teamId&&
+     Array.isArray(data.players)?data.players:[]);
+  feLineupPhotoRequests.set(cacheKey,promise);
+  promise.then(apply).catch(()=>{feLineupPhotoRequests.delete(cacheKey)});
+ }
+}
+
 function fePrimePitchHistory(g){
  if(!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
  const body=document.getElementById("modalBody");
@@ -2482,6 +2556,7 @@ function fePrimePitchHistory(g){
     fallbackLeague:feRosterLeague(g,team),name,id:String(button.dataset.fePlayerId||"")});
  }
  fePaintPitchStats(g);feRunPitchHistoryQueue();
+ feHydrateLineupHeadshots(g);
 }
 
 function feTeamPitchRows(x,t,g,position){
