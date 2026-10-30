@@ -1690,3 +1690,37 @@
 .fe-playerHeroEditorial .fe-playerPhotoStage>.fe-playerPortraitPlaceholder{background:rgba(50,124,83,.12)!important;border-radius:14px!important}
 .fe-playerHeroFacts{display:grid;gap:9px;margin:0!important}.fe-playerHeroFacts>div{display:grid;grid-template-columns:minmax(66px,32%) minmax(0,1fr);align-items:baseline;gap:9px}.fe-playerHeroFacts dt{font-size:9px;font-weight:850;letter-spacing:.09em;color:#82a997}.fe-playerHeroFacts dd{margin:0;font-size:12px;font-weight:750;color:#e5f8ec;overflow-wrap:anywhere}
 @media(max-width:460px){.fe-playerHero.fe-playerHeroEditorial{grid-template-columns:minmax(0,1fr) minmax(100px,39%)!important;min-height:195px!important;padding:15px 12px!important;gap:4px!important}.fe-playerHeroEditorial .fe-playerIdentity h2{font-size:clamp(23px,6vw,32px)!important;margin:8px 0 14px!important}.fe-playerHeroEditorial .fe-playerPhotoStage{height:183px!important}.fe-playerHeroFacts{gap:6px}.fe-playerHeroFacts>div{grid-template-columns:1fr!important;gap:1px}.fe-playerHeroFacts dt{font-size:8px}.fe-playerHeroFacts dd{font-size:10px}}
+
+/* Full-width player intelligence redesign: reference-inspired editorial dashboard. */
+.fe-playerSheet{width:min(1180px,calc(100vw - 28px))!important;max-height:min(94dvh,1000px)!important;border-radius:17px!important}
+.fe-playerHero.fe-playerHeroEditorial{min-height:315px!important;grid-template-columns:minmax(0,1fr) minmax(250px,46%)!important;padding:32px 42px!important}
+.fe-playerHeroEditorial .fe-playerPhotoStage{height:300px!important;max-width:410px!important}
+.fe-playerHeroEditorial .fe-playerIdentity h2{font-size:clamp(35px,5vw,60px)!important}
+.fe-playerHeroFacts{max-width:370px!important;gap:13px!important}
+.fe-playerHeroFacts dt{font-size:10px!important}.fe-playerHeroFacts dd{font-size:14px!important}
+.fe-playerDashboard{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(290px,1fr);gap:16px;align-items:start}
+.fe-playerDashboard>.fe-playerPerformance{grid-column:2;grid-row:1}
+.fe-playerDashboard>.fe-playerAppearances{grid-column:1;grid-row:1 / span 3}
+.fe-playerDashboard>.fe-playerPanel:not(.fe-playerPerformance):not(.fe-playerAppearances){grid-column:2}
+.fe-playerDashboard .fe-playerPanel{margin:0!important;min-width:0!important;border:1px solid rgba(84,165,121,.22)!important;border-radius:12px!important;background:#0b251e!important;padding:17px!important}
+.fe-playerSectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.fe-playerSectionHead h3{margin:0!important}.fe-playerSeasonLabel{font-size:10px;color:#9bb9aa;text-align:right}
+.fe-playerCompetitionTabs{display:flex;gap:6px;overflow-x:auto;padding:13px 0;scrollbar-width:thin}
+.fe-playerCompTab{flex-shrink:0;padding:6px 9px;border-radius:8px;background:rgba(255,255,255,.04);color:#829f91;font-size:10px;white-space:nowrap}
+.fe-playerCompTab.is-active{background:#154a34;color:#b6f8d0;font-weight:750}
+.fe-playerPerformanceHero{display:grid;grid-template-columns:minmax(92px,35%) 1fr;gap:13px;padding:12px 0}
+.fe-playerPerformanceHero>div:first-child{display:flex;flex-direction:column;gap:7px;justify-content:center;border-right:1px solid rgba(115,196,147,.2)}
+.fe-playerPerformanceHero>div:first-child>span{font-size:9px;letter-spacing:.1em;color:#8eae9d}
+.fe-playerPerformanceHero>div:first-child>strong{font-size:clamp(44px,5vw,67px);line-height:1;color:#66e9a6;font-weight:850}
+.fe-playerPerformanceHero small{color:#a2c0ae;font-size:10px}
+.fe-playerPerformanceMetrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.fe-playerPerformanceMetrics>div{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:#103528;border:1px solid rgba(112,188,144,.14);border-radius:9px;min-height:64px;padding:7px}
+.fe-playerPerformanceMetrics strong{font-size:22px;color:#e9fff2}.fe-playerPerformanceMetrics span{font-size:9px;color:#a8c6b5;text-align:center}
+.fe-playerMoreStats{margin-top:13px}.fe-playerMoreStats h4{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#a9d3b8}
+.fe-playerMoreStats .fe-playerStatsGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important}
+.fe-playerMoreStats .fe-playerStat{min-height:64px!important;padding:8px 3px!important}
+.fe-playerMoreStats .fe-playerStat strong{font-size:20px!important}
+.fe-playerAppearances .fe-playerTableScroll{max-width:100%;overflow-x:auto}
+.fe-playerAppearances .fe-playerLastTenTable{min-width:680px}
+@media(max-width:800px){.fe-playerDashboard{grid-template-columns:1fr}.fe-playerDashboard>.fe-playerPerformance,.fe-playerDashboard>.fe-playerAppearances,.fe-playerDashboard>.fe-playerPanel:not(.fe-playerPerformance):not(.fe-playerAppearances){grid-column:1;grid-row:auto}.fe-playerDashboard>.fe-playerAppearances{order:1}.fe-playerDashboard>.fe-playerPerformance{order:2}.fe-playerHero.fe-playerHeroEditorial{min-height:230px!important;padding:18px!important;grid-template-columns:minmax(0,1fr) minmax(115px,39%)!important}.fe-playerHeroEditorial .fe-playerPhotoStage{height:220px!important}.fe-playerHeroEditorial .fe-playerIdentity h2{font-size:clamp(26px,6vw,40px)!important}.fe-playerHeroFacts{gap:6px!important}.fe-playerHeroFacts dt{font-size:8px!important}.fe-playerHeroFacts dd{font-size:11px!important}}
+@media(max-width:460px){.fe-playerSheet{width:calc(100vw - 10px)!important}.fe-playerHero.fe-playerHeroEditorial{min-height:200px!important;padding:13px!important}.fe-playerHeroEditorial .fe-playerPhotoStage{height:185px!important}.fe-playerDashboard .fe-playerPanel{padding:12px!important}.fe-playerPerformanceHero{grid-template-columns:100px 1fr}.fe-playerPerformanceMetrics>div{min-height:56px}.fe-playerMoreStats .fe-playerStatsGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
