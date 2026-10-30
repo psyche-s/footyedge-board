@@ -1717,6 +1717,17 @@ async function load(date=S.date){
   // A late provider must not leave an indefinite spinner. Keep date-scoped
   // loading state so switching days never paints another day's data.
   const loadingDate=S.date;
+  // Small, read-only metadata produced by GitHub Actions with its own FSAPI secret.
+  // An unavailable or outdated snapshot never blocks the primary fixture board.
+  S.feGithubApiSnapshot=null;
+  repoData("data/github-api-football/"+loadingDate+".json").then(payload=>{
+    if(S.date!==loadingDate||payload?.schema!=="footyedge-api-football-github-v1"||
+       payload.date!==loadingDate||!Array.isArray(payload.matches))return;
+    S.feGithubApiSnapshot=payload;
+    const open=S.games.find(g=>String(g.id)===String(S.openGameId));
+    if(open?.feTab==="lineups"&&document.getElementById("drawer")?.classList.contains("on"))
+      renderModal(open);
+  }).catch(()=>{});
   const loadingWatchdog=setTimeout(()=>{
     if(S.date!==loadingDate)return;
     const board=document.getElementById("games");
@@ -2594,12 +2605,51 @@ function feTeamPitchRows(x,t,g,position){
   '<div class="fe-sharedRows">'+plot.map(row=>'<div class="fe-pitchRow">'+row.map(person).join("")+'</div>').join("")+'</div>'+
   '</div>';
 }
+/* Supplemental, factual XIs fetched by the GitHub FSAPI pipeline.
+ * Never treat an API-Football numeric player ID as an ESPN player ID; the
+ * existing verified roster matcher resolves profile/photo identity by team/name.
+ */
+function feGithubOriginalXI(g){
+ const p=S.feGithubApiSnapshot;
+ if(!p||p.schema!=="footyedge-api-football-github-v1"||p.date!==S.date||!Array.isArray(p.matches))
+  return null;
+ const matches=p.matches.filter(m=>
+  String(m?.originalGameId)===String(g?.id)&&
+  fixtureMatchKey(m.home?.name,m.away?.name)===fixtureMatchKey(g.home?.name,g.away?.name)&&
+  Number.isFinite(Date.parse(m.kickoff))&&Number.isFinite(Date.parse(g.date))&&
+  Math.abs(Date.parse(m.kickoff)-Date.parse(g.date))<=3*60*60*1000);
+ if(matches.length!==1)return null;
+ const item=matches[0],side=(key)=>{
+  const t=item[key],raw=item[key+"XI"];
+  if(!raw||String(raw.teamId||"")!==String(t?.id||"")||
+     !Array.isArray(raw.confirmedXI)||raw.confirmedXI.length!==11)return null;
+  const seen=new Set();
+  const players=raw.confirmedXI.map(q=>{
+   const name=String(q?.name||"").trim();
+   const sourceId=String(q?.id||"");
+   if(!name||!/^\d{1,12}$/.test(sourceId)||seen.has(sourceId))return null;
+   seen.add(sourceId);
+   return {name,id:"",jersey:q?.jersey??null,position:q?.position||null};
+  });
+  if(players.some(q=>!q))return null;
+  return {confirmedXI:players,confirmedFormation:raw.formation||null,
+   lineupStatus:"source-confirmed",name:key==="home"?g.home.name:g.away.name};
+ };
+ const home=side("home"),away=side("away");
+ if(!home&&!away)return null;
+ return {source:{url:"https://www.api-football.com",checkedAt:p.checkedAt},
+  home,away};
+}
 function feLineupsPanel(g){
  // Always present the same football pitch for every tracked league. Without
  // a source-backed XI, show the empty team half without a duplicate squad list;
  // do not position ordinary roster members as alleged starters.
  const raw=g.liveIntel||g.teamIntel;
- const intel=raw&&/^https:\/\//.test(String(raw.source?.url||""))?raw:{home:{},away:{}};
+ const base=raw&&/^https:\/\//.test(String(raw.source?.url||""))?raw:{home:{},away:{}};
+ const github=feGithubOriginalXI(g);
+ const prefer=(side)=>base?.[side]?.confirmedXI?.length===11?base[side]:
+   github?.[side]?.confirmedXI?.length===11?github[side]:base?.[side]||{};
+ const intel={source:github?.source||base.source||null,home:prefer("home"),away:prefer("away")};
  const homeXI=intel.home?.confirmedXI?.length===11?intel.home.confirmedXI:intel.home?.predictedXI||[];
  const awayXI=intel.away?.confirmedXI?.length===11?intel.away.confirmedXI:intel.away?.predictedXI||[];
  const hasHome=homeXI.length===11,hasAway=awayXI.length===11;
