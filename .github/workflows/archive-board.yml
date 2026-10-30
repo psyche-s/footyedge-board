@@ -156,6 +156,7 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
         run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
           node --test tests/top3-research-overlay.test.mjs tests/reviewed-slips.test.mjs tests/source-consensus.test.mjs
           node scripts/build-top3-review.mjs
           # Only dated independently validated opinion snapshots count as sources checked.
