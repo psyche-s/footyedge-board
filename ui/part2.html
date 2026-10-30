@@ -2261,7 +2261,10 @@ function fePlayerProfileMarkup(result,fallback){
   '<h2 id="fe-playerTitle">'+display(player.name)+'</h2>'+
   '<dl class="fe-playerHeroFacts"><div><dt>CLUB</dt><dd>'+display(player.team||fallback.teamName)+'</dd></div>'+
   '<div><dt>POSITION</dt><dd>'+display(role||"—")+'</dd></div>'+
+  (birthday?'<div><dt>BORN</dt><dd>'+display(birthday)+'</dd></div>':'')+
   (player.nationality?'<div><dt>NATIONALITY</dt><dd>'+display(player.nationality)+'</dd></div>':'')+
+  (player.height?'<div><dt>HEIGHT</dt><dd>'+display(player.height)+'</dd></div>':'')+
+  (player.weight?'<div><dt>WEIGHT</dt><dd>'+display(player.weight)+'</dd></div>':'')+
   (player.jerseyNumber?'<div><dt>NUMBER</dt><dd>'+display(player.jerseyNumber)+'</dd></div>':'')+'</dl></div>'+
   '<div class="fe-playerPhotoStage">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div></div>';
  if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
@@ -2302,12 +2305,15 @@ function fePlayerProfileMarkup(result,fallback){
   ["foulsWon","FW","Fouls won"],["yellowCards","YC","Yellow cards"],
   ["redCards","RC","Red cards"]];
  const lastMarkup=last.length?
+  '<div class="fe-playerRecentFilters" role="group" aria-label="Filter appearances by competition">'+
+   '<button type="button" class="fe-playerRecentFilter is-active" data-fe-recent-filter="all">All competitions</button>'+
+   [...new Set(last.map(x=>x.competition).filter(Boolean))].map((name,i)=>'<button type="button" class="fe-playerRecentFilter" data-fe-recent-filter="'+esc(name)+'">'+display(name)+'</button>').join('')+'</div>'+
   '<p class="fe-playerSwipeHint">Scroll sideways to see all match statistics →</p>'+
   '<div class="fe-playerTableScroll" role="region" tabindex="0" aria-label="Last 10 appearances table, scroll horizontally for additional statistics">'+
   '<table class="fe-playerLastTenTable"><thead><tr><th scope="col">Match</th>'+
    columns.map(([,abbr,label])=>'<th scope="col" title="'+esc(label)+'">'+esc(abbr)+'</th>').join('')+
    '</tr></thead><tbody>'+last.map(r=>
-    '<tr><th scope="row" class="fe-playerOpponent">'+
+    '<tr data-fe-recent-comp="'+esc(r.competition||"")+'"><th scope="row" class="fe-playerOpponent">'+
      '<span class="fe-playerMatchDate">'+display(r.date)+'</span>'+
      '<strong>'+display(r.opponent)+'</strong>'+
      (r.competition?'<small>'+display(r.competition)+'</small>':'')+
@@ -2350,7 +2356,14 @@ async function feOpenPlayerProfile(g,button){
  document.body.appendChild(root);
  const close=()=>{controller.abort();root.remove();focusBack.isConnected&&focusBack.focus({preventScroll:true});document.removeEventListener("keydown",onKey)};
  const onKey=event=>{if(event.key==="Escape")close()};
- root.addEventListener("click",event=>{if(event.target.closest("[data-fe-player-close]"))close()});
+ root.addEventListener("click",event=>{
+  if(event.target.closest("[data-fe-player-close]")){close();return}
+  const filter=event.target.closest("[data-fe-recent-filter]");
+  if(filter){const selected=filter.dataset.feRecentFilter;
+   root.querySelectorAll(".fe-playerRecentFilter").forEach(el=>el.classList.toggle("is-active",el===filter));
+   root.querySelectorAll(".fe-playerLastTenTable tbody tr").forEach(row=>{row.hidden=selected!=="all"&&row.dataset.feRecentComp!==selected});
+  }
+ });
  document.addEventListener("keydown",onKey);
  root.querySelector(".fe-playerClose")?.focus();
  const controller=new AbortController();
