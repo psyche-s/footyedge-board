@@ -2324,8 +2324,7 @@ function fePlayerProfileMarkup(result,fallback){
  const note=verified?'Fields shown are sourced from available player records. “—” means the statistic was not provided, not zero.':
   (result?.note||"Player verification is unavailable.");
  return hero+'<div class="fe-playerScroll"><div class="fe-playerDashboard">'+
-  ''+
-  ''+
+  performance+
   '<section class="fe-playerPanel fe-playerAppearances"><h3>Last 10 appearances <span class="fe-playerPanelHint">'+
    last.length+' verified available</span></h3>'+lastMarkup+'</section>'+
   (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
