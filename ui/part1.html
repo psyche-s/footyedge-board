@@ -1661,6 +1661,86 @@ body{background:#031008}
 <link rel="stylesheet" href="assets/footyedge-match-v3.css?v=39">
 <link rel="stylesheet" href="assets/fixture-art/split-kit-backgrounds-v2.css?v=2">
 <link rel="stylesheet" href="assets/fixture-controls-v1.css?v=1">
+
+<!-- Player Intelligence: use the full hero height for the verified athlete cut-out. -->
+<style id="fe-player-portrait-fill-v1">
+.fe-playerHero.fe-playerHeroEditorial{
+  isolation:isolate!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+.fe-playerHero.fe-playerHeroEditorial .fe-playerIdentity{
+  position:relative!important;
+  z-index:3!important;
+  grid-column:1!important;
+  min-width:0!important;
+}
+.fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage{
+  position:absolute!important;
+  top:0!important;
+  right:0!important;
+  bottom:0!important;
+  left:auto!important;
+  z-index:2!important;
+  width:48%!important;
+  max-width:none!important;
+  min-width:0!important;
+  height:100%!important;
+  min-height:100%!important;
+  align-self:stretch!important;
+  justify-self:end!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  margin:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+.fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage>.fe-playerPortrait{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  min-width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-height:100%!important;
+  object-fit:cover!important;
+  object-position:50% 26%!important;
+  transform:scale(1.02)!important;
+  transform-origin:50% 100%!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage>.fe-playerPortraitPlaceholder{
+  position:absolute!important;
+  inset:0!important;
+  display:grid!important;
+  width:100%!important;
+  height:100%!important;
+  place-items:center!important;
+  color:#9fd6ba!important;
+  font-size:clamp(44px,7vw,90px)!important;
+}
+@media(max-width:800px){
+  .fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage{
+    width:47%!important;
+  }
+}
+@media(max-width:460px){
+  .fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage{
+    width:46%!important;
+  }
+  .fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage>.fe-playerPortrait{
+    object-position:50% 23%!important;
+    transform:scale(1.04)!important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="wrap">
