@@ -1,0 +1,85 @@
+name: FootyEdge Original API-Football GitHub source sync
+
+# Separate data enrichment, NOT a second FootyEdge picks publisher.
+on:
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "Optional Toronto date YYYY-MM-DD; empty means today"
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - "scripts/build-github-api-football.mjs"
+      - "tests/github-api-football.test.mjs"
+      - ".github/workflows/sync-api-football.yml"
+  schedule:
+    # Toronto 00:36, 11:36, 15:36 (either DST offset). Hour gate below
+    # ensures only one actual ingest per local slot; no other refresh tasks run.
+    - cron: "36 4,5,15,16,19,20 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-original-api-football-source
+  cancel-in-progress: false
+
+jobs:
+  source-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Guard local scheduled time and skip DST duplicates
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "schedule" ]]; then
+            HOUR="$(TZ=America/Toronto date +%H)"
+            if [[ "$HOUR" != "00" && "$HOUR" != "11" && "$HOUR" != "15" ]]; then
+              echo "run=false" >> "$GITHUB_OUTPUT"
+              echo "Outside the Toronto source-ingest slot: skip without API calls."
+              exit 0
+            fi
+          fi
+          echo "run=true" >> "$GITHUB_OUTPUT"
+      - name: Validate source matching, unique XI and Toronto date
+        if: steps.gate.outputs.run == 'true'
+        run: |
+          node --check scripts/build-github-api-football.mjs
+          node --test tests/github-api-football.test.mjs
+      - name: Fetch verified API-Football facts through GitHub Actions
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FSAPI: ${{ secrets.FSAPI }}
+          FOOTYEDGE_API_DATE: ${{ inputs.date }}
+        run: |
+          set -euo pipefail
+          if [[ -z "$FSAPI" ]]; then
+            echo "::error::GitHub repository Actions secret fsAPI/FSAPI is not available."
+            exit 1
+          fi
+          node scripts/build-github-api-football.mjs
+      - name: Commit only the new verified source snapshot
+        if: steps.gate.outputs.run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -- data/github-api-football/
+          if git diff --cached --quiet; then
+            echo "No verified snapshot changes; original boards and picks untouched."
+            exit 0
+          fi
+          git config user.name "FootyEdge Source Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "data(original): refresh verified API-Football snapshot [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
