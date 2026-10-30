@@ -2273,10 +2273,17 @@ function fePlayerProfileMarkup(result,fallback){
   '<div class="fe-playerStat '+(number.has(label)?'':'fe-playerStatEmpty')+'"><span>'+esc(label)+'</span>'+
   '<strong>'+plain(number.get(label))+'</strong></div>').join("");
  const competition=result?.competition?'<p class="fe-competitionName">'+display(result.competition)+'</p>':'';
- const performance='<section class="fe-playerPanel"><h3>Season performance</h3>'+competition+
-  (number.size?'<p class="fe-playerHint">Appearances = all games played, including substitutions. Starts = games in the starting XI.</p>'+
-  '<div class="fe-playerStatsGrid fe-playerStatsGridFull">'+seasonCards+'</div>':
-  '<p class="fe-playerUnavailable">No verified season statistics are available for this player yet.</p>')+'</section>';
+ const availableCompetitions=[...new Set((result?.recent||[]).map(x=>x.competition).filter(Boolean))];
+ const activeCompetition=result?.competition||availableCompetitions[0]||"Season";
+ const competitionTabs=[activeCompetition,...availableCompetitions.filter(x=>x!==activeCompetition)].slice(0,5);
+ const competitionOptions=competitionTabs.map((name,i)=>'<button type="button" class="fe-playerCompTab '+(i===0?'is-active':'')+'" data-fe-comp-tab="'+i+'">'+display(name)+'</button>').join('');
+ const headlineStats=["Appearances","Goals","Assists","Shots","Shots on target","Minutes played"];
+ const performance='<section class="fe-playerPanel fe-playerPerformance"><div class="fe-playerSectionHead"><h3>Season performance</h3><span class="fe-playerSeasonLabel">'+display(activeCompetition)+'</span></div>'+
+  '<div class="fe-playerCompetitionTabs" role="group" aria-label="Competition filters">'+competitionOptions+'</div>'+
+  '<div class="fe-playerPerformanceHero"><div><span>APPEARANCES</span><strong>'+plain(number.get("Appearances"))+'</strong><small>'+display(activeCompetition)+'</small></div>'+
+  '<div class="fe-playerPerformanceMetrics">'+headlineStats.slice(1).map(label=>'<div><strong>'+plain(number.get(label))+'</strong><span>'+esc(label)+'</span></div>').join('')+'</div></div>'+
+  '<div class="fe-playerMoreStats"><h4>All recorded season statistics</h4><div class="fe-playerStatsGrid fe-playerStatsGridFull">'+seasonCards+'</div></div>'+
+  '<p class="fe-playerHint">Season totals shown for the verified competition above. Other competitions are listed for reference; totals are not attributed to them without verified splits.</p></section>';
  const personal=[["Full name",player.name],["Nationality",player.nationality],["Born",birthday],
   ["Shirt number",player.jerseyNumber||fallback.jersey],["Height",player.height],
   ["Weight",player.weight],["Preferred foot",player.dominantFoot],
@@ -2316,13 +2323,13 @@ function fePlayerProfileMarkup(result,fallback){
   '<span>'+plain([c.from,c.to].filter(Boolean).join(" – "))+'</span></div>').join("");
  const note=verified?'Fields shown are sourced from available player records. “—” means the statistic was not provided, not zero.':
   (result?.note||"Player verification is unavailable.");
- return hero+'<div class="fe-playerScroll">'+performance+
-  '<section class="fe-playerPanel"><h3>Player details</h3><div class="fe-playerDetails">'+details+'</div></section>'+
-  (role?'<section class="fe-playerPanel"><h3>On-field role</h3><p>'+display(role)+'</p></section>':'')+
-  '<section class="fe-playerPanel"><h3>Last 10 appearances <span class="fe-playerPanelHint">'+
+ return hero+'<div class="fe-playerScroll"><div class="fe-playerDashboard">'+
+  ''+
+  ''+
+  '<section class="fe-playerPanel fe-playerAppearances"><h3>Last 10 appearances <span class="fe-playerPanelHint">'+
    last.length+' verified available</span></h3>'+lastMarkup+'</section>'+
   (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
-  '<p class="fe-playerHint">'+esc(note)+'</p></div>';
+  '</div><p class="fe-playerHint">'+esc(note)+'</p></div>';
 }
 
 async function feOpenPlayerProfile(g,button){
