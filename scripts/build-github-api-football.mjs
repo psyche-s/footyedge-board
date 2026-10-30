@@ -69,7 +69,7 @@ export function sanitizeXI(raw,expectedTeam){
  });
  if(players.some(x=>!x))return null;
  if(new Set(players.map(p=>p.id)).size!==11)return null;
- return {formation:/^\d(?:-\d){2,4}$/.test(formation)?formation:null,
+ return {teamId,formation:/^\d(?:-\d){2,4}$/.test(formation)?formation:null,
   confirmedXI:players};
 }
 function safeText(x,n=120){return String(x||"").trim().slice(0,n)}
