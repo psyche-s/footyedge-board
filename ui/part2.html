@@ -2265,13 +2265,13 @@ function fePlayerProfileMarkup(result,fallback){
  const hero='<div class="fe-playerHero fe-playerHeroEditorial">'+
   '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER INTELLIGENCE / PROFILE</span>'+
   '<h2 id="fe-playerTitle">'+display(player.name)+'</h2>'+
-  '<dl class="fe-playerHeroFacts"><div><dt>CLUB</dt><dd>'+display(player.team||fallback.teamName)+'</dd></div>'+
+  '</div><dl class="fe-playerHeroFacts"><div><dt>CLUB</dt><dd>'+display(player.team||fallback.teamName)+'</dd></div>'+
   '<div><dt>POSITION</dt><dd>'+display(role||"—")+'</dd></div>'+
   (birthday?'<div><dt>BORN</dt><dd>'+display(birthday)+'</dd></div>':'')+
   (player.nationality?'<div><dt>NATIONALITY</dt><dd>'+display(player.nationality)+'</dd></div>':'')+
   (player.height?'<div><dt>HEIGHT</dt><dd>'+display(player.height)+'</dd></div>':'')+
   (player.weight?'<div><dt>WEIGHT</dt><dd>'+display(player.weight)+'</dd></div>':'')+
-  (player.jerseyNumber?'<div><dt>NUMBER</dt><dd>'+display(player.jerseyNumber)+'</dd></div>':'')+'</dl></div>'+
+  (player.jerseyNumber?'<div><dt>NUMBER</dt><dd>'+display(player.jerseyNumber)+'</dd></div>':'')+'</dl>'+
   '<div class="fe-playerPhotoStage">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div></div>';
  if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
   '<div class="fe-profileShimmer"></div><p>Checking player details and recent matches…</p></div>';
