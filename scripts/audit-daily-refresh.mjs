@@ -28,8 +28,32 @@ const provenance=get("data/source-provenance/"+date+".json");
 const scheduledCups=(provenance?.fixtures||[]).filter(f=>requiredCupIds.includes(f.league)&&f.verifiedFixtureSchedule?.url);
 const publishedCupKeys=new Set(all.filter(g=>requiredCupIds.includes(g.league)).map(g=>g.league+"|"+String(g.home||"").toLowerCase()+"|"+String(g.away||"").toLowerCase()));
 const absentCupFixtures=scheduledCups.filter(f=>!publishedCupKeys.has(f.league+"|"+String(f.home||"").toLowerCase()+"|"+String(f.away||"").toLowerCase()));
+const newsById=new Map((news?.fixtures||[]).map(f=>[String(f.fixtureId),f]));
+const deskById=new Map((desk?.matches||[]).map(f=>[String(f.gameId),f]));
+const perFixture=all.map(g=>{
+ const id=String(g.id),intel=newsById.get(id),review=deskById.get(id);
+ const count=Array.isArray(g.top3)?g.top3.length:0;
+ const lineupReady=!!(intel?.home?.predictedXI?.length===11&&intel?.away?.predictedXI?.length===11);
+ const lineupStatus=lineupReady?(intel.home.lineupStatus==="confirmed"&&intel.away.lineupStatus==="confirmed"?"confirmed":"predicted-not-confirmed"):"unavailable";
+ const newsReady=!!(intel?.source?.url&&(intel?.home?.out||intel?.home?.doubtful||intel?.away?.out||intel?.away?.doubtful));
+ const modelReady=!!(g.model?.expectedGoals&&Number.isFinite(g.model.expectedGoals.home)&&Number.isFinite(g.model.expectedGoals.away));
+ const draws=Number(g.model?.simulation?.draws||g.model?.simulations||0);
+ return {id,league:g.league,home:g.home,away:g.away,
+  top3:{count,status:count===3?"qualified":count?"partial":"pass",reason:count===3?null:g.recoveryStatus||"insufficient independently verified distinct markets"},
+  lineup:{status:lineupStatus,sourceVerified:!!intel?.source?.publicationDateVerified},
+  teamNews:{status:newsReady?"available":"unavailable",sourceVerified:!!intel?.source?.publicationDateVerified},
+  playerProfiles:{status:"not-audited",reason:"Individual player last-ten logs and image rights not checked by this audit"},
+  model:{status:modelReady?"expected-goals-available":"missing-expected-goals",verified10000Draws:draws===10000},
+  editorialDesk:{status:review?.reviewed?"reviewed":"pass"}};
+});
+const perLeagueSGP=leagueIds.map(league=>{
+ const row=(desk?.sgpsByLeague||[]).find(x=>x.league===league&&x.status==="qualified"&&x.legs?.length>=3);
+ return {league,status:row?"qualified":"hold",legs:row?.legs?.length||0,
+  reason:row?null:"No verified compatible 3+ leg editorial SGP with exact market support"};
+});
 const obj={
- schema:"footyedge-original-refresh-audit-v1",date,generatedAt:new Date().toISOString(),
+ schema:"footyedge-original-refresh-audit-v2",date,generatedAt:new Date().toISOString(),
+ perFixture,perLeagueSGP,
  auditedPublishedBoard:board.immutable===true||board.state==="published",
  noUiChanges:true,top5Entries:(board.top5||[]).length,
  fixtureTotal:all.length,leaguesOnSlate:leagueIds,
