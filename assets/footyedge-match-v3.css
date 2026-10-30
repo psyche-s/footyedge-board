@@ -1672,3 +1672,11 @@
 .fe-sourceEvidenceTag{display:inline-flex;align-items:center;margin:4px 0 0;max-width:100%;border:1px solid #4b6558;border-radius:6px;background:#152d20;color:#a9bbaf;padding:3px 7px;font-size:9px;font-weight:800;letter-spacing:.055em;line-height:1.25}
 .fe-sourceEvidenceTag.fe-sourceEvidenceAlign{background:#123b29;border-color:#347957;color:#93eeb6}
 .fe-sourceEvidenceTag.fe-sourceEvidenceDispute{background:#3d2c19;border-color:#a17a3b;color:#f0c787}
+
+/* Player intelligence portrait card: framed headshot with natural full-head framing. */
+.fe-playerHero{align-items:center!important;gap:clamp(14px,3vw,24px)!important;padding:18px 20px!important;min-height:210px!important}
+.fe-playerPhotoStage{flex:0 0 clamp(116px,29%,154px)!important;width:clamp(116px,29%,154px)!important;height:clamp(154px,38vw,188px)!important;align-self:center!important;overflow:hidden!important;border:1px solid rgba(111,215,153,.35)!important;border-radius:15px!important;background:linear-gradient(145deg,#214c37,#0b241a)!important;box-shadow:0 10px 25px rgba(0,0,0,.2)!important}
+.fe-playerPhotoStage>.fe-playerPortrait{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;transform:none!important;transform-origin:center!important;border:0!important;border-radius:0!important;background:transparent!important}
+.fe-playerPhotoStage>.fe-playerPortraitPlaceholder{display:grid!important;place-items:center!important;background:transparent!important}
+.fe-playerIdentity{align-self:center!important;padding:0!important;min-width:0!important}
+@media(max-width:460px){.fe-playerHero{padding:16px 13px!important;gap:14px!important;min-height:184px!important}.fe-playerPhotoStage{flex-basis:116px!important;width:116px!important;height:155px!important}.fe-playerIdentity h2{font-size:clamp(20px,5vw,27px)!important}}
