@@ -2252,11 +2252,14 @@ function fePlayerProfileMarkup(result,fallback){
  const birthday=player.dateOfBirth&&/^\d{4}-\d{2}-\d{2}$/.test(player.dateOfBirth)?
   new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(player.dateOfBirth+"T12:00:00Z")):null;
  const role=fePlayerRole(player.position||fallback.position);
- const hero='<div class="fe-playerHero"><div class="fe-playerPhotoStage">'+
-  (photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div>'+
-  '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER PROFILE</span>'+
-  '<h2 id="fe-playerTitle">'+display(player.name)+'</h2><p>'+display(player.team||fallback.teamName)+'</p>'+
-  (role?'<span class="fe-playerPosition">'+display(role)+'</span>':'')+'</div></div>';
+ const hero='<div class="fe-playerHero fe-playerHeroEditorial">'+
+  '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER INTELLIGENCE / PROFILE</span>'+
+  '<h2 id="fe-playerTitle">'+display(player.name)+'</h2>'+
+  '<dl class="fe-playerHeroFacts"><div><dt>CLUB</dt><dd>'+display(player.team||fallback.teamName)+'</dd></div>'+
+  '<div><dt>POSITION</dt><dd>'+display(role||"—")+'</dd></div>'+
+  (player.nationality?'<div><dt>NATIONALITY</dt><dd>'+display(player.nationality)+'</dd></div>':'')+
+  (player.jerseyNumber?'<div><dt>NUMBER</dt><dd>'+display(player.jerseyNumber)+'</dd></div>':'')+'</dl></div>'+
+  '<div class="fe-playerPhotoStage">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div></div>';
  if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
   '<div class="fe-profileShimmer"></div><p>Checking player details and recent matches…</p></div>';
  const number=new Map((result?.stats||[]).filter(x=>Number.isFinite(x.value)&&x.value>=0).map(x=>[x.label,x.value]));
