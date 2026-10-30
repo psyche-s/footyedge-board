@@ -2276,7 +2276,7 @@ function fePlayerProfileMarkup(result,fallback){
  const availableCompetitions=[...new Set((result?.recent||[]).map(x=>x.competition).filter(Boolean))];
  const activeCompetition=result?.competition||availableCompetitions[0]||"Season";
  const competitionTabs=[activeCompetition,...availableCompetitions.filter(x=>x!==activeCompetition)].slice(0,5);
- const competitionOptions=competitionTabs.map((name,i)=>'<button type="button" class="fe-playerCompTab '+(i===0?'is-active':'')+'" data-fe-comp-tab="'+i+'">'+display(name)+'</button>').join('');
+ const competitionOptions=competitionTabs.map((name,i)=>'<span class="fe-playerCompTab '+(i===0?'is-active':'')+'">'+display(name)+'</span>').join('');
  const headlineStats=["Appearances","Goals","Assists","Shots","Shots on target","Minutes played"];
  const performance='<section class="fe-playerPanel fe-playerPerformance"><div class="fe-playerSectionHead"><h3>Season performance</h3><span class="fe-playerSeasonLabel">'+display(activeCompetition)+'</span></div>'+
   '<div class="fe-playerCompetitionTabs" role="group" aria-label="Competition filters">'+competitionOptions+'</div>'+
