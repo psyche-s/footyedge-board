@@ -122,8 +122,37 @@ async function fallback(endpoint,query){
 
 export default async function handler(req, res) {
   try {
-    const key = process.env.FOOTBALL;
-    const endpoint = req.query.endpoint;
+    const key = String(process.env.FOOTBALL||"").trim();
+    const endpoint = String(req.query.endpoint||"");
+    if(endpoint==="status"){
+      // API-Sports /status is quota-free; never return API keys, subscription
+      // identity, raw provider payloads or user-linked account information.
+      res.setHeader("Cache-Control","private, no-store");
+      res.setHeader("X-Content-Type-Options","nosniff");
+      if(!key)return res.status(200).json({provider:"api-football.com",configured:false,connection:"missing_key"});
+      try{
+        const check=await fetch("https://v3.football.api-sports.io/status",{
+          headers:{"x-apisports-key":key},signal:AbortSignal.timeout(6500)
+        });
+        const payload=await check.json().catch(()=>null);
+        const categories=payload?.errors&&typeof payload.errors==="object"
+          ?Object.entries(payload.errors).filter(([,v])=>Boolean(v)).map(([k])=>k):[];
+        const valid=check.ok&&!categories.length&&payload?.response&&typeof payload.response==="object"
+          &&!Array.isArray(payload.response);
+        const quotas=valid?payload.response.requests||{}:{};
+        const positive=x=>typeof x==="number"&&Number.isFinite(x)?x:null;
+        return res.status(200).json({
+          provider:"api-football.com",configured:true,
+          connection:valid?"authenticated":
+            (check.status===401||check.status===403)?"unauthorized":
+            check.status===429?"rate_limited":"provider_error",
+          upstreamStatus:check.status,providerErrorCategories:categories,
+          quota:valid?{used:positive(quotas.current),dailyLimit:positive(quotas.limit)}:null
+        });
+      }catch{
+        return res.status(200).json({provider:"api-football.com",configured:true,connection:"unreachable"});
+      }
+    }
     const allowed = ["fixtures","odds","fixtures/lineups","injuries","predictions","teams","players","standings"];
 
     if (!allowed.includes(endpoint)) {
