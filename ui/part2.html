@@ -971,13 +971,13 @@ function feDistinctTop3(picks){
 }
 
 function feOwnerBoardPublished(){
- return S.archive?.date===S.date && S.archive?.ownerOverride===true && S.archive?.state==="published" && !ARCHIVE_CAPTURE;
+ return S.archive?.date===S.date && S.archive?.immutable===true && ["locked","published"].includes(S.archive?.state) && !ARCHIVE_CAPTURE;
 }
 function feOwnerBoardPicks(g){
  const picks=(g.model?.top3||[]).filter(p=>p?.sourceBackedReason===true&&
    p?.label&&String(p.reason||"").length>=30&&
    Number.isFinite(Number(p.confidenceRating))&&Number(p.confidenceRating)>=58&&
-   Number(p.homeSample)>=5&&Number(p.awaySample)>=5);
+   (p.homeSample==null||Number(p.homeSample)>=5)&&(p.awaySample==null||Number(p.awaySample)>=5));
  const unique=new Set();
  return picks.filter(p=>{const key=normName(p.label);if(unique.has(key))return false;unique.add(key);return true})
    .sort((a,b)=>Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
