@@ -1724,3 +1724,18 @@
 .fe-playerAppearances .fe-playerLastTenTable{min-width:680px}
 @media(max-width:800px){.fe-playerDashboard{grid-template-columns:1fr}.fe-playerDashboard>.fe-playerPerformance,.fe-playerDashboard>.fe-playerAppearances,.fe-playerDashboard>.fe-playerPanel:not(.fe-playerPerformance):not(.fe-playerAppearances){grid-column:1;grid-row:auto}.fe-playerDashboard>.fe-playerAppearances{order:1}.fe-playerDashboard>.fe-playerPerformance{order:2}.fe-playerHero.fe-playerHeroEditorial{min-height:230px!important;padding:18px!important;grid-template-columns:minmax(0,1fr) minmax(115px,39%)!important}.fe-playerHeroEditorial .fe-playerPhotoStage{height:220px!important}.fe-playerHeroEditorial .fe-playerIdentity h2{font-size:clamp(26px,6vw,40px)!important}.fe-playerHeroFacts{gap:6px!important}.fe-playerHeroFacts dt{font-size:8px!important}.fe-playerHeroFacts dd{font-size:11px!important}}
 @media(max-width:460px){.fe-playerSheet{width:calc(100vw - 10px)!important}.fe-playerHero.fe-playerHeroEditorial{min-height:200px!important;padding:13px!important}.fe-playerHeroEditorial .fe-playerPhotoStage{height:185px!important}.fe-playerDashboard .fe-playerPanel{padding:12px!important}.fe-playerPerformanceHero{grid-template-columns:100px 1fr}.fe-playerPerformanceMetrics>div{min-height:56px}.fe-playerMoreStats .fe-playerStatsGrid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+
+/* Player profile final polish: reference-density tables, competition filters, editorial hero. */
+.fe-playerHeroEditorial .fe-playerIdentity{max-width:100%!important}
+.fe-playerHeroEditorial .fe-playerHeroFacts{grid-template-columns:1fr!important}
+.fe-playerRecentFilters{display:flex;align-items:center;gap:7px;overflow-x:auto;margin:12px 0 8px;padding:0 0 4px;scrollbar-width:thin}
+.fe-playerRecentFilter{flex:0 0 auto;background:#132e27;border:1px solid rgba(119,195,151,.16);border-radius:7px;color:#a7c6b6;font-size:11px;font-weight:650;padding:7px 10px;cursor:pointer}
+.fe-playerRecentFilter.is-active{color:#092a1e;background:#72e5aa;border-color:#72e5aa}
+.fe-playerLastTenTable tbody tr[hidden]{display:none!important}
+.fe-playerAppearances .fe-playerLastTenTable{border-collapse:separate!important;border-spacing:0 4px!important}
+.fe-playerAppearances .fe-playerLastTenTable tbody tr{background:#102b24!important}
+.fe-playerAppearances .fe-playerLastTenTable tbody tr:nth-child(even){background:#17352b!important}
+.fe-playerAppearances .fe-playerLastTenTable td,.fe-playerAppearances .fe-playerLastTenTable th{padding:10px 8px!important}
+.fe-playerAppearances .fe-playerLastTenTable thead th{color:#91b4a2!important;font-size:10px!important;letter-spacing:.05em}
+.fe-playerHeroEditorial:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 82% 45%,rgba(80,174,121,.12),transparent 45%)}
+@media(min-width:801px){.fe-playerHeroEditorial .fe-playerHeroFacts>div{grid-template-columns:110px minmax(0,1fr)!important}.fe-playerHeroEditorial .fe-playerIdentity h2{max-width:650px!important}}
