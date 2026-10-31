@@ -154,7 +154,6 @@ jobs:
 
       - name: Build daily match-level researched Top 3 overlay without modifying frozen picks
         if: steps.gate.outputs.run == 'true'
-        continue-on-error: true
         run: |
           TODAY="$(TZ=America/Toronto date +%F)"
           node --test tests/top3-research-overlay.test.mjs tests/reviewed-slips.test.mjs tests/source-consensus.test.mjs
@@ -173,8 +172,13 @@ jobs:
             node --test tests/source-led-picks.test.mjs
             node scripts/build-source-led-picks.mjs
           else
-            echo "::warning::No independently recorded dated editorial predictions; no publisher-led Top 3 published."
+            echo "::warning::No independently recorded dated editorial predictions; do not attribute model leans to publishers."
           fi
+          if [[ ! -s "data/source-led/$TODAY.json" ]]; then
+            echo "::error::Missing dated Top Picks overlay. Daily refresh cannot report success without a published picks artifact."
+            exit 1
+          fi
+          jq -e --arg day "$TODAY" '.date == $day and (.matches | type == "array") and (.matches | length > 0) and (.totals.fixtures == (.matches | length))' "data/source-led/$TODAY.json" >/dev/null || { echo "::error::Invalid dated Top Picks coverage"; exit 1; }
 
       - name: Settle prior boards and ingest post-match learning before picks
         if: steps.gate.outputs.run == 'true'
