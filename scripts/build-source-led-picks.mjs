@@ -188,7 +188,12 @@ function generate({date,research,curated,opinions}){
     sourceProvenance:[...v.support].map(([source,url])=>({source,url,fixtureDate:date})),
     reason:basis+particular+numbers+disagreement+caveat
    };
-  }).filter(Boolean).sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
+  }).filter(Boolean).filter(p=>{
+   // An evenly split or outvoted 1X2 thesis is a PASS, not a qualified ML.
+   // Preserve opposing opinions in the internal audit; never choose a side
+   // solely from historical trend when publishers contradict one another.
+   return p.family!=="result"||p.editorialOpposition<p.editorialSupport;
+  }).sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
   // A competing winner forecast is an important signal, not a second independent leg.
   // Pick one strongest outcome thesis, then genuinely different supported markets.
   let best=[];
