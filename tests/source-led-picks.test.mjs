@@ -51,3 +51,16 @@ test("Editorial disagreements reduce rating and are explicitly disclosed, not co
  assert.ok(first(b).confidenceRating<first(a).confidenceRating);
  assert.match(first(b).reason,/no unanimous result consensus/);
 });
+
+test("Tied publisher directions are a result-market PASS, not a forced ML",()=>{
+ const two={date,opinions:[
+  {fixtureId:"123456",source:"sports_mole",market:"match_winner",prediction:"home",
+   kind:"explicit_pre_match_prediction",fixtureDate:date,url:"https://www.sportsmole.co.uk/football/example.html"},
+  {fixtureId:"123456",source:"the_analyst",market:"match_winner",prediction:"away",
+   kind:"explicit_pre_match_prediction",fixtureDate:date,url:"https://theanalyst.com/articles/example"}
+ ]};
+ const result=generate({date,research:researched,curated:{date,fixtures:[]},opinions:two});
+ assert.equal(result.matches[0].picks.length,0);
+ assert.equal(result.matches[0].reviewStatus,"pass_no_independent_market_tip");
+ assert.equal(result.top5.length,0);
+});
