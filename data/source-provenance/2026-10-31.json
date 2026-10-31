@@ -1,0 +1,3800 @@
+{
+  "schema": "footyedge-original-source-provenance-v1",
+  "date": "2026-10-31",
+  "recordedAt": "2026-10-31T04:09:09Z",
+  "visibility": "internal-research-file-not-for-public-pick-text",
+  "providersActuallyInspected": [
+    "Opta Analyst",
+    "Forebet",
+    "Sports Mole"
+  ],
+  "providersNotCredited": [
+    "WinDrawWin",
+    "Football Whispers",
+    "Sportskeeda",
+    "FotMob",
+    "FBref",
+    "Understat",
+    "ESPN Core API",
+    "Transfermarkt",
+    "OneFootball",
+    "bet365 Ontario"
+  ],
+  "sourceVotePolicy": "One provider counts once; article duplicates and translated versions are not independent votes; unverified source is missing, not zero.",
+  "notes": [
+    "Opta 2026-10-29 matchday 9 article supplies 8 EPL outcome forecasts; same-provider Chelsea preview is not a second independent vote.",
+    "Forebet 2026-10-30 disagrees with Opta on Chelsea vs Manchester United draw probability; do not claim consensus.",
+    "No matchday confirmed XIs, exact Ontario SGP prices, or ESPN Core odds were verified in this manual audit.",
+    "All non-EPL fixture external predictions remain unverified; the V4 generator must use V3-only for those fixtures.",
+    "Source metadata is research-only and must not appear as links or provider names in public pick copy."
+  ],
+  "summary": {
+    "researchFixtures": 69,
+    "withOptaPublishedForecast": 8,
+    "withFullTenBothSides": 63,
+    "withDatedPredictedXI": 1,
+    "withConfirmedXI": 0,
+    "withExecutableOntarioSGP": 0,
+    "withIndependentlyVerifiedPlayerEventLogs": 0,
+    "withESPNCoreOddsVerified": 0
+  },
+  "fixtures": [
+    {
+      "fixtureId": "401879248",
+      "league": "eng.1",
+      "home": "Chelsea",
+      "away": "Manchester United",
+      "kickoff": "2026-10-31T12:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/chelsea-vs-man-utd-prediction-premier-league-preview-10-2026",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 51.8,
+          "draw": 24.6,
+          "away": 23.7
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Dedicated preview lists draw as 24.6%, while same-provider round-up lists 24.5%; sum 100.1% due to rounding.",
+        "teamStats": {
+          "manUnitedWinlessAllCompetitions": 8
+        }
+      },
+      "editorialCrossChecks": [
+        {
+          "source": "Forebet",
+          "url": "https://www.forebet.com/en/football-match-previews/31666-chelsea-and-manchester-united-collide-at-stamford-bridge-amidst-contrasting-form",
+          "publishedOn": "2026-10-30",
+          "status": "pre-kickoff-independent-provider-forecast",
+          "wdlPct": {
+            "home": 41,
+            "draw": 43,
+            "away": 16
+          },
+          "pick": "draw",
+          "forecastContradiction": "Forebet draw 43% versus Opta draw 24.6%; no two-source agreement on 1X2."
+        },
+        {
+          "source": "Sports Mole",
+          "url": "https://www.sportsmole.co.uk/football/chelsea/news/chelsea-man-united-bidding-to-avoid-ending-streaks-stretching-six-decades_608050.html",
+          "publishedOn": "2026-10-30",
+          "status": "dated-qualitative-crosscheck",
+          "fact": "Chelsea have two wins in the last 17 league H2Hs; United have not kept a league clean sheet this season."
+        },
+        {
+          "source": "Sports Mole",
+          "url": "https://www.sportsmole.co.uk/football/premier-league/chelsea-vs-man-utd_game_260754.html",
+          "publishedOn": null,
+          "status": "undated-model-not-credited-as-independent-published-pre-kickoff-forecast",
+          "wdlPct": {
+            "home": 43.99,
+            "draw": 25.32,
+            "away": 30.69
+          }
+        }
+      ],
+      "teamNews": {
+        "status": "dated-editorial-projected-XIs-and-absences",
+        "sourceUrl": "https://theanalyst.com/articles/chelsea-vs-man-utd-prediction-premier-league-preview-10-2026",
+        "publishedOn": "2026-10-29",
+        "confirmedXI": false,
+        "predictedXI": {
+          "home": [
+            "Mike Penders",
+            "Josh Acheampong",
+            "Wesley Fofana",
+            "Levi Colwill",
+            "Jorrel Hato",
+            "Jordan Henderson",
+            "Moisés Caicedo",
+            "Pedro Neto",
+            "Cole Palmer",
+            "Morgan Rogers",
+            "Danny Welbeck"
+          ],
+          "away": [
+            "Senne Lammens",
+            "Leny Yoro",
+            "Lisandro Martínez",
+            "Harry Maguire",
+            "Diogo Dalot",
+            "Andrey Santos",
+            "Carlos Baleba",
+            "Bruno Fernandes",
+            "Amad Diallo",
+            "Matheus Cunha",
+            "Bryan Mbeumo"
+          ]
+        },
+        "reportedUnavailable": {
+          "home": [
+            "João Pedro",
+            "Emiliano Martínez",
+            "Reece James"
+          ],
+          "away": [
+            "Patrick Dorgu",
+            "Luke Shaw",
+            "Benjamin Sesko",
+            "Manuel Ugarte"
+          ]
+        },
+        "caveat": "Pre-match article projections; not confirmed matchday lineups; conflicting sources on Mainoo status; no numerical injury effect applied."
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401879248",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": true,
+        "injuriesVerified": true,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401879251",
+      "league": "eng.1",
+      "home": "AFC Bournemouth",
+      "away": "Leeds United",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 50.6,
+          "draw": 25,
+          "away": 24.4
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Pre-kickoff published Opta forecast, independent but not a calibrated FootyEdge probability.",
+        "teamStats": {
+          "bournemouthRecentLeagueWinsWithoutConceding": 2
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401879251",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401879249",
+      "league": "eng.1",
+      "home": "Brentford",
+      "away": "Nottingham Forest",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 50.3,
+          "draw": 25.2,
+          "away": 24.5
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Draw 25.2% is arithmetic residual; not directly quoted in article.",
+        "teamStats": {
+          "brentfordLossesFirstEightLeagueGames": 1
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401879249",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401879247",
+      "league": "eng.1",
+      "home": "Coventry City",
+      "away": "Sunderland",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 43.2,
+          "draw": 26.7,
+          "away": 30.1
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Pre-kickoff published Opta forecast, independent but not a calibrated FootyEdge probability.",
+        "teamStats": {
+          "coventryUnbeatenInLastLeagueMeetings": 10,
+          "bothTeamsLeagueGoalsFirstEight": 6
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401879247",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401878763",
+      "league": "eng.1",
+      "home": "Hull City",
+      "away": "Ipswich Town",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 45,
+          "draw": 26.9,
+          "away": 28.1
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Pre-kickoff published Opta forecast, independent but not a calibrated FootyEdge probability.",
+        "teamStats": {
+          "ipswichConsecutivePLGamesConceded": 27
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401878763",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401879245",
+      "league": "eng.1",
+      "home": "Manchester City",
+      "away": "Brighton & Hove Albion",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 56.3,
+          "draw": 22.6,
+          "away": 21.1
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Draw 22.6% is arithmetic residual; not directly quoted in article.",
+        "teamStats": {
+          "manCityLeagueXgSeasonToDate": 16.7,
+          "brightonLeagueXgSeasonToDate": 16.2,
+          "manCityLeagueGoalsSeasonToDate": 20,
+          "brightonLeagueGoalsSeasonToDate": 23
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401879245",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401878761",
+      "league": "eng.1",
+      "home": "Tottenham Hotspur",
+      "away": "Crystal Palace",
+      "kickoff": "2026-10-31T17:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 54.2,
+          "draw": 23.5,
+          "away": 22.3
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Draw 23.5% is arithmetic residual; not directly quoted in article.",
+        "teamStats": {
+          "palaceLeagueDefeatsSince2025Dec7": 17
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401878761",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401879250",
+      "league": "eng.1",
+      "home": "Aston Villa",
+      "away": "Fulham",
+      "kickoff": "2026-10-31T20:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "verified-pre-kickoff-public-forecast",
+        "sourceUrl": "https://theanalyst.com/articles/premier-league-match-predictions",
+        "publishedOn": "2026-10-29",
+        "wdlPct": {
+          "home": 57.9,
+          "draw": 21.9,
+          "away": 20.2
+        },
+        "isOneProviderVote": true,
+        "forecastCaveat": "Draw 21.9% is arithmetic residual; not directly quoted in article.",
+        "teamStats": {
+          "fulhamLeagueAveragePossessionPct": 58,
+          "fulhamSuccessfulPassesPerGame": 505
+        }
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401879250",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": true,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401882820",
+      "league": "esp.1",
+      "home": "Levante",
+      "away": "Atlético Madrid",
+      "kickoff": "2026-10-31T13:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401882820",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401882818",
+      "league": "esp.1",
+      "home": "Rayo Vallecano",
+      "away": "Celta Vigo",
+      "kickoff": "2026-10-31T15:15Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401882818",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401882825",
+      "league": "esp.1",
+      "home": "Real Betis",
+      "away": "Málaga",
+      "kickoff": "2026-10-31T17:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401882825",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401882822",
+      "league": "esp.1",
+      "home": "Barcelona",
+      "away": "Alavés",
+      "kickoff": "2026-10-31T20:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401882822",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761922",
+      "league": "usa.1",
+      "home": "Charlotte FC",
+      "away": "Orlando City SC",
+      "kickoff": "2026-10-31T17:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761922",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761924",
+      "league": "usa.1",
+      "home": "Columbus Crew",
+      "away": "D.C. United",
+      "kickoff": "2026-10-31T18:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761924",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761919",
+      "league": "usa.1",
+      "home": "FC Cincinnati",
+      "away": "Philadelphia Union",
+      "kickoff": "2026-10-31T18:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761919",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761930",
+      "league": "usa.1",
+      "home": "New York City FC",
+      "away": "CF Montréal",
+      "kickoff": "2026-10-31T18:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761930",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761928",
+      "league": "usa.1",
+      "home": "Sporting Kansas City",
+      "away": "FC Dallas",
+      "kickoff": "2026-10-31T19:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761928",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761926",
+      "league": "usa.1",
+      "home": "St. Louis CITY SC",
+      "away": "San Diego FC",
+      "kickoff": "2026-10-31T19:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761926",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761925",
+      "league": "usa.1",
+      "home": "LA Galaxy",
+      "away": "Austin FC",
+      "kickoff": "2026-10-31T21:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761925",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761929",
+      "league": "usa.1",
+      "home": "San Jose Earthquakes",
+      "away": "Real Salt Lake",
+      "kickoff": "2026-10-31T21:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761929",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "761923",
+      "league": "usa.1",
+      "home": "Colorado Rapids",
+      "away": "Chicago Fire FC",
+      "kickoff": "2026-11-01T01:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "761923",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401874798",
+      "league": "ita.1",
+      "home": "Bologna",
+      "away": "Monza",
+      "kickoff": "2026-10-31T14:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401874798",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401874990",
+      "league": "ita.1",
+      "home": "Udinese",
+      "away": "AS Roma",
+      "kickoff": "2026-10-31T17:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401874990",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401874795",
+      "league": "ita.1",
+      "home": "AC Milan",
+      "away": "Internazionale",
+      "kickoff": "2026-10-31T19:45Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401874795",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401884753",
+      "league": "ger.1",
+      "home": "Bayer Leverkusen",
+      "away": "VfB Stuttgart",
+      "kickoff": "2026-10-31T14:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401884753",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401884749",
+      "league": "ger.1",
+      "home": "Borussia Mönchengladbach",
+      "away": "SC Paderborn 07",
+      "kickoff": "2026-10-31T14:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401884749",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401884751",
+      "league": "ger.1",
+      "home": "FC Augsburg",
+      "away": "SC Freiburg",
+      "kickoff": "2026-10-31T14:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401884751",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401884747",
+      "league": "ger.1",
+      "home": "Schalke 04",
+      "away": "RB Leipzig",
+      "kickoff": "2026-10-31T14:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401884747",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401884748",
+      "league": "ger.1",
+      "home": "Werder Bremen",
+      "away": "TSG Hoffenheim",
+      "kickoff": "2026-10-31T14:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401884748",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401884754",
+      "league": "ger.1",
+      "home": "Bayern Munich",
+      "away": "Borussia Dortmund",
+      "kickoff": "2026-10-31T17:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401884754",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401876413",
+      "league": "fra.1",
+      "home": "Troyes",
+      "away": "Le Mans",
+      "kickoff": "2026-10-31T19:45Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401876413",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401875565",
+      "league": "ned.1",
+      "home": "Feyenoord Rotterdam",
+      "away": "Fortuna Sittard",
+      "kickoff": "2026-10-31T15:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401875565",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401875563",
+      "league": "ned.1",
+      "home": "Heerenveen",
+      "away": "NEC Nijmegen",
+      "kickoff": "2026-10-31T17:45Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401875563",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401875564",
+      "league": "ned.1",
+      "home": "PSV Eindhoven",
+      "away": "Willem II",
+      "kickoff": "2026-10-31T17:45Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401875564",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401875562",
+      "league": "ned.1",
+      "home": "Ajax Amsterdam",
+      "away": "AZ Alkmaar",
+      "kickoff": "2026-10-31T20:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401875562",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401875561",
+      "league": "ned.1",
+      "home": "SC Cambuur",
+      "away": "Go Ahead Eagles",
+      "kickoff": "2026-10-31T20:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401875561",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880194",
+      "league": "eng.2",
+      "home": "Lincoln City",
+      "away": "Birmingham City",
+      "kickoff": "2026-10-31T12:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880194",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880191",
+      "league": "eng.2",
+      "home": "Norwich City",
+      "away": "Watford",
+      "kickoff": "2026-10-31T12:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880191",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880188",
+      "league": "eng.2",
+      "home": "Stoke City",
+      "away": "Preston North End",
+      "kickoff": "2026-10-31T12:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880188",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880196",
+      "league": "eng.2",
+      "home": "Bolton Wanderers",
+      "away": "Bristol City",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880196",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880195",
+      "league": "eng.2",
+      "home": "Burnley",
+      "away": "Portsmouth",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880195",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880193",
+      "league": "eng.2",
+      "home": "Middlesbrough",
+      "away": "Charlton Athletic",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880193",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880192",
+      "league": "eng.2",
+      "home": "Millwall",
+      "away": "Derby County",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880192",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880189",
+      "league": "eng.2",
+      "home": "Southampton",
+      "away": "Queens Park Rangers",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880189",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880187",
+      "league": "eng.2",
+      "home": "Swansea City",
+      "away": "Blackburn Rovers",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880187",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880186",
+      "league": "eng.2",
+      "home": "West Ham United",
+      "away": "West Bromwich Albion",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880186",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401880185",
+      "league": "eng.2",
+      "home": "Wolverhampton Wanderers",
+      "away": "Cardiff City",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401880185",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401878347",
+      "league": "sco.1",
+      "home": "Kilmarnock",
+      "away": "St Johnstone",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401878347",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401878346",
+      "league": "sco.1",
+      "home": "Motherwell",
+      "away": "St Mirren",
+      "kickoff": "2026-10-31T15:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401878346",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401920023",
+      "league": "sco.cis",
+      "home": "Rangers",
+      "away": "Aberdeen",
+      "kickoff": "2026-10-31T17:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401920023",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401900878",
+      "league": "ksa.1",
+      "home": "Al Taawoun",
+      "away": "Al Ettifaq",
+      "kickoff": "2026-10-31T13:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401900878",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401900884",
+      "league": "ksa.1",
+      "home": "Al Fayha",
+      "away": "Al Faisaly",
+      "kickoff": "2026-10-31T14:55Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401900884",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401900883",
+      "league": "ksa.1",
+      "home": "Al Hilal",
+      "away": "Al Fateh",
+      "kickoff": "2026-10-31T18:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401900883",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401885405",
+      "league": "por.1",
+      "home": "Moreirense",
+      "away": "Estrela",
+      "kickoff": "2026-10-31T15:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401885405",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401885404",
+      "league": "por.1",
+      "home": "FC Porto",
+      "away": "Estoril",
+      "kickoff": "2026-10-31T20:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401885404",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401888373",
+      "league": "tur.1",
+      "home": "Erzurum BB",
+      "away": "Çorum FK",
+      "kickoff": "2026-10-31T10:30Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 9,
+        "awayMatches": 9,
+        "homeFullTen": false,
+        "awayFullTen": false,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401888373",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401888257",
+      "league": "tur.1",
+      "home": "Kocaelispor",
+      "away": "Caykur Rizespor",
+      "kickoff": "2026-10-31T13:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401888257",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401888258",
+      "league": "tur.1",
+      "home": "Fenerbahce",
+      "away": "Goztepe",
+      "kickoff": "2026-10-31T16:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401888258",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401877579",
+      "league": "jpn.1",
+      "home": "Fagiano Okayama",
+      "away": "FC Tokyo",
+      "kickoff": "2026-10-31T05:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401877579",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401877562",
+      "league": "jpn.1",
+      "home": "Kyoto Sanga",
+      "away": "Shimizu S-Pulse",
+      "kickoff": "2026-10-31T05:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401877562",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401877564",
+      "league": "jpn.1",
+      "home": "Mito Hollyhock",
+      "away": "Sanfrecce Hiroshima",
+      "kickoff": "2026-10-31T05:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401877564",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401877583",
+      "league": "jpn.1",
+      "home": "Kashima Antlers",
+      "away": "Cerezo Osaka",
+      "kickoff": "2026-10-31T06:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401877583",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401877561",
+      "league": "jpn.1",
+      "home": "Vissel Kobe",
+      "away": "Nagoya Grampus",
+      "kickoff": "2026-10-31T06:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401877561",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "401877563",
+      "league": "jpn.1",
+      "home": "Kashiwa Reysol",
+      "away": "Urawa Red Diamonds",
+      "kickoff": "2026-10-31T07:00Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 10,
+        "awayMatches": 10,
+        "homeFullTen": true,
+        "awayFullTen": true,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "401877563",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "cz1-20261031-1-fc-slovacko-fk-teplice",
+      "league": "cze.1",
+      "home": "1.FC Slovácko",
+      "away": "FK Teplice",
+      "kickoff": "2026-10-31T14:00:00.000Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 9,
+        "awayMatches": 9,
+        "homeFullTen": false,
+        "awayFullTen": false,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "cz1-20261031-1-fc-slovacko-fk-teplice",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "cz1-20261031-fk-pardubice-slovan-liberec",
+      "league": "cze.1",
+      "home": "FK Pardubice",
+      "away": "Slovan Liberec",
+      "kickoff": "2026-10-31T14:00:00.000Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 9,
+        "awayMatches": 9,
+        "homeFullTen": false,
+        "awayFullTen": false,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "cz1-20261031-fk-pardubice-slovan-liberec",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "cz1-20261031-artis-brno-fc-fastav-zlin",
+      "league": "cze.1",
+      "home": "Artis Brno",
+      "away": "FC Fastav Zlín",
+      "kickoff": "2026-10-31T14:00:00.000Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 9,
+        "awayMatches": 9,
+        "homeFullTen": false,
+        "awayFullTen": false,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "cz1-20261031-artis-brno-fc-fastav-zlin",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "cz1-20261031-fk-jablonec-slavia-praha",
+      "league": "cze.1",
+      "home": "FK Jablonec",
+      "away": "Slavia Praha",
+      "kickoff": "2026-10-31T14:00:00.000Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 9,
+        "awayMatches": 9,
+        "homeFullTen": false,
+        "awayFullTen": false,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "cz1-20261031-fk-jablonec-slavia-praha",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    },
+    {
+      "fixtureId": "cz1-20261031-sigma-olomouc-zbrojovka-brno",
+      "league": "cze.1",
+      "home": "Sigma Olomouc",
+      "away": "Zbrojovka Brno",
+      "kickoff": "2026-10-31T17:00:00.000Z",
+      "preKickoffHistory": {
+        "source": "FootyEdge dated research-base",
+        "file": "data/research-base-2026-10-31.json",
+        "generatedAt": "2026-10-30T10:50:29.932Z",
+        "homeMatches": 9,
+        "awayMatches": 9,
+        "homeFullTen": false,
+        "awayFullTen": false,
+        "rawMatchEventStatsVerified": false,
+        "verifiedXgPerMatch": false
+      },
+      "optaAnalyst": {
+        "status": "not-verified-for-this-fixture",
+        "blendApplied": false
+      },
+      "editorialCrossChecks": [],
+      "teamNews": {
+        "status": "not-yet-verified-for-this-fixture",
+        "confirmedXI": false
+      },
+      "playerProfiles": {
+        "lastFiveVerified": false,
+        "lastTenVerified": false,
+        "headshotRightsAndIdentityAudited": false
+      },
+      "espn": {
+        "scoreboardEventId": "cz1-20261031-sigma-olomouc-zbrojovka-brno",
+        "scoreboardSchemaCheckedThisRun": false,
+        "summaryCheckedThisRun": false,
+        "coreOddsCheckedThisRun": false,
+        "ontarioExecutableQuoteVerified": false
+      },
+      "market": {
+        "bet365OntarioExactLinesVerified": false,
+        "sgpStatus": "HOLD",
+        "reason": "No exact executable Ontario sportsbook quote or verified SGP combination"
+      },
+      "researchCoverageFlags": {
+        "preKickoffHistory": true,
+        "optaPublishedWDL": false,
+        "sourceBackedLineup": false,
+        "injuriesVerified": false,
+        "playerEventPropsVerified": false,
+        "verifiedXg": false
+      }
+    }
+  ]
+}
