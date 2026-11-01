@@ -1,0 +1,68 @@
+name: FootyEdge Original Reviewed Top 3 Recovery
+
+on:
+  # Run automatically when the existing 00:05 Toronto publisher finishes.
+  # No second frozen-board publication; only read-only dated research overlays.
+  workflow_run:
+    workflows: ["Publish FootyEdge Daily Frozen Board"]
+    types: [completed]
+  push:
+    paths:
+      - ".github/workflows/original-top3-recovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-original-reviewed-top3-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test the model, source-priority and frozen-board safeguards
+        run: |
+          node --test tests/top3-research-overlay.test.mjs tests/owner-top3-ranking.test.mjs tests/source-led-ui-priority.test.mjs tests/metric-safety.test.mjs
+      - name: Build date-gated researched picks and source cross-checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          test -s "data/boards/$TODAY.json" || { echo "::warning::Today's frozen board is absent; the 00:05 publisher owns first publication."; exit 0; }
+          test -s "data/research-base-$TODAY.json" || { echo "::error::No date-matched verified history"; exit 1; }
+          test -s "data/experimental-simulations/$TODAY-v3.json" || { echo "::error::No date-matched 10k simulation"; exit 1; }
+          OWNER_OVERRIDE_DATE="$TODAY" REVIEW_DATE="$TODAY" node scripts/build-top3-review.mjs
+          SLATE_DATE="$TODAY" node scripts/build-consensus-reviewed.mjs
+          jq -e --arg day "$TODAY" '.date==$day and (.totals.fixtures==(.matches|length)) and (.totals.fixtures>0) and (.totals.three+.totals.two+.totals.one+.totals.zero==.totals.fixtures)' "data/consensus-reviewed/$TODAY.json" >/dev/null
+          THREE="$(jq -r '.totals.three' "data/consensus-reviewed/$TODAY.json")"
+          TOTAL="$(jq -r '.totals.fixtures' "data/consensus-reviewed/$TODAY.json")"
+          echo "Reviewed Top 3: $THREE / $TOTAL"
+          {
+            echo "### Original Top 3 research recovery — $TODAY"
+            echo "Three distinct model-and-history-reviewed picks: $THREE / $TOTAL"
+            echo "Unfilled markets are reported, not invented; source publisher votes are separate."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve the frozen archive and commit research overlays only
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          if [[ ! -s "data/consensus-reviewed/$TODAY.json" ]]; then exit 0; fi
+          node scripts/validate-published-boards.mjs --base origin/main
+          git config user.name "FootyEdge Original Research Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -- "data/pick-reviews/$TODAY.json" "data/consensus-reviewed/$TODAY.json"
+          if git diff --cached --quiet; then echo "Reviewed overlay already current."; exit 0; fi
+          git commit -m "data(original): recover researched Top 3 overlay for $TODAY"
+          git pull --rebase origin main
+          node scripts/validate-published-boards.mjs --base origin/main
+          git push origin HEAD:main
