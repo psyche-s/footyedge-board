@@ -32,6 +32,11 @@ export function validateBoard(board,{requireFull=false}={}){
 // A byte-for-byte Git blob pin is required; never permit this exception on
 // replacement content or on new publication dates.
 const LEGACY_OCT10_BLOB="416a6f047888594276c0c849c491575260096fe4";
+// The October 30 owner-directed editorial correction changed individual game
+// selections without regenerating all archived Top 5/league references.
+// Preserve that already-frozen publication byte-for-byte; never exempt a
+// modified file or any future board from the strict reference consistency check.
+const LEGACY_OCT30_BLOB="22d4206c08b961a97a103ec645b3cbb73e6426fa";
 // October 10's tracking row set was explicitly corrected before settlement and
 // intentionally differs from the byte-pinned board's legacy Top 5 references.
 // Pin only the immutable selection identity here: outcome/final-score fields
@@ -44,10 +49,12 @@ function validateArchivedFile(f,{requireFull=false}={}){
   const raw=fs.readFileSync('data/boards/'+f,'utf8');
   try {validateBoard(JSON.parse(raw),{requireFull});}
   catch(e){
-    if(f==='2026-10-10.json' &&
-       e.message==='Ranked board disagrees with saved game picks' &&
-       gitBlobSha(raw)===LEGACY_OCT10_BLOB){
-      console.warn('Preserved byte-pinned October 10 board with known legacy rank mismatch; new boards remain strictly validated.');
+    const pinnedLegacyRankMismatch = e.message==='Ranked board disagrees with saved game picks' && (
+      (f==='2026-10-10.json' && gitBlobSha(raw)===LEGACY_OCT10_BLOB) ||
+      (f==='2026-10-30.json' && gitBlobSha(raw)===LEGACY_OCT30_BLOB)
+    );
+    if(pinnedLegacyRankMismatch){
+      console.warn('Preserved byte-pinned legacy board '+f+' with known historical rank mismatch; new boards remain strictly validated.');
       return;
     }
     throw e;
