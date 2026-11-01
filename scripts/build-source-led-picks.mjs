@@ -203,13 +203,19 @@ function generate({date,research,curated,opinions}){
   // Pick one strongest outcome thesis, then genuinely different supported markets.
   let best=[];
   const choose=(selected,start)=>{
-   const score=xs=>xs.reduce((n,x)=>n+x.editorialSupport*10+x.confidenceRating+(x.editorialOpposition? -8:0),0);
+   // When independently sourced options are similarly supported, prefer
+   // genuinely different scoring/event markets over default 1X2/DC chalk.
+   // This is a ranking tie-break, never a fabricated odds or value estimate.
+   const score=xs=>xs.reduce((n,x)=>n+x.editorialSupport*10+x.confidenceRating+
+     (["result"].includes(x.family)?-8:0)+(x.editorialOpposition?-8:0),0);
    if(selected.length>best.length||(selected.length===best.length&&score(selected)>score(best)))best=[...selected];
    if(selected.length===3)return;
    for(let i=start;i<picks.length;i++)if(selected.every(x=>compatible(x,picks[i]))&&scoreFeasible([...selected,picks[i]]))choose([...selected,picks[i]],i+1);
   };
   choose([],0);
-  best.sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
+  best.sort((a,b)=>b.editorialSupport-a.editorialSupport||
+    (a.family==="result"?1:0)-(b.family==="result"?1:0)||
+    b.confidenceRating-a.confidenceRating);
   for(let i=0;i<best.length;i++)best[i].rank=i+1;
   output.push({gameId:String(f.id),league:f.league,home:f.home.name,away:f.away.name,
    kickoff:f.date,reviewed:best.length>0,reviewStatus:best.length===3?"three_distinct_sourced_market_tips":best.length?"partial_sourced_market_tips":"pass_no_independent_market_tip",
