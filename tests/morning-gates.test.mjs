@@ -419,11 +419,16 @@ test("October 10 owner-approved modal removes GF/GA cards and renders verified H
   assert.doesNotMatch(p2,/<small>AWAY GF \/ GA<\/small>/);
 });
 
-test("one timed refresh only, without downstream workflow_run triggers",()=>{
+test("one timed picks publisher with source-only enrichment and no downstream workflow_run triggers",()=>{
   const dir=".github/workflows";
   const scheduled=fs.readdirSync(dir).filter(file=>/\.ya?ml$/.test(file))
     .filter(file=>/^  schedule:/m.test(fs.readFileSync(dir+"/"+file,"utf8")));
-  assert.deepEqual(scheduled,["archive-board.yml"]);
+  // API-Football enriches dated source facts only; it is not a second picks
+  // publisher and must never add or rewrite a frozen board.
+  assert.deepEqual(scheduled,["archive-board.yml","sync-api-football.yml"]);
+  const enrichment=fs.readFileSync(dir+"/sync-api-football.yml","utf8");
+  assert.match(enrichment,/git add -- data\\/github-api-football\\//);
+  assert.doesNotMatch(enrichment,/git add -- data\\/boards/);
   const shadow=fs.readFileSync(dir+"/shadow-dixon-coles.yml","utf8");
   assert.doesNotMatch(shadow,/^  workflow_run:/m);
   const master=fs.readFileSync(dir+"/archive-board.yml","utf8");
