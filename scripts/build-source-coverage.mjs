@@ -13,6 +13,7 @@ async function main(){
  const evidence=await read(path.join("data","source-opinions",date+".json"))||
   {date,opinions:[]};
  const audit=await read(path.join("data","consensus-audits",date+".json"));
+ const sourceLed=await read(path.join("data","source-led",date+".json"));
  if(evidence.date!==date)throw Error("Source opinions date mismatch");
  const sources=new Map();
  for(const [role,rows] of [
@@ -44,7 +45,8 @@ async function main(){
   fixturesWithAnyCheckedIndependentForecast:audit?.summary?.fixturesWithExternalPrediction||0,
   fixturesWithTwoOrMoreIndependentSources:audit?.summary?.fixturesWithTwoOrMoreIndependentSources||0,
   picksWithTwoSourceAgreement:audit?.summary?.picksWithTwoSourceAgreement||0,
-  picksWithConflictingForecasts:audit?.summary?.picksWithConflictingForecasts||0};
+  picksWithConflictingForecasts:audit?.summary?.picksWithConflictingForecasts||0,
+  picksWithOpposingExplicitMarketForecasts:sourceLed?.date===date?(sourceLed.matches||[]).flatMap(x=>x.picks||[]).filter(x=>x.marketEvidence?.researchContradiction).length:0};
  const report={schema:"footyedge-original-source-coverage-v1",date,generatedAt:new Date().toISOString(),
    scope:"Dated independent editorial opinion checks only; source adapters and general stats are distinguished",
    notAllSourcesChecked:totals.notCreditedProviders>0,neverAssumeProviderAgrees:true,totals,sources:rows};
