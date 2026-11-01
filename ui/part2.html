@@ -3305,7 +3305,16 @@ function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
   S.openGameId=String(id);
   g.feTab="overview";
-  renderModal(g);document.getElementById("drawer").classList.add("on");
+  const drawer=document.getElementById("drawer");
+  if(!drawer)return;
+  drawer.classList.add("on");
+  try{
+    renderModal(g);
+  }catch(error){
+    console.error("FootyEdge match details rendering failed",error);
+    const body=document.getElementById("modalBody");
+    if(body)body.innerHTML='<section class="researchBox"><div class="researchTitle">MATCH DETAILS</div><p>Some match details could not be displayed. Please try again shortly.</p></section>';
+  }
   loadVerifiedMatchDetails(g);
   feEnsureTable(g).catch(()=>{});
   if(!g.availabilityLoaded&&!GITHUB_STATIC){
