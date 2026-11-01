@@ -25,6 +25,10 @@ test("Image lookup requires matching team and unique player name",()=>{
   "eng.1:83":[["333","Second Player","https://a.espncdn.com/i/headshots/soccer/players/full/333.png"]],
   "esp.1:75":[["222","First Player","https://a.espncdn.com/i/headshots/soccer/players/full/222.png"]]
  }}};
+ // Isolated function evaluation must provide the same helpers that the
+ // production bundle defines immediately before the cached lookup.
+ ctx.fePhotoNameKey=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+ ctx.feLiveRosterPhotos=new Map();
  const lookup=vm.runInNewContext(fn+";feCachedPlayerPhoto",ctx);
  assert.equal(lookup({league:"esp.1"},{id:"83"},{id:"333",name:"Second Player"}),
   "https://a.espncdn.com/i/headshots/soccer/players/full/333.png");
