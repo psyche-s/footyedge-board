@@ -11,6 +11,8 @@ on:
       - ".github/workflows/original-top3-recovery.yml"
       - "scripts/owner-top3-ranking.mjs"
       - "scripts/build-top3-review.mjs"
+      - "data/source-opinions/**"
+      - "data/team-intelligence/**"
   workflow_dispatch:
 
 permissions:
@@ -44,6 +46,7 @@ jobs:
           test -s "data/experimental-simulations/$TODAY-v3.json" || { echo "::error::No date-matched 10k simulation"; exit 1; }
           OWNER_OVERRIDE_DATE="$TODAY" REVIEW_DATE="$TODAY" node scripts/build-top3-review.mjs
           SLATE_DATE="$TODAY" node scripts/build-consensus-reviewed.mjs
+          REVIEW_DATE="$TODAY" node scripts/build-source-led-picks.mjs
           jq -e --arg day "$TODAY" '.date==$day and (.totals.fixtures==(.matches|length)) and (.totals.fixtures>0) and (.totals.three+.totals.two+.totals.one+.totals.zero==.totals.fixtures)' "data/consensus-reviewed/$TODAY.json" >/dev/null
           THREE="$(jq -r '.totals.three' "data/consensus-reviewed/$TODAY.json")"
           TOTAL="$(jq -r '.totals.fixtures' "data/consensus-reviewed/$TODAY.json")"
@@ -62,7 +65,7 @@ jobs:
           node scripts/validate-published-boards.mjs --base origin/main
           git config user.name "FootyEdge Original Research Bot"
           git config user.email "actions@users.noreply.github.com"
-          git add -- "data/pick-reviews/$TODAY.json" "data/consensus-reviewed/$TODAY.json"
+          git add -- "data/pick-reviews/$TODAY.json" "data/consensus-reviewed/$TODAY.json" "data/source-led/$TODAY.json"
           if git diff --cached --quiet; then echo "Reviewed overlay already current."; exit 0; fi
           git commit -m "data(original): recover researched Top 3 overlay for $TODAY"
           git pull --rebase origin main
