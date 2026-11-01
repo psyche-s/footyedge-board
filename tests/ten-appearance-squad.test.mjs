@@ -13,7 +13,7 @@ const browserContext={esc:x=>String(x??"").replace(/&/g,"&amp;").replace(/</g,"&
  fePlayerSafePhoto:()=>"",fePlayerRole:x=>x||"",feCachedPlayerPhoto:()=>"",
  teamImgTag:()=>"",teamDisplayName:(_g,x)=>x.name};
 test("Player profile renders ten horizontal-scroll table rows with nine metrics each",()=>{
- const source=extract("function fePlayerProfileMarkup(result,fallback){","async function feOpenPlayerProfile(g,button){");
+ const source=extract("function fePlayerImageUrl(","async function feOpenPlayerProfile(g,button){");
  const markup=vm.runInNewContext(source+";fePlayerProfileMarkup",browserContext);
  const recent=Array.from({length:10},(_,i)=>({
    date:"2026-10-"+String(i+1).padStart(2,"0"),opponent:"Club "+i,goals:i%2,assists:0,
@@ -28,10 +28,10 @@ test("Player profile renders ten horizontal-scroll table rows with nine metrics 
  assert.match(result,/class="fe-playerTableScroll"/);
  assert.match(result,/scope="row" class="fe-playerOpponent"/);
  assert.match(result,/Last 10 appearances/);
- assert.match(result,/10 verified available/);
+ assert.match(result,/10 available/);
  for(const abbr of ["G","A","SH","SOT","MIN","FC","FW","YC","RC"])
    assert.match(result,new RegExp('<th scope="col" title="[^"]+">'+abbr+"</th>"));
- assert.match(result,/— means not reported, not zero/);
+ assert.match(result,/— means the statistic was not provided, not zero/);
  assert.match(result,/Scroll sideways to see all match statistics/);
 });
 test("La Liga lineup pane keeps the pitch and check button without duplicate squads",()=>{
