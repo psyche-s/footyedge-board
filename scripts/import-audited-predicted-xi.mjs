@@ -21,7 +21,7 @@ const validXI = list => Array.isArray(list) && list.length===11 &&
 const freshUrl = url => {
  try {
   const u=new URL(url);
-  return u.protocol==="https:" && /(^|\.)(sportsmole\.co\.uk|bulinews\.com)$/.test(u.hostname);
+  return u.protocol==="https:" && /(^|\.)(sportsmole\.co\.uk|bulinews\.com|theanalyst\.com)$/.test(u.hostname);
  } catch {return false;}
 };
 const recent = (when, now) => {
