@@ -12,6 +12,8 @@ import {pathToFileURL} from "node:url";
 const allowed={
  football_whispers:"footballwhispers.com",
  forebet:"forebet.com",
+ statz:"statz.ai",
+ eagleeyeodds:"eagleeyeodds.com",
  the_analyst:"theanalyst.com",
  windrawwin:"windrawwin.com",
  sports_mole:"sportsmole.co.uk"
