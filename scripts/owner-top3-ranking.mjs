@@ -27,11 +27,10 @@ export function ownerPickCompatible(a,b){
  const [total,other]=x==="total"?[a,b]:y==="total"?[b,a]:[null,null];
  const [btts,goal]=x==="btts"?[a,b]:y==="btts"?[b,a]:[null,null];
  const [result,teamGoal]=x==="result"&&y==="team-goal"?[a,b]:y==="result"&&x==="team-goal"?[b,a]:[null,null];
- if(result&&teamGoal&&teamFrom(result)===teamFrom(teamGoal)&&/\\b1\\+\\s*goals?$/i.test(teamGoal.label))return false;
+ if(result&&teamGoal&&teamFrom(result)===teamFrom(teamGoal)&&/\b1\+\s*goals?$/i.test(teamGoal.label))return false;
  if(btts&&ownerThesis(goal)==="team-goal"&&/\byes\b/i.test(btts.label))return false;
  if(total){
   // A team scoring 2+ necessarily clears a full-match over 1.5 line.
-  if(ownerThesis(other)==="team-goal"&&/over\\s*1[.]5/i.test(total.label)&&/\\b2\\+\\s*goals?$/i.test(other.label))return false;
   // BTTS Yes necessarily satisfies over 1.5; do not sell both as two edges.
   if(ownerThesis(other)==="btts"&&/over\s*1[.]5/i.test(total.label)&&/\byes\b/i.test(other.label))return false;
   if(ownerThesis(other)==="team-goal"&&/over\s*1[.]5/i.test(total.label))return false;
