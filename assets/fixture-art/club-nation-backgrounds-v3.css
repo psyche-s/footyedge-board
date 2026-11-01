@@ -69,8 +69,7 @@
  background-image:radial-gradient(ellipse at 50% 44%,#001008,#00170d)!important;
 }
 
-/* Player identity: club fabric on the left, reported national flag on the right.
-   The flag belongs to the hero background, never to the portrait or stat panels. */
+/* Player identity: club fabric and colours across the full header. */
 .fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial {
  overflow:hidden!important;isolation:isolate;background:#03170f!important;
  background-image:radial-gradient(ellipse at 50% 50%,#00130b,#081d15)!important;
@@ -96,9 +95,10 @@
 .fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial::after {
  right:0!important;left:auto!important;
  background-image:linear-gradient(180deg,#00100955,#00100938 42%,#001009b0),
-  url("/assets/fixture-art/premium-knit-away.svg"),var(--fe-player-nation-flag),linear-gradient(#143349,#102b24)!important;
+  url("/assets/fixture-art/premium-knit-away.svg"),var(--fe-player-club-art),
+  linear-gradient(250deg,color-mix(in srgb,var(--fe-player-club) 64%,#021009),color-mix(in srgb,var(--fe-player-club) 42%,#021009))!important;
  background-size:100% 100%!important;
- background-blend-mode:normal,soft-light,normal,normal!important;
+ background-blend-mode:normal,soft-light,overlay,normal!important;
  -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 68%,transparent 100%)!important;
  mask-image:linear-gradient(270deg,#000 0%,#000 68%,transparent 100%)!important;
 }

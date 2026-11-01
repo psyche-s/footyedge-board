@@ -1,3 +1,7 @@
+## 2026-11-01 — Remove national flags from player profiles
+
+- Player profile headers now use the club fabric and colours throughout.
+
 ## 2026-11-01 — Mockup team backgrounds and club/nation player headers
 
 - Applied the same woven club colours, decorative patterns and dark centre fade to fixture cards and expanded match headers, following the owner's reference.

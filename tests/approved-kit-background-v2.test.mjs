@@ -24,7 +24,7 @@ test("future fixtures use the same dynamic per-team colours",()=>{
 });
 test("art-only update preserves the match layout and cache busting",()=>{
   assert.doesNotMatch(css,/grid-template-columns|padding|font-size/);
-  assert.match(part1,/club-nation-backgrounds-v3\.css\?v=1/);
+  assert.match(part1,/club-nation-backgrounds-v3\.css\?v=\d+/);
   assert.ok(part1.indexOf("club-nation-backgrounds-v3.css")>part1.lastIndexOf("</style>"),"background treatment loads after the existing profile styles");
   assert.match(picks,/ui\/part1\.html\?v=\d+/);
 });

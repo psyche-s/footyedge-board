@@ -19,29 +19,18 @@ test("reference clubs retain distinct decorative patterns and existing colours",
  }
 });
 
-test("nationality selects current flag codes and handles provider aliases",()=>{
- for(const [nation,code] of [["France","fr"],["Myanmar (Burma)","mm"],["Sweden","se"],
-  ["England","gb-eng"],["Côte d'Ivoire","ci"],["Türkiye","tr"],["Congo DR","cd"],
-  ["South Korea","kr"],["Cape Verde","cv"]])
-  assert.equal(context.fePlayerNationCode(nation),code,nation);
- for(const unknown of ["",null,"Nationality unavailable","https://example.com/player.svg"])
-  assert.equal(context.fePlayerNationCode(unknown),"");
-});
-
-test("the player backdrop combines the selected club with reported nationality",()=>{
+test("the player backdrop uses club colours without national flag artwork",()=>{
  const data={status:"verified",player:{name:"Club player",team:"Liverpool",nationality:"Sweden"},
   stats:[{label:"Goals",value:6}],recent:[{date:"2026-10-25",opponent:"Brighton",goals:1,shots:3}]};
  const fallback={name:"Club player",club:{name:"Liverpool"},teamName:"Liverpool"};
  const backdrop=context.fePlayerBackdrop(data.player,fallback);
- assert.equal(backdrop.nation,"se");
  assert.match(backdrop.style,/--fe-player-club:#C8102E/);
- assert.match(backdrop.style,/flagcdn\.com\/se\.svg/);
+ assert.doesNotMatch(backdrop.style,/flagcdn|nation-flag/);
  const html=context.fePlayerProfileMarkup(data,fallback);
- assert.match(html,/data-fe-nation="se"/);
+ assert.doesNotMatch(html,/data-fe-nation|flagcdn/);
+ assert.match(html,/Sweden/);
  assert.match(html,/>Goals<\/span><strong>6<\/strong>/);
  assert.match(html,/Brighton/);
  assert.match(html,/<td>3<\/td>/);
- const missing=context.fePlayerBackdrop({team:"Liverpool",birthPlace:{country:"Sweden"}},fallback);
- assert.equal(missing.nation,"");
- assert.match(missing.style,/--fe-player-nation-flag:none$/);
+ assert.equal(context.fePlayerBackdrop({...data.player,nationality:"France"},fallback).style,backdrop.style);
 });
