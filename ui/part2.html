@@ -1646,8 +1646,7 @@ function renderGames(){
   document.getElementById("gamesCount").textContent=list.length+" fixture"+(list.length===1?"":"s");
   if(!list.length){el.innerHTML='<div class="empty">'+esc(S.games.length?"No matches fit this filter.":emptyBoardMessage())+'</div>';return}
   el.innerHTML=list.map(g=>{
-    return '<article class="game fe-matchCard" role="button" tabindex="0" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'" '+
-      'onclick="openGame(\''+g.id+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openGame(\''+g.id+'\')}">'+
+    return '<article class="game fe-matchCard" role="button" tabindex="0" data-fe-open-game="'+esc(g.id)+'" aria-label="'+esc(g.home.name+' versus '+g.away.name+'; open match analysis')+'">'+
       feMatchHero(g)+
     '</article>';
   }).join("");
@@ -3287,6 +3286,21 @@ document.getElementById("modalBody").onclick=event=>{
     document.querySelector('[data-fe-tab="'+g.feTab+'"]')?.focus({preventScroll:true});
   }
 };
+// Delegated listeners keep fixture cards clickable after every render and avoid
+// inline handlers, which can be blocked by restrictive browser CSP settings.
+const feGamesContainer=document.getElementById("games");
+if(feGamesContainer){
+  feGamesContainer.addEventListener("click",event=>{
+    const card=event.target.closest("[data-fe-open-game]");
+    if(card&&feGamesContainer.contains(card))openGame(card.dataset.feOpenGame);
+  });
+  feGamesContainer.addEventListener("keydown",event=>{
+    if(event.key!=="Enter"&&event.key!==" ")return;
+    const card=event.target.closest("[data-fe-open-game]");
+    if(!card||!feGamesContainer.contains(card))return;
+    event.preventDefault();openGame(card.dataset.feOpenGame);
+  });
+}
 function openGame(id){
   const g=S.games.find(x=>x.id===String(id));if(!g)return;
   S.openGameId=String(id);
