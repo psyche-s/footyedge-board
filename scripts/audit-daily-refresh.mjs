@@ -12,6 +12,11 @@ const get=p=>{try{return JSON.parse(fs.readFileSync(path.join(root,p),"utf8"))}c
 const board=get("data/boards/"+date+".json");
 if(board?.date!==date||!Array.isArray(board.games))throw Error("Exact-day published board required; no coverage numbers invented");
 const desk=get("data/editorial-desk/"+date+".json");
+const pricedSlips=get("data/slips-reviewed/"+date+".json");
+const sourceLed=get("data/source-led/"+date+".json");
+const v4=get("data/experimental-simulations/"+date+"-v4.json");
+const modelById=new Map((v4?.date===date?v4.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
+const publisherById=new Map((sourceLed?.date===date?sourceLed.matches||[]:[]).map(x=>[String(x.gameId),x]));
 const news=get("data/team-intelligence/"+date+".json");
 const h2h=get("data/h2h/"+date+".json");
 const research=get("data/research-base-"+date+".json");
@@ -36,14 +41,21 @@ const perFixture=all.map(g=>{
  const lineupReady=!!(intel?.home?.predictedXI?.length===11&&intel?.away?.predictedXI?.length===11);
  const lineupStatus=lineupReady?(intel.home.lineupStatus==="confirmed"&&intel.away.lineupStatus==="confirmed"?"confirmed":"predicted-not-confirmed"):"unavailable";
  const newsReady=!!(intel?.source?.url&&(intel?.home?.out||intel?.home?.doubtful||intel?.away?.out||intel?.away?.doubtful));
- const modelReady=!!(g.model?.expectedGoals&&Number.isFinite(g.model.expectedGoals.home)&&Number.isFinite(g.model.expectedGoals.away));
- const draws=Number(g.model?.simulation?.draws||g.model?.simulations||0);
+ const simulation=modelById.get(id);
+ const modelReady=!!(simulation?.expectedGoals&&Number.isFinite(simulation.expectedGoals.home)&&Number.isFinite(simulation.expectedGoals.away));
+ const draws=Number(simulation?.simulations||0);
+ const retrospective=String(simulation?.status||"").startsWith("retrospective");
+ const publisher=publisherById.get(id);
+ const publisherCount=publisher?.picks?.length||0;
  return {id,league:g.league,home:g.home,away:g.away,
-  top3:{count,status:count===3?"qualified":count?"partial":"pass",reason:count===3?null:g.recoveryStatus||"insufficient independently verified distinct markets"},
+  top3:{count,status:count===3?"qualified":count?"partial":"pass",reason:count===3?null:g.recoveryStatus||"insufficient independently verified distinct markets",
+   publisherCount,publisherStatus:publisherCount===3?"qualified":publisherCount?"partial":"pass"},
   lineup:{status:lineupStatus,sourceVerified:!!intel?.source?.publicationDateVerified},
   teamNews:{status:newsReady?"available":"unavailable",sourceVerified:!!intel?.source?.publicationDateVerified},
   playerProfiles:{status:"not-audited",reason:"Individual player last-ten logs and image rights not checked by this audit"},
-  model:{status:modelReady?"expected-goals-available":"missing-expected-goals",verified10000Draws:draws===10000},
+  model:{status:modelReady?(retrospective?"retrospective-10000-draws":"pre-kickoff-10000-draws"):"missing-expected-goals",
+   verified10000Draws:modelReady&&draws===10000,externalAnalystBlendVerified:!!simulation?.externalOpinion,
+   retrospective},
   editorialDesk:{status:review?.reviewed?"reviewed":"pass"}};
 });
 const perLeagueSGP=leagueIds.map(league=>{
@@ -61,10 +73,16 @@ const obj={
  picks:{threePerMatch:qualified.length,unqualified:missed.map(g=>({id:String(g.id),league:g.league,reason:g.recoveryStatus||"insufficient verified research"})),
   incompleteCount:missed.length},
  research:{available:research?.date===date,verifiedFixtureIds:idRows(research).size,h2hFixtures:idRows(h2h).size,
-  lineupCoverage:predicted.length,newsFixtures:idRows(news).size},
+  lineupCoverage:predicted.length,newsFixtures:idRows(news).size,
+  v4ModeledFixtures:modelById.size,v4Verified10000Draws:[...modelById.values()].filter(x=>x.simulations===10000).length,
+  externalAnalystForecasts:[...modelById.values()].filter(x=>x.externalOpinion).length,
+  retrospectiveModelFixtures:[...modelById.values()].filter(x=>String(x.status||"").startsWith("retrospective")).length,
+  sourceLedQualifiedThree:sourceLed?.totals?.three||0,sourceLedPartial:(sourceLed?.totals?.two||0)+(sourceLed?.totals?.one||0)},
  slips:{editorialAvailable:desk?.date===date,reviewedMatches:(desk?.matches||[]).length,
   qualifiedLeagues:slipLeagues,leaguesWithoutQualifiedSGP:leagueIds.filter(x=>!slipLeagues.includes(x)),
-  globalSgpStatus:desk?.sgp?.status||"unavailable",crossGameStatus:desk?.acca?.status||"unavailable"},
+  globalSgpStatus:pricedSlips?.sgp?.status||desk?.sgp?.status||"unavailable",
+  crossGameStatus:pricedSlips?.acca?.status||desk?.acca?.status||"unavailable",
+  executableOntarioQuotesVerified:!!pricedSlips?.acca?.legs?.length&&pricedSlips.acca.legs.every(x=>x.verifiedPrice===true&&Number.isFinite(Number(x.odds)))},
  warnings:[
   ...(!research||research.date!==date?["Dated research file missing"]:[]),
   ...(absentCupFixtures.length?["Verified scheduled cup fixtures absent from board: "+absentCupFixtures.length]:[]),
@@ -73,6 +91,8 @@ const obj={
   ...(missed.length?["Not all games have 3 source-supported picks"]:[]),
   ...(slipLeagues.length<leagueIds.length?["Not every league has a sourced compatible 3+ leg SGP"]:[]),
   ...(predicted.length<all.length?["Predicted starting XIs are incomplete or unverified"]:[]),
+  ...(modelById.size<all.length?["One or more fixtures lack a V4 10000-draw projection"]:[]),
+  ...(pricedSlips?.acca?.status==="hold"?["Cross-game research slip HOLD: no verified executable bet365 Ontario prices"]:[]),
   ...((board.top5||[]).length===0&&all.length?["No qualifying global Top 5 published"]:[])
  ]
 };
