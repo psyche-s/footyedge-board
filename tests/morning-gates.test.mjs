@@ -427,8 +427,8 @@ test("one timed picks publisher with source-only enrichment and no downstream wo
   // publisher and must never add or rewrite a frozen board.
   assert.deepEqual(scheduled,["archive-board.yml","sync-api-football.yml"]);
   const enrichment=fs.readFileSync(dir+"/sync-api-football.yml","utf8");
-  assert.match(enrichment,/git add -- data\\/github-api-football\\//);
-  assert.doesNotMatch(enrichment,/git add -- data\\/boards/);
+  assert.match(enrichment,/git add -- data\/github-api-football\//);
+  assert.doesNotMatch(enrichment,/git add -- data\/boards/);
   const shadow=fs.readFileSync(dir+"/shadow-dixon-coles.yml","utf8");
   assert.doesNotMatch(shadow,/^  workflow_run:/m);
   const master=fs.readFileSync(dir+"/archive-board.yml","utf8");
