@@ -49,7 +49,7 @@ test("Editorial disagreements reduce rating and are explicitly disclosed, not co
  const first=v=>v.matches[0].picks.find(x=>x.key==="home_win");
  assert.ok(first(b).editorialOpposition>0);
  assert.ok(first(b).confidenceRating<first(a).confidenceRating);
- assert.match(first(b).reason,/no unanimous result consensus/);
+ assert.match(first(b).reason,/evidence is not unanimous/);
 });
 
 test("Tied publisher directions are a result-market PASS, not a forced ML",()=>{
@@ -63,4 +63,26 @@ test("Tied publisher directions are a result-market PASS, not a forced ML",()=>{
  assert.equal(result.matches[0].picks.length,0);
  assert.equal(result.matches[0].reviewStatus,"pass_no_independent_market_tip");
  assert.equal(result.top5.length,0);
+});
+
+test("Opposing totals are counted as contradictions, not independent agreement",()=>{
+ const under={date,fixtures:[
+  {fixtureId:"123456",league:"eng.1",home:"Home FC",away:"Away FC",publicationDate:date,
+   source:"football_whispers",url:webURL,marketPicks:[{market:"under_2_5",explicitPreMatchTip:true}]},
+  {fixtureId:"123456",league:"eng.1",home:"Home FC",away:"Away FC",publicationDate:date,
+   source:"windrawwin",url:"https://www.windrawwin.com/tips/england-premier-league/",marketPicks:[{market:"under_2_5",explicitPreMatchTip:true}]}
+ ]};
+ const clean=generate({date,research:researched,curated:under,opinions:{date,opinions:[]}});
+ const conflicted=structuredClone(under);
+ conflicted.fixtures.push({fixtureId:"123456",league:"eng.1",home:"Home FC",away:"Away FC",publicationDate:date,
+  source:"forebet",url:"https://www.forebet.com/en/football/matches/example",marketPicks:[{market:"over_2_5",explicitPreMatchTip:true}]});
+ const withOpposition=generate({date,research:researched,curated:conflicted,opinions:{date,opinions:[]}});
+ const pick=withOpposition.matches[0].picks.find(x=>x.key==="under_2_5");
+ assert.ok(pick);
+ assert.equal(pick.editorialSupport,2);
+ assert.equal(pick.editorialOpposition,1);
+ assert.equal(pick.marketEvidence.researchContradiction,true);
+ assert.ok(pick.confidenceRating<clean.matches[0].picks[0].confidenceRating);
+ assert.match(pick.reason,/opposing market forecast/);
+ assert.ok(!withOpposition.matches[0].picks.some(x=>x.key==="over_2_5"));
 });
