@@ -250,11 +250,17 @@ async function main(){
   read(path.join("data","research-base-"+date+".json")),
   read(path.join("data","source-market-picks",date+".json")),
   read(path.join("data","source-opinions",date+".json"))]);
- if(!research||!opinions){console.log("No dated independent publisher opinions; source-led picks PASS.");return}
+ if(!research||research.date!==date||!Array.isArray(research.fixtures)||!research.fixtures.length){
+  throw Error("Date-matched fixture research is required for a Top Picks PASS/coverage overlay");
+ }
+ // Missing publisher evidence is an explicit PASS, never a reason to leave
+ // the public Top Picks status blank or to fabricate an editorial forecast.
+ const verifiedOpinions=opinions?.date===date&&Array.isArray(opinions.opinions)?opinions:
+  {schema:"footyedge-source-opinions-v1",date,opinions:[]};
  // An absent market-level file is NOT permission to infer extra publisher bets.
  // A result-only opinion can support one result thesis, not three model tips.
  const curated=curatedPayload?.date===date?curatedPayload:{date,fixtures:[]};
- const doc=generate({date,research,curated,opinions});
+ const doc=generate({date,research,curated,opinions:verifiedOpinions});
  const target=path.join("data","source-led",date+".json");
  await fs.mkdir(path.dirname(target),{recursive:true});
  await fs.writeFile(target,JSON.stringify(doc,null,2)+"\n");
