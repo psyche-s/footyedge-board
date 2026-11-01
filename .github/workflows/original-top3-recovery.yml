@@ -25,6 +25,7 @@ concurrency:
 
 jobs:
   recover:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 18
     steps:
@@ -34,6 +35,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Synchronize latest Original main before research
+        run: |
+          git fetch origin main
+          git checkout main
+          git pull --ff-only origin main
       - name: Test the model, source-priority and frozen-board safeguards
         run: |
           node --test tests/top3-research-overlay.test.mjs tests/owner-top3-ranking.test.mjs tests/source-led-ui-priority.test.mjs tests/metric-safety.test.mjs
@@ -70,6 +76,20 @@ jobs:
           git add -- "data/pick-reviews/$TODAY.json" "data/consensus-reviewed/$TODAY.json" "data/source-led/$TODAY.json" "data/refresh-health/$TODAY.json"
           if git diff --cached --quiet; then echo "Reviewed overlay already current."; exit 0; fi
           git commit -m "data(original): recover researched Top 3 overlay for $TODAY"
-          git pull --rebase origin main
+          if ! git pull --rebase origin main; then
+            # A concurrent data-only refresh may touch the same dated JSON.
+            # Rebuild against the latest main instead of dropping today's picks.
+            git rebase --abort
+            git fetch origin main
+            git reset --hard origin/main
+            OWNER_OVERRIDE_DATE="$TODAY" REVIEW_DATE="$TODAY" node scripts/build-top3-review.mjs
+            SLATE_DATE="$TODAY" node scripts/build-consensus-reviewed.mjs
+            REVIEW_DATE="$TODAY" node scripts/build-source-led-picks.mjs
+            REFRESH_AUDIT_DATE="$TODAY" node scripts/audit-daily-refresh.mjs
+            git add -- "data/pick-reviews/$TODAY.json" "data/consensus-reviewed/$TODAY.json" "data/source-led/$TODAY.json" "data/refresh-health/$TODAY.json"
+            if git diff --cached --quiet; then exit 0; fi
+            git commit -m "data(original): recover researched Top 3 overlay for $TODAY"
+            git pull --rebase origin main
+          fi
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
