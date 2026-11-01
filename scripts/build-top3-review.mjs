@@ -43,6 +43,20 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    result.push(q({label:a+" or Draw",category:"Double Chance",family:"result"},pct(w.awayWin+w.draw),sideA,notWinH,{},`${a} avoided defeat in ${sideA}/${na} recent games and ${h} failed to win ${notWinH}/${nh}. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached ${pct(w.awayWin+w.draw).toFixed(1)}%.${standingContext}`));
    if(w.homeWin>=56&&hwin>=5&&homeOppLoss>=3)result.push(q({label:h+" ML",category:"Match Result",family:"result"},pct(w.homeWin),hwin,homeOppLoss,{},`${h} won ${hwin}/${nh} recent matches while ${a} lost ${homeOppLoss}/${na}. Home win is supported in ${pct(w.homeWin).toFixed(1)}% of simulated outcomes, though the draw still presents risk.${standingContext}`));
    if(w.awayWin>=56&&awin>=5&&awayOppLoss>=3)result.push(q({label:a+" ML",category:"Match Result",family:"result"},pct(w.awayWin),awin,awayOppLoss,{},`${a} won ${awin}/${na} recent games and ${h} lost ${awayOppLoss}/${nh}. The modeled away-win rate was ${pct(w.awayWin).toFixed(1)}%; the straight win is less protected than double chance.${standingContext}`));
+   // A dominant, independently modeled ML is a distinct and more informative
+   // recommendation than the almost-certain double-chance version of that side.
+   // This is an editorial research-strength grade, NOT a calibrated win rate.
+   const dominantHome=w.homeWin>=72&&hwin/nh>=.6&&homeOppLoss/na>=.5;
+   const dominantAway=w.awayWin>=72&&awin/na>=.6&&awayOppLoss/nh>=.5;
+   if(dominantHome||dominantAway){
+     const preferred=result.find(p=>p.label===(dominantHome?h:a)+" ML");
+     if(preferred){
+       preferred.confidenceRating=Math.min(94,Math.max(preferred.confidenceRating,
+         Math.round(.82*(dominantHome?w.homeWin:w.awayWin)+23)));
+       preferred.researchStrength=preferred.confidenceRating;
+       preferred.reason+=" The strong outright-win direction is preferred to a redundant double-chance selection; the grade is not a win probability.";
+     }
+   }
    result.sort((x,y)=>y.confidenceRating-x.confidenceRating||y.historicalSupportPct-x.historicalSupportPct);
    const chooseResult=result.find(x=>x.confidenceRating>=58)||result[0];
    const goals=[];
@@ -74,6 +88,24 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    scMarket(a+" 1+ Goal","team-goal",x=>x.ga>=1,x=>x.gf>=1,pct(100*(1-Math.exp(-e.away))));
    scMarket("BTTS Yes","btts",x=>x.gf>=1&&x.ga>=1,x=>x.gf>=1&&x.ga>=1,sim.marketsPct.bttsYes);
    scMarket("BTTS No","btts",x=>x.gf===0||x.ga===0,x=>x.gf===0||x.ga===0,100-sim.marketsPct.bttsYes);
+   // Team 2+ goals is a different thesis from a straight ML: winning 1-0
+   // does not settle it. Use the date-gated Poisson scoring distribution and
+   // both teams' verified histories, not an invented external market tip.
+   const twoGoals=(lam)=>pct(100*(1-Math.exp(-lam)*(1+lam)));
+   const home2=c(H,x=>x.gf>=2),awayAllows2=c(A,x=>x.ga>=2);
+   const away2=c(A,x=>x.gf>=2),homeAllows2=c(H,x=>x.ga>=2);
+   scoring.push(q({label:h+" 2+ Goals",category:"Team Goals",family:"team-goal"},
+     twoGoals(e.home),home2,awayAllows2,{verifiedTeamSamples:true},
+     h+" scored twice or more in "+home2+"/"+nh+" recent matches; "+a+
+     " conceded at least twice in "+awayAllows2+"/"+na+
+     ". The date-gated scoring model reached two home goals in "+
+     twoGoals(e.home).toFixed(1)+"% of scenarios; this does not follow from an ML."));
+   scoring.push(q({label:a+" 2+ Goals",category:"Team Goals",family:"team-goal"},
+     twoGoals(e.away),homeAllows2,away2,{verifiedTeamSamples:true},
+     a+" scored twice or more in "+away2+"/"+na+" recent matches; "+h+
+     " conceded at least twice in "+homeAllows2+"/"+nh+
+     ". The date-gated scoring model reached two away goals in "+
+     twoGoals(e.away).toFixed(1)+"% of scenarios; this does not follow from an ML."));
    scoring.sort((x,y)=>y.confidenceRating-x.confidenceRating);
    const ownerReviewed=process.env.OWNER_OVERRIDE_DATE===day;
    const firstTwo=[chooseResult,goalChoice].filter(x=>x?.confidenceRating>=58);
