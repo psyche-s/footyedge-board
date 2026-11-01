@@ -1800,7 +1800,7 @@ async function load(date=S.date){
       repoData('data/editorial-previews/'+S.date+'.json').catch(()=>null),
       ARCHIVE_CAPTURE?Promise.resolve(null):repoData('data/editorial-desk/'+S.date+'.json').catch(()=>null),
       repoData('data/experimental-simulations/'+S.date+'-v4.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'-v3.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'-v2.json').catch(()=>repoData('data/experimental-simulations/'+S.date+'.json').catch(()=>null)))),
-      repoData('data/consensus-reviewed/'+S.date+'.json').catch(()=>repoData('data/pick-reviews/'+S.date+'.json').catch(()=>null))
+      repoData('data/owner-reviews/'+S.date+'.json').catch(()=>repoData('data/consensus-reviewed/'+S.date+'.json').catch(()=>repoData('data/pick-reviews/'+S.date+'.json').catch(()=>null)))
     ].map((request,index)=>Promise.race([
       Promise.resolve(request).catch(()=>null),
       new Promise(resolve=>setTimeout(()=>resolve(null),index<3?6500:5500))
@@ -2229,9 +2229,10 @@ function feOfficialNewsHTML(g){
    const item=(arr,label,type)=>arr.length?'<div class="fe-availabilityTitle '+type+'">'+label+'</div><ul class="fe-newsPlayers">'+arr.map(person=>'<li>'+esc(person)+'</li>').join('')+'</ul>':'';
    return '<section class="teamNewsCard fe-sourceNews"><div class="teamNewsHead">'+teamImgTag(t,"newsTeamLogo")+
      '<b>'+esc(teamDisplayName(g,t))+'</b></div>'+
+     (x?.newsSummary?'<p class="fe-newsClear">'+esc(x.newsSummary)+'</p>':'')+
      (out.length+doubt.length+reports.length?item(out,'REPORTED OUT / SUSPENDED','out')+
        item(doubt,'DOUBTFUL','doubt')+item(reports,'INJURY REPORT · AVAILABILITY NOT CONFIRMED','doubt'):
-       '<p class="fe-newsClear">No confirmed absence listed for this fixture.</p>')+'</section>';
+       (x?.newsSummary?'':'<p class="fe-newsClear">No current availability update has been verified.</p>'))+'</section>';
  };
  return side(intel.home,g.home)+side(intel.away,g.away);
 }
@@ -2318,15 +2319,15 @@ function fePlayerProfileMarkup(result,fallback){
   new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(new Date(player.dateOfBirth+"T12:00:00Z")):null;
  const role=fePlayerRole(player.position||fallback.position);
  const hero='<div class="fe-playerHero fe-playerHeroEditorial">'+
-  '<div class="fe-playerIdentity"><span class="fe-playerEyebrow">PLAYER INTELLIGENCE / PROFILE</span>'+
+  '<div class="fe-playerIdentity">'+
   '<h2 id="fe-playerTitle">'+display(player.name)+'</h2>'+
-  '</div><dl class="fe-playerHeroFacts"><div><dt>CLUB</dt><dd>'+display(player.team||fallback.teamName)+'</dd></div>'+
-  '<div><dt>POSITION</dt><dd>'+display(role||"—")+'</dd></div>'+
+  '<p class="fe-playerSubtitle">'+display(player.team||fallback.teamName)+(role?' · '+display(role):'')+(player.jerseyNumber?' · #'+display(player.jerseyNumber):'')+'</p>'+
+  '</div><dl class="fe-playerHeroFacts">'+
   (birthday?'<div><dt>BORN</dt><dd>'+display(birthday)+'</dd></div>':'')+
   (player.nationality?'<div><dt>NATIONALITY</dt><dd>'+display(player.nationality)+'</dd></div>':'')+
   (player.height?'<div><dt>HEIGHT</dt><dd>'+display(player.height)+'</dd></div>':'')+
   (player.weight?'<div><dt>WEIGHT</dt><dd>'+display(player.weight)+'</dd></div>':'')+
-  (player.jerseyNumber?'<div><dt>NUMBER</dt><dd>'+display(player.jerseyNumber)+'</dd></div>':'')+'</dl>'+
+  (player.dominantFoot?'<div><dt>FOOT</dt><dd>'+display(player.dominantFoot)+'</dd></div>':'')+'</dl>'+
   '<div class="fe-playerPhotoStage">'+(photo||'<div class="fe-playerPortraitPlaceholder">'+esc(initials)+'</div>')+'</div></div>';
  if(loading)return hero+'<div class="fe-playerScroll fe-playerLoadingPanel" role="status">'+
   '<div class="fe-profileShimmer"></div><p>Checking player details and recent matches…</p></div>';
@@ -2343,13 +2344,8 @@ function fePlayerProfileMarkup(result,fallback){
  const competitionOptions=competitionTabs.map((name,i)=>'<span class="fe-playerCompTab '+(i===0?'is-active':'')+'">'+display(name)+'</span>').join('');
  const headlineStats=["Appearances","Goals","Assists","Shots","Shots on target","Minutes played"];
  const performance='<section class="fe-playerPanel fe-playerPerformance"><div class="fe-playerSectionHead"><h3>Season performance</h3><span class="fe-playerSeasonLabel">'+display(activeCompetition)+'</span></div>'+
-  '<div class="fe-playerCompetitionTabs" role="group" aria-label="Competition filters">'+competitionOptions+'</div>'+
-  '<div class="fe-playerPerformanceHero"><div><span>APPEARANCES</span><strong>'+plain(number.get("Appearances"))+'</strong><small>'+display(activeCompetition)+'</small></div>'+
-  '<div class="fe-playerPerformanceMetrics">'+headlineStats.slice(1).map(label=>'<div><strong>'+plain(number.get(label))+'</strong><span>'+esc(label)+'</span></div>').join('')+'</div></div>'+
-  (number.size===0?'<p class="fe-playerUnavailable">No verified season statistics are available for this player yet.</p>':'')+
-  '<div class="fe-playerMoreStats"><h4>All recorded season statistics</h4><div class="fe-playerStatsGrid fe-playerStatsGridFull">'+seasonCards+'</div></div>'+
-  '<p class="fe-playerHint">Appearances = all games played, including substitutions. Starts = games in the starting XI.</p>'+
-  '<p class="fe-playerHint">Season totals shown for the verified competition above. Other competitions are listed for reference; totals are not attributed to them without verified splits.</p></section>';
+  (number.size?'<div class="fe-playerStatsGrid fe-playerStatsGridFull">'+priority.filter(label=>number.has(label)).map(label=>'<div class="fe-playerStat"><span>'+esc(label)+'</span><strong>'+plain(number.get(label))+'</strong></div>').join('')+'</div>':'<p class="fe-playerUnavailable">No verified season statistics are available for this player yet.</p>')+
+  '<p class="fe-playerHint">Totals for '+display(activeCompetition)+'. Appearances = all games played, including substitutions. Starts = games in the starting XI.</p></section>';
  const personal=[["Full name",player.name],["Nationality",player.nationality],["Born",birthday],
   ["Shirt number",player.jerseyNumber||fallback.jersey],["Height",player.height],
   ["Weight",player.weight],["Preferred foot",player.dominantFoot],
@@ -2395,7 +2391,7 @@ function fePlayerProfileMarkup(result,fallback){
  return hero+'<div class="fe-playerScroll"><div class="fe-playerDashboard">'+
   performance+
   '<section class="fe-playerPanel fe-playerAppearances"><h3>Last 10 appearances <span class="fe-playerPanelHint">'+
-   last.length+' verified available</span></h3>'+lastMarkup+'</section>'+
+   last.length+' available</span></h3>'+lastMarkup+'</section>'+
   (career.length?'<section class="fe-playerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
   '</div><p class="fe-playerHint">'+esc(note)+'</p></div>';
 }
@@ -2413,7 +2409,7 @@ async function feOpenPlayerProfile(g,button){
  root.className="fe-playerOverlay";
  root.innerHTML='<div class="fe-playerShade" data-fe-player-close></div>'+
   '<section class="fe-playerSheet" role="dialog" aria-modal="true" aria-labelledby="fe-playerTitle">'+
-  '<header class="fe-playerTopbar"><span>FootyEdge · Player intelligence</span>'+
+  '<header class="fe-playerTopbar"><span>Player profile</span>'+
   '<button type="button" class="fe-playerClose" aria-label="Close player profile" data-fe-player-close>✕</button></header>'+
   '<div class="fe-playerContent">'+fePlayerProfileMarkup(null,fallback)+'</div></section>';
  document.body.appendChild(root);
@@ -3422,3 +3418,4 @@ load().then(()=>{if(!ARCHIVE_CAPTURE&&!GITHUB_STATIC&&S.date===etDate())return P
 </script>
 </body>
 </html>
+

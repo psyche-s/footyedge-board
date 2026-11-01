@@ -158,17 +158,21 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .fe-priceSnapshotUnverified{display:inline-block;margin:6px 0 0;padding:4px 7px;font-size:10px;border-radius:7px;border:1px solid #d6dcd5;color:#657368;background:#f1f4ef}
 .fe-oddsDisclaimer{margin:10px 0 0;font-size:10px;color:#b4cabb;line-height:1.6}
 
+
+.fe-slipPrice{display:flex;align-items:center;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid #d7d0c3;color:#1b6b4b}
+.fe-slipPrice strong{font-size:26px!important;letter-spacing:-.04em}.fe-slipPrice span{font-size:11px;line-height:1.5;color:#6e766d}.fe-slipPrice small{display:block;font-size:10px;color:#858678}
+.fe-leagueReceipt .legWhy{font-size:11px;line-height:1.5;color:#a8bcb0}.fe-leagueReceipt .legWhy p{margin:8px 0}.fe-leagueReceiptTop>strong{color:#70e2a4;font-size:18px}.fe-leagueReceipt h3{font-size:15px;line-height:1.4}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
-  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Build research-backed combinations from verified match picks. Selections ranked by form, statistics and matchup strength.</p></div>
+  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Today’s match combinations, player props and cross-game parlay. Check the starting XIs and the final price at your sportsbook.</p></div>
   <div class="fe-slipActions"><div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh latest data</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
-  <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">BEST SGP FROM</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Only compatible, independently supported legs qualify.</span></section>
+  <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">BEST SGP FROM</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Five major European leagues · SGP reference target +150 or higher.</span></section>
   <section class="grid" aria-label="FootyEdge research slips">
   <article class="slip ticketPaper" aria-labelledby="sgpTitle">
     <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="sgpMeta">SGP · MATCHDAY</span><span class="slipBadge" id="sgpLegBadge">RESEARCH</span></div>
-      <h2 id="sgpTitle">THE MATCHDAY SGP</h2><p class="slipIntro" id="sgpIntro">One fixture. Independent, supported selections.</p></header>
+      <h2 id="sgpTitle">THE MATCHDAY SGP</h2><p class="slipIntro" id="sgpIntro">One fixture. Supported selections.</p><div class="fe-slipPrice" id="sgpPrice"></div></header>
     <div class="slipBody" id="sgpSlip"><div class="empty">Loading supported selections…</div></div>
     <p class="slipRisk" id="sgpCaution" hidden></p>
     <div class="ticketTear" aria-hidden="true"></div>
@@ -176,14 +180,14 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
   </article>
   <article class="slip ticketPaper" aria-labelledby="accaTitle">
     <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="accaMeta">ACCA · MATCHDAY</span><span class="slipBadge" id="accaLegBadge">RESEARCH</span></div>
-      <h2 id="accaTitle">THE MATCHDAY ACCA</h2><p class="slipIntro" id="accaIntro">The highest-supported selections across different games.</p></header>
+      <h2 id="accaTitle">THE MATCHDAY ACCA</h2><p class="slipIntro" id="accaIntro">Selections across different games.</p><div class="fe-slipPrice" id="accaPrice"></div></header>
     <div class="slipBody" id="accaSlip"><div class="empty">Loading supported selections…</div></div>
     <p class="slipRisk" id="accaCaution" hidden></p>
     <div class="ticketTear" aria-hidden="true"></div>
     <div class="slipFooter"><span id="accaCount">Checking available legs</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span></strong></div>
   </article>
 </section>
-  <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>Only independent, verified market families qualify</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
+  <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>Published reference prices · recheck before placing</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
   <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
   <p class="notice">Confidence grades are research rankings, not guaranteed hit probabilities. Confirm market prices and lineups before betting.</p>
 </main>
@@ -246,19 +250,31 @@ function slipDate(legs){if(!legs.length)return "MATCHDAY";
 function viewLeg(x){
  const parts=String(x.fixture||"").split(" vs ");
  return {p:{label:x.label,reason:x.why,evidence:x.evidence},g:{home:parts[0]||"Club",away:parts.slice(1).join(" vs ")||"Club",date:x.kickoff||null,league:x.league},
-   rating:Number(x.rating),risk:x.risk||[],evidence:x.evidence||"",
-   observedReferenceOdds:Number.isInteger(x.observedReferenceOdds)?x.observedReferenceOdds:null,
+   rating:x.rating==null?null:Number(x.rating),recentHits:x.recentHits,recentSample:x.recentSample,risk:x.risk||[],evidence:x.evidence||"",
+   observedReferenceOdds:Number.isInteger(x.publishedReferenceOdds)?x.publishedReferenceOdds:Number.isInteger(x.observedReferenceOdds)?x.observedReferenceOdds:null,
+   referenceRegion:x.referenceRegion||"US reference",
    referenceQuoteStatus:String(x.priceStatus||""),verifiedOntarioPrice:x.verifiedPrice===true?x.odds:null};
 }
 function legHTML(x,i){
- const p=x.p,g=x.g;
+ const p=x.p,g=x.g,grade=x.rating==null?'—':x.rating+'%';
+ const sample=Number.isFinite(x.recentHits)&&Number.isFinite(x.recentSample)&&x.recentSample>0;
+ const label=sample?'LAST '+x.recentSample:'RESEARCH';
  return '<div class="leg"><div class="legTop"><div class="legTitle">'+esc(p.label)+'</div>'+
-  '<span class="legRating" title="Research strength grade, not win probability">'+x.rating+'<small>/100 GRADE</small></span></div>'+
-  '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+ 
-  (Number.isInteger(x.observedReferenceOdds)?'<div class="fe-priceSnapshot" title="Observed US reference market; not confirmed available to bet365 Ontario">US reference '+esc((x.observedReferenceOdds>0?'+':'')+x.observedReferenceOdds)+' · not Ontario</div>':
-   '<div class="fe-priceSnapshotUnverified">Odds unavailable · verify your sportsbook</div>')+
+  '<span class="legRating" title="'+(sample?'Observed recent hit rate, not a forecast':'Research grade, not a calibrated win probability')+'">'+grade+'<small>'+label+'</small></span></div>'+
+  '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+
+  (sample?'<div class="fe-priceSnapshot">Recent record '+x.recentHits+'/'+x.recentSample+'</div>':'')+
+  (Number.isInteger(x.observedReferenceOdds)?'<div class="fe-priceSnapshot" title="Published reference only; current Ontario availability is unverified">Reference '+esc((x.observedReferenceOdds>0?'+':'')+x.observedReferenceOdds)+'</div>':
+   '<div class="fe-priceSnapshotUnverified">Individual price pending</div>')+
   '<details class="legWhy"><summary>Why this leg</summary><p>'+esc(cleanReason(p.reason||"See the match analysis."))+'</p>'+
   (x.risk?.length?'<span class="legEvidence">Watch: '+esc(cleanReason(x.risk.join("; ")))+'</span>':'')+'</details></div>';
+}
+function referencePrice(result,minimum){
+ const q=Number(result?.combinedReferenceAmerican);
+ return Number.isFinite(q)&&q>=minimum?{american:q,minimum,kind:result?.combinedPriceStatus==='calculated_from_same_book_distinct_fixture_reference_quotes'?'Reference calculation':'Published reference'}:null;
+}
+function renderSlipPrice(result,id,minimum){
+ const el=document.getElementById(id),quote=referencePrice(result,minimum);
+ el.innerHTML=quote?'<strong>+'+quote.american+'</strong><span>'+quote.kind+'<small>Target +'+minimum+' or higher · confirm final price</small></span>':'';
 }
 
 function kickoffCountdown(items){
@@ -273,8 +289,8 @@ function kickoffCountdown(items){
 function printSlip(id,items,empty){
  document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
  const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
- const researchScore=items.length?Math.max(0,Math.round(Math.min(...items.map(x=>x.rating))-3*(items.length-1)-(isSgp?2:0))):null;
- document.getElementById(prefix+"Count").textContent=researchScore==null?"PASS · NO QUALIFIED TICKET":items.length+" LEGS";
+ const hasTicket=items.length>0;
+ document.getElementById(prefix+"Count").textContent=!hasTicket?"NO PUBLISHED TICKET":items.length+" LEGS";
  document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
  if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
  document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
@@ -289,6 +305,7 @@ function printProps(items){
 let selected=0;
 const chosenDate=()=>selected?nextDay(localDate()):localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
+const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1"]);
 const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
 let selectedSgpLeague="all";
 function sgpForLeague(desk){
@@ -298,40 +315,42 @@ function sgpForLeague(desk){
 }
 function fillSgpSelect(){
  const select=document.getElementById("sgpCompetitionSelect");
- const names=Object.entries(FE_MAJOR_NAMES).sort((a,b)=>a[1].localeCompare(b[1]));
+ const names=Object.entries(FE_MAJOR_NAMES).filter(([key])=>FE_SGP_LEAGUES.has(key)).sort((a,b)=>a[1].localeCompare(b[1]));
  select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
  select.value=selectedSgpLeague;
 }
-let displayedDesk=null;
+let displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",250);
 function renderCompetitionSlips(list){
  const target=document.getElementById("sgpLeagueList");
- const valid=(list||[]).filter(x=>x?.status==="qualified"&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&x.legs.every(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)));
+ const valid=(list||[]).filter(x=>x?.status==="qualified"&&FE_SGP_LEAGUES.has(x.league)&&referencePrice(x,150)&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
  target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
-  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+x.legs.length+' LEGS</strong></div>'+
-  '<h3>'+esc(FE_MAJOR_NAMES[x.league]||x.league)+' FLYER</h3>'+
-  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.fixture)+'</small></div><span title="Research grade, not win probability">'+l.rating+'/100</span></div>').join("")+
-  '<footer>Overall research rating · '+esc(x.overallResearchRating??"—")+'% · Not a combined win probability</footer></article>').join(""):
-  '<div class="fe-sgpEmpty">PASS — the existing result, team-goal and total lines repeat the same goal/result drivers. No independent, verified third event prop currently qualifies. A three-leg ticket will not be forced.</div>';
+  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>+'+Number(x.combinedReferenceAmerican)+'</strong></div>'+
+  '<h3>'+esc(x.legs[0].fixture)+'</h3>'+
+  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+(l.recentSample?l.recentHits+'/'+l.recentSample+' recent matches':esc(l.category||''))+'</small></div><span title="Observed recent hit rate; not a joint win forecast">'+(l.rating==null?'—':esc(l.rating)+'%')+'</span></div>').join("")+
+  '<footer>Published reference · target +150 or higher. Joint hit rate unverified.</footer><details class="legWhy"><summary>Matchup and team-news checks</summary><p>'+esc(cleanReason(x.caution||"Confirm all starting players and the final price."))+'</p></details></article>').join(""):
+  '<div class="fe-sgpEmpty">No major-league SGP with a qualifying published reference price is available for this date.</div>';
 }
+
 function renderDesk(desk,date,live=false){
  const valid=desk?.date===date&&(desk.schema==="footyedge-odds-reviewed-slips-v1"||desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
  if(!valid){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
   printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
-  displayedDesk=null;
+  displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",250);
   printProps([]);renderCompetitionSlips([]);
   for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
   return;
  }
  document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
  (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
-  (desk.schema==="footyedge-odds-reviewed-slips-v1"?"SGP & ACCA research · Ontario quotes not verified":desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+  (desk.schema==="footyedge-odds-reviewed-slips-v1"?"Major-league SGPs & cross-game parlay · reference prices":desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
  function drawSlip(result,id,empty){
   const isSgp=id==="sgpSlip";
   const eligible=(result?.status==="qualified"||(result?.status==="hold"&&!isSgp))&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
   const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
   printSlip(id,legs,result?.caution||empty);
+  renderSlipPrice(legs.length?result:null,isSgp?"sgpPrice":"accaPrice",isSgp?150:250);
   if(result?.status==="hold"&&legs.length){document.getElementById("accaCount").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById("accaLegBadge").textContent="NOT PRICED";}
   const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
@@ -383,4 +402,4 @@ document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
 document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
 document.getElementById("refreshBtn").onclick=refreshLive;
 refresh();
-</script><script src="assets/sgp-bet365-2026-10-21.js?v=1"></script><script>refresh();</script></body></html>
+</script><script src="assets/sgp-bet365-2026-10-21.js?v=1"></script></body></html>
