@@ -131,7 +131,28 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    const ownerResults=(dominantHome||dominantAway)?
      result.filter(x=>x.label===(dominantHome?h:a)+" ML"):result;
    const ownerPool=[...ownerResults,...meaningfulGoals,...scoring].filter(x=>x.confidenceRating>=58);
-   const distinct=ownerReviewed?takeOwnerTop3(ownerPool,3):distinctPickSet(picked,3);
+   let distinct=ownerReviewed?takeOwnerTop3(ownerPool,3):distinctPickSet(picked,3);
+   // Only when fewer than three genuinely distinct markets qualify, consider
+   // team under-1.5 goals. Unlike a trivial 1+ goal, this does not follow
+   // from the match winner or from an under-4.5 match total.
+   if(ownerReviewed&&distinct.length<3){
+     const under15=lam=>pct(100*Math.exp(-lam)*(1+lam));
+     const homeUnder=c(H,x=>x.gf<=1),awayAllowsUnder=c(A,x=>x.ga<=1);
+     const awayUnder=c(A,x=>x.gf<=1),homeAllowsUnder=c(H,x=>x.ga<=1);
+     const fallbacks=[
+       q({label:h+" Under 1.5 Goals",category:"Team Goals",family:"team-goal"},
+         under15(e.home),homeUnder,awayAllowsUnder,{verifiedTeamSamples:true},
+         h+" scored at most once in "+homeUnder+"/"+nh+" recent matches; "+
+         a+" allowed at most one in "+awayAllowsUnder+"/"+na+
+         ". The date-gated scoring model gives "+under15(e.home).toFixed(1)+"% for under two home goals."),
+       q({label:a+" Under 1.5 Goals",category:"Team Goals",family:"team-goal"},
+         under15(e.away),homeAllowsUnder,awayUnder,{verifiedTeamSamples:true},
+         a+" scored at most once in "+awayUnder+"/"+na+" recent matches; "+
+         h+" allowed at most one in "+homeAllowsUnder+"/"+nh+
+         ". The date-gated scoring model gives "+under15(e.away).toFixed(1)+"% for under two away goals.")
+     ];
+     distinct=takeOwnerTop3([...ownerPool,...fallbacks.filter(x=>x.confidenceRating>=58)],3);
+   }
    distinct.forEach((x,i)=>{x.rank=i+1;});
    // A dated optional independent preview may ADD a verified contextual fact
    // to an already-supported selection. It never creates a pick or changes rating.
