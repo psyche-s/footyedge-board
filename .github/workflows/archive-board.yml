@@ -168,11 +168,10 @@ jobs:
           # Primary public display picks are built from genuine dated publisher
           # recommendations, not statistical defaults disguised as consensus.
           # This same-date overlay never rewrites frozen historical settlement.
-          if [[ -s "data/source-opinions/$TODAY.json" ]]; then
-            node --test tests/source-led-picks.test.mjs
-            node scripts/build-source-led-picks.mjs
-          else
-            echo "::warning::No independently recorded dated editorial predictions; do not attribute model leans to publishers."
+          node --test tests/source-led-picks.test.mjs
+          node scripts/build-source-led-picks.mjs
+          if [[ ! -s "data/source-opinions/$TODAY.json" ]]; then
+            echo "::warning::No independently recorded dated editorial predictions; dated source-led overlay explicitly marks fixtures PASS rather than fabricating consensus."
           fi
           if [[ ! -s "data/source-led/$TODAY.json" ]]; then
             echo "::error::Missing dated Top Picks overlay. Daily refresh cannot report success without a published picks artifact."
