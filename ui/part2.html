@@ -2974,6 +2974,7 @@ function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)
   const tabs=[["overview","Overview"],["stats","Stats"],["lineups","Lineups"],["standings","Table"],["projections","Projections"]];
   const nav='<div class="fe-tabs" role="tablist" aria-label="Match analysis">'+tabs.map(([id,label])=>
     '<button type="button" role="tab" aria-selected="'+(id===active)+'" class="'+(id===active?"active":"")+'" data-fe-tab="'+id+'">'+label+'</button>').join("")+'</div>';
+  const top3=viewCandidates(g);
   const pickCoverage=top3.length===3?"":top3.length?" · PARTIAL":" · PASS";
   const head='<section class="fe-panel fe-picks"><div class="fe-panelHeading"><h3><span class="fe-star">★</span> TOP '+Math.min(3,top3.length)+' PICKS'+pickCoverage+'</h3>'+
     '</div>'+ranked+'</section>';
