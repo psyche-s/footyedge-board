@@ -987,8 +987,24 @@ function feOwnerBoardPicks(g){
      Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
 }
 function viewCandidates(g){
-  // Explicit owner-approved published Top 3 take precedence over the older
-  // current-day editorial-only gate, which wrongly hid saved predictions.
+  // A dated, independently verified publisher overlay takes display priority
+  // only for its own researched fixture. Preserve the immutable archived
+  // selections and use them for fixtures with no qualified publisher tips.
+  if(S.sourceLed?.date===S.date && !ARCHIVE_CAPTURE &&
+     Array.isArray(g.feEditorialPicks) && g.feEditorialPicks.some(p=>
+       p?.sourceBackedReason===true && p?.marketEvidence?.explicitEditorialTip===true &&
+       Array.isArray(p.sourceProvenance) && p.sourceProvenance.length>=1)){
+    const picks=g.feEditorialPicks.filter(p=>p?.sourceBackedReason===true&&
+      p?.marketEvidence?.explicitEditorialTip===true&&
+      Array.isArray(p.sourceProvenance)&&p.sourceProvenance.length>=1).slice(0,3);
+    if(S.filter==="result"||S.filter==="ml")return picks.filter(p=>p.family==="result"&&
+      (S.filter!=="ml"||String(p.label).endsWith(" ML")));
+    if(S.filter==="goals")return picks.filter(p=>["total","teamtotal","firsthalf"].includes(p.family));
+    if(S.filter==="btts")return picks.filter(p=>p.family==="btts");
+    if(S.filter==="atgs"||S.filter==="soa")return [];
+    return picks;
+  }
+  // The frozen board remains the fallback and historical source of truth.
   if(feOwnerBoardPublished()){
     const picks=feOwnerBoardPicks(g);
     if(S.filter==="result"||S.filter==="ml")return picks.filter(p=>
@@ -1134,7 +1150,7 @@ async function pollAttributedOdds(){
 }
 function renderBest(){
   const a=[...topPicks()].sort((x,y)=>Number((y.archiveTopPick||y.model?.top)?.confidenceRating??(y.archiveTopPick||y.model?.top)?.score??0)-Number((x.archiveTopPick||x.model?.top)?.confidenceRating??(x.archiveTopPick||x.model?.top)?.score??0)),el=document.getElementById("best");
-  document.getElementById("topSub").textContent=S.sourceLed?.date===S.date?"Independent market previews · research-strength grades":"Confidence-ranked match predictions · statistical analysis";
+  document.getElementById("topSub").textContent=feOwnerBoardPublished()?"Frozen daily research rankings · grades are not calibrated win probabilities":S.sourceLed?.date===S.date?"Independent market previews · research-strength grades":"Confidence-ranked match predictions · statistical analysis";
   if(!a.length){el.innerHTML='<div class="empty">'+esc(!S.games.length||!S.archive?emptyBoardMessage():"No pick has cleared the 80 confidence threshold for this view.")+'</div>';return}
   el.innerHTML=a.map((g,i)=>{
     const p=g.archiveTopPick||g.model.top,px=null;
@@ -2957,7 +2973,8 @@ function renderMatchDetailsHTML(g,ranked,newsHtml,noteHtml,dcHtml,modelApproach)
   const tabs=[["overview","Overview"],["stats","Stats"],["lineups","Lineups"],["standings","Table"],["projections","Projections"]];
   const nav='<div class="fe-tabs" role="tablist" aria-label="Match analysis">'+tabs.map(([id,label])=>
     '<button type="button" role="tab" aria-selected="'+(id===active)+'" class="'+(id===active?"active":"")+'" data-fe-tab="'+id+'">'+label+'</button>').join("")+'</div>';
-  const head='<section class="fe-panel fe-picks"><div class="fe-panelHeading"><h3><span class="fe-star">★</span> TOP '+Math.min(3,(viewCandidates(g)||[]).length)+' PICKS</h3>'+
+  const pickCoverage=top3.length===3?"":top3.length?" · PARTIAL":" · PASS";
+  const head='<section class="fe-panel fe-picks"><div class="fe-panelHeading"><h3><span class="fe-star">★</span> TOP '+Math.min(3,top3.length)+' PICKS'+pickCoverage+'</h3>'+
     '</div>'+ranked+'</section>';
   let content;
   if(active==="overview")content=head+matchH2HHtml(g)+feLastFive(g)+feNewsPanel(g,newsHtml);
@@ -3184,7 +3201,7 @@ function renderModal(g){
       '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+feForecastReviewChip(x)+'</div>'+
       '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
     '</article>';
-  }).join(""):'<div class="fe-empty">No selection has enough verified support for this fixture.</div>';
+  }).join(""):'<div class="fe-empty">PASS — 0 qualified picks. Independent evidence for a distinct market is unavailable.</div>';
   const allNews=latestNewsItems(g);
   const teamCard=team=>{
     const items=allNews.filter(item=>itemBelongsToTeam(g,item,team)).slice(0,2);
