@@ -157,7 +157,10 @@ jobs:
         run: |
           TODAY="$(TZ=America/Toronto date +%F)"
           node --test tests/top3-research-overlay.test.mjs tests/reviewed-slips.test.mjs tests/source-consensus.test.mjs
-          node scripts/build-top3-review.mjs
+          # Owner-approved model research provides up to three distinct ranked
+          # markets without claiming unsupported external publisher votes.
+          # Keep immutable official board picks separate from this display overlay.
+          OWNER_OVERRIDE_DATE="$TODAY" REVIEW_DATE="$TODAY" node scripts/build-top3-review.mjs
           # Only dated independently validated opinion snapshots count as sources checked.
           # No source-opinions file => all external votes remain missing, not "consensus".
           node scripts/audit-source-consensus.mjs
