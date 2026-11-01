@@ -125,7 +125,12 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    const meaningfulGoals=goals.filter(candidate=>candidate.label!=="Under 4.5 Goals"||
      !goals.some(other=>other.label!=="Under 4.5 Goals"&&other.confidenceRating>=70&&
        other.confidenceRating>=candidate.confidenceRating-8));
-   const ownerPool=[...result,...meaningfulGoals,...scoring].filter(x=>x.confidenceRating>=58);
+   // A high-conviction ML supersedes its redundant double-chance alternative.
+   // This also prevents the optimiser from using the protected result solely
+   // to pair with a scoring leg that a straight win already implies.
+   const ownerResults=(dominantHome||dominantAway)?
+     result.filter(x=>x.label===(dominantHome?h:a)+" ML"):result;
+   const ownerPool=[...ownerResults,...meaningfulGoals,...scoring].filter(x=>x.confidenceRating>=58);
    const distinct=ownerReviewed?takeOwnerTop3(ownerPool,3):distinctPickSet(picked,3);
    distinct.forEach((x,i)=>{x.rank=i+1;});
    // A dated optional independent preview may ADD a verified contextual fact
