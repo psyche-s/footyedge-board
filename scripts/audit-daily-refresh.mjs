@@ -14,6 +14,8 @@ if(board?.date!==date||!Array.isArray(board.games))throw Error("Exact-day publis
 const desk=get("data/editorial-desk/"+date+".json");
 const pricedSlips=get("data/slips-reviewed/"+date+".json");
 const sourceLed=get("data/source-led/"+date+".json");
+const reviewed=get("data/consensus-reviewed/"+date+".json");
+const reviewedById=new Map((reviewed?.date===date?reviewed.matches||[]:[]).map(x=>[String(x.gameId),x]));
 const v4=get("data/experimental-simulations/"+date+"-v4.json");
 const modelById=new Map((v4?.date===date?v4.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
 const publisherById=new Map((sourceLed?.date===date?sourceLed.matches||[]:[]).map(x=>[String(x.gameId),x]));
@@ -37,7 +39,9 @@ const newsById=new Map((news?.fixtures||[]).map(f=>[String(f.fixtureId),f]));
 const deskById=new Map((desk?.matches||[]).map(f=>[String(f.gameId),f]));
 const perFixture=all.map(g=>{
  const id=String(g.id),intel=newsById.get(id),review=deskById.get(id);
- const count=Array.isArray(g.top3)?g.top3.length:0;
+ const reviewedRow=reviewedById.get(id);
+ const count=Array.isArray(reviewedRow?.picks)?reviewedRow.picks.length:Array.isArray(g.top3)?g.top3.length:0;
+ const archiveCount=Array.isArray(g.top3)?g.top3.length:0;
  const lineupReady=!!(intel?.home?.predictedXI?.length===11&&intel?.away?.predictedXI?.length===11);
  const lineupStatus=lineupReady?(intel.home.lineupStatus==="confirmed"&&intel.away.lineupStatus==="confirmed"?"confirmed":"predicted-not-confirmed"):"unavailable";
  const newsReady=!!(intel?.source?.url&&(intel?.home?.out||intel?.home?.doubtful||intel?.away?.out||intel?.away?.doubtful));
@@ -48,7 +52,7 @@ const perFixture=all.map(g=>{
  const publisher=publisherById.get(id);
  const publisherCount=publisher?.picks?.length||0;
  return {id,league:g.league,home:g.home,away:g.away,
-  top3:{count,status:count===3?"qualified":count?"partial":"pass",reason:count===3?null:g.recoveryStatus||"insufficient independently verified distinct markets",
+  top3:{count,archiveCount,displaySource:reviewedRow?"dated_model_and_source_audited_overlay":"immutable_archive",status:count===3?"qualified":count?"partial":"pass",reason:count===3?null:reviewedRow?.reviewStatus||g.recoveryStatus||"insufficient independently verified distinct markets",
    publisherCount,publisherStatus:publisherCount===3?"qualified":publisherCount?"partial":"pass"},
   lineup:{status:lineupStatus,sourceVerified:!!intel?.source?.publicationDateVerified},
   teamNews:{status:newsReady?"available":"unavailable",sourceVerified:!!intel?.source?.publicationDateVerified},
@@ -63,20 +67,23 @@ const perLeagueSGP=leagueIds.map(league=>{
  return {league,status:row?"qualified":"hold",legs:row?.legs?.length||0,
   reason:row?null:"No verified compatible 3+ leg editorial SGP with exact market support"};
 });
+const displayQualified=perFixture.filter(x=>x.top3.count===3);
+const displayMissed=perFixture.filter(x=>x.top3.count!==3);
 const obj={
  schema:"footyedge-original-refresh-audit-v2",date,generatedAt:new Date().toISOString(),
  perFixture,perLeagueSGP,
  auditedPublishedBoard:board.immutable===true||board.state==="published",
- noUiChanges:true,top5Entries:(board.top5||[]).length,
+ noUiChanges:true,top5Entries:Math.min(5,perFixture.filter(x=>x.top3.count>0).length),archivedTop5Entries:(board.top5||[]).length,
  fixtureTotal:all.length,leaguesOnSlate:leagueIds,
  cupCoverage:{sourceVerified:scheduledCups.length,absentFromBoard:absentCupFixtures.map(f=>({league:f.league,home:f.home,away:f.away}))},
- picks:{threePerMatch:qualified.length,unqualified:missed.map(g=>({id:String(g.id),league:g.league,reason:g.recoveryStatus||"insufficient verified research"})),
-  incompleteCount:missed.length},
+ picks:{threePerMatch:displayQualified.length,unqualified:displayMissed.map(x=>({id:x.id,league:x.league,reason:x.top3.reason||"insufficient verified research"})),
+  incompleteCount:displayMissed.length,archivedThreePerMatch:qualified.length},
  research:{available:research?.date===date,verifiedFixtureIds:idRows(research).size,h2hFixtures:idRows(h2h).size,
   lineupCoverage:predicted.length,newsFixtures:idRows(news).size,
   v4ModeledFixtures:modelById.size,v4Verified10000Draws:[...modelById.values()].filter(x=>x.simulations===10000).length,
   externalAnalystForecasts:[...modelById.values()].filter(x=>x.externalOpinion).length,
   retrospectiveModelFixtures:[...modelById.values()].filter(x=>String(x.status||"").startsWith("retrospective")).length,
+  reviewedTop3QualifiedThree:reviewed?.totals?.three||0,
   sourceLedQualifiedThree:sourceLed?.totals?.three||0,sourceLedPartial:(sourceLed?.totals?.two||0)+(sourceLed?.totals?.one||0)},
  slips:{editorialAvailable:desk?.date===date,reviewedMatches:(desk?.matches||[]).length,
   qualifiedLeagues:slipLeagues,leaguesWithoutQualifiedSGP:leagueIds.filter(x=>!slipLeagues.includes(x)),
@@ -88,7 +95,7 @@ const obj={
   ...(absentCupFixtures.length?["Verified scheduled cup fixtures absent from board: "+absentCupFixtures.length]:[]),
   ...((news?.fixtures||[]).length===0?["No dated team intelligence file with verified lineup/news rows"]:[]),
   ...(all.some(g=>!Array.isArray(g.h2h)||!g.h2h.length)?["One or more board fixtures lack attached H2H; do not represent missing as zero meetings"]:[]),
-  ...(missed.length?["Not all games have 3 source-supported picks"]:[]),
+  ...(displayMissed.length?["Not all games have 3 distinct model-and-history-supported picks"]:[]),
   ...(slipLeagues.length<leagueIds.length?["Not every league has a sourced compatible 3+ leg SGP"]:[]),
   ...(predicted.length<all.length?["Predicted starting XIs are incomplete or unverified"]:[]),
   ...(modelById.size<all.length?["One or more fixtures lack a V4 10000-draw projection"]:[]),
