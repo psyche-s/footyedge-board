@@ -1,0 +1,37 @@
+name: One-time FootyEdge ORIGINAL Nov 1 publisher recovery
+on:
+  push:
+    paths:
+      - '.github/workflows/footyedge-original-recovery-2026-11-01.yml'
+permissions:
+  contents: read
+  actions: write
+jobs:
+  dispatch-once:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dispatch missing original daily publisher once only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TODAY="$(TZ=America/Toronto date +%F)"
+          if [[ "$TODAY" != "2026-11-01" ]]; then
+            echo "Recovery expired; no dispatch."
+            exit 0
+          fi
+          if [[ -f "data/boards/$TODAY.json" ]]; then
+            echo "Immutable dated board already exists; no duplicate dispatch."
+            exit 0
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100" > /tmp/original-runs.json
+          if jq -e --arg day "$TODAY" '.workflow_runs | any(.name == "Publish FootyEdge Daily Frozen Board" and (.created_at >= ($day+"T04:00:00Z")))' /tmp/original-runs.json >/dev/null; then
+            echo "Today's original publisher run already exists; no duplicate dispatch."
+            exit 0
+          fi
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/archive-board.yml/dispatches" -f ref=main
+          echo "Dispatched exactly one original publisher recovery for $TODAY."
