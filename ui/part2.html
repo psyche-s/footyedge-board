@@ -987,6 +987,24 @@ function feOwnerBoardPicks(g){
      Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
 }
 function viewCandidates(g){
+  // Primary current-day view: independently modeled, date-gated Top 3
+  // cross-checked against verified editorial forecasts. A source-only desk
+  // with zero tips must NEVER suppress 43 researched fixture shortlists.
+  // The frozen official board remains untouched for historical settlement.
+  if(S.reviewedTop3?.date===S.date&&!ARCHIVE_CAPTURE&&
+     Array.isArray(g.feEditorialPicks)&&g.feEditorialPicks.length){
+    const picks=g.feEditorialPicks.filter(p=>p?.sourceBackedReason===true&&
+      p?.label&&Number.isFinite(Number(p.confidenceRating))&&
+      String(p.reason||"").length>=45).sort((a,b)=>
+        Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
+    if(S.filter==="result"||S.filter==="ml")return picks.filter(p=>
+      ["Match Result","Double Chance"].includes(p.category)&&
+      (S.filter!=="ml"||p.category==="Match Result"));
+    if(S.filter==="goals")return picks.filter(p=>["Goals","Team Goals"].includes(p.category));
+    if(S.filter==="btts")return picks.filter(p=>p.category==="BTTS");
+    if(S.filter==="atgs"||S.filter==="soa")return [];
+    return picks;
+  }
   // A dated, independently verified publisher overlay takes display priority
   // only for its own researched fixture. Preserve the immutable archived
   // selections and use them for fixtures with no qualified publisher tips.
@@ -1062,9 +1080,16 @@ function viewPick(g){
   if(S.filter==="ml")return moneylineCandidates(g)[0]||null;
   return viewCandidates(g)[0]||null;
 }
-function filterOK(g){if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE&&!feOwnerBoardPublished()){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search&&!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(String(S.search).toLowerCase()))return false;return S.filter==="all"||viewCandidates(g).length>0;}if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
+function filterOK(g){if(S.reviewedTop3?.date===S.date&&!ARCHIVE_CAPTURE){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search&&!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(String(S.search).toLowerCase()))return false;return S.filter==="all"||viewCandidates(g).length>0;}if(S.sourceLed?.date===S.date&&!ARCHIVE_CAPTURE&&!feOwnerBoardPublished()){if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search&&!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(String(S.search).toLowerCase()))return false;return S.filter==="all"||viewCandidates(g).length>0;}if(S.league!=="all"&&g.league!==S.league)return false;if(!statusOK(g))return false;if(S.search){const q=String(S.search).toLowerCase();if(!String(g.home.name+" "+g.away.name+" "+g.leagueName).toLowerCase().includes(q))return false}const p=g.model?.top;if(S.filter==="all")return true;if(S.filter==="atgs"||S.filter==="soa")return !!viewPick(g);if(!p)return false;if(S.filter==="goals")return p.category==="Goals"||p.category==="Team Goals";if(S.filter==="btts")return p.category==="BTTS";if(S.filter==="result")return resultMarketCandidates(g).length>0;if(S.filter==="ml")return moneylineCandidates(g).length>0;return true}
 function scoreSide(g,s){return g.live||g.done?`<div class="matchScore">${g[s].score??0}</div>`:`<div class="pre">${s==="home"?"HOME":"AWAY"}</div>`}
 function topPicks(){
+  if(S.reviewedTop3?.date===S.date&&!ARCHIVE_CAPTURE){
+    return S.games.filter(g=>(S.league==="all"||g.league===S.league)&&statusOK(g))
+      .map(g=>({...g,archiveTopPick:viewCandidates(g)[0]||null}))
+      .filter(g=>g.archiveTopPick)
+      .sort((a,b)=>Number(b.archiveTopPick.confidenceRating)-Number(a.archiveTopPick.confidenceRating))
+      .slice(0,5);
+  }
   if(feOwnerBoardPublished()){
     const refs=S.league!=="all"&&S.archive.leagueTop5?.[S.league]
       ?S.archive.leagueTop5[S.league]:S.archive.top5||[];
@@ -1826,8 +1851,12 @@ async function load(date=S.date){
        independentMarketPicks.sourceLedDisplayOnly===true&&independentMarketPicks.archiveUnmodified===true&&
        independentMarketPicks.date===S.date&&Array.isArray(independentMarketPicks.matches)){
       S.sourceLed=independentMarketPicks;
-      reviewedPicksPayload=independentMarketPicks;
+      // Keep the separately modeled and externally audited research overlay.
+      // Publisher tips supplement it; they do not erase missing-fixture picks.
     }
+    S.reviewedTop3=reviewedPicksPayload?.schema==='footyedge-dated-researched-top3-v1'&&
+      reviewedPicksPayload.date===S.date&&reviewedPicksPayload.archiveUnmodified===true&&
+      Array.isArray(reviewedPicksPayload.matches)?reviewedPicksPayload:null;
     const analyticsOverlay=await repoData('data/analytics/'+S.date+'.json').catch(()=>null);
     if(S.date!==date)return;
     const advancedById=new Map(analyticsOverlay?.date===S.date?(analyticsOverlay.matches||[]).filter(x=>x.verifiedJoin===true).map(x=>[String(x.fixtureId),x]):[]);
@@ -3290,7 +3319,7 @@ document.getElementById("modalBody").onclick=event=>{
 // Delegated listeners keep fixture cards clickable after every render and avoid
 // inline handlers, which can be blocked by restrictive browser CSP settings.
 const feGamesContainer=document.getElementById("games");
-if(feGamesContainer){
+if(feGamesContainer&&typeof feGamesContainer.addEventListener==="function"){
   feGamesContainer.addEventListener("click",event=>{
     const card=event.target.closest("[data-fe-open-game]");
     if(card&&feGamesContainer.contains(card))openGame(card.dataset.feOpenGame);
