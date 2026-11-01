@@ -1,3 +1,9 @@
+## 2026-11-01 — Mockup team backgrounds and club/nation player headers
+
+- Applied the same woven club colours, decorative patterns and dark centre fade to fixture cards and expanded match headers, following the owner's reference.
+- Split player identity backgrounds between the selected club and the player's reported national flag, preserving portraits, stats and responsive profile controls.
+- Added nationality alias and current-country-code coverage; unknown nationalities remain neutral.
+
 ## 2026-11-01 — Restore player profiles and lineup statistics
 
 - Fixed the shared portrait helper's CommonJS/ESM mismatch that crashed the player-profile, lineup-headshots and match-updates functions on Vercel.

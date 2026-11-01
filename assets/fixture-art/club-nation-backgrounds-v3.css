@@ -1,0 +1,117 @@
+/* FootyEdge Original — shared woven club artwork, based on the owner's mockup.
+   These are decorative colour treatments. The existing fixture grid stays intact. */
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit] {
+ --fe-home-bands:linear-gradient(transparent,transparent);
+ --fe-away-bands:linear-gradient(transparent,transparent);
+ background:#00140b!important;
+ background-image:radial-gradient(ellipse at 50% 44%,#001008,#00170d)!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]::before,
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]::after {
+ content:""!important;position:absolute!important;top:0!important;bottom:0!important;
+ width:61%!important;opacity:1!important;z-index:0!important;pointer-events:none!important;
+ background-repeat:no-repeat,no-repeat,no-repeat,repeat,no-repeat!important;
+ background-blend-mode:normal,soft-light,overlay,normal,normal!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]::before {
+ left:0!important;right:auto!important;
+ background-size:100% 100%,100% 100%,100% 100%,var(--fe-home-band-size,100% 100%),100% 100%!important;
+ background-image:
+  linear-gradient(180deg,#0010081f 0%,transparent 30%,#00140bc9 100%),
+  url("/assets/fixture-art/premium-knit-home.svg"),
+  var(--fe-home-art,url("/assets/fixture-art/filigree.svg")),
+  var(--fe-home-bands),
+  linear-gradient(90deg,color-mix(in srgb,var(--fe-home) 87%,#000c06) 0%,
+   color-mix(in srgb,var(--fe-home) 69%,#000c06) 48%,#00140b 100%)!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 24%,#000d 42%,#0005 72%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 24%,#000d 42%,#0005 72%,transparent 100%)!important;
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]::after {
+ right:0!important;left:auto!important;
+ background-size:100% 100%,100% 100%,100% 100%,var(--fe-away-band-size,100% 100%),100% 100%!important;
+ background-image:
+  linear-gradient(180deg,#0010081f 0%,transparent 30%,#00140bc9 100%),
+  url("/assets/fixture-art/premium-knit-away.svg"),
+  var(--fe-away-art,url("/assets/fixture-art/filigree.svg")),
+  var(--fe-away-bands),
+  linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 87%,#000c06) 0%,
+   color-mix(in srgb,var(--fe-away) 69%,#000c06) 48%,#00140b 100%)!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 24%,#000d 42%,#0005 72%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 24%,#000d 42%,#0005 72%,transparent 100%)!important;
+}
+/* Broader coloured shirt bands sit beneath the fine embossed artwork. */
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit][data-home-kit="vertical"] {
+ --fe-home-bands:repeating-linear-gradient(86deg,transparent 0 28px,color-mix(in srgb,var(--fe-home-accent) 74%,transparent) 29px 55px,transparent 56px 84px);
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit][data-away-kit="vertical"] {
+ --fe-away-bands:repeating-linear-gradient(86deg,transparent 0 28px,color-mix(in srgb,var(--fe-away-accent) 74%,transparent) 29px 55px,transparent 56px 84px);
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]:is([data-home-kit="angled"],[data-home-kit="diagonal"],[data-home-kit="chevron"]) {
+ --fe-home-bands:repeating-linear-gradient(132deg,transparent 0 27px,color-mix(in srgb,var(--fe-home-accent) 17%,transparent) 28px 54px,transparent 55px 84px);
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]:is([data-away-kit="angled"],[data-away-kit="diagonal"],[data-away-kit="chevron"]) {
+ --fe-away-bands:repeating-linear-gradient(132deg,transparent 0 27px,color-mix(in srgb,var(--fe-away-accent) 17%,transparent) 28px 54px,transparent 55px 84px);
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]:is([data-home-kit="diamonds"],[data-home-kit="mosaic"]) {
+ --fe-home-band-size:38px 38px;
+ --fe-home-bands:repeating-conic-gradient(from 45deg,color-mix(in srgb,var(--fe-home-accent) 10%,transparent) 0% 25%,transparent 0% 50%);
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]:is([data-away-kit="diamonds"],[data-away-kit="mosaic"]) {
+ --fe-away-band-size:38px 38px;
+ --fe-away-bands:repeating-conic-gradient(from 45deg,color-mix(in srgb,var(--fe-away-accent) 10%,transparent) 0% 25%,transparent 0% 50%);
+}
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]>.fe-heroHead,
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit]>.fe-heroTeams {
+ position:relative!important;z-index:2!important;
+}
+/* Even formerly featured fixtures use the same dynamic club treatment. */
+:is(.fe-matchCard,.fe-dialogHero) .fe-hero.fe-kitHero[data-home-kit][data-featured-art] {
+ background-image:radial-gradient(ellipse at 50% 44%,#001008,#00170d)!important;
+}
+
+/* Player identity: club fabric on the left, reported national flag on the right.
+   The flag belongs to the hero background, never to the portrait or stat panels. */
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial {
+ overflow:hidden!important;isolation:isolate;background:#03170f!important;
+ background-image:radial-gradient(ellipse at 50% 50%,#00130b,#081d15)!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial::before,
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial::after {
+ content:""!important;position:absolute!important;top:0!important;bottom:0!important;
+ width:57%!important;height:100%!important;opacity:1!important;z-index:0!important;
+ pointer-events:none!important;background-repeat:no-repeat!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial::before {
+ left:0!important;right:auto!important;
+ background-image:
+  linear-gradient(180deg,#00100966,#00100938 35%,#001009b0),
+  url("/assets/fixture-art/premium-knit-home.svg"),
+  var(--fe-player-club-art),
+  linear-gradient(110deg,color-mix(in srgb,var(--fe-player-club) 86%,#021009),color-mix(in srgb,var(--fe-player-club) 66%,#021009))!important;
+ background-size:100% 100%!important;
+ background-blend-mode:normal,soft-light,overlay,normal!important;
+ -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 68%,transparent 100%)!important;
+ mask-image:linear-gradient(90deg,#000 0%,#000 68%,transparent 100%)!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial::after {
+ right:0!important;left:auto!important;
+ background-image:linear-gradient(180deg,#00100955,#00100938 42%,#001009b0),
+  url("/assets/fixture-art/premium-knit-away.svg"),var(--fe-player-nation-flag),linear-gradient(#143349,#102b24)!important;
+ background-size:100% 100%!important;
+ background-blend-mode:normal,soft-light,normal,normal!important;
+ -webkit-mask-image:linear-gradient(270deg,#000 0%,#000 68%,transparent 100%)!important;
+ mask-image:linear-gradient(270deg,#000 0%,#000 68%,transparent 100%)!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial .fe-playerPhotoStage,
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial .fe-playerIdentity,
+.fe-playerSheet .fe-playerContent .fe-playerHero.fe-playerHeroEditorial .fe-playerHeroFacts {
+ position:relative!important;z-index:2!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerGivenName,
+.fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerSubtitle {color:#d3e0d9!important}
+.fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerHeroFacts dt {color:#b1c5ba!important}
+.fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerIdentity {text-shadow:0 2px 15px #0008}
+.fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerJersey {z-index:1!important;opacity:.10!important}
+@media(prefers-reduced-motion:reduce) {
+ .fe-playerHero::before,.fe-playerHero::after {animation:none!important}
+}
