@@ -13,6 +13,16 @@ An HTTP success alone is insufficient: known default images, repeated placeholde
 digests and mismatched identities are excluded. The browser and API share the same
 restricted image URL patterns.
 
+Official Liverpool and Real Madrid player-page references are reviewed in
+`config/official-player-portraits.json`, joined by exact athlete name, ESPN ID
+and current roster club. Their original images are checked before selection.
+PNG, JPEG and WebP dimensions are read from the image bytes. The collector keeps
+the larger checked portrait instead of accepting the first successful thumbnail;
+both catalogues also choose the largest reference across duplicate competition
+rosters. The APIs and browser prefer that catalogue over live roster thumbnails.
+Small fallbacks are not enlarged in the profile, and wide club photographs use
+a centred crop. No portraits are generated, altered or mirrored.
+
 `data/player-image-identities.json` keeps the reviewed provider crosswalk. Its
 Reep portion is a pinned CC0 snapshot, joined by exact ESPN ID and name; official
 FPL photo-code matches have their separate source field. This crosswalk is not
@@ -28,6 +38,8 @@ An abbreviated or mononymous lineup name must resolve uniquely inside that club.
   fallback for existing reviewed identity bridges without any API key.
 - `node scripts/build-player-photo-catalog.mjs` rebuilds both browser and API
   indexes from the saved checked references.
+- `node scripts/upgrade-player-portraits.mjs` checks for larger portraits for
+  existing exact roster identities without changing fixtures or picks.
 - `node scripts/check-player-photo-coverage.mjs YYYY-MM-DD` audits the actual
   browser lookup against that date's saved XIs and records every remaining gap.
 

@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import struct
+import subprocess
 import urllib.request
 
 
@@ -80,22 +81,9 @@ def main():
                                   "unavailable": len(results) - len(approved), "placeholderDigestsRejected": len(placeholders)}
     refs["policy"] = "Verified source URLs only; no third-party image bytes stored. Exact roster identity and provider-ID crosswalk; no global face or name guessing."
     (root / "data/player-photo-refs.json").write_text(json.dumps(refs, ensure_ascii=False, indent=2) + "\n")
-    registry = {}
-    index = {}
-    for key, team in refs["teams"].items():
-        photos = list(team.get("players", {}).values())
-        if photos:
-            registry[key] = [[p["id"], p["name"], p["url"]] for p in photos]
-        for p in photos:
-            index[p["id"]] = {"id": p["id"], "name": p["name"], "url": p["url"],
-                              "kind": p.get("kind", "cutout"), "provider": p.get("provider", "ESPN"),
-                              "verifiedAt": p["verifiedAt"]}
-    (root / "assets/player-photo-registry.js").write_text(
-        "/* Verified roster identities and checked provider photo URLs. Image bytes remain upstream. */\nwindow.FE_PLAYER_PHOTOS=" +
-        json.dumps(registry, ensure_ascii=False, separators=(",", ":")) + ";\n")
-    (root / "data/player-photo-index.json").write_text(json.dumps(
-        {"schema": "footyedge-player-photo-index-v1", "checkedAt": checked, "players": index},
-        ensure_ascii=False, separators=(",", ":")) + "\n")
+    # Keep the same dimension-aware, no-downgrade catalogue builder as nightly.
+    subprocess.run(["node", "scripts/build-player-photo-catalog.mjs"], cwd=root, check=True)
+    index = json.loads((root / "data/player-photo-index.json").read_text())["players"]
     report = {"checkedAt": checked, "teams": len(refs["teams"]), "uniquePlayers": len(index),
               "rosterEntries": sum(len(t.get("roster", {})) for t in refs["teams"].values()),
               "imageEntries": sum(len(t.get("players", {})) for t in refs["teams"].values()),

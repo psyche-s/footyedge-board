@@ -112,6 +112,30 @@
 .fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerHeroFacts dt {color:#b1c5ba!important}
 .fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerIdentity {text-shadow:0 2px 15px #0008}
 .fe-playerSheet .fe-playerContent .fe-playerHero .fe-playerJersey {z-index:1!important;opacity:.10!important}
+/* Small fallbacks keep their native detail. Official wide club photographs
+   use a face-centred crop; large transparent cutouts retain the full portrait. */
+.fe-playerSheet .fe-playerContent .fe-playerPhotoStage>.fe-playerPortrait {
+ object-fit:scale-down!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerPhotoStage:has(>.fe-playerPortrait[src^="https://contentfulproxy.stadion.io/"]) {
+ display:grid!important;place-items:center!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerPhotoStage>.fe-playerPortrait[src^="https://contentfulproxy.stadion.io/"] {
+ width:220px!important;height:240px!important;max-width:100%!important;max-height:100%!important;
+ object-fit:cover!important;object-position:50% 35%!important;border-radius:14px!important;
+}
+.fe-sharedPitch .fe-fieldAvatar>img[src^="https://contentfulproxy.stadion.io/"],
+.fe-squadAvatar>img[src^="https://contentfulproxy.stadion.io/"] {
+ object-fit:cover!important;object-position:50% 35%!important;
+}
+.fe-playerSheet .fe-playerContent .fe-playerPhotoStage>.fe-playerPortrait[src^="https://publish.realmadrid.com/"] {
+ width:230px!important;height:260px!important;max-width:100%!important;max-height:100%!important;
+ object-fit:cover!important;object-position:50% 0!important;
+}
+.fe-sharedPitch .fe-fieldAvatar>img[src^="https://publish.realmadrid.com/"],
+.fe-squadAvatar>img[src^="https://publish.realmadrid.com/"] {
+ object-fit:cover!important;object-position:50% 0!important;
+}
 @media(prefers-reduced-motion:reduce) {
  .fe-playerHero::before,.fe-playerHero::after {animation:none!important}
 }

@@ -82,9 +82,9 @@ export default async function handler(req,res){
  const matches=requested.map(p=>({query:p,roster:uniqueMatch(rows,p)}));
  const resolved=await Promise.all(matches.map(async ({query,roster})=>{
   if(!roster)return {name:query.name,id:null,photoUrl:null};
-  let image=validImage(roster.headshot?.href||roster.headshot?.url||roster.headshot||
+  let image=photoForIdentity(roster)||validImage(roster.headshot?.href||roster.headshot?.url||roster.headshot||
    roster.image?.href||"");
-  if(!image)image=photoForIdentity(roster)||await verifiedCdnPhoto(String(roster.id));
+  if(!image)image=await verifiedCdnPhoto(String(roster.id));
   return {name:query.name,id:String(roster.id),photoUrl:image||null};
  }));
  return res.status(200).json({schema:"footyedge-lineup-headshots-v1",

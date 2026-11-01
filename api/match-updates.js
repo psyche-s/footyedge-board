@@ -16,7 +16,7 @@ function extractStarters(summary){
    const name=String(athlete?.displayName||athlete?.fullName||athlete?.name||"").trim();
    const link=String(athlete?.headshot?.href||athlete?.headshot||"");
    return {id:/^\d{1,12}$/.test(String(athlete.id||""))?String(athlete.id):null,
-    name,photoUrl:validPlayerImageURL(link)||photoForIdentity(athlete)||null,
+    name,photoUrl:photoForIdentity(athlete)||validPlayerImageURL(link)||null,
     jersey:athlete.jersey||athlete.jerseyNumber||null,
     position:String(athlete.position?.displayName||athlete.position?.abbreviation||"")||null};
   }).filter(p=>p.name).filter((p,i,a)=>a.findIndex(x=>x.name===p.name)===i);
@@ -47,7 +47,7 @@ function rosterPhotos(payload){
   const name=String(a.displayName||a.fullName||a.name||"").trim();
   const href=String(a.headshot?.href||a.headshot||"");
   return name?{id:/^\d{1,12}$/.test(String(a.id||""))?String(a.id):null,
-    name,photoUrl:validPlayerImageURL(href)||photoForIdentity(a)||null,
+    name,photoUrl:photoForIdentity(a)||validPlayerImageURL(href)||null,
     jersey:a.jersey||a.jerseyNumber||null,position:a.position?.displayName||null}:null;
  }).filter(Boolean).filter((row,i,a)=>a.findIndex(x=>x.name===row.name)===i).slice(0,40);
 }

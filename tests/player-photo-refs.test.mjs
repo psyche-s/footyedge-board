@@ -29,6 +29,7 @@ test("Image lookup requires matching team and unique player name",()=>{
  // production bundle defines immediately before the cached lookup.
  ctx.fePhotoNameKey=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
  ctx.feLiveRosterPhotos=new Map();
+ ctx.feLiveRosterPhotos.set("esp.1:83:second player","https://media.api-sports.io/football/players/333.png");
  const lookup=vm.runInNewContext(fn+";feCachedPlayerPhoto",ctx);
  assert.equal(lookup({league:"esp.1"},{id:"83"},{id:"333",name:"Second Player"}),
   "https://a.espncdn.com/i/headshots/soccer/players/full/333.png");

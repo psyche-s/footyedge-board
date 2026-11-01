@@ -34,6 +34,7 @@ test("browser and API accept the same checked photo hosts",()=>{
  const code=ui.slice(ui.indexOf("function fePlayerImageUrl("),ui.indexOf("function fePlayerSafePhoto("));
  const allowed=vm.runInNewContext(code+";fePlayerImageUrl");
  for(const url of [photo,"https://a.espncdn.com/i/headshots/soccer/players/full/213248.png",
+  ...Object.values(JSON.parse(fs.readFileSync("config/official-player-portraits.json","utf8")).players).map(p=>p.url),
   "https://media.api-sports.io.evil.test/football/players/278.png"])
   assert.equal(allowed(url),validPlayerImageURL(url));
 });
@@ -57,7 +58,8 @@ test("profile and lineup handlers both return the same saved portrait without fu
  const previous=globalThis.fetch,calls=[];
  globalThis.fetch=async url=>{
   calls.push(String(url));
-  const data=String(url).includes("/teams/86/roster")?{team:{id:"86",displayName:"Real Madrid"},athletes:[athlete]}:{};
+  const data=String(url).includes("/teams/86/roster")?{team:{id:"86",displayName:"Real Madrid"},athletes:[{...athlete,
+   headshot:{href:"https://a.espncdn.com/i/headshots/soccer/players/full/231388.png"}}]}:{};
   return {ok:true,status:200,json:async()=>data};
  };
  t.after(()=>{globalThis.fetch=previous;});

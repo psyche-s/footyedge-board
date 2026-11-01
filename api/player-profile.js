@@ -264,9 +264,9 @@ export default async function handler(req,res){
   ]);
   const from=x=>x.status==="fulfilled"?x.value:null;
   const profile=parseBio(from(bio),player,team?.team?.displayName||team?.team?.name||"");
-  // ESPN often omits roster photo URLs while its player-ID CDN has the
-  // portrait. HEAD-verify the URL first; never display a guessed image.
-  if(!profile.headshot)profile.headshot=photoForIdentity(player)||await verifyESPNHeadshot(id);
+  // The checked catalogue compares actual dimensions; a roster thumbnail
+  // must not replace a sharper, identity-verified club portrait.
+  profile.headshot=photoForIdentity(player)||profile.headshot||await verifyESPNHeadshot(id);
   const verified=from(overview),matches=from(gameLog);
   const summary=parseOverviewSeason(verified,matchedLeague,teamId,matches);
   const season=summary.stats.length?summary.stats:statEntries(from(stats));

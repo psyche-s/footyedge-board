@@ -11,6 +11,8 @@ import path from "node:path";
 import crypto from "node:crypto";
 import {validPlayerImageURL} from "../lib/player-photos.mjs";
 import {writePlayerPhotoCatalog} from "./build-player-photo-catalog.mjs";
+import quality from "../lib/portrait-quality.cjs";
+const {imageDimensions,betterPortrait,portraitScore}=quality;
 
 const ROOT=process.cwd();
 const SOURCE="https://site.api.espn.com/apis/site/v2/sports/soccer/";
@@ -33,6 +35,7 @@ function day(offset){
 }
 function read(filename){try{return JSON.parse(fs.readFileSync(path.join(ROOT,filename),"utf8"));}catch{return null;}}
 const PHOTO_BRIDGES=read("data/player-image-identities.json")?.players||{};
+const OFFICIAL_PORTRAITS=read("config/official-player-portraits.json")?.players||{};
 async function get(url,timeout=4500){
  const response=await fetch(url,{headers:{"accept":"application/json"},signal:AbortSignal.timeout(timeout)});
  if(!response.ok)throw Error("HTTP "+response.status);
@@ -166,7 +169,12 @@ async function verifyImage(item){
  const bridge=PHOTO_BRIDGES[item.id];
  const exact=bridge&&String(bridge.key_espn)===String(item.id)&&
   [bridge.name,bridge.full_name].some(name=>n(name)===n(item.name));
- const urls=[item.explicit||CDN+item.id+".png"];
+ const official=OFFICIAL_PORTRAITS[item.id];
+ const verifiedOfficial=official&&n(official.name)===n(item.name)&&String(official.teamId)===String(item.teamId);
+ const needsDimensions=item.previous?.url&&!(item.previous.width&&item.previous.height);
+ const urls=needsDimensions?[item.previous.url]:[];
+ if(verifiedOfficial)urls.push(official.url);
+ urls.push(item.explicit||CDN+item.id+".png");
  if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_fpl_photo||"")))
   urls.push("https://resources.premierleague.com/premierleague/photos/players/250x250/p"+bridge.key_fpl_photo+".png");
  if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_fpl_photo||"")))
@@ -175,21 +183,34 @@ async function verifyImage(item){
   urls.push("https://media.api-sports.io/football/players/"+bridge.key_api_football+".png");
  if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_fotmob||"")))
   urls.push("https://images.fotmob.com/image_resources/playerimages/"+bridge.key_fotmob+".png");
- for(const url of urls){
+ let best=item.previous||null;
+ let previousMeasured=!needsDimensions;
+ for(const url of [...new Set(urls)]){
  if(!validPlayerImageURL(url))continue;
+ const measuringPrevious=needsDimensions&&url===item.previous.url;
+ if(!measuringPrevious&&!previousMeasured)continue;
+ // A known large portrait needs only a checked official-club upgrade.
+ if(!measuringPrevious&&portraitScore(best)>=500&&url!==official?.url)continue;
+ if(!measuringPrevious&&(url.includes("media.api-sports.io")||url.includes("images.fotmob.com")||url.includes("/110x140/"))&&
+    portraitScore({url})<=portraitScore(best))continue;
  try{
   const response=await fetch(url,{headers:{accept:"image/png,image/jpeg,image/webp,image/*"},
-   signal:AbortSignal.timeout(3500)});
+   signal:AbortSignal.timeout(url===official?.url?10000:3500)});
   if(!response.ok||!/^image\/(png|jpeg|webp)/i.test(response.headers.get("content-type")||""))continue;
   const bytes=Buffer.from(await response.arrayBuffer());
-  if(bytes.length<3000||bytes.length>1_500_000)continue;
-  return {id:item.id,name:item.name,url,bytes:bytes.length,
-   digest:crypto.createHash("sha256").update(bytes).digest("hex"),
-   provider:url.includes("media.api-sports.io")?"API-Football":url.includes("premierleague.com")?"Premier League":url.includes("fotmob.com")?"FotMob":"ESPN",
-   kind:url.includes("espncdn.com")?"cutout":"headshot",checkedAt:new Date().toISOString()};
+  if(bytes.length<3000||bytes.length>5_000_000)continue;
+  const size=imageDimensions(bytes);
+  if(!size||Math.min(size.width,size.height)<64||Math.max(size.width,size.height)>8000)continue;
+  if(measuringPrevious)previousMeasured=true;
+  const candidate={id:item.id,name:item.name,url,bytes:bytes.length,...size,
+   sha256:crypto.createHash("sha256").update(bytes).digest("hex"),
+   provider:url===official?.url?official.provider:url.includes("media.api-sports.io")?"API-Football":url.includes("premierleague.com")?"Premier League":url.includes("fotmob.com")?"FotMob":"ESPN",
+   source:url===official?.url?official.source:"Exact roster identity and checked provider-ID crosswalk",
+   kind:url===official?.url?official.kind:url.includes("espncdn.com")?"cutout":"headshot",verifiedAt:new Date().toISOString()};
+  best=betterPortrait(candidate,best);
  }catch{continue;}
  }
- return null;
+ return best;
 }
 async function main(){
  const current=read("data/player-photo-refs.json")||{schema:"footyedge-player-photo-refs-v1",teams:{}};
@@ -202,7 +223,8 @@ async function main(){
   if(info?.team?.id&&String(info.team.id)!==target.teamId)throw Error("Club identity mismatch");
   const players=rosterPlayers(info);
   if(!players.length)throw Error("No verified roster; preserve current references");
-  const photos=await inPool(players,verifyImage,POOL_SIZE);
+  const photos=await inPool(players,p=>verifyImage({...p,teamId:target.teamId,
+   previous:previous[target.key]?.players?.[p.id]}),POOL_SIZE);
   return {target,players,photos:photos.filter(x=>x&&x.url)};
  },4);
  // A common blank silhouette is returned under different athlete URLs by some
@@ -212,8 +234,8 @@ async function main(){
  for(const entry of collected){
   if(!entry?.photos)continue;
   for(const photo of entry.photos){
-   if(!digestIds.has(photo.digest))digestIds.set(photo.digest,new Set());
-   digestIds.get(photo.digest).add(photo.id);
+   if(!digestIds.has(photo.sha256))digestIds.set(photo.sha256,new Set());
+   digestIds.get(photo.sha256).add(photo.id);
   }
  }
  const badDigests=new Set([...(current.rejectedImageDigests||[]),
@@ -228,12 +250,9 @@ async function main(){
   const rosterIds=new Set(entry.players.map(p=>p.id));
   const players=Object.fromEntries(Object.entries(prior).filter(([id])=>rosterIds.has(id)));
   for(const photo of photos){
-   if(badDigests.has(photo.digest)){discarded++;continue;}
+   if(badDigests.has(photo.sha256)){discarded++;continue;}
    approved++;
-   players[photo.id]={id:photo.id,name:photo.name,url:photo.url,
-    source:photo.provider==="ESPN"?"ESPN roster and player-id CDN":"Exact roster identity and checked provider-ID crosswalk",
-    provider:photo.provider,kind:photo.kind,verifiedAt:photo.checkedAt,
-    sha256:photo.digest};
+   players[photo.id]=photo;
   }
   teams[target.key]={league:target.league,teamId:target.teamId,
    teamName:target.teamName,source:target.source,
@@ -256,5 +275,5 @@ async function main(){
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===path.resolve(new URL(import.meta.url).pathname))
  main().catch(e=>{console.error("Photo collection failed:",e);process.exitCode=1;});
-export{targetTeams,rosterPlayers,parseLeagueTeams,fixtureTeams};
+export{targetTeams,rosterPlayers,parseLeagueTeams,fixtureTeams,verifyImage};
 

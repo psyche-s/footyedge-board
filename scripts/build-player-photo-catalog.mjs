@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {validPlayerImageURL} from "../lib/player-photos.mjs";
+import quality from "../lib/portrait-quality.cjs";
+const {betterPortrait}=quality;
 
 function writePlayerPhotoCatalog(refs,root=process.cwd()){
  const registry={},index={};
@@ -9,12 +11,19 @@ function writePlayerPhotoCatalog(refs,root=process.cwd()){
   const photos=Object.values(team.players||{}).filter(p=>
    (/^\d{1,12}$/.test(String(p.id))||/^club:[a-z0-9-]+:\d+$/.test(String(p.id)))&&
    team.roster?.[p.id]&&validPlayerImageURL(p.url));
-  if(photos.length)registry[key]=photos.map(p=>[String(p.id),p.name,p.url]);
   for(const p of photos){
    const names=[...new Set([...(index[p.id]?.names||[]),p.name])];
-   index[p.id]={id:String(p.id),name:p.name,names,url:p.url,kind:p.kind||"cutout",
-    provider:p.provider||"ESPN",verifiedAt:p.verifiedAt};
+   const best=betterPortrait(p,index[p.id]);
+   index[p.id]={id:String(p.id),name:best.name,names,url:best.url,kind:best.kind||"cutout",
+    provider:best.provider||"ESPN",verifiedAt:best.verifiedAt,
+    ...(best.width&&best.height?{width:best.width,height:best.height}:{})};
   }
+ }
+ // Reuse the best checked resolution across competitions for the same exact
+ // athlete. Team membership and display names still come from that team's roster.
+ for(const [key,team] of Object.entries(refs.teams||{})){
+  const rows=Object.values(team.players||{}).filter(p=>team.roster?.[p.id]&&index[p.id]&&validPlayerImageURL(p.url));
+  if(rows.length)registry[key]=rows.map(p=>[String(p.id),p.name,index[p.id].url]);
  }
  fs.writeFileSync(path.join(root,"assets/player-photo-registry.js"),
   "/* Verified club roster and checked provider portrait references; image bytes remain upstream. */\n"+
