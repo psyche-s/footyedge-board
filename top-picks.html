@@ -326,7 +326,7 @@ function renderCompetitionSlips(list){
  target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
   '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>+'+Number(x.combinedReferenceAmerican)+'</strong></div>'+
   '<h3>'+esc(x.legs[0].fixture)+'</h3>'+
-  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+(l.recentSample?l.recentHits+'/'+l.recentSample+' recent matches':esc(l.category||''))+'</small></div><span title="Observed recent hit rate; not a joint win forecast">'+(l.rating==null?'—':esc(l.rating)+'%')+'</span></div>').join("")+
+  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong>'+(l.recentSample?'<small>'+l.recentHits+'/'+l.recentSample+' recent matches</small>':'')+'</div><span title="Observed recent hit rate; not a joint win forecast">'+(l.rating==null?'—':esc(l.rating)+'%')+'</span></div>').join("")+
   '<footer>Published reference · target +150 or higher. Joint hit rate unverified.</footer><details class="legWhy"><summary>Matchup and team-news checks</summary><p>'+esc(cleanReason(x.caution||"Confirm all starting players and the final price."))+'</p></details></article>').join(""):
   '<div class="fe-sgpEmpty">No major-league SGP with a qualifying published reference price is available for this date.</div>';
 }
