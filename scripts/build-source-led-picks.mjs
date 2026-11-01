@@ -168,23 +168,28 @@ function generate({date,research,curated,opinions}){
   const direction=candidates.filter(x=>["home_win","away_win","draw","home_or_draw","away_or_draw"].includes(x.key));
   const directResult=direction.filter(x=>["home_win","away_win","draw"].includes(x.key));
   const resultOpposition=(key)=>directResult.filter(x=>x.key!==key).reduce((n,x)=>n+x.support.size,0);
+  const oppositeMarket=key=>key==="btts_yes"?"btts_no":key==="btts_no"?"btts_yes":
+    key.startsWith("over_")?"under_"+key.slice(5):key.startsWith("under_")?"over_"+key.slice(6):null;
+  const marketOpposition=key=>candidates.filter(x=>x.key===oppositeMarket(key)).reduce((n,x)=>n+x.support.size,0);
   const picks=candidates.map(v=>{
    const spec=definitions[v.key],name=label(v.key,f);
    if(!name)return null;
-   const nums=trend(v.key,f),count=v.support.size,opposed=spec[0]==="result"?resultOpposition(v.key):0;
+   const nums=trend(v.key,f),count=v.support.size,opposed=spec[0]==="result"?resultOpposition(v.key):
+     ["total","btts"].includes(spec[0])?marketOpposition(v.key):0;
    const event=["corners","cards","firstgoal","firsthalf","halftime","combo","teamtotal"].includes(spec[0]);
    const grade=Math.max(50,Math.min(80,Math.round(55+8*(count-1)+(nums?Math.max(-5,Math.min(9,(nums.combined-.5)*21)):0)-(event?3:0)-Math.min(14,opposed*5))));
    const basis=count>=2?count+" independently recorded pre-match predictions support this market.":"A dated match-specific preview explicitly recommends this market.";
    const numbers=nums?" Recent verified results match the selection in "+nums.homeHits+"/"+nums.homeGames+" "+f.home.name+" games and "+nums.awayHits+"/"+nums.awayGames+" "+f.away.name+" games.":"";
    const particular=v.facts?.length?" Match-specific research: "+v.facts[0]:"";
-   const disagreement=opposed?" "+opposed+" independent opposing outcome forecast"+(opposed===1?" was":"s were")+" also recorded; there is no unanimous result consensus.":"";
+   const disagreement=opposed?" "+opposed+" independent opposing market forecast"+(opposed===1?" was":"s were")+" also recorded; the evidence is not unanimous.":"";
    const caveat=event?" The selection is editorially sourced; matching event-level hit rates or confirmed player roles were not available for independent verification.":"";
    return {key:v.key,label:name,category:spec[1],family:spec[0],confidenceRating:grade,
     researchStrength:grade,sourceBackedReason:true,probabilityCalibrated:false,
     confidenceType:"editorial_research_grade_not_outcome_probability",
     score:null,odds:null,ev:null,verifiedPrice:false,researchOnly:true,
     editorialSupport:count,editorialOpposition:opposed,
-    marketEvidence:{explicitEditorialTip:true,verifiedPublisherCount:count,verified:event===false&&!!nums,sourceCheckedAt:date},
+    marketEvidence:{explicitEditorialTip:true,verifiedPublisherCount:count,opposingPublisherCount:opposed,
+     researchContradiction:opposed>0,verified:event===false&&!!nums,sourceCheckedAt:date},
     sourceProvenance:[...v.support].map(([source,url])=>({source,url,fixtureDate:date})),
     reason:basis+particular+numbers+disagreement+caveat
    };
@@ -192,7 +197,7 @@ function generate({date,research,curated,opinions}){
    // An evenly split or outvoted 1X2 thesis is a PASS, not a qualified ML.
    // Preserve opposing opinions in the internal audit; never choose a side
    // solely from historical trend when publishers contradict one another.
-   return p.family!=="result"||p.editorialOpposition<p.editorialSupport;
+   return !["result","total","btts"].includes(p.family)||p.editorialOpposition<p.editorialSupport;
   }).sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
   // A competing winner forecast is an important signal, not a second independent leg.
   // Pick one strongest outcome thesis, then genuinely different supported markets.
