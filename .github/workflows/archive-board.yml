@@ -178,6 +178,30 @@ jobs:
             exit 1
           fi
           jq -e --arg day "$TODAY" '.date == $day and (.matches | type == "array") and (.matches | length > 0) and (.totals.fixtures == (.matches | length))' "data/source-led/$TODAY.json" >/dev/null || { echo "::error::Invalid dated Top Picks coverage"; exit 1; }
+          # Coverage is an operational outcome, not a claim that all markets were
+          # independently verified. Surface missing editorial tips on every run.
+          PICKS_THREE="$(jq -r '.totals.three // 0' "data/source-led/$TODAY.json")"
+          PICKS_TOTAL="$(jq -r '.totals.fixtures // 0' "data/source-led/$TODAY.json")"
+          NEWS_TOTAL=0
+          if [[ -s "data/team-intelligence/$TODAY.json" ]]; then
+            NEWS_TOTAL="$(jq -r '.fixtures | length' "data/team-intelligence/$TODAY.json")"
+          fi
+          {
+            echo "### FootyEdge Original — $TODAY coverage"
+            echo "| Measure | Verified count |"
+            echo "|---|---:|"
+            echo "| Fixtures | $PICKS_TOTAL |"
+            echo "| Fixtures with 3 source-reviewed picks | $PICKS_THREE |"
+            echo "| Fixtures with dated predicted XI / team news | $NEWS_TOTAL |"
+            echo ""
+            echo "Unverified markets and unavailable lineups remain explicitly unfilled; no invented source attribution."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if (( PICKS_THREE < PICKS_TOTAL )); then
+            echo "::warning::Top 3 source coverage incomplete ($PICKS_THREE/$PICKS_TOTAL); verify approved editorial market feed and dated source-market-picks."
+          fi
+          if (( NEWS_TOTAL < PICKS_TOTAL )); then
+            echo "::warning::Team news/lineup coverage incomplete ($NEWS_TOTAL/$PICKS_TOTAL); verify FOOTYEDGE_TEAM_NEWS_FEED_APPROVED and provider availability."
+          fi
 
       - name: Settle prior boards and ingest post-match learning before picks
         if: steps.gate.outputs.run == 'true'
