@@ -1,4 +1,4 @@
-import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.mjs";
+import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.cjs";
 /* FootyEdge Original: roster-verified image references for the XI currently in view.
  * No third-party facepack copying, image mirroring, fuzzy global-name search,
  * or assertion that a publicly reachable CDN image is licensed for rehosting.

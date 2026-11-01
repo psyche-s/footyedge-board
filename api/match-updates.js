@@ -1,4 +1,4 @@
-import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.mjs";
+import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.cjs";
 // Read-only live matchday check. ESPN summary is source-labelled; no source,
 // confirmed starters or fresh injuries are invented when ESPN lacks coverage.
 const LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1","jpn.1","kor.1","ksa.1","cze.1","sco.1","sco.cis","eng.league_cup"]);

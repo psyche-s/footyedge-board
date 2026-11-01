@@ -1,3 +1,9 @@
+## 2026-11-01 — Restore player profiles and lineup statistics
+
+- Fixed the shared portrait helper's CommonJS/ESM mismatch that crashed the player-profile, lineup-headshots and match-updates functions on Vercel.
+- Preserved the same verified photo catalogue, stat parsing, profile layout and last-five lineup filters.
+- Added a CommonJS cold-start regression check and a handler-to-display check for season totals, ten appearances and lineup goals, shots, SOT and fouls, including recorded zeroes and missing values.
+
 ## 2026-10-09 — Add Czech Chance Liga and five exact league crests
 **Status:** Source-tracked men-only Czech fixtures plus source-accurate logos
 

@@ -1,4 +1,4 @@
-import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.mjs";
+import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.cjs";
 // Read-only player information from ESPN's public soccer team roster and
 // athlete endpoints. Never guess a player identity, biography, injury or stat.
 // No email, phone, private address, contract or nonpublic contact information.
