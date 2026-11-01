@@ -22,7 +22,7 @@ test("Player profile renders ten horizontal-scroll table rows with nine metrics 
  }));
  const result=markup({status:"verified",player:{name:"Example Player",team:"Sample FC"},stats:[],recent},
    {name:"Example Player",teamName:"Sample FC"});
- assert.equal((result.match(/<tr>/g)||[]).length,11); // header + ten appearances
+ assert.equal((result.match(/<tr(?:\\s[^>]*)?>/g)||[]).length,11); // header + ten appearances, including competition-tagged rows
  assert.equal((result.match(/<td>/g)||[]).length,90);
  assert.match(result,/class="fe-playerLastTenTable"/);
  assert.match(result,/class="fe-playerTableScroll"/);
