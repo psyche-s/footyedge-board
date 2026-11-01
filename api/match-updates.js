@@ -1,6 +1,7 @@
+import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.mjs";
 // Read-only live matchday check. ESPN summary is source-labelled; no source,
 // confirmed starters or fresh injuries are invented when ESPN lacks coverage.
-const LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1","jpn.1","kor.1","ksa.1","cze.1"]);
+const LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1","jpn.1","kor.1","ksa.1","cze.1","sco.1","sco.cis","eng.league_cup"]);
 const local=()=>{const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return p.year+"-"+p.month+"-"+p.day};
 const plusDay=d=>{const x=new Date(d+"T12:00Z");x.setUTCDate(x.getUTCDate()+1);return x.toISOString().slice(0,10)};
 function extractStarters(summary){
@@ -15,7 +16,7 @@ function extractStarters(summary){
    const name=String(athlete?.displayName||athlete?.fullName||athlete?.name||"").trim();
    const link=String(athlete?.headshot?.href||athlete?.headshot||"");
    return {id:/^\d{1,12}$/.test(String(athlete.id||""))?String(athlete.id):null,
-    name,photoUrl:/^https:\/\/a\.espncdn\.com\//.test(link)?link:null,
+    name,photoUrl:validPlayerImageURL(link)||photoForIdentity(athlete)||null,
     jersey:athlete.jersey||athlete.jerseyNumber||null,
     position:String(athlete.position?.displayName||athlete.position?.abbreviation||"")||null};
   }).filter(p=>p.name).filter((p,i,a)=>a.findIndex(x=>x.name===p.name)===i);
@@ -46,7 +47,7 @@ function rosterPhotos(payload){
   const name=String(a.displayName||a.fullName||a.name||"").trim();
   const href=String(a.headshot?.href||a.headshot||"");
   return name?{id:/^\d{1,12}$/.test(String(a.id||""))?String(a.id):null,
-    name,photoUrl:/^https:\/\/a\.espncdn\.com\//.test(href)?href:null,
+    name,photoUrl:validPlayerImageURL(href)||photoForIdentity(a)||null,
     jersey:a.jersey||a.jerseyNumber||null,position:a.position?.displayName||null}:null;
  }).filter(Boolean).filter((row,i,a)=>a.findIndex(x=>x.name===row.name)===i).slice(0,40);
 }
@@ -111,3 +112,4 @@ export default async function handler(req,res){
  }
 }
 export{extractStarters,injuries,rosterPhotos,requestedTeams};
+

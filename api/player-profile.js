@@ -1,15 +1,16 @@
+import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.mjs";
 // Read-only player information from ESPN's public soccer team roster and
 // athlete endpoints. Never guess a player identity, biography, injury or stat.
 // No email, phone, private address, contract or nonpublic contact information.
 const LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1",
  "por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf",
- "usa.1","jpn.1","kor.1","ksa.1","cze.1","uefa.nations"]);
+ "usa.1","jpn.1","kor.1","ksa.1","cze.1","sco.1","sco.cis","eng.league_cup","uefa.nations"]);
 const escName=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
  .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 const asText=x=>typeof x==="string"?x:typeof x==="number"?String(x):"";
 const txt=x=>asText(x).slice(0,120).trim();
 const num=x=>Number.isFinite(Number(x))&&x!==""&&x!=null?Number(x):null;
-const allowedImg=x=>/^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!$&'()*+,;=:@/%?-]+$/i.test(String(x||""))?x:null;
+const allowedImg=x=>validPlayerImageURL(x)||null;
 function rosterRows(payload){
  const groups=Array.isArray(payload?.athletes)?payload.athletes:[];
  const items=groups.flatMap(g=>Array.isArray(g.items)?g.items:
@@ -31,9 +32,9 @@ function matchRosterPlayer(payload,name,id){
   const suffix=input.length>=4&&full.endsWith(" "+input);
   const unique=rows.filter(a=>{
    const k=escName(a.displayName||a.fullName||a.name);
-   return k.endsWith(" "+input)||matchesInitialSurname(k,input);
+   return k.endsWith(" "+input)||(input.length>=4&&k.startsWith(input+" "))||matchesInitialSurname(k,input);
   });
-  return !input||full===input||((suffix||matchesInitialSurname(full,input))&&unique.length===1)?matched[0]:null;
+  return !input||full===input||((suffix||(input.length>=4&&full.startsWith(input+" "))||matchesInitialSurname(full,input))&&unique.length===1)?matched[0]:null;
  }
  if(input.length<3)return null;
  const exact=rows.filter(a=>escName(a.displayName||a.fullName||a.name)===input);
@@ -43,7 +44,7 @@ function matchRosterPlayer(payload,name,id){
  // in this exact club roster; ambiguous surnames are never resolved by guess.
  const similar=rows.filter(a=>{
   const k=escName(a.displayName||a.fullName||a.name);
-  return k.endsWith(" "+input)&&input.length>=5;
+  return (k.endsWith(" "+input)&&input.length>=5)||(input.length>=4&&k.startsWith(input+" "));
  });
  if(similar.length===1)return similar[0];
  if(similar.length>1)return null;
@@ -265,7 +266,7 @@ export default async function handler(req,res){
   const profile=parseBio(from(bio),player,team?.team?.displayName||team?.team?.name||"");
   // ESPN often omits roster photo URLs while its player-ID CDN has the
   // portrait. HEAD-verify the URL first; never display a guessed image.
-  if(!profile.headshot)profile.headshot=await verifyESPNHeadshot(id);
+  if(!profile.headshot)profile.headshot=photoForIdentity(player)||await verifyESPNHeadshot(id);
   const verified=from(overview),matches=from(gameLog);
   const summary=parseOverviewSeason(verified,matchedLeague,teamId,matches);
   const season=summary.stats.length?summary.stats:statEntries(from(stats));
@@ -296,3 +297,4 @@ export default async function handler(req,res){
  }
 }
 export {rosterRows,matchRosterPlayer,parseBio,statEntries,parseRecent,parseOverviewSeason,parseESPNLastFive,parseESPNLastTen};
+

@@ -9,13 +9,15 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import {validPlayerImageURL} from "../lib/player-photos.mjs";
+import {writePlayerPhotoCatalog} from "./build-player-photo-catalog.mjs";
 
 const ROOT=process.cwd();
 const SOURCE="https://site.api.espn.com/apis/site/v2/sports/soccer/";
 const CDN="https://a.espncdn.com/i/headshots/soccer/players/full/";
 const GOOD_LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1",
  "ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf",
- "usa.1","jpn.1","kor.1","ksa.1","cze.1","uefa.nations"]);
+ "usa.1","jpn.1","kor.1","ksa.1","cze.1","sco.1","sco.cis","eng.league_cup","uefa.nations"]);
 const SCOPE_DAYS=Math.max(1,Math.min(7,Number(process.env.PHOTO_DAYS||5)));
 const MAX_TEAMS=Math.max(1,Math.min(550,Number(process.env.PHOTO_MAX_TEAMS||120)));
 const POOL_SIZE=8;
@@ -30,6 +32,7 @@ function day(offset){
  return d.toISOString().slice(0,10);
 }
 function read(filename){try{return JSON.parse(fs.readFileSync(path.join(ROOT,filename),"utf8"));}catch{return null;}}
+const PHOTO_BRIDGES=read("data/player-image-identities.json")?.players||{};
 async function get(url,timeout=4500){
  const response=await fetch(url,{headers:{"accept":"application/json"},signal:AbortSignal.timeout(timeout)});
  if(!response.ok)throw Error("HTTP "+response.status);
@@ -160,18 +163,33 @@ function rosterPlayers(payload){
  return [...unique.values()];
 }
 async function verifyImage(item){
- const url=item.explicit||CDN+item.id+".png";
- if(!/^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(url))return null;
+ const bridge=PHOTO_BRIDGES[item.id];
+ const exact=bridge&&String(bridge.key_espn)===String(item.id)&&
+  [bridge.name,bridge.full_name].some(name=>n(name)===n(item.name));
+ const urls=[item.explicit||CDN+item.id+".png"];
+ if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_fpl_photo||"")))
+  urls.push("https://resources.premierleague.com/premierleague/photos/players/250x250/p"+bridge.key_fpl_photo+".png");
+ if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_fpl_photo||"")))
+  urls.push("https://resources.premierleague.com/premierleague/photos/players/110x140/p"+bridge.key_fpl_photo+".png");
+ if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_api_football||"")))
+  urls.push("https://media.api-sports.io/football/players/"+bridge.key_api_football+".png");
+ if(exact&&/^[1-9]\d{0,11}$/.test(String(bridge.key_fotmob||"")))
+  urls.push("https://images.fotmob.com/image_resources/playerimages/"+bridge.key_fotmob+".png");
+ for(const url of urls){
+ if(!validPlayerImageURL(url))continue;
  try{
   const response=await fetch(url,{headers:{accept:"image/png,image/jpeg,image/webp,image/*"},
    signal:AbortSignal.timeout(3500)});
-  if(!response.ok||!/^image\/(png|jpeg|webp)/i.test(response.headers.get("content-type")||""))return null;
+  if(!response.ok||!/^image\/(png|jpeg|webp)/i.test(response.headers.get("content-type")||""))continue;
   const bytes=Buffer.from(await response.arrayBuffer());
-  if(bytes.length<3000||bytes.length>1_500_000)return null;
+  if(bytes.length<3000||bytes.length>1_500_000)continue;
   return {id:item.id,name:item.name,url,bytes:bytes.length,
    digest:crypto.createHash("sha256").update(bytes).digest("hex"),
-   provider:"ESPN",checkedAt:new Date().toISOString()};
- }catch{return null;}
+   provider:url.includes("media.api-sports.io")?"API-Football":url.includes("premierleague.com")?"Premier League":url.includes("fotmob.com")?"FotMob":"ESPN",
+   kind:url.includes("espncdn.com")?"cutout":"headshot",checkedAt:new Date().toISOString()};
+ }catch{continue;}
+ }
+ return null;
 }
 async function main(){
  const current=read("data/player-photo-refs.json")||{schema:"footyedge-player-photo-refs-v1",teams:{}};
@@ -181,7 +199,9 @@ async function main(){
  if(!targets.length)throw Error("No source-backed club rosters available for player-photo collection.");
  const collected=await inPool(targets,async target=>{
   const info=await get(SOURCE+encodeURIComponent(target.league)+"/teams/"+target.teamId+"/roster",5000);
+  if(info?.team?.id&&String(info.team.id)!==target.teamId)throw Error("Club identity mismatch");
   const players=rosterPlayers(info);
+  if(!players.length)throw Error("No verified roster; preserve current references");
   const photos=await inPool(players,verifyImage,POOL_SIZE);
   return {target,players,photos:photos.filter(x=>x&&x.url)};
  },4);
@@ -196,7 +216,8 @@ async function main(){
    digestIds.get(photo.digest).add(photo.id);
   }
  }
- const badDigests=new Set([...digestIds].filter(([,ids])=>ids.size>1).map(([hash])=>hash));
+ const badDigests=new Set([...(current.rejectedImageDigests||[]),
+  ...[...digestIds].filter(([,ids])=>ids.size>1).map(([hash])=>hash)]);
  const teams={...previous};
  let fetched=0,approved=0,discarded=0;
  for(const entry of collected){
@@ -210,7 +231,8 @@ async function main(){
    if(badDigests.has(photo.digest)){discarded++;continue;}
    approved++;
    players[photo.id]={id:photo.id,name:photo.name,url:photo.url,
-    source:"ESPN roster and player-id CDN",verifiedAt:photo.checkedAt,
+    source:photo.provider==="ESPN"?"ESPN roster and player-id CDN":"Exact roster identity and checked provider-ID crosswalk",
+    provider:photo.provider,kind:photo.kind,verifiedAt:photo.checkedAt,
     sha256:photo.digest};
   }
   teams[target.key]={league:target.league,teamId:target.teamId,
@@ -221,24 +243,18 @@ async function main(){
  if(!fetched)throw Error("ESPN roster collection returned zero readable teams; existing references not replaced.");
  const result={schema:"footyedge-player-photo-refs-v1",checkedAt:new Date().toISOString(),
   policy:"Source URL references only; no third-party image files stored. Player identity matched to roster.",
+  rejectedImageDigests:[...badDigests],
   collection:{targets:targets.length,allDiscoveredTeams:discovery.available,
    leagueCoverage:discovery.coverage,rostersFetched:fetched,photosChecked:approved,
    duplicatePlaceholderRejected:discarded},teams};
  const file=path.join(ROOT,"data/player-photo-refs.json");
  fs.mkdirSync(path.dirname(file),{recursive:true});
  fs.writeFileSync(file,JSON.stringify(result,null,2)+"\n");
- const registry={};
- for(const [key,t] of Object.entries(teams)){
-  const list=Object.values(t.players||{}).filter(x=>numeric(x.id)&&
-   /^https:\/\/a\.espncdn\.com\//.test(x.url)).map(p=>[p.id,p.name,p.url]);
-  if(list.length)registry[key]=list;
- }
- fs.writeFileSync(path.join(ROOT,"assets/player-photo-registry.js"),
-  "/* Generated ESPN verified roster/image references; no image bytes distributed. */\n"+
-  "window.FE_PLAYER_PHOTOS="+JSON.stringify(registry)+";\n");
+ const {registry}=writePlayerPhotoCatalog(result,ROOT);
  console.log(JSON.stringify({date:day(0),...result.collection,teamsIndexed:Object.keys(registry).length,
   playerRefs:Object.values(registry).reduce((n,r)=>n+r.length,0)}));
 }
 if(process.argv[1]&&path.resolve(process.argv[1])===path.resolve(new URL(import.meta.url).pathname))
  main().catch(e=>{console.error("Photo collection failed:",e);process.exitCode=1;});
 export{targetTeams,rosterPlayers,parseLeagueTeams,fixtureTeams};
+

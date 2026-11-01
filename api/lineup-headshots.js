@@ -1,14 +1,14 @@
+import {validPlayerImageURL,photoForIdentity} from "../lib/player-photos.mjs";
 /* FootyEdge Original: roster-verified image references for the XI currently in view.
  * No third-party facepack copying, image mirroring, fuzzy global-name search,
  * or assertion that a publicly reachable CDN image is licensed for rehosting.
  */
 const LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1",
- "por.1","tur.1","ksa.1","usa.1","jpn.1","kor.1","cze.1",
+ "por.1","tur.1","ksa.1","usa.1","jpn.1","kor.1","cze.1","sco.1","sco.cis","eng.league_cup",
  "uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations"]);
 const norm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
  .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-const validImage=x=>/^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!$&'()*+,;=:@/%?-]+$/i.test(String(x||""))
- ?String(x):"";
+const validImage=validPlayerImageURL;
 function athletes(data){
  const groups=Array.isArray(data?.athletes)?data.athletes:[];
  return groups.flatMap(g=>Array.isArray(g.items)?g.items:Array.isArray(g.athletes)?g.athletes:
@@ -25,7 +25,8 @@ function uniqueMatch(rows,q){
   const suffix=asked.length>=4&&full.endsWith(" "+asked);
   const initials=asked.match(/^([a-z]) ([a-z][a-z0-9 ]{3,})$/);
   const initialSurname=initials&&full.startsWith(initials[1])&&full.endsWith(" "+initials[2]);
-  return exact||suffix||initialSurname;
+  const mononym=asked.length>=4&&full.startsWith(asked+" ");
+  return exact||suffix||initialSurname||mononym;
  });
  if(candidates.length!==1)return null;
  const matched=candidates[0];
@@ -83,7 +84,7 @@ export default async function handler(req,res){
   if(!roster)return {name:query.name,id:null,photoUrl:null};
   let image=validImage(roster.headshot?.href||roster.headshot?.url||roster.headshot||
    roster.image?.href||"");
-  if(!image)image=await verifiedCdnPhoto(String(roster.id));
+  if(!image)image=photoForIdentity(roster)||await verifiedCdnPhoto(String(roster.id));
   return {name:query.name,id:String(roster.id),photoUrl:image||null};
  }));
  return res.status(200).json({schema:"footyedge-lineup-headshots-v1",
@@ -91,3 +92,4 @@ export default async function handler(req,res){
   matchedCount:resolved.filter(x=>x.id).length,
   photoCount:resolved.filter(x=>x.photoUrl).length});
 }
+

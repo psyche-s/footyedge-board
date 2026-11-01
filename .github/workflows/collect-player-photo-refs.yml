@@ -28,7 +28,7 @@ jobs:
         run: node scripts/sync-player-photo-refs.mjs
       - name: Validate saved references and original UI regression tests
         run: |
-          node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+          node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs tests/player-portrait-catalog.test.mjs
           node scripts/validate-public-metrics.mjs
       - name: Commit checked source references to current original FootyEdge branch
         if: github.event_name != 'pull_request'
@@ -41,9 +41,9 @@ jobs:
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse "origin/$GITHUB_REF_NAME")" ]; then
             git reset --hard "origin/$GITHUB_REF_NAME"
             node scripts/sync-player-photo-refs.mjs
-            node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+            node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs tests/player-portrait-catalog.test.mjs
           fi
-          git add -- data/player-photo-refs.json assets/player-photo-registry.js
+          git add -- data/player-photo-refs.json data/player-photo-index.json assets/player-photo-registry.js
           if git diff --cached --quiet; then
             echo "No new source references"; exit 0
           fi
@@ -51,3 +51,4 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git commit -m "data(original): store checked player portrait source references"
           git push origin HEAD:"$GITHUB_REF_NAME"
+

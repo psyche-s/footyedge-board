@@ -358,15 +358,15 @@ jobs:
         run: |
           TODAY="$(TZ=America/Toronto date +%F)"
           TOMORROW="$(TZ=America/Toronto date -d "$TODAY +1 day" +%F)"
-          node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs
+          node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs tests/player-portrait-catalog.test.mjs
           if node scripts/sync-player-photo-refs.mjs; then
-            if ! node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs; then
+            if ! node --test tests/player-photo-refs.test.mjs tests/player-profile.test.mjs tests/ten-appearance-squad.test.mjs tests/player-portrait-catalog.test.mjs; then
               echo "::warning::Photo validation failed; restore checked references."
-              git restore -- data/player-photo-refs.json assets/player-photo-registry.js
+              git restore -- data/player-photo-refs.json data/player-photo-index.json assets/player-photo-registry.js
             fi
           else
             echo "::warning::Photo source unavailable; preserve previously checked references."
-            git restore -- data/player-photo-refs.json assets/player-photo-registry.js
+            git restore -- data/player-photo-refs.json data/player-photo-index.json assets/player-photo-registry.js
           fi
           # Dated forward research remains a preview; cannot publish tomorrow's locked board.
           if [[ ! -e "data/boards/$TOMORROW.json" ]]; then
@@ -384,7 +384,7 @@ jobs:
           set -euo pipefail
           TODAY="$(TZ=America/Toronto date +%F)"
           TOMORROW="$(TZ=America/Toronto date -d "$TODAY +1 day" +%F)"
-          files=(data/player-photo-refs.json assets/player-photo-registry.js)
+          files=(data/player-photo-refs.json data/player-photo-index.json assets/player-photo-registry.js)
           for file in "data/research-base-$TOMORROW.json" "data/h2h/$TOMORROW.json"; do
             if [[ -f "$file" ]]; then files+=("$file"); fi
           done
@@ -401,4 +401,5 @@ jobs:
           git pull --rebase origin main
           node scripts/validate-published-boards.mjs --base origin/main
           git push origin HEAD:main
+
 

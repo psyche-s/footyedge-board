@@ -2244,7 +2244,7 @@ function feOfficialNewsHTML(g){
 function feRosterLeague(g,team){
  const id=String(team?.id||""),name=String(team?.name||"").toLowerCase().trim();
  const keys=Object.keys(window.FE_PLAYER_PHOTOS||{}).filter(k=>k.endsWith(":"+id));
- const domestic=keys.map(k=>k.split(":")[0]).find(k=>["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","ksa.1","jpn.1","kor.1","cze.1"].includes(k));
+ const domestic=keys.map(k=>k.split(":")[0]).find(k=>["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","ksa.1","jpn.1","kor.1","cze.1","sco.1"].includes(k));
  if(domestic)return domestic;
  const fallback={"juventus":"ita.1","ac milan":"ita.1","atalanta":"ita.1","stade rennais":"fra.1","marseille":"fra.1","lyon":"fra.1","as monaco":"fra.1",
  "bayer leverkusen":"ger.1","tsg hoffenheim":"ger.1","sc freiburg":"ger.1",
@@ -2270,6 +2270,7 @@ function feCachedPlayerPhoto(g,team,player){
   const fullname=norm(row[1]),asked=norm(name);
   const initials=asked.match(/^([a-z]) ([a-z][a-z0-9 ]{3,})$/);
   return asked.length>=3&&(fullname===asked||
+   (asked.length>=4&&fullname.startsWith(asked+" "))||
    (asked.length>=4&&fullname.endsWith(" "+asked))||
    (initials&&fullname.startsWith(initials[1])&&fullname.endsWith(" "+initials[2])));
  });
@@ -2278,12 +2279,24 @@ function feCachedPlayerPhoto(g,team,player){
  const url=String(match?.[2]||"");
  const rosterKey=league+":"+teamId+":"+fePhotoNameKey(name);
  const live=String(feLiveRosterPhotos.get(rosterKey)||"");
- if(/^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(live))return live;
- return /^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(url)?url:"";
+ return fePlayerImageUrl(live)||fePlayerImageUrl(url);
+}
+function fePlayerImageUrl(value){
+ const url=String(value||"");
+ if(/default_player|placeholder|silhouette|no-image/i.test(url))return "";
+ if(/^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!$&'()*+,;=:@/%?-]+$/i.test(url))return url;
+ if(/^https:\/\/media\.api-sports\.io\/football\/players\/[1-9]\d{0,11}\.png$/.test(url))return url;
+ if(/^https:\/\/images\.fotmob\.com\/image_resources\/playerimages\/[1-9]\d{0,11}\.png$/.test(url))return url;
+ if(/^https:\/\/resources\.premierleague\.com\/premierleague\/photos\/players\/(?:110x140|250x250)\/p[1-9]\d{0,11}\.png$/.test(url))return url;
+ if(/^https:\/\/www\.chanceliga\.cz\/min\.php\?exact&topcut&w=\d{1,4}&h=\d{1,4}&file=photo\/player\/player_\d+\.jpg$/.test(url))return url;
+ if(/^https:\/\/php\.esports\.cz\/images\/min\.php\?exact&topcut&w=\d{1,4}&h=\d{1,4}&compresss=&mtime=\d+&file=https:\/\/fcb\.cz\/+foto\/[a-z0-9._~/%-]+\.png$/i.test(url))return url;
+ if(/^https:\/\/fchk\.cz\/image\?file=https:\/\/fchk\.esports\.cz\/foto\/[a-z0-9._~/%-]+\.png(?:\?\d+)?&w=\d{1,4}&h=\d{1,4}$/i.test(url))return url;
+ if(/^https:\/\/(?:fcb\.cz|fkmb\.esports\.cz|fchk\.esports\.cz)\/+foto\/[a-z0-9._~/%-]+\.(?:png|jpe?g|webp)(?:\?[a-z0-9._~=&%-]*)?$/i.test(url))return url;
+ return /^https:\/\/www\.chanceliga\.cz\/photo\/player\/player_\d+\.(?:png|jpe?g)$/.test(url)?url:"";
 }
 function fePlayerSafePhoto(src){
- const url=String(src||"");
- return /^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\//i.test(url)?
+ const url=fePlayerImageUrl(src);
+ return url?
    '<img class="fe-playerPortrait" alt="" loading="lazy" decoding="async" src="'+esc(url)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
    '<span class="fe-playerPortraitPlaceholder" hidden>—</span>':'';
 }
@@ -2524,7 +2537,7 @@ function feApplyLineupHeadshots(g,teamId,players){
  if(!body)return;
  for(const item of players){
   const url=String(item?.photoUrl||"");
-  if(!/^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(url))continue;
+  if(!fePlayerImageUrl(url))continue;
   const key=String(g.league)+":"+String(teamId)+":"+fePhotoNameKey(item.name);
   feLiveRosterPhotos.set(key,url);
   for(const button of body.querySelectorAll(".fe-sharedPitch [data-fe-player-name]")){
@@ -2612,7 +2625,7 @@ function feTeamPitchRows(x,t,g,position){
  const name=p=>typeof p==="string"?p:String(p?.name||"");
  const safeImage=p=>{
   const photo=feCachedPlayerPhoto(g,t,p)||(typeof p==="object"?String(p?.photoUrl||""):"");
-  return /^https:\/\/a\.espncdn\.com\/[a-z0-9._~/?=&%-]+$/i.test(photo)?
+  return fePlayerImageUrl(photo)?
     '<img loading="lazy" decoding="async" referrerpolicy="no-referrer" src="'+esc(photo)+'" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false">'+
      '<span hidden>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>':
     '<span>'+esc(name(p).trim().split(/\s+/).slice(0,2).map(z=>z.slice(0,1)).join("").toUpperCase())+'</span>';

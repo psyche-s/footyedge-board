@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/player-profile.js": {"includeFiles": "data/player-photo-index.json"},
+    "api/lineup-headshots.js": {"includeFiles": "data/player-photo-index.json"},
+    "api/match-updates.js": {"includeFiles": "data/player-photo-index.json"}
+  }
+}

@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import test from 'node:test';
 
 const ui=fs.readFileSync('ui/part2.html','utf8');
-const code=ui.slice(ui.indexOf('function fePlayerSafePhoto('),ui.indexOf('\nasync function feOpenPlayerProfile('));
+const code=ui.slice(ui.indexOf('function fePlayerImageUrl('),ui.indexOf('\nasync function feOpenPlayerProfile('));
 const context=vm.createContext({esc:s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))});
 vm.runInContext(code,context);
 const render=(result,fallback={name:'Club player',teamName:'Club'})=>context.fePlayerProfileMarkup(result,fallback);

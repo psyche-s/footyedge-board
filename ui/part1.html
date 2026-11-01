@@ -1851,7 +1851,7 @@ body{background:#031008}
 .fe-playerSheet .fe-playerTopbar>span{font-size:10px!important;letter-spacing:.13em!important;color:#98bea9}
 .fe-playerSheet .fe-playerClose{width:34px!important;height:34px!important;min-height:34px!important;font-size:16px!important;background:#112e22!important;border-color:#2a513d!important}
 .fe-playerSheet .fe-playerContent{min-height:0;background:#071d16!important}
-.fe-playerSheet .fe-playerHero.fe-playerHeroEditorial{display:grid!important;position:relative;isolation:isolate;min-height:302px!important;padding:26px 34px 24px!important;grid-template-columns:minmax(0,1.15fr) minmax(190px,.85fr)!important;grid-template-rows:auto auto!important;gap:20px 30px!important;background:repeating-linear-gradient(132deg,transparent 0,transparent 77px,rgba(127,217,170,.035) 78px,transparent 80px),linear-gradient(112deg,#102e23,#071c15)!important;border-bottom:1px solid #224a36!important}
+.fe-playerSheet .fe-playerHero.fe-playerHeroEditorial{display:grid!important;position:relative;isolation:isolate;min-height:312px!important;padding:26px 34px!important;grid-template-columns:minmax(0,1.15fr) minmax(190px,.85fr)!important;grid-template-rows:auto auto!important;gap:20px 30px!important;background:repeating-linear-gradient(132deg,transparent 0,transparent 77px,rgba(127,217,170,.035) 78px,transparent 80px),linear-gradient(112deg,#102e23,#071c15)!important;border-bottom:1px solid #224a36!important}
 .fe-playerSheet .fe-playerHeroEditorial:after{background:radial-gradient(ellipse at 76% 72%,rgba(61,170,110,.12),transparent 52%)!important;z-index:-1}
 .fe-playerSheet .fe-playerHeroEditorial .fe-playerIdentity{grid-area:1/1!important;align-self:end!important;max-width:100%!important;z-index:2!important}
 .fe-playerSheet .fe-playerHeroEditorial .fe-playerIdentity h2{font-size:clamp(32px,4vw,54px)!important;line-height:1.04!important;font-weight:800!important;letter-spacing:-.045em!important;margin:0!important;max-width:none!important;overflow-wrap:anywhere}
@@ -1863,8 +1863,8 @@ body{background:#031008}
 .fe-playerSheet .fe-playerHeroFacts dt{font-size:9px!important;line-height:1.5;letter-spacing:.075em!important;color:#789b88!important;font-weight:650!important;text-transform:uppercase}
 .fe-playerSheet .fe-playerHeroFacts dd{font-size:12px!important;line-height:1.5;margin:0!important;color:#e2eee6!important;font-weight:550!important;overflow-wrap:anywhere}
 .fe-playerJersey{position:absolute;right:23px;top:50%;transform:translateY(-50%);color:rgba(136,202,164,.065);font-size:clamp(150px,23vw,290px);font-weight:850;letter-spacing:-.08em;line-height:.8;pointer-events:none;z-index:0}
-.fe-playerSheet .fe-playerHeroEditorial .fe-playerPhotoStage{grid-area:1/2/3/3!important;align-self:stretch!important;justify-self:center!important;width:100%!important;max-width:320px!important;height:280px!important;margin:-8px 0 -24px!important;border:0!important;border-radius:0!important;background:transparent!important;overflow:hidden!important;z-index:1!important}
-.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center bottom!important;transform:none!important;border-radius:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+.fe-playerSheet .fe-playerHeroEditorial .fe-playerPhotoStage{grid-area:1/2/3/3!important;align-self:center!important;justify-self:center!important;width:100%!important;max-width:300px!important;height:260px!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;overflow:hidden!important;z-index:1!important}
+.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait{width:100%!important;height:100%!important;object-fit:contain!important;object-position:50% 50%!important;transform:none!important;border-radius:0!important;background:transparent!important;border:0!important;box-shadow:none!important}
 .fe-playerSheet .fe-playerPhotoStage>.fe-playerPortraitPlaceholder{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)!important;width:140px!important;height:140px!important;border-radius:50%!important;display:grid;place-items:center;background:linear-gradient(135deg,#23553d,#123426)!important;color:#8dddb2!important;font-size:44px!important;font-weight:750!important;border:1px solid #37654b!important;box-shadow:0 10px 35px #03170e!important}
 .fe-playerSheet .fe-playerPhotoStage>[hidden]{display:none!important}
 .fe-playerSheet .fe-playerScroll{padding:18px 20px 24px!important}
@@ -1910,6 +1910,9 @@ body{background:#031008}
 .fe-playerSheet .fe-playerStat span{font-size:10px!important;line-height:1.4!important;color:#8ca997!important;text-align:left!important}
 .fe-playerSheet .fe-playerStatAccent strong{color:#70e5aa!important}
 .fe-playerSheet .fe-playerHint{font-size:9px!important;line-height:1.6!important;color:#7b9c88!important;margin:13px 0 0!important}
+.fe-playerSheet .fe-playerPhotoStage:has(>.fe-playerPortrait[src^="https://media.api-sports.io/"]),.fe-playerSheet .fe-playerPhotoStage:has(>.fe-playerPortrait[src^="https://images.fotmob.com/"]),.fe-playerSheet .fe-playerPhotoStage:has(>.fe-playerPortrait[src^="https://resources.premierleague.com/"]){display:grid!important;place-items:center!important}
+.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait[src^="https://media.api-sports.io/"],.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait[src^="https://images.fotmob.com/"],.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait[src^="https://resources.premierleague.com/"]{width:186px!important;height:186px!important;max-width:100%!important;max-height:100%!important;object-fit:cover!important;object-position:50% 38%!important;border-radius:50%!important;align-self:center!important;justify-self:center!important}
+.fe-sharedPitch .fe-fieldAvatar>img{object-position:50% 38%!important;transform:none!important}
 .fe-playerViewSwitch{display:none}
 @media(max-width:1000px) and (min-width:761px){.fe-playerSheet .fe-playerDashboard{grid-template-columns:minmax(0,1fr) 230px!important}.fe-playerSheet .fe-playerHero.fe-playerHeroEditorial{padding:24px!important;gap:16px!important}.fe-playerSheet .fe-playerScroll{padding:15px!important}}
 @media(max-width:760px){
@@ -1925,6 +1928,7 @@ body{background:#031008}
  .fe-playerSheet .fe-playerHeroFacts dt{font-size:8px!important;letter-spacing:.04em!important}
  .fe-playerSheet .fe-playerHeroFacts dd{font-size:11px!important;line-height:1.45!important}
  .fe-playerSheet .fe-playerPhotoStage>.fe-playerPortraitPlaceholder{width:94px!important;height:94px!important;font-size:30px!important}
+ .fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait[src^="https://media.api-sports.io/"],.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait[src^="https://images.fotmob.com/"],.fe-playerSheet .fe-playerPhotoStage>.fe-playerPortrait[src^="https://resources.premierleague.com/"]{width:118px!important;height:118px!important}
  .fe-playerJersey{right:9px;font-size:166px;top:44%;color:rgba(136,202,164,.055)}
  .fe-playerSheet .fe-playerScroll{padding:12px!important}
  .fe-playerViewSwitch{display:flex;gap:4px;background:#05170f;border:1px solid #244a34;border-radius:8px;padding:4px;margin-bottom:12px}
@@ -1941,7 +1945,7 @@ body{background:#031008}
  .fe-playerSheet .fe-playerStatsGridFull .fe-playerStat{min-height:73px!important}
  .fe-playerSheet .fe-playerStatLegend>div{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
-@media(max-width:360px){.fe-playerSheet .fe-playerHero.fe-playerHeroEditorial{grid-template-columns:minmax(0,1fr) 90px!important;padding:17px 14px!important}.fe-playerSheet .fe-playerHeroEditorial .fe-playerPhotoStage{height:190px!important;margin-bottom:-17px!important}.fe-playerSheet .fe-playerHeroFacts dd{font-size:9px!important}.fe-playerSheet .fe-playerHeroEditorial .fe-playerHeroFacts>div{grid-template-columns:58px minmax(0,1fr)!important}}
+@media(max-width:360px){.fe-playerSheet .fe-playerHero.fe-playerHeroEditorial{grid-template-columns:minmax(0,1fr) 90px!important;padding:17px 14px!important}.fe-playerSheet .fe-playerHeroEditorial .fe-playerPhotoStage{height:156px!important;margin:0!important}.fe-playerSheet .fe-playerHeroFacts dd{font-size:9px!important}.fe-playerSheet .fe-playerHeroEditorial .fe-playerHeroFacts>div{grid-template-columns:58px minmax(0,1fr)!important}}
 </style>
 </head>
 <body>
