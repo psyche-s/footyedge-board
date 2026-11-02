@@ -8,22 +8,13 @@ on:
         description: "Optional Toronto date YYYY-MM-DD; empty means today"
         required: false
         type: string
-  push:
-    branches: [main]
-    paths:
-      - "scripts/build-github-api-football.mjs"
-      - "tests/github-api-football.test.mjs"
-      - ".github/workflows/sync-api-football.yml"
-  schedule:
-    # Toronto 00:36, 11:36, 15:36 (either DST offset). Hour gate below
-    # ensures only one actual ingest per local slot; no other refresh tasks run.
-    - cron: "36 4,5,15,16,19,20 * * *"
+  # Daily source ingestion runs inside the sole 00:15 publisher.
 
 permissions:
   contents: write
 
 concurrency:
-  group: footyedge-original-api-football-source
+  group: footyedge-original-sole-daily-refresh
   cancel-in-progress: false
 
 jobs:

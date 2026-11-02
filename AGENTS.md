@@ -1,3 +1,10 @@
+## Latest owner refresh instruction — November 2, 2026
+
+- The daily Original refresh starts at **00:15 America/Toronto**. This supersedes every older timing below. Keep one scheduled GitHub publisher and one existing ChatGPT research task; no downstream data-writer fan-out.
+- Personally review the permitted sources for every tracked fixture, compare with dated simulations, and publish the strongest three distinct supported picks with short reasons. Source absence alone is not a reason to suppress independently supported research; do not invent facts or publisher opinions.
+- Major-league SGPs have flexible leg counts and target **+150 or above** combined odds. Publish exactly one strongest cross-game parlay targeting **+300 or above**. Record reference versus executable prices honestly, and keep researched candidates visible with price pending when the exact combination cannot be verified.
+- Complete missing form, H2H, standings/tables, predicted or confirmed lineups and news. Preserve the design and historical archives. Same-day research overlays may complete a refresh without rewriting frozen records.
+
 ## Owner-facing copy cleanup — October 21, 2026 (all future original FootyEdge boards)
 
 - Do not display provider/preview names, source footnotes, citations, raw URLs, article links, or additional references in public Top 3, WHY THIS PICK, league SGPs, main SGP, cross-game ACCA, team news, H2H or player explanations. Keep source URLs, identity references and rights records in internal research metadata only.

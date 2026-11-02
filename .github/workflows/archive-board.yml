@@ -2,8 +2,8 @@ name: Publish FootyEdge Daily Frozen Board
 
 on:
   schedule:
-    # GitHub timezone-aware schedule keeps 00:05 Toronto through DST.
-    - cron: "5 0 * * *"
+    # Owner schedule: 00:15 Toronto, including daylight-saving changes.
+    - cron: "15 0 * * *"
       timezone: "America/Toronto"
   workflow_dispatch:
 
@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Toronto 00:05 publication window (tolerates GitHub scheduler delay)
+      - name: Toronto 00:15 publication window (tolerates GitHub scheduler delay)
         id: gate
         shell: bash
         run: |
@@ -33,14 +33,16 @@ jobs:
           MINUTES_SINCE_MIDNIGHT=$((10#$HOUR * 60 + 10#$MINUTE))
           RUN=false
           # GitHub scheduled runs may arrive hours late. Permit a delayed same-day
-          # recovery after 00:05 and before noon only while today's write-once
+          # recovery after 00:15 and before noon only while today's write-once
           # archive is absent. One timezone-aware cron and this write-once
           # guard prevent a second publication of an already completed board.
-          if (( MINUTES_SINCE_MIDNIGHT >= 5 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            RUN=true
+          elif (( MINUTES_SINCE_MIDNIGHT >= 15 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
             RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
-          echo "Official 00:05 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE; board=data/boards/$TODAY.json"
+          echo "Official 00:15 Toronto gate=$RUN; current Toronto time=$HOUR:$MINUTE; board=data/boards/$TODAY.json"
       - uses: actions/setup-node@v4
         if: steps.gate.outputs.run == 'true'
         with:
@@ -50,6 +52,15 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         with:
           python-version: '3.11'
+
+      - name: Refresh API-Football source within the single daily writer
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FSAPI: ${{ secrets.FSAPI }}
+        run: |
+          if [[ -n "$FSAPI" ]]; then
+            node scripts/build-github-api-football.mjs || echo "::warning::API-Football unavailable; retaining verified source snapshots."
+          fi
 
       - name: Refresh fixture horizon and public-domain score history (single writer)
         if: steps.gate.outputs.run == 'true'
@@ -258,7 +269,7 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
-      - name: Ensure three-to-five leg parlay rules and source-only slip coverage
+      - name: Validate researched parlay markets and source-only slip coverage
         if: steps.gate.outputs.run == 'true'
         run: |
           node --test tests/daily-slips.test.mjs tests/editorial-refresh.test.mjs
@@ -291,7 +302,10 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed data/source-led data/source-coverage)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed data/source-led data/source-coverage data/league-tables)
+          if [[ -d data/github-api-football ]]; then files+=(data/github-api-football); fi
+          if [[ -d data/owner-reviews ]]; then files+=(data/owner-reviews); fi
+          if [[ -d data/source-provenance ]]; then files+=(data/source-provenance); fi
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           if [[ -d data/style-matchups ]]; then files+=(data/style-matchups); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do

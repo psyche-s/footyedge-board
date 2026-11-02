@@ -273,6 +273,8 @@ function referencePrice(result,minimum){
  return Number.isFinite(q)&&q>=minimum?{american:q,minimum,kind:result?.combinedPriceStatus==='calculated_from_same_book_distinct_fixture_reference_quotes'?'Reference calculation':'Published reference'}:null;
 }
 function renderSlipPrice(result,id,minimum){
+ const savedMinimum=Number(result?.minimumAmericanOdds);
+ if(Number.isFinite(savedMinimum)&&savedMinimum>=100)minimum=savedMinimum;
  const el=document.getElementById(id),quote=referencePrice(result,minimum);
  el.innerHTML=quote?'<strong>+'+quote.american+'</strong><span>'+quote.kind+'<small>Target +'+minimum+' or higher · confirm final price</small></span>':'';
 }
@@ -319,10 +321,10 @@ function fillSgpSelect(){
  select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
  select.value=selectedSgpLeague;
 }
-let displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",250);
+let displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);
 function renderCompetitionSlips(list){
  const target=document.getElementById("sgpLeagueList");
- const valid=(list||[]).filter(x=>x?.status==="qualified"&&FE_SGP_LEAGUES.has(x.league)&&referencePrice(x,150)&&Array.isArray(x.legs)&&x.legs.length>=3&&x.legs.length<=5&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
+ const valid=(list||[]).filter(x=>x?.status==="qualified"&&FE_SGP_LEAGUES.has(x.league)&&referencePrice(x,150)&&Array.isArray(x.legs)&&x.legs.length>=2&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
  target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
   '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>+'+Number(x.combinedReferenceAmerican)+'</strong></div>'+
   '<h3>'+esc(x.legs[0].fixture)+'</h3>'+
@@ -337,7 +339,7 @@ function renderDesk(desk,date,live=false){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
   printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
-  displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",250);
+  displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);
   printProps([]);renderCompetitionSlips([]);
   for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
   return;
@@ -347,11 +349,11 @@ function renderDesk(desk,date,live=false){
   (desk.schema==="footyedge-odds-reviewed-slips-v1"?"Major-league SGPs & cross-game parlay · reference prices":desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
  function drawSlip(result,id,empty){
   const isSgp=id==="sgpSlip";
-  const eligible=(result?.status==="qualified"||(result?.status==="hold"&&!isSgp))&&(isSgp?(result.legs||[]).length>=3&&(result.legs||[]).length<=5:true);
+  const eligible=(result?.status==="qualified"||result?.status==="hold")&&(isSgp?(result.legs||[]).length>=2:true);
   const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
   printSlip(id,legs,result?.caution||empty);
-  renderSlipPrice(legs.length?result:null,isSgp?"sgpPrice":"accaPrice",isSgp?150:250);
-  if(result?.status==="hold"&&legs.length){document.getElementById("accaCount").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById("accaLegBadge").textContent="NOT PRICED";}
+  renderSlipPrice(legs.length?result:null,isSgp?"sgpPrice":"accaPrice",isSgp?150:300);
+  if(result?.status==="hold"&&legs.length){const prefix=isSgp?"sgp":"acca";document.getElementById(prefix+"Count").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById(prefix+"LegBadge").textContent="PRICE PENDING";}
   const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
  }

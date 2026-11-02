@@ -14,7 +14,7 @@ if(board?.date!==date||!Array.isArray(board.games))throw Error("Exact-day publis
 const desk=get("data/editorial-desk/"+date+".json");
 const pricedSlips=get("data/slips-reviewed/"+date+".json");
 const sourceLed=get("data/source-led/"+date+".json");
-const reviewed=get("data/consensus-reviewed/"+date+".json");
+const reviewed=get("data/owner-reviews/"+date+".json")||get("data/consensus-reviewed/"+date+".json")||get("data/pick-reviews/"+date+".json");
 const reviewedById=new Map((reviewed?.date===date?reviewed.matches||[]:[]).map(x=>[String(x.gameId),x]));
 const v4=get("data/experimental-simulations/"+date+"-v4.json");
 const modelById=new Map((v4?.date===date?v4.fixtures||[]:[]).map(x=>[String(x.fixtureId),x]));
@@ -29,7 +29,10 @@ const ids=new Set(all.map(g=>String(g.id)));
 const idRows=(x)=>new Set((x?.fixtures||[]).map(f=>String(f.fixtureId||f.id)).filter(x=>ids.has(x)));
 const predicted=(news?.fixtures||[]).filter(f=>ids.has(String(f.fixtureId))&&f.home?.predictedXI?.length===11&&f.away?.predictedXI?.length===11);
 const leagueIds=[...new Set(all.map(g=>g.league).filter(Boolean))].sort();
-const slipLeagues=[...new Set((desk?.sgpsByLeague||[]).filter(x=>x.status==="qualified"&&x.legs?.length>=3).map(x=>x.league))].sort();
+const activeSlips=pricedSlips?.date===date?pricedSlips:desk;
+const majorLeagues=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1"]);
+const requiredSlipLeagues=leagueIds.filter(league=>majorLeagues.has(league));
+const slipLeagues=[...new Set((activeSlips?.sgpsByLeague||[]).filter(x=>x.status==="qualified"&&x.legs?.length>=2&&Number(x.combinedReferenceAmerican)>=150).map(x=>x.league))].sort();
 const requiredCupIds=["eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.tennents","sco.cis"];
 const provenance=get("data/source-provenance/"+date+".json");
 const scheduledCups=(provenance?.fixtures||[]).filter(f=>requiredCupIds.includes(f.league)&&f.verifiedFixtureSchedule?.url);
@@ -62,10 +65,12 @@ const perFixture=all.map(g=>{
    retrospective},
   editorialDesk:{status:review?.reviewed?"reviewed":"pass"}};
 });
-const perLeagueSGP=leagueIds.map(league=>{
- const row=(desk?.sgpsByLeague||[]).find(x=>x.league===league&&x.status==="qualified"&&x.legs?.length>=3);
- return {league,status:row?"qualified":"hold",legs:row?.legs?.length||0,
-  reason:row?null:"No verified compatible 3+ leg editorial SGP with exact market support"};
+const perLeagueSGP=requiredSlipLeagues.map(league=>{
+ const row=(activeSlips?.sgpsByLeague||[]).find(x=>x.league===league&&x.legs?.length>=2);
+ const qualified=!!row&&row.status==="qualified"&&Number(row.combinedReferenceAmerican)>=150;
+ return {league,status:qualified?"qualified_reference":row?"price_pending":"hold",legs:row?.legs?.length||0,
+  executablePriceVerified:row?.verifiedCombinedPrice===true,
+  reason:qualified?null:row?.caution||"No supported major-league SGP with a qualifying exact combination price"};
 });
 const displayQualified=perFixture.filter(x=>x.top3.count===3);
 const displayMissed=perFixture.filter(x=>x.top3.count!==3);
@@ -86,7 +91,10 @@ const obj={
   reviewedTop3QualifiedThree:reviewed?.totals?.three||0,
   sourceLedQualifiedThree:sourceLed?.totals?.three||0,sourceLedPartial:(sourceLed?.totals?.two||0)+(sourceLed?.totals?.one||0)},
  slips:{editorialAvailable:desk?.date===date,reviewedMatches:(desk?.matches||[]).length,
-  qualifiedLeagues:slipLeagues,leaguesWithoutQualifiedSGP:leagueIds.filter(x=>!slipLeagues.includes(x)),
+  qualifiedLeagues:slipLeagues,leaguesWithoutQualifiedSGP:requiredSlipLeagues.filter(x=>!slipLeagues.includes(x)),
+  researchedCandidates:(activeSlips?.sgpsByLeague||[]).length,
+  pricePendingLeagues:perLeagueSGP.filter(x=>x.status==="price_pending").map(x=>x.league),
+  minimumSgpAmerican:150,minimumCrossGameAmerican:300,
   globalSgpStatus:pricedSlips?.sgp?.status||desk?.sgp?.status||"unavailable",
   crossGameStatus:pricedSlips?.acca?.status||desk?.acca?.status||"unavailable",
   executableOntarioQuotesVerified:!!pricedSlips?.acca?.legs?.length&&pricedSlips.acca.legs.every(x=>x.verifiedPrice===true&&Number.isFinite(Number(x.odds)))},
@@ -96,7 +104,7 @@ const obj={
   ...((news?.fixtures||[]).length===0?["No dated team intelligence file with verified lineup/news rows"]:[]),
   ...(all.some(g=>!Array.isArray(g.h2h)||!g.h2h.length)?["One or more board fixtures lack attached H2H; do not represent missing as zero meetings"]:[]),
   ...(displayMissed.length?["Not all games have 3 distinct model-and-history-supported picks"]:[]),
-  ...(slipLeagues.length<leagueIds.length?["Not every league has a sourced compatible 3+ leg SGP"]:[]),
+  ...(slipLeagues.length<requiredSlipLeagues.length?["One or more researched major-league SGPs still require a qualifying combined quote"]:[]),
   ...(predicted.length<all.length?["Predicted starting XIs are incomplete or unverified"]:[]),
   ...(modelById.size<all.length?["One or more fixtures lack a V4 10000-draw projection"]:[]),
   ...(pricedSlips?.acca?.status==="hold"?["Cross-game research slip HOLD: no verified executable bet365 Ontario prices"]:[]),

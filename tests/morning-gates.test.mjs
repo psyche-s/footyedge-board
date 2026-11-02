@@ -88,13 +88,13 @@ test("public current-day published board renders picks before using any draft",(
   assert.match(p2,/Same-day preview · refreshable/);
   assert.doesNotMatch(p2,/Locked at 12:30 AM ET/);
 });
-test("publisher schedules 00:05 Toronto with an immutable daily archive",()=>{
+test("publisher schedules 00:15 Toronto with an immutable daily archive",()=>{
   const workflow=fs.readFileSync(".github/workflows/archive-board.yml","utf8");
   const research=fs.readFileSync(".github/workflows/build-research-base.yml","utf8");
   const shadow=fs.readFileSync(".github/workflows/shadow-dixon-coles.yml","utf8");
-  assert.match(workflow,/cron: "5 0 \* \* \*"/);
+  assert.match(workflow,/cron: "15 0 \* \* \*"/);
    assert.match(workflow,/timezone: "America\/Toronto"/);
-  assert.match(workflow,/Toronto 00:05 publication window/);
+  assert.match(workflow,/Toronto 00:15 publication window/);
   assert.doesNotMatch(research,/^  schedule:/m);
   assert.doesNotMatch(shadow,/^  schedule:/m);
   assert.doesNotMatch(shadow,/^  workflow_run:/m);
@@ -425,7 +425,7 @@ test("one timed picks publisher with source-only enrichment and no downstream wo
     .filter(file=>/^  schedule:/m.test(fs.readFileSync(dir+"/"+file,"utf8")));
   // API-Football enriches dated source facts only; it is not a second picks
   // publisher and must never add or rewrite a frozen board.
-  assert.deepEqual(scheduled,["archive-board.yml","sync-api-football.yml"]);
+  assert.deepEqual(scheduled,["archive-board.yml"]);
   const enrichment=fs.readFileSync(dir+"/sync-api-football.yml","utf8");
   assert.match(enrichment,/git add -- data\/github-api-football\//);
   assert.doesNotMatch(enrichment,/git add -- data\/boards/);
@@ -433,5 +433,8 @@ test("one timed picks publisher with source-only enrichment and no downstream wo
   assert.doesNotMatch(shadow,/^  workflow_run:/m);
   const master=fs.readFileSync(dir+"/archive-board.yml","utf8");
   assert.match(master,/cancel-in-progress: false/);
+  assert.match(master,/node scripts\/build-github-api-football\.mjs/);
+  const recovery=fs.readFileSync(dir+"/original-top3-recovery.yml","utf8");
+  assert.doesNotMatch(recovery,/^  (workflow_run|push|schedule):/m);
   assert.doesNotMatch(master,/^  push:/m);
 });

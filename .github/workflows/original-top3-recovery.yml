@@ -1,26 +1,14 @@
 name: FootyEdge Original Reviewed Top 3 Recovery
 
 on:
-  # Run automatically when the existing 00:05 Toronto publisher finishes.
-  # No second frozen-board publication; only read-only dated research overlays.
-  workflow_run:
-    workflows: ["Publish FootyEdge Daily Frozen Board"]
-    types: [completed]
-  push:
-    paths:
-      - ".github/workflows/original-top3-recovery.yml"
-      - "scripts/owner-top3-ranking.mjs"
-      - "scripts/build-top3-review.mjs"
-      - "scripts/audit-daily-refresh.mjs"
-      - "data/source-opinions/**"
-      - "data/team-intelligence/**"
+  # Manual repair only. The 00:15 publisher owns nightly data writes.
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: footyedge-original-reviewed-top3-recovery
+  group: footyedge-original-sole-daily-refresh
   cancel-in-progress: false
 
 jobs:
