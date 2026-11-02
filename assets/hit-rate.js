@@ -21,11 +21,22 @@
  function american(value){const n=Number(value);return value!=null&&Number.isFinite(n)&&Math.abs(n)>=100?(n>0?'+':'')+Math.round(n):null}
  function ticketTitle(ticket){return ticket.type==='acca'?'Cross-game parlay':(ticket.bestSgp?'Best SGP':leagueName(ticket.league)?leagueName(ticket.league)+' SGP':'Same-game parlay')}
  function markHtml(result){return '<span class="mark '+result+'" role="img" aria-label="'+labels[result]+'"><span class="markGlyph">'+marks[result]+'</span></span>'}
+ function legValue(leg){
+  const label=String(leg.selection||leg.label||''),hasStat=typeof leg.observedStat==='number'&&Number.isFinite(leg.observedStat);
+  if(hasStat)return {value:String(leg.observedStat),detail:leg.observedUnit||label.match(/\d+\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won|Tackles?|Cards?|Goals?|Assists?)$/i)?.[1]||'Recorded'};
+  // Match scores describe result markets only. They are never a substitute
+  // for tackles, shots, corners, a half's goals, or another event count.
+  const score=scoreOnly(leg.finalScore),scoreMarket=/\bML$|\bor Draw$|\bHandicap$|\bBTTS\b/i.test(label);
+  const goals=score.match(/^(\d+)–(\d+)$/);
+  if(goals&&/^(Over|Under)\s+\d+(?:\.\d+)?\s+Goals?$/i.test(label))return {value:String(Number(goals[1])+Number(goals[2])),detail:'Goals'};
+  const teamGoal=label.match(/^(.*?)\s+(?:\d+\+\s+Goals?|(Over|Under)\s+\d+(?:\.\d+)?\s+Team Goals?)$/i),teams=leg.home&&leg.away?[leg.home,leg.away]:String(leg.fixture||'').split(' vs ');
+  if(goals&&teamGoal&&teams.length===2){const side=teams.findIndex(t=>t.toLowerCase()===teamGoal[1].toLowerCase());if(side>=0)return {value:goals[side+1],detail:'Team goals'};}
+  if(scoreMarket&&score!=='—')return {value:score,detail:'Final'};
+  return {value:'—',detail:leg.result==='push'?'Void / push':leg.finalScore?'Awaiting stat':'Pending'};
+ }
  function legHtml(leg,top5=false){
   const result=resultOf(leg.result),fixture=top5?[leg.home,leg.away].filter(Boolean).join(' vs '):leg.fixture||'',league=leagueName(leg.league);
-  const hasStat=leg.observedStat!=null&&Number.isFinite(Number(leg.observedStat));
-  const value=hasStat?String(leg.observedStat):scoreOnly(leg.finalScore);
-  const detail=hasStat?'Recorded':value!=='—'?'Final':result==='pending'?'Pending':labels[result];
+  const {value,detail}=legValue(leg);
   return '<li class="trackedLeg">'+markHtml(result)+'<div class="legCopy"><h4>'+esc(leg.selection||leg.label||'Pick')+'</h4><p>'+(league?'<span class="legLeague">'+esc(league)+'</span><span class="metaSep"> · </span>':'')+esc(fixture)+'</p></div><div class="resultValue"><strong>'+esc(value)+'</strong><small>'+esc(detail)+'</small></div></li>';
  }
  function top5Card(day){
@@ -104,6 +115,6 @@
   for(const id of ['monthRate','yearRate','slipMonthRate','slipYearRate'])document.getElementById(id).textContent='Tracking unavailable';
   document.getElementById('history').innerHTML='<p class="empty">Tracked results could not be loaded. Please try again.</p>';
  }
- root.FootyEdgeHitRate={todayToronto,monthDays,stats,scoreOnly,dayLabel,historyHtml,trackingDays,render,top5Card,slipCard};
+ root.FootyEdgeHitRate={todayToronto,monthDays,stats,scoreOnly,dayLabel,historyHtml,trackingDays,render,top5Card,slipCard,legValue};
  if(typeof document!=='undefined'&&document.getElementById('history'))load();
 })(globalThis);

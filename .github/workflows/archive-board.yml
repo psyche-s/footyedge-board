@@ -282,7 +282,7 @@ jobs:
       - name: Validate researched parlay markets and source-only slip coverage
         if: steps.gate.outputs.run == 'true'
         run: |
-          node --test tests/daily-slips.test.mjs tests/editorial-refresh.test.mjs tests/hit-rate.test.mjs tests/tracking-history.test.mjs tests/track-slip-performance.test.mjs
+          node --test tests/daily-slips.test.mjs tests/editorial-refresh.test.mjs tests/hit-rate.test.mjs tests/tracking-history.test.mjs tests/track-slip-performance.test.mjs tests/prop-settlement.test.mjs
           # The authorised editorial desk was frozen above. No model-built
           # slip overwrites it or the immutable official board.
 
@@ -316,6 +316,7 @@ jobs:
           if [[ -d data/github-api-football ]]; then files+=(data/github-api-football); fi
           if [[ -d data/owner-reviews ]]; then files+=(data/owner-reviews); fi
           if [[ -d data/source-provenance ]]; then files+=(data/source-provenance); fi
+          if [[ -d data/verified-leg-results ]]; then files+=(data/verified-leg-results); fi
           if [[ -d data/refresh-health ]]; then files+=(data/refresh-health); fi
           if [[ -d data/style-matchups ]]; then files+=(data/style-matchups); fi
           for file in "data/$TODAY/fixtures.json" "data/$TODAY/scoreboard.json"; do

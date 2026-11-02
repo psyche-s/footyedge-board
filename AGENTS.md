@@ -1,5 +1,7 @@
 ## Latest owner refresh instruction — November 2, 2026
 
+- Hit Rate corrections: show each prop's actual recorded value and stat, never the game's final score as a missing-stat fallback. Actively retrieve and record completed-match tackle and half-specific goal/corner results. Use validated match-summary period/event data and finalized provider box scores, retaining exact source/player/match evidence in `data/verified-leg-results`; settle all supported remaining legs even when the whole slip has already lost. Never infer missing values from the match being finished.
+
 - Hit Rate UI is explicitly authorized to show one horizontally scrollable carousel per day, with original Top 5 selections and distinct published SGP/cross-game slips. Match FootyEdge's styling, with per-leg Hit/Miss/Pending/Void marks, whole-ticket outcomes, arrows and pagination dots. Snapshot new published selections immediately, settle only from verified results, and update the carousel feed during the existing daily refresh. Count Top 5 picks individually and each distinct slip once; unpriced candidates remain separate.
 
 - The daily Original refresh starts at **00:15 America/Toronto**. This supersedes every older timing below. Keep one scheduled GitHub publisher and one existing ChatGPT research task; no downstream data-writer fan-out.

@@ -15,6 +15,7 @@ const exists=p=>fs.existsSync(p);
 const write=(p,value)=>{fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,JSON.stringify(value,null,2)+"\n")};
 const norm=v=>String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();
 const matchKey=(h,a)=>norm(h)+"|"+norm(a);
+const count=value=>{const raw=typeof value==='object'&&value!==null?value.value??value.displayValue:value;return raw!==null&&raw!==undefined&&raw!==''&&Number.isInteger(Number(raw))&&Number(raw)>=0?Number(raw):null};
 function dayOffset(date,n){const d=new Date(date+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10);}
 function eventInfo(e){
   const cs=e?.competitions?.[0]?.competitors||[];
@@ -108,12 +109,85 @@ export function parsePlayerMarket(label){
  // Only verified player logs may settle an event prop; a final score never can.
  return String(label||"").match(/^\s*(.+?)(?:\s+[—–-]\s*|\s+)(\d+)\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won|Fouls Drawn|Tackles?|Yellow Cards?|Red Cards?|Assists?|Goals?)\s*$/i);
 }
+const playerFields={"shot on target":"shotsOnTarget","shots on target":"shotsOnTarget","shot":"shots","shots":"shots",
+ "fouls committed":"foulsCommitted","fouls won":"foulsWon","fouls drawn":"foulsWon","tackle":"tackles","tackles":"tackles",
+ "yellow card":"yellowCards","yellow cards":"yellowCards","red card":"redCards","red cards":"redCards","assist":"assists","assists":"assists","goal":"goals","goals":"goals"};
+const units={shotsOnTarget:'Shots on target',shots:'Shots',foulsCommitted:'Fouls committed',foulsWon:'Fouls won',tackles:'Tackles',yellowCards:'Yellow cards',redCards:'Red cards',assists:'Assists',goals:'Goals'};
+export function parseCountMarket(label){
+ const m=String(label||'').match(/^(?:(1st|2nd|first|second)\s+Half\s+)?(?:(Over|Under)\s+(\d+(?:\.\d+)?)|(\d+)\+)\s+(Goals?|Corners?)$/i);
+ if(!m)return null;
+ return {half:m[1]?/^(1st|first)$/i.test(m[1])?1:2:null,comparison:m[2]?.toLowerCase()||'at_least',line:Number(m[3]??m[4]),metric:/corner/i.test(m[5])?'corners':'goals'};
+}
+export function countOutcome(market,value){
+ if(!market||!Number.isInteger(value)||value<0)return null;
+ const result=market.comparison==='at_least'?(value>=market.line?'hit':'miss'):value===market.line?'push':(market.comparison==='over'?value>market.line:value<market.line)?'hit':'miss';
+ return {result,observed:value,unit:(market.half?market.half===1?'1st-half ':'2nd-half ':'')+market.metric};
+}
+export function scoreObservation(leg,event){
+ if(!event?.completed||count(event.hs)===null||count(event.as)===null)return null;
+ const market=parseCountMarket(leg.label);
+ if(market?.metric==='goals'&&!market.half)return countOutcome(market,event.hs+event.as);
+ const m=String(leg.label||'').match(/^(.*?)\s+(?:(\d+)\+\s+Goals?|(Over|Under)\s+(\d+(?:\.\d+)?)\s+Team Goals?)$/i);
+ if(!m)return null;
+ const value=norm(m[1])===norm(event.home)?event.hs:norm(m[1])===norm(event.away)?event.as:null;
+ if(value===null)return null;
+ const outcome=countOutcome({comparison:m[3]?.toLowerCase()||'at_least',line:Number(m[2]??m[4])},value);
+ return {...outcome,unit:'Team goals'};
+}
+export function summaryLegOutcome(leg,summary){
+ const comp=summary?.header?.competitions?.[0];
+ if(!comp||String(comp.id)!==String(leg.gameId)||!comp.status?.type?.completed)return null;
+ const competitors=comp.competitors||[],market=parseCountMarket(leg.label);
+ if(market){
+  let value=null;
+  if(market.metric==='goals'){
+   // ESPN linescores are individual periods, not the cumulative FT score.
+   if(competitors.length!==2||competitors.some(t=>t.linescores?.length!==2||t.linescores.some(s=>count(s)===null)||t.linescores.reduce((n,s)=>n+count(s),0)!==count(t.score)))return null;
+   value=competitors.reduce((n,t)=>n+(market.half?count(t.linescores[market.half-1]):count(t.score)),0);
+  }else{
+   const teams=summary.boxscore?.teams||[],totals=teams.map(t=>({team:t.team?.displayName,total:count(t.statistics?.find(s=>s.name==='wonCorners')?.displayValue)}));
+   if(totals.length!==2||totals.some(t=>t.total===null))return null;
+   if(!market.half)value=totals.reduce((n,t)=>n+t.total,0);
+   else{
+    // Count only typed, deduplicated corner events. An incomplete commentary
+    // feed must reconcile with both teams' final corner totals before grading.
+    const plays=[...new Map((summary.commentary||[]).map(row=>row.play).filter(p=>p?.id&&p.type?.type==='corner-awarded').map(p=>[p.id,p])).values()];
+    const ends=new Set((summary.keyEvents||[]).map(p=>p.type?.type));
+    if(!ends.has('halftime')||!ends.has('end-regular-time')||plays.some(p=>![1,2].includes(p.period?.number)||!totals.some(t=>norm(t.team)===norm(p.team?.displayName)))||totals.some(t=>plays.filter(p=>norm(p.team?.displayName)===norm(t.team)).length!==t.total))return null;
+    value=plays.filter(p=>p.period.number===market.half).length;
+   }
+  }
+  const outcome=countOutcome(market,value);
+  return outcome?{...outcome,evidence:{kind:market.half?'verified-period-count':'verified-match-count',period:market.half,metric:market.metric}}:null;
+ }
+ const player=parsePlayerMarket(leg.label);if(!player)return null;
+ const field=playerFields[player[3].toLowerCase()];
+ const names=p=>[p.athlete?.displayName,p.athlete?.fullName].map(norm);
+ const matches=(summary.rosters||[]).flatMap(t=>t.roster||[]).filter(p=>names(p).includes(norm(player[1])));
+ if(matches.length!==1)return null;
+ const row=matches[0],stats=row.stats||[];
+ // Unused substitutes' zero-filled stat lines are not a losing prop.
+ if(count(stats.find(s=>s.name==='appearances')?.value)!==1)return null;
+ const providerNames={shots:['totalShots'],shotsOnTarget:['shotsOnTarget'],foulsCommitted:['foulsCommitted'],foulsWon:['foulsSuffered'],tackles:['totalTackles','tackles'],yellowCards:['yellowCards'],redCards:['redCards'],assists:['goalAssists'],goals:['totalGoals']}[field]||[];
+ const value=count(stats.find(s=>providerNames.includes(s.name))?.value);
+ if(value===null)return null;
+ return {result:value>=Number(player[2])?'hit':'miss',observed:value,unit:units[field],evidence:{kind:'verified-match-player-stat',athleteId:row.athlete.id,metric:field}};
+}
+const summaryCache=new Map();
+async function matchSummary(leg){
+ const key=leg.league+'|'+leg.gameId;
+ if(!summaryCache.has(key))summaryCache.set(key,(async()=>{
+  if(!/^[a-z0-9_.]+$/i.test(leg.league||'')||!/^\d+$/.test(leg.gameId))return null;
+  const url='https://site.api.espn.com/apis/site/v2/sports/soccer/'+encodeURIComponent(leg.league)+'/summary?event='+encodeURIComponent(leg.gameId);
+  try{const response=await fetch(url,{signal:AbortSignal.timeout(12000),headers:{Accept:'application/json'}});if(response.ok)return {data:await response.json(),url};}catch{}
+  return null;
+ })());
+ return summaryCache.get(key);
+}
 export function playerStatResult(leg,recent,opponent,date){
   const match=parsePlayerMarket(leg.label);
   if(!match||!Array.isArray(recent))return null;
-  const field=({"shot on target":"shotsOnTarget","shots on target":"shotsOnTarget","shot":"shots","shots":"shots",
-    "fouls committed":"foulsCommitted","fouls won":"foulsWon","fouls drawn":"foulsWon",
-    "tackle":"tackles","tackles":"tackles","yellow card":"yellowCards","yellow cards":"yellowCards","red card":"redCards","red cards":"redCards","assist":"assists","assists":"assists","goal":"goals","goals":"goals"})[match[3].toLowerCase()];
+  const field=playerFields[match[3].toLowerCase()];
   const opp=norm(opponent);
   const matches=recent.filter(x=>{
     if(Number.isFinite(x.minutes)&&x.minutes===0)return false;
@@ -122,7 +196,7 @@ export function playerStatResult(leg,recent,opponent,date){
     return sameOpponent&&(day===date||day===dayOffset(date,1))&&Number.isFinite(x[field])&&x[field]>=0;
   });
   if(matches.length!==1)return null;
-  return {result:matches[0][field]>=Number(match[2])?"hit":"miss",observed:matches[0][field],market:match[3]};
+  return {result:matches[0][field]>=Number(match[2])?"hit":"miss",observed:matches[0][field],unit:units[field],market:match[3]};
 }
 export async function playerOutcome(leg,date,game,research,news){
   const label=String(leg.label||"");
@@ -164,14 +238,23 @@ export async function playerOutcome(leg,date,game,research,news){
   return null;
 }
 
+export function validReviewedResult(r){
+ if(!r.gameId||!r.label||!['hit','miss','push'].includes(r.result)||!/^https:\/\//.test(String(r.sourceUrl||''))||!Number.isFinite(Date.parse(r.verifiedAt)))return false;
+ if(r.observedStat!==undefined){
+  if(typeof r.observedStat!=='number'||!Number.isInteger(r.observedStat)||r.observedStat<0)return false;
+  const player=parsePlayerMarket(r.label),market=parseCountMarket(r.label);
+  const derived=player?(r.observedStat>=Number(player[2])?'hit':'miss'):market?countOutcome(market,r.observedStat)?.result:null;
+  if(derived&&derived!==r.result)return false;
+ }
+ return true;
+}
 function reviewedLegResults(date){
   const p=path.join(ROOT,"data","verified-leg-results",date+".json");
   if(!exists(p))return new Map();
   const d=read(p),results=new Map();
   if(d.date!==date||!Array.isArray(d.results))throw Error("Invalid verified leg-results file "+date);
   for(const r of d.results){
-    if(!r.gameId||!r.label||!["hit","miss","push"].includes(r.result)||
-       !/^https:\/\//.test(String(r.sourceUrl||""))||!Number.isFinite(Date.parse(r.verifiedAt)))continue;
+    if(!validReviewedResult(r))throw Error('Invalid verified leg result: '+date+' '+r.label);
     results.set(String(r.gameId)+"|"+norm(r.label),r);
   }
   return results;
@@ -203,6 +286,15 @@ async function run(){
     // Fill an old empty capture from the actually published desk. Never replace
     // a saved ticket's selections or its already verified leg results.
     if(!snapshot.tickets.length){const published=sourceFor(day);if(published){snapshot.source=published.path.replace(ROOT+path.sep,"");snapshot.tickets=ticketsOf(published.data);}}
+    // Existing verified full-time scores can supply a goal count for the exact
+    // saved goal market without regrading or rewriting the original selection.
+    for(const leg of snapshot.tickets.flatMap(t=>t.legs||[])){
+      if(leg.observedStat!=null||!leg.finalScore)continue;
+      const score=leg.finalScore.match(/^(\d+)-(\d+)$/),sides=leg.fixture.split(' vs ');
+      if(!score||sides.length!==2)continue;
+      const observed=scoreObservation(leg,{home:sides[0],away:sides[1],hs:Number(score[1]),as:Number(score[2]),completed:true});
+      if(observed){leg.observedStat=observed.observed;leg.observedUnit=observed.unit;}
+    }
     const upcoming=day===dateToday&&snapshot.tickets.flatMap(t=>t.legs||[]).every(l=>l.kickoff&&Date.parse(l.kickoff)>Date.now());
     if(!snapshot.tickets.some(needsLegResults)||upcoming||process.env.TRACK_CAPTURE_ONLY==='1'){if(!exists(file)||snapshot.tickets.length)write(file,snapshot);continue;}
     const games=await finalResultsFor(day),byId=new Map(games.map(x=>[x.id,x])),byTeams=new Map(games.map(x=>[matchKey(x.home,x.away),x]));
@@ -215,7 +307,7 @@ async function run(){
       for(const leg of ticket.legs){
         if(leg.result!=="pending")continue;
         const manual=verified.get(leg.gameId+"|"+norm(leg.label));
-        if(manual){leg.result=manual.result;leg.verifiedSource=manual.sourceUrl;continue;}
+        if(manual){leg.result=manual.result;leg.verifiedSource=manual.sourceUrl;leg.verifiedAt=manual.verifiedAt;if(manual.observedStat!==undefined)leg.observedStat=manual.observedStat;if(manual.observedUnit)leg.observedUnit=manual.observedUnit;continue;}
         let game=byId.get(leg.gameId);
         if(!game&&leg.fixture.includes(" vs ")){
           const sides=leg.fixture.split(" vs ");if(sides.length===2)game=byTeams.get(matchKey(sides[0],sides[1]));
@@ -223,9 +315,13 @@ async function run(){
         if(game){
           leg.finalScore=game.hs+"-"+game.as;
           leg.result=scoreLeg(leg,game);
+          const observed=scoreObservation(leg,game);
+          if(observed){leg.observedStat=observed.observed;leg.observedUnit=observed.unit;}
           if(leg.result==="pending"){
+            const summary=await matchSummary(leg),outcome=summary?summaryLegOutcome(leg,summary.data):null;
+            if(outcome){leg.result=outcome.result;leg.observedStat=outcome.observed;leg.observedUnit=outcome.unit;leg.verifiedSource=summary.url;leg.verifiedAt=new Date().toISOString();leg.settlementEvidence=outcome.evidence;continue;}
             const prop=await playerOutcome(leg,day,game,research,news);
-            if(prop){leg.result=prop.result;leg.verifiedSource=prop.source;leg.observedStat=prop.observed;}
+            if(prop){leg.result=prop.result;leg.verifiedSource=prop.source;leg.observedStat=prop.observed;leg.observedUnit=prop.unit;leg.verifiedAt=new Date().toISOString();}
           }
         }
       }

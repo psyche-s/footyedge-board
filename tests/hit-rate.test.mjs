@@ -20,13 +20,13 @@ test('Month rollover clears October rows without changing saved history',()=>{
   assert.equal(h.todayToronto(new Date('2026-11-01T03:30:00Z')),'2026-10-31');
   assert.equal(h.todayToronto(new Date('2026-11-01T04:00:00Z')),'2026-11-01');
 });
-test('History scores contain only the numeric score, with clear hit/miss marks',()=>{
+test('History goal markets show the recorded goal count, with clear hit/miss marks',()=>{
   const h=context().FootyEdgeHitRate;
   const html=h.historyHtml([{date:'2026-10-06',top5:[pick(1),pick(2,'miss')]}]);
   assert.equal(h.scoreOnly('Switzerland 3-0 North Macedonia'),'3–0');
   assert.equal(h.scoreOnly('2-1'),'2–1');assert.equal(h.scoreOnly(null),'—');
   assert.match(html,/aria-label="Hit"><span class="markGlyph">✓<\/span>/);assert.match(html,/aria-label="Miss"><span class="markGlyph">×<\/span>/);
-  assert.match(html,/<strong>3–0<\/strong>/);assert.doesNotMatch(html,/Switzerland 3-0 North Macedonia/);
+  assert.match(html,/<strong>3<\/strong><small>Goals<\/small>/);assert.doesNotMatch(html,/<strong>3–0<\/strong>|Switzerland 3-0 North Macedonia/);
   assert.match(html,/class="date">OCT 6, 2026/);assert.match(html,/aria-roledescription="carousel"/);assert.match(html,/data-ticket-title="Top 5 picks"/);assert.equal((html.match(/class="trackedLeg"/g)||[]).length,2);
 });
 test('Month and YTD cards use real records and roll over independently',()=>{
