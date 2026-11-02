@@ -1,0 +1,62 @@
+#!/usr/bin/env node
+// The Hit Rate page reads posted selections and verified settlements only.
+import fs from 'node:fs';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {summaryOf} from './track-slip-performance.mjs';
+
+const cleanResult=value=>['hit','miss','push'].includes(value)?value:'pending';
+export function outcomeStats(rows){
+ const hits=rows.filter(x=>x.result==='hit').length,misses=rows.filter(x=>x.result==='miss').length;
+ return {hits,misses,pushes:rows.filter(x=>x.result==='push').length,pending:rows.filter(x=>!['hit','miss','push'].includes(x.result)).length,settled:hits+misses,hitRate:hits+misses?Math.round(hits/(hits+misses)*10000)/100:null};
+}
+export function buildHistory({date,performanceDays=[],slipDays=[],candidates=[]}){
+ const month=date.slice(0,7),year=date.slice(0,4),byDate=new Map();
+ const dayFor=day=>{if(!byDate.has(day))byDate.set(day,{date:day,top5:[],tickets:[]});return byDate.get(day)};
+ const eligible=day=>/^\d{4}-\d{2}-\d{2}$/.test(day||'')&&day.startsWith(month)&&day<=date;
+ for(const record of performanceDays){
+  if(!eligible(record.date))continue;
+  dayFor(record.date).top5=(record.top5||[]).slice().sort((a,b)=>a.rank-b.rank).slice(0,5).map(p=>({...p,result:cleanResult(p.result)}));
+ }
+ for(const record of slipDays){
+  if(!eligible(record.date))continue;
+  const seen=new Set();
+  dayFor(record.date).tickets=(record.tickets||[]).filter(t=>{
+   const signature=t.signature||(t.legs||[]).map(l=>l.gameId+'|'+String(l.label).toLowerCase()).sort().join('||');
+   if(t.duplicateOf||seen.has(signature)||!t.legs?.length)return false;seen.add(signature);return true;
+  }).map(t=>({id:t.id,type:t.type,league:t.league,bestSgp:t.bestSgp===true,trackable:true,
+   result:cleanResult(t.result),settledAt:t.settledAt||null,
+   combinedReferenceAmerican:t.combinedReferenceAmerican??null,combinedReferenceDecimal:t.combinedReferenceDecimal??null,
+   verifiedCombinedPrice:t.verifiedCombinedPrice===true,combinedOntarioOdds:t.combinedOntarioOdds??null,
+   sourcePublishedAt:record.capturedAt||null,
+   legs:t.legs.map(l=>({...l,result:cleanResult(l.result)}))}));
+ }
+ // A researched but unpriced candidate remains visible without entering the
+ // win/loss denominator. Its final score must never turn it into a posted bet.
+ for(const record of candidates){
+  if(!eligible(record.date))continue;
+  const day=dayFor(record.date);
+  for(const t of record.sgpsByLeague||[]){
+   if(t.status!=='hold'||!t.legs?.length)continue;
+   day.tickets.push({id:'candidate:'+t.league,type:'league_sgp',league:t.league,trackable:false,result:'unpriced',legs:t.legs.map(l=>({gameId:l.gameId,fixture:l.fixture,league:l.league,label:l.label,category:l.category,result:'pending'}))});
+  }
+ }
+ const days=[...byDate.values()].filter(d=>d.top5.length||d.tickets.length).sort((a,b)=>b.date.localeCompare(a.date));
+ const allTickets=prefix=>slipDays.filter(d=>d.date<=date&&d.date.startsWith(prefix)).flatMap(d=>d.tickets||[]);
+ return {schema:'footyedge-tracking-history-v1',date,generatedAt:new Date().toISOString(),month,
+  top5:{month:{key:month,...outcomeStats(days.flatMap(d=>d.top5))},year:{key:year,...outcomeStats(performanceDays.filter(d=>d.date<=date&&d.date.startsWith(year)).flatMap(d=>d.top5||[]))}},
+  slips:{month:{key:month,...summaryOf(allTickets(month))},year:{key:year,...summaryOf(allTickets(year))}},
+  days,note:'Top 5 selections count individually. Each distinct published slip counts once as a whole; unpriced candidates do not count. Missing verified player stats remain pending.'};
+}
+function readDays(root,folder){
+ const dir=path.join(root,'data',folder);if(!fs.existsSync(dir))return [];
+ return fs.readdirSync(dir).filter(f=>/^\d{4}-\d{2}-\d{2}\.json$/.test(f)).map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
+}
+export function main(root=process.cwd()){
+ const parts=Object.fromEntries(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+ const date=process.env.TRACKING_DATE||[parts.year,parts.month,parts.day].join('-');
+ const output=buildHistory({date,performanceDays:readDays(root,'performance'),slipDays:readDays(root,'performance/slips'),candidates:readDays(root,'slips-reviewed')});
+ const file=path.join(root,'data','performance','history.json');fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(output,null,2)+'\n');
+ console.log(JSON.stringify({date,days:output.days.length,top5:output.days.reduce((n,d)=>n+d.top5.length,0),slips:output.days.reduce((n,d)=>n+d.tickets.filter(t=>t.trackable).length,0)}));return output;
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)main();

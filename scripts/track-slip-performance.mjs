@@ -27,6 +27,8 @@ function eventInfo(e){
 export function scoreLeg(leg,event){
   if(!event?.completed||!Number.isInteger(event.hs)||!Number.isInteger(event.as))return "pending";
   const label=String(leg.label||""),cat=norm(leg.category||""),h=event.home,a=event.away,hs=event.hs,as=event.as;
+  // A full-time score cannot establish a goal or corner count in either half.
+  if(/\b(?:1st|2nd|first|second)\s+half\b|half[ -]?time/i.test(label))return "pending";
   const answer=x=>x?"hit":"miss";
   const teamScore=name=>norm(name)===norm(h)?hs:norm(name)===norm(a)?as:null;
   if(/\bML$/i.test(label)){
@@ -55,25 +57,26 @@ export function settleTicket(legs){
   if(grades.every(x=>["hit","push"].includes(x)))return grades.includes("hit")?"hit":"push";
   return "pending";
 }
-const ticketsOf=d=>{
+export const ticketsOf=d=>{
   const candidates=[];
-  if(d?.sgp?.status==="qualified"&&d.sgp.legs?.length)candidates.push({id:"sgp",type:"sgp",league:null,legs:d.sgp.legs});
-  if(d?.acca?.status==="qualified"&&d.acca.legs?.length)candidates.push({id:"acca",type:"acca",league:null,legs:d.acca.legs});
+  if(d?.sgp?.status==="qualified"&&d.sgp.legs?.length)candidates.push({...d.sgp,id:"sgp",type:"sgp",league:d.sgp.league||d.sgp.legs[0].league||null,bestSgp:true});
+  if(d?.acca?.status==="qualified"&&d.acca.legs?.length)candidates.push({...d.acca,id:"acca",type:"acca",league:null});
   for(const s of d?.sgpsByLeague||[]){
-    if(s.status==="qualified"&&s.legs?.length)candidates.push({id:"league:"+s.league,type:"league_sgp",league:s.league,legs:s.legs});
+    if(s.status==="qualified"&&s.legs?.length)candidates.push({...s,id:"league:"+s.league,type:"league_sgp",league:s.league});
   }
   const seen=new Map();
   return candidates.map(s=>{
     const signature=s.legs.map(x=>String(x.gameId||"")+"|"+norm(x.label)).sort().join("||");
     const duplicateOf=seen.get(signature)||null;if(!duplicateOf)seen.set(signature,s.id);
-    return {...s,duplicateOf,legs:s.legs.map(x=>({gameId:String(x.gameId||""),fixture:String(x.fixture||""),label:String(x.label||""),category:String(x.category||""),result:"pending"})),result:"pending"};
+    return {...s,signature,duplicateOf,legs:s.legs.map(x=>({gameId:String(x.gameId||""),fixture:String(x.fixture||""),league:x.league||s.league||null,kickoff:x.kickoff||null,label:String(x.label||""),category:String(x.category||""),odds:x.odds??null,referenceOdds:x.publishedReferenceOdds??x.observedReferenceOdds??null,referenceDecimal:x.publishedReferenceDecimal??null,verifiedPrice:x.verifiedPrice===true,result:"pending"})),result:"pending"};
   });
 };
-function sourceFor(date){
-  if(!exists(path.join(ROOT,"data","boards",date+".json")))return null;
-  const d1=path.join(ROOT,"data","editorial-desk",date+".json"),d2=path.join(ROOT,"data","slips",date+".json");
-  if(exists(d1))return {path:d1,data:read(d1)};
-  if(exists(d2))return {path:d2,data:read(d2)};
+export function sourceFor(date,root=ROOT){
+  if(!exists(path.join(root,"data","boards",date+".json")))return null;
+  for(const kind of ["slips-reviewed","editorial-desk","slips"]){
+    const file=path.join(root,"data",kind,date+".json");
+    if(exists(file)){const data=read(file);if(data.date===date)return {path:file,data};}
+  }
   return null;
 }
 async function finalResultsFor(date){
@@ -100,18 +103,20 @@ async function finalResultsFor(date){
 
 const profileCache=new Map();
 let profileRequests=0;
-function parsePlayerMarket(label){
+export function parsePlayerMarket(label){
  // Supports archived "Player — 1+ Shots" and source-reviewed "Player 1+ Shot".
  // Only verified player logs may settle an event prop; a final score never can.
- return String(label||"").match(/^\s*(.+?)(?:\s+[—–-]\s*|\s+)(\d+)\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won)\s*$/i);
+ return String(label||"").match(/^\s*(.+?)(?:\s+[—–-]\s*|\s+)(\d+)\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won|Fouls Drawn|Tackles?|Yellow Cards?|Red Cards?|Assists?|Goals?)\s*$/i);
 }
 export function playerStatResult(leg,recent,opponent,date){
   const match=parsePlayerMarket(leg.label);
   if(!match||!Array.isArray(recent))return null;
   const field=({"shot on target":"shotsOnTarget","shots on target":"shotsOnTarget","shot":"shots","shots":"shots",
-    "fouls committed":"foulsCommitted","fouls won":"foulsWon"})[match[3].toLowerCase()];
+    "fouls committed":"foulsCommitted","fouls won":"foulsWon","fouls drawn":"foulsWon",
+    "tackle":"tackles","tackles":"tackles","yellow card":"yellowCards","yellow cards":"yellowCards","red card":"redCards","red cards":"redCards","assist":"assists","assists":"assists","goal":"goals","goals":"goals"})[match[3].toLowerCase()];
   const opp=norm(opponent);
   const matches=recent.filter(x=>{
+    if(Number.isFinite(x.minutes)&&x.minutes===0)return false;
     const other=norm(x.opponent),day=String(x.date||"").slice(0,10);
     const sameOpponent=other.length>=4&&opp.length>=4&&(opp===other||opp.includes(other)||other.includes(opp));
     return sameOpponent&&(day===date||day===dayOffset(date,1))&&Number.isFinite(x[field])&&x[field]>=0;
@@ -119,7 +124,7 @@ export function playerStatResult(leg,recent,opponent,date){
   if(matches.length!==1)return null;
   return {result:matches[0][field]>=Number(match[2])?"hit":"miss",observed:matches[0][field],market:match[3]};
 }
-async function playerOutcome(leg,date,game,research,news){
+export async function playerOutcome(leg,date,game,research,news){
   const label=String(leg.label||"");
   const name=parsePlayerMarket(label)?.[1];
   if(!name||!game||!research)return null;
@@ -127,7 +132,7 @@ async function playerOutcome(leg,date,game,research,news){
   if(!fixture||!fixture.home?.id||!fixture.away?.id||!fixture.league)return null;
   const intel=(news?.fixtures||[]).find(x=>String(x.fixtureId)===leg.gameId);
   const hasPlayer=(side)=>(intel?.[side]?.predictedXI||[]).some(x=>{
-    const a=norm(x),b=norm(name);
+    const a=norm(typeof x==="string"?x:x.name),b=norm(name);
     return a===b||(a.length>=5&&b.endsWith(" "+a))||(b.length>=5&&a.endsWith(" "+b));
   });
   let teams=[fixture.home,fixture.away];
@@ -177,13 +182,14 @@ export function summaryOf(items){
   const pushes=unique.filter(x=>x.result==="push").length,pending=unique.filter(x=>x.result==="pending").length;
   return {hits,misses,pushes,pending,settled:hits+misses,hitRate:hits+misses?Math.round(hits/(hits+misses)*10000)/100:null};
 }
+export const needsLegResults=ticket=>(ticket.legs||[]).some(leg=>(leg.result||"pending")==="pending");
 async function run(){
   const dateToday=today();fs.mkdirSync(DIR,{recursive:true});
   const days=new Set();
-  for(const kind of ["editorial-desk","slips"]){
+  for(const kind of ["slips-reviewed","editorial-desk","slips"]){
     const loc=path.join(ROOT,"data",kind);
     if(!exists(loc))continue;
-    for(const name of fs.readdirSync(loc))if(/^\d{4}-\d{2}-\d{2}\.json$/.test(name)&&name.slice(0,10)<dateToday)days.add(name.slice(0,10));
+    for(const name of fs.readdirSync(loc))if(/^\d{4}-\d{2}-\d{2}\.json$/.test(name)&&name.slice(0,10)<=dateToday&&(!process.env.TRACK_SINCE||name.slice(0,10)>=process.env.TRACK_SINCE))days.add(name.slice(0,10));
   }
   for(const day of [...days].sort()){
     const file=path.join(DIR,day+".json");
@@ -194,14 +200,18 @@ async function run(){
       if(!published||published.data.date!==day)continue;
       snapshot={date:day,source:published.path.replace(ROOT+path.sep,""),capturedAt:new Date().toISOString(),tickets:ticketsOf(published.data)};
     }
-    if(!snapshot.tickets.some(t=>t.result==="pending")){if(!exists(file))write(file,snapshot);continue;}
+    // Fill an old empty capture from the actually published desk. Never replace
+    // a saved ticket's selections or its already verified leg results.
+    if(!snapshot.tickets.length){const published=sourceFor(day);if(published){snapshot.source=published.path.replace(ROOT+path.sep,"");snapshot.tickets=ticketsOf(published.data);}}
+    const upcoming=day===dateToday&&snapshot.tickets.flatMap(t=>t.legs||[]).every(l=>l.kickoff&&Date.parse(l.kickoff)>Date.now());
+    if(!snapshot.tickets.some(needsLegResults)||upcoming||process.env.TRACK_CAPTURE_ONLY==='1'){if(!exists(file)||snapshot.tickets.length)write(file,snapshot);continue;}
     const games=await finalResultsFor(day),byId=new Map(games.map(x=>[x.id,x])),byTeams=new Map(games.map(x=>[matchKey(x.home,x.away),x]));
     const verified=reviewedLegResults(day);
     const researchPath=path.join(ROOT,"data","research-base-"+day+".json");
     const newsPath=path.join(ROOT,"data","team-intelligence",day+".json");
     const research=exists(researchPath)?read(researchPath):null,news=exists(newsPath)?read(newsPath):null;
     for(const ticket of snapshot.tickets){
-      if(ticket.result!=="pending")continue;
+      if(!needsLegResults(ticket))continue;
       for(const leg of ticket.legs){
         if(leg.result!=="pending")continue;
         const manual=verified.get(leg.gameId+"|"+norm(leg.label));
@@ -211,6 +221,7 @@ async function run(){
           const sides=leg.fixture.split(" vs ");if(sides.length===2)game=byTeams.get(matchKey(sides[0],sides[1]));
         }
         if(game){
+          leg.finalScore=game.hs+"-"+game.as;
           leg.result=scoreLeg(leg,game);
           if(leg.result==="pending"){
             const prop=await playerOutcome(leg,day,game,research,news);
@@ -219,7 +230,7 @@ async function run(){
         }
       }
       ticket.result=settleTicket(ticket.legs);
-      if(ticket.result!=="pending")ticket.settledAt=new Date().toISOString();
+      if(ticket.result!=="pending"&&!ticket.settledAt)ticket.settledAt=new Date().toISOString();
     }
     write(file,snapshot);
   }

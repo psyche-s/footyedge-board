@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import {playerOutcome} from './track-slip-performance.mjs';
 
 
 const ROOT=process.cwd();
@@ -26,7 +27,7 @@ function fixtureKey(home,away){return norm(home)+"|"+norm(away)}
 function readJson(file){return JSON.parse(fs.readFileSync(file,"utf8"))}
 function writeJson(file,data){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(data,null,2)+"\n")}
 async function fetchJson(url){
-  const r=await fetch(url,{headers:{accept:"application/json","user-agent":"FootyEdgeTracker/1.0"}});
+  const r=await fetch(url,{headers:{accept:"application/json","user-agent":"FootyEdgeTracker/1.0"},signal:AbortSignal.timeout(12500)});
   if(!r.ok)throw new Error("HTTP "+r.status+" for "+url);
   return r.json();
 }
@@ -141,6 +142,7 @@ function settlePick(p,event){
 async function settleDailyFile(file){
   const data=readJson(file);
   if(!Array.isArray(data.top5)||!data.top5.some(x=>(x.result||"pending")==="pending"))return false;
+  if(data.top5.every(p=>p.kickoff&&Date.parse(p.kickoff)>Date.now()))return false;
   let board;
   try{board=await verifiedScoreboardFor(data.date)}catch(e){console.log("Settlement scoreboard failed:",data.date,e.message);return false}
   const map=new Map((board.events||[]).map(e=>{const x=eventInfo(e);return[fixtureKey(x.home,x.away),x]}));
@@ -150,6 +152,12 @@ async function settleDailyFile(file){
     const ev=map.get(fixtureKey(pick.home,pick.away));
     if(!ev)continue;
     const settled=settlePick(pick,ev);
+    if(settled.result==='pending'&&ev.done){
+      const researchPath=path.join(ROOT,'data','research-base-'+data.date+'.json'),newsPath=path.join(ROOT,'data','team-intelligence',data.date+'.json');
+      const prop=await playerOutcome({gameId:String(pick.gameId),label:pick.selection},data.date,ev,
+        fs.existsSync(researchPath)?readJson(researchPath):null,fs.existsSync(newsPath)?readJson(newsPath):null);
+      if(prop){settled.result=prop.result;pick.verifiedSource=prop.source;pick.observedStat=prop.observed;}
+    }
     if(settled.result!=="pending"){
       pick.result=settled.result;pick.finalScore=settled.finalScore;pick.settledAt=new Date().toISOString();changed=true;
     }
@@ -210,6 +218,8 @@ function publishedTop5(today){
   const board=readJson(file);
   if(board.date!==today||!(board.immutable===true||board.state==="published"))throw new Error("Tracker requires a published board");
   return (board.top5||[]).map(x=>({rank:x.rank,gameId:x.gameId,home:x.home,away:x.away,
+    league:board.games?.find(g=>String(g.id)===String(x.gameId))?.league||null,
+    kickoff:board.games?.find(g=>String(g.id)===String(x.gameId))?.date||null,
     fixture:x.home+" vs "+x.away,category:x.pick.category,selection:x.pick.label,confidence:x.pick.score,
     odds:x.pick.odds??x.pick.oddsDisplay??null,book:x.pick.provider??null,result:"pending",finalScore:null}));
 }
@@ -223,11 +233,11 @@ async function main(){
   fs.mkdirSync(PERF_DIR,{recursive:true});
 
   const dailyFiles=fs.readdirSync(PERF_DIR).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x)).map(x=>path.join(PERF_DIR,x));
-  for(const file of dailyFiles)await settleDailyFile(file);
+  for(const file of dailyFiles)if(!process.env.TRACK_SINCE||path.basename(file).slice(0,10)>=process.env.TRACK_SINCE)await settleDailyFile(file);
 
   const boardsDir=path.join(ROOT,"data","boards");
   for(const name of fs.readdirSync(boardsDir).filter(x=>/^\d{4}-\d{2}-\d{2}\.json$/.test(x))){
-    const date=name.slice(0,10);if(date>today)continue;
+    const date=name.slice(0,10);if(date>today||(process.env.TRACK_SINCE&&date<process.env.TRACK_SINCE))continue;
     const dailyFile=path.join(PERF_DIR,name);
     const existing=fs.existsSync(dailyFile)?readJson(dailyFile):null;
     // Existing historical snapshots are permanent. Today's publication snapshot

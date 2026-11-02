@@ -32,9 +32,16 @@ This agreement does not re-enable FootyEdge V2, and does not affect unrelated Sp
 - Sportsbook odds are optional and must be a current, exact sportsbook market quote if used. Never synthesize quotes from preview sites, old screenshots, adjacent goal lines or confidence percentages.
 - Third-party match previews are a research cross-check only with permission and rights respected. A source being mentioned in older project instructions does not guarantee a licensed, configured nightly feed.
 - A nightly `00:15` **start** does not mean all steps or late official lineups are available at that time. Some late full-time settlements may remain pending until next midnight because all separate scheduled checks were removed at the owner's direction.
-- Current Hit Rate page is the existing Top 5 interface: the new complete-slip statistics live in `data/performance/slips` and `data/performance/summary.json.slips` until a separately authorized UI change.
+- Hit Rate shows a dated horizontal carousel of the original Top 5 and distinct SGP/cross-game tickets. It reads `data/performance/history.json`, built from preserved Top 5 snapshots and whole-slip settlement records. Newly published days are captured immediately after the board is archived, inside this same daily workflow.
 - Fail closed if providers do not return reliable completed fixtures, accepted licensed previews or player event stats; retain previously verified snapshots. Monitor GitHub Actions outcome and actual live site's dated data independently.
 
 ## ChatGPT research handoff
 
 The daily ChatGPT task is scheduled for 00:15 America/Toronto. It researches the sources, completes dated owner-reviews, lineups/news and slips, validates, pushes Original main and verifies Vercel production. The existing GitHub publisher uses the same local start time as the one-writer pipeline; it never replaces a completed archive. Manual same-day continuation is allowed for non-destructive research overlays. API-Football ingestion is inside the publisher; the separate source-sync and reviewed-pick recovery workflows are manual-only to avoid duplicate refresh writers. Source references remain internal, and late official XIs remain predicted until verified.
+
+## Hit Rate publication and settlement
+
+- `scripts/track-performance.mjs` saves the official published Top 5 and grades verified full-time markets or matching verified player logs, without changing selections.
+- `scripts/track-slip-performance.mjs` captures the same `slips-reviewed` desk displayed on Top Picks, falling back to older editorial/slip archives when appropriate. Each distinct slip counts once. A miss settles the ticket as lost, while remaining leg results continue to update independently.
+- `scripts/build-hit-rate-history.mjs` builds the current-month carousel and separate monthly/YTD Top 5 and whole-slip statistics. Researched unpriced candidates are visible but excluded from slip hit rates.
+- Full-time scores cannot settle half-specific goals/corners or player event counts. Missing metrics remain pending until matching verified records are available.

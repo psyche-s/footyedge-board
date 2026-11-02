@@ -1,5 +1,7 @@
 ## Latest owner refresh instruction — November 2, 2026
 
+- Hit Rate UI is explicitly authorized to show one horizontally scrollable carousel per day, with original Top 5 selections and distinct published SGP/cross-game slips. Match FootyEdge's styling, with per-leg Hit/Miss/Pending/Void marks, whole-ticket outcomes, arrows and pagination dots. Snapshot new published selections immediately, settle only from verified results, and update the carousel feed during the existing daily refresh. Count Top 5 picks individually and each distinct slip once; unpriced candidates remain separate.
+
 - The daily Original refresh starts at **00:15 America/Toronto**. This supersedes every older timing below. Keep one scheduled GitHub publisher and one existing ChatGPT research task; no downstream data-writer fan-out.
 - Personally review the permitted sources for every tracked fixture, compare with dated simulations, and publish the strongest three distinct supported picks with short reasons. Source absence alone is not a reason to suppress independently supported research; do not invent facts or publisher opinions.
 - Major-league SGPs have flexible leg counts and target **+150 or above** combined odds. Publish exactly one strongest cross-game parlay targeting **+300 or above**. Record reference versus executable prices honestly, and keep researched candidates visible with price pending when the exact combination cannot be verified.

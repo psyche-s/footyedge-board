@@ -269,10 +269,20 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/archive-board.mjs
 
+      - name: Capture posted Top 5 and slips for the daily Hit Rate carousel
+        if: steps.gate.outputs.run == 'true'
+        env:
+          FORCE_TRACK: '1'
+        run: |
+          TODAY="$(TZ=America/Toronto date +%F)"
+          TRACK_SINCE="$TODAY" node scripts/track-performance.mjs
+          TRACK_SINCE="$TODAY" node scripts/track-slip-performance.mjs
+          node scripts/build-hit-rate-history.mjs
+
       - name: Validate researched parlay markets and source-only slip coverage
         if: steps.gate.outputs.run == 'true'
         run: |
-          node --test tests/daily-slips.test.mjs tests/editorial-refresh.test.mjs
+          node --test tests/daily-slips.test.mjs tests/editorial-refresh.test.mjs tests/hit-rate.test.mjs tests/tracking-history.test.mjs tests/track-slip-performance.test.mjs
           # The authorised editorial desk was frozen above. No model-built
           # slip overwrites it or the immutable official board.
 
