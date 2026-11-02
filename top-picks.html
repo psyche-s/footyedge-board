@@ -2,9 +2,9 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#031008"><title>FootyEdge — Top Picks & Slip Builder</title>
 <style>
-:root{--bg:#031008;--green:#39eba0;--line:#1f583d;--muted:#a4c4b1;--text:#eafaf0}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 25% 0,#0d3925,#031008 44%);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}
+:root{--bg:#031008;--green:#47e590;--line:#1c442d;--muted:#93a89c;--text:#f4f8f5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,rgba(56,223,132,.08),transparent 32rem),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+a{color:inherit;text-decoration:none}button,select{font:inherit}button{cursor:pointer}
 .nav{max-width:1060px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px 20px 15px;border-bottom:1px solid #17442b}
 .logo{font-size:23px;font-weight:950;letter-spacing:-.9px}.logo span{color:var(--green)}
 .links{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.links a{font-weight:800;font-size:12px;color:#a0c0ad}.links a.active{color:var(--green)}
@@ -102,7 +102,7 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .ticketPaper{--paper:#f6f2e9!important;box-shadow:0 2px 0 #c8c1b4,0 15px 40px rgba(0,0,0,.23)!important}
 .ticketPaper .slipTopline{margin-bottom:22px}
 .ticketPaper .slipHead{padding-bottom:14px!important}
-.ticketPaper .slipHead h2{font-family:"Arial Narrow","Impact",system-ui,-apple-system,sans-serif!important;font-stretch:condensed;font-size:clamp(27px,3vw,40px)!important;letter-spacing:-.045em!important;line-height:1.1!important}
+.ticketPaper .slipHead h2{font-family:inherit!important;font-size:clamp(27px,3vw,40px)!important;letter-spacing:-.045em!important;line-height:1.1!important}
 .ticketPaper .slipBadge{font-size:11px!important;font-weight:750!important;color:#777673!important}
 .ticketPaper .slipIntro{font-size:12px!important;color:#77736e!important;margin-top:16px!important}
 .ticketPaper .leg{display:block!important;padding:18px 0!important}
@@ -162,13 +162,14 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .fe-slipPrice{display:flex;align-items:center;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid #d7d0c3;color:#1b6b4b}
 .fe-slipPrice strong{font-size:26px!important;letter-spacing:-.04em}.fe-slipPrice span{font-size:11px;line-height:1.5;color:#6e766d}.fe-slipPrice small{display:block;font-size:10px;color:#858678}
 .fe-leagueReceipt .legWhy{font-size:11px;line-height:1.5;color:#a8bcb0}.fe-leagueReceipt .legWhy p{margin:8px 0}.fe-leagueReceiptTop>strong{color:#70e2a4;font-size:18px}.fe-leagueReceipt h3{font-size:15px;line-height:1.4}
-/* Calm matchday hierarchy; the tickets retain their warm paper finish. */
-body{background:#0c1113;color:#f1f4f3}.nav{border-color:#293035}.links a{color:#aab5b1}
-.container{padding-top:30px}.headline{align-items:center;flex-wrap:nowrap}.eyebrow{font-size:9px;letter-spacing:.13em;color:#7fc8a7}h1{font-size:clamp(30px,4vw,42px);margin:8px 0 10px}.subtitle{color:#a7b1b1;font-size:12px;max-width:480px}
-.fe-slipActions{min-width:0;flex:none}.fe-refreshBtn{min-height:36px;padding:0 13px;background:#171f22;border:1px solid #354348;color:#dce8e3;border-radius:9px;font-weight:650}.fe-refreshBtn span{font-size:18px}
-.statusLine{font-size:11px;color:#899b98;padding:20px 0 12px;min-height:0}.fe-refreshStatus:empty{display:none}
-.fe-sgpPicker{background:#151d20;border:1px solid #303c40;border-radius:12px;padding:12px 14px;gap:10px;margin:0 0 22px}.fe-sgpPicker label{font-size:9px;letter-spacing:.09em;color:#aabbb3}.fe-sgpPicker select{background:#202b2e;border-color:#41524e;border-radius:7px;font-size:12px;font-weight:600;min-height:36px}.fe-sgpPicker span{color:#899c96;font-size:10px}
-.ticketPaper .slipHead h2{font-family:Inter,system-ui,-apple-system,sans-serif!important;font-size:clamp(25px,3vw,32px)!important;letter-spacing:-.045em!important;font-weight:850!important;text-transform:none!important}.ticketPaper .slipTopline{margin-bottom:16px}.ticketPaper .slipIntro{margin-top:12px!important}.ticketPaper .legTitle{font-size:16px!important}.ticketPaper .legMatch{font-size:11px!important}.ticketPaper .slipHead,.ticketPaper .slipBody{padding-left:23px!important;padding-right:23px!important}.ticketPaper .ticketTear:before,.ticketPaper .ticketTear:after{background:#0c1113}.marketItem{background:#161f22;border-color:#303e40}.marketRank{background:transparent;border-color:#3a5249}.marketInfo p,.marketInfo .fixture{color:#a0b0a9}.notice{border-color:#2b3838;color:#8fa39b}.sectionTitle span{color:#8fa39b}
+/* Compact hierarchy, using the same evergreen palette and system type as Home. */
+.nav{height:68px;max-width:1180px;padding:0 22px;gap:24px;border-color:rgba(65,126,88,.18)}.logo{letter-spacing:-1px}.links{gap:26px}.links a{font-size:13px;font-weight:750;color:#9eb0a6;white-space:nowrap}.links a.active,.links a:hover{color:#fff}.links a.active:after{content:"";display:block;height:2px;background:var(--green);margin-top:7px;border-radius:2px}
+.container{padding-top:30px}.headline{align-items:center;flex-wrap:nowrap}.eyebrow{font-size:9px;letter-spacing:.13em;color:var(--green)}h1{font-size:clamp(30px,4vw,42px);margin:8px 0 10px}.subtitle{color:var(--muted);font-size:12px;max-width:480px}
+.fe-slipActions{min-width:0;flex:none}.fe-refreshBtn{min-height:36px;padding:0 13px;background:#07140d;border:1px solid #244a34;color:#dce8e0;border-radius:9px;font-weight:750}.fe-refreshBtn:hover{background:#10261a;border-color:#368256}.fe-refreshBtn span{font-size:18px}
+.statusLine{font-size:11px;color:var(--muted);padding:20px 0 12px;min-height:0}.fe-refreshStatus:empty{display:none}
+.fe-sgpPicker{background:#07160d;border:1px solid var(--line);border-radius:12px;padding:12px 14px;gap:10px;margin:0 0 22px}.fe-sgpPicker label{font-size:9px;letter-spacing:.09em;color:#a9bdaf}.fe-sgpPicker select{background:#0e2116;border-color:#2a5139;border-radius:7px;font-size:12px;font-weight:750;min-height:36px}.fe-sgpPicker span{color:var(--muted);font-size:10px}
+.ticketPaper .slipHead h2{font-family:inherit!important;font-stretch:normal;font-size:clamp(25px,3vw,32px)!important;letter-spacing:-.045em!important;font-weight:850!important;text-transform:none!important}.ticketPaper .slipTopline{margin-bottom:16px}.ticketPaper .slipIntro{margin-top:12px!important}.ticketPaper .legTitle{font-size:16px!important}.ticketPaper .legMatch{font-size:11px!important}.ticketPaper .slipHead,.ticketPaper .slipBody{padding-left:23px!important;padding-right:23px!important}.ticketPaper .ticketTear:before,.ticketPaper .ticketTear:after{background:var(--bg)}.marketItem{background:#08170e;border-color:var(--line)}.marketRank{background:transparent;border-color:#2a5139}.marketInfo p,.marketInfo .fixture{color:#93a89c}.notice{border-color:var(--line);color:var(--muted)}.sectionTitle span{color:var(--muted)}
+@media(max-width:640px){.nav{height:58px;padding:0 14px;gap:12px}.logo{font-size:19px}.links{gap:10px}.links a{font-size:10px}}
 @media(max-width:550px){.container{padding:24px 16px 40px}.headline{gap:12px;align-items:flex-start}.fe-slipActions{width:auto;padding-top:21px}.fe-refreshBtn{font-size:10px;padding:0 9px;gap:4px;min-height:34px}.subtitle{font-size:12px;line-height:1.6}.eyebrow{font-size:8px}h1{font-size:31px;letter-spacing:-1.1px}.fe-sgpPicker label{flex-basis:auto}.fe-sgpPicker select{flex-basis:100%;order:2}.fe-sgpPicker span{flex-basis:auto;min-width:0;margin-left:auto;font-size:9px}.ticketPaper .slipHead h2{font-size:27px!important}.ticketPaper .legTitle{font-size:16px!important}.sectionTitle{align-items:flex-start}.sectionTitle span{max-width:125px;text-align:right;font-size:10px}.sectionTitle h2{font-size:18px}}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
