@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 CACHE=ROOT/".cache"/"footyedge"
 LEAGUES={"eng.1":"E0","eng.2":"E1","esp.1":"SP1","ita.1":"I1","ger.1":"D1","fra.1":"F1","ned.1":"N1","por.1":"P1","tur.1":"T1"}
-ALIAS={"fc cologne":"koln","cologne":"koln","borussia monchengladbach":"m gladbach","ac milan":"milan","as roma":"roma","celta vigo":"celta","stade rennais":"rennes","aj auxerre":"auxerre","sc freiburg":"freiburg"}
+ALIAS={"newcastle united":"newcastle","fc cologne":"koln","cologne":"koln","borussia monchengladbach":"m gladbach","ac milan":"milan","as roma":"roma","celta vigo":"celta","stade rennais":"rennes","aj auxerre":"auxerre","sc freiburg":"freiburg"}
 def normalize(s):
     raw=unicodedata.normalize("NFKD",str(s or "")).encode("ascii","ignore").decode().lower()
     v=" ".join(re.findall(r"[a-z0-9]+",raw))
