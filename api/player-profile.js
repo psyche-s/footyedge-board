@@ -129,7 +129,7 @@ function parseRecent(log){
   if(!stats.length)return null;
   const value=label=>stats.find(z=>z.label===label)?.value??null;
   return {date:date.slice(0,10),opponent,goals:value("Goals"),
-   assists:value("Assists"),minutes:value("Minutes"),shots:value("Shots")};
+   assists:value("Assists"),minutes:value("Minutes played"),shots:value("Shots")};
  }).filter(Boolean).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
 }
 

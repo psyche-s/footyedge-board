@@ -162,13 +162,21 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .fe-slipPrice{display:flex;align-items:center;gap:12px;margin-top:15px;padding-top:12px;border-top:1px solid #d7d0c3;color:#1b6b4b}
 .fe-slipPrice strong{font-size:26px!important;letter-spacing:-.04em}.fe-slipPrice span{font-size:11px;line-height:1.5;color:#6e766d}.fe-slipPrice small{display:block;font-size:10px;color:#858678}
 .fe-leagueReceipt .legWhy{font-size:11px;line-height:1.5;color:#a8bcb0}.fe-leagueReceipt .legWhy p{margin:8px 0}.fe-leagueReceiptTop>strong{color:#70e2a4;font-size:18px}.fe-leagueReceipt h3{font-size:15px;line-height:1.4}
+/* Calm matchday hierarchy; the tickets retain their warm paper finish. */
+body{background:#0c1113;color:#f1f4f3}.nav{border-color:#293035}.links a{color:#aab5b1}
+.container{padding-top:30px}.headline{align-items:center;flex-wrap:nowrap}.eyebrow{font-size:9px;letter-spacing:.13em;color:#7fc8a7}h1{font-size:clamp(30px,4vw,42px);margin:8px 0 10px}.subtitle{color:#a7b1b1;font-size:12px;max-width:480px}
+.fe-slipActions{min-width:0;flex:none}.fe-refreshBtn{min-height:36px;padding:0 13px;background:#171f22;border:1px solid #354348;color:#dce8e3;border-radius:9px;font-weight:650}.fe-refreshBtn span{font-size:18px}
+.statusLine{font-size:11px;color:#899b98;padding:20px 0 12px;min-height:0}.fe-refreshStatus:empty{display:none}
+.fe-sgpPicker{background:#151d20;border:1px solid #303c40;border-radius:12px;padding:12px 14px;gap:10px;margin:0 0 22px}.fe-sgpPicker label{font-size:9px;letter-spacing:.09em;color:#aabbb3}.fe-sgpPicker select{background:#202b2e;border-color:#41524e;border-radius:7px;font-size:12px;font-weight:600;min-height:36px}.fe-sgpPicker span{color:#899c96;font-size:10px}
+.ticketPaper .slipHead h2{font-family:Inter,system-ui,-apple-system,sans-serif!important;font-size:clamp(25px,3vw,32px)!important;letter-spacing:-.045em!important;font-weight:850!important;text-transform:none!important}.ticketPaper .slipTopline{margin-bottom:16px}.ticketPaper .slipIntro{margin-top:12px!important}.ticketPaper .legTitle{font-size:16px!important}.ticketPaper .legMatch{font-size:11px!important}.ticketPaper .slipHead,.ticketPaper .slipBody{padding-left:23px!important;padding-right:23px!important}.ticketPaper .ticketTear:before,.ticketPaper .ticketTear:after{background:#0c1113}.marketItem{background:#161f22;border-color:#303e40}.marketRank{background:transparent;border-color:#3a5249}.marketInfo p,.marketInfo .fixture{color:#a0b0a9}.notice{border-color:#2b3838;color:#8fa39b}.sectionTitle span{color:#8fa39b}
+@media(max-width:550px){.container{padding:24px 16px 40px}.headline{gap:12px;align-items:flex-start}.fe-slipActions{width:auto;padding-top:21px}.fe-refreshBtn{font-size:10px;padding:0 9px;gap:4px;min-height:34px}.subtitle{font-size:12px;line-height:1.6}.eyebrow{font-size:8px}h1{font-size:31px;letter-spacing:-1.1px}.fe-sgpPicker label{flex-basis:auto}.fe-sgpPicker select{flex-basis:100%;order:2}.fe-sgpPicker span{flex-basis:auto;min-width:0;margin-left:auto;font-size:9px}.ticketPaper .slipHead h2{font-size:27px!important}.ticketPaper .legTitle{font-size:16px!important}.sectionTitle{align-items:flex-start}.sectionTitle span{max-width:125px;text-align:right;font-size:10px}.sectionTitle h2{font-size:18px}}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
-  <div class="headline"><div><div class="eyebrow">Confidence-ranked soccer intelligence</div><h1>Today’s Top Picks</h1><p class="subtitle">Today’s match combinations, player props and cross-game parlay. Check the starting XIs and the final price at your sportsbook.</p></div>
-  <div class="fe-slipActions"><div class="dateControl" aria-label="Choose board date"><button id="todayBtn" class="active">Today</button><button id="tomorrowBtn">Tomorrow</button></div><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh latest data</button></div></div>
+  <div class="headline"><div><div class="eyebrow">Matchday selections</div><h1>Top Picks</h1><p class="subtitle">Same-game slips, player props and one cross-game parlay.</p></div>
+  <div class="fe-slipActions"><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
-  <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">BEST SGP FROM</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Five major European leagues · SGP reference target +150 or higher.</span></section>
+  <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">SGP COMPETITION</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Reference target +150 or higher.</span></section>
   <section class="grid" aria-label="FootyEdge research slips">
   <article class="slip ticketPaper" aria-labelledby="sgpTitle">
     <header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="sgpMeta">SGP · MATCHDAY</span><span class="slipBadge" id="sgpLegBadge">RESEARCH</span></div>
@@ -194,7 +202,6 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 <script>
 const GH="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/";
 const localDate=()=>{const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return p.year+"-"+p.month+"-"+p.day};
-const nextDay=s=>{const d=new Date(s+"T12:00:00Z");d.setUTCDate(d.getUTCDate()+1);return d.toISOString().slice(0,10)};
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 function cleanReason(value){
   return String(value??"")
@@ -304,8 +311,7 @@ function printProps(items){
  '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(cleanReason(x.p.reason||"Match statistics support this selection."))+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
  '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without verified player/event statistics.</div>';
 }
-let selected=0;
-const chosenDate=()=>selected?nextDay(localDate()):localDate();
+const chosenDate=()=>localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
 const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1"]);
 const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
@@ -344,9 +350,7 @@ function renderDesk(desk,date,live=false){
   for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
   return;
  }
- document.getElementById("boardStatus").textContent=chosenLabel(date)+" · "+
- (live?desk.fixturesRemaining+" fixtures still eligible · refreshed research":
-  (desk.schema==="footyedge-odds-reviewed-slips-v1"?"Major-league SGPs & cross-game parlay · reference prices":desk.schema==="footyedge-editorial-desk-v1"?"Today’s reviewed picks":desk.state==="frozen"?"Frozen original analysis":"Pre-match research preview"));
+ document.getElementById("boardStatus").textContent=chosenLabel(date);
  function drawSlip(result,id,empty){
   const isSgp=id==="sgpSlip";
   const eligible=(result?.status==="qualified"||result?.status==="hold")&&(isSgp?(result.legs||[]).length>=2:true);
@@ -365,8 +369,8 @@ function renderDesk(desk,date,live=false){
 }
 async function refresh(){
  const date=chosenDate();document.getElementById("boardStatus").textContent="Checking "+chosenLabel(date)+"…";
- document.getElementById("todayBtn").classList.toggle("active",selected===0);
- document.getElementById("tomorrowBtn").classList.toggle("active",selected===1);
+
+
  document.getElementById("refreshStatus").textContent="";
  const pricedResearch=await data("data/slips-reviewed/"+date+".json");
  const reviewed=pricedResearch||await data("data/editorial-desk/"+date+".json");
@@ -400,8 +404,8 @@ document.getElementById("sgpCompetitionSelect").onchange=e=>{
  selectedSgpLeague=e.target.value;
  if(displayedDesk)renderDesk(displayedDesk,chosenDate(),displayedDesk.schema==="footyedge-live-slip-check-v1");
 };
-document.getElementById("todayBtn").onclick=()=>{selected=0;refresh()};
-document.getElementById("tomorrowBtn").onclick=()=>{selected=1;refresh()};
-document.getElementById("refreshBtn").onclick=refreshLive;
+
+
+document.getElementById("refreshBtn").onclick=async()=>{const b=document.getElementById("refreshBtn");b.disabled=true;b.classList.add("busy");try{await refresh();document.getElementById("refreshStatus").textContent="Latest published picks loaded."}finally{b.disabled=false;b.classList.remove("busy")}};
 refresh();
 </script><script src="assets/sgp-bet365-2026-10-21.js?v=1"></script></body></html>

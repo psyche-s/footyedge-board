@@ -8,6 +8,12 @@ const sample={team:{name:"Verified FC"},athletes:[{position:"Forward",items:[
  {id:"99812",displayName:"Álvaro Serrano",jersey:"9",headshot:{href:"https://a.espncdn.com/i/headshots/soccer/players/full/99812.png"}},
  {id:"99813",displayName:"Marco Serrano",jersey:"8"}
 ]}]};
+test("legacy recent-match logs retain explicit minutes without deriving them from a start",()=>{
+ const entries=[{date:'2026-11-01',opponent:{displayName:'Opponent'},statistics:{stats:[{name:'minutesPlayed',value:67},{name:'totalShots',value:2}]}}];
+ assert.equal(parseRecent({entries})[0].minutes,67);
+ entries[0].statistics.stats.shift();
+ assert.equal(parseRecent({entries})[0].minutes,null);
+});
 test("Player resolves by exact team-roster identity; ambiguous surname is not guessed",()=>{
  assert.equal(rosterRows(sample).length,2);
  assert.equal(matchRosterPlayer(sample,"Alvaro Serrano")?.id,"99812");

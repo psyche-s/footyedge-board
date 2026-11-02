@@ -2285,6 +2285,9 @@ function feCachedPlayerPhoto(g,team,player){
 function fePlayerImageUrl(value){
  const url=String(value||"");
  if(/default_player|placeholder|silhouette|no-image/i.test(url))return "";
+ if(/^https:\/\/assets\.bundesliga\.com\/player\/dfl-obj-[a-z0-9]+-dfl-clu-[a-z0-9]+-dfl-sea-[a-z0-9]+-body\.png$/i.test(url))return url;
+ if(/^https:\/\/media\.psg\.fr\/image\/upload\/w_640\/f_png,q_85\/(?:v\d+\/)?[a-z0-9_-]+\.png$/i.test(url))return url;
+ if(/^https:\/\/intermilan\.bynder\.com\/transform\/[a-f0-9-]{36}\/[a-z0-9_-]+$/i.test(url))return url;
  if(/^https:\/\/(?:a\.espncdn\.com|a\.espn\.com)\/[a-z0-9._~!$&'()*+,;=:@/%?-]+$/i.test(url))return url;
  if(/^https:\/\/media\.api-sports\.io\/football\/players\/[1-9]\d{0,11}\.png$/.test(url))return url;
  if(/^https:\/\/images\.fotmob\.com\/image_resources\/playerimages\/[1-9]\d{0,11}\.png$/.test(url))return url;
@@ -2422,7 +2425,7 @@ async function feOpenPlayerProfile(g,button){
  root.innerHTML='<div class="fe-playerShade" data-fe-player-close></div>'+
   '<section class="fe-playerSheet" role="dialog" aria-modal="true" aria-labelledby="fe-playerTitle">'+
   '<header class="fe-playerTopbar"><span>Player profile</span>'+
-  '<button type="button" class="fe-playerClose" aria-label="Close player profile" data-fe-player-close>✕</button></header>'+
+  '<button type="button" class="fe-playerClose" aria-label="Close player profile" data-fe-player-close><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header>'+
   '<div class="fe-playerContent">'+fePlayerProfileMarkup(null,fallback)+'</div></section>';
  document.body.appendChild(root);
  const close=()=>{controller.abort();root.remove();focusBack.isConnected&&focusBack.focus({preventScroll:true});document.removeEventListener("keydown",onKey)};
