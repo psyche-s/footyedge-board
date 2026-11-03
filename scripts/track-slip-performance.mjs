@@ -107,10 +107,11 @@ let profileRequests=0;
 export function parsePlayerMarket(label){
  // Supports archived "Player — 1+ Shots" and source-reviewed "Player 1+ Shot".
  // Only verified player logs may settle an event prop; a final score never can.
- return String(label||"").match(/^\s*(.+?)(?:\s+[—–-]\s*|\s+)(\d+)\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won|Fouls Drawn|Tackles?|Yellow Cards?|Red Cards?|Assists?|Goals?)\s*$/i);
+ return String(label||"").match(/^\s*(.+?)(?:\s+[—–-]\s*|\s+)(\d+)\+\s+(Shots? on Target|Shots?|Fouls? Committed|Fouls? Won|Fouls? Drawn|Tackles?|Yellow Cards?|Red Cards?|Assists?|Goals?)\s*$/i);
 }
 const playerFields={"shot on target":"shotsOnTarget","shots on target":"shotsOnTarget","shot":"shots","shots":"shots",
- "fouls committed":"foulsCommitted","fouls won":"foulsWon","fouls drawn":"foulsWon","tackle":"tackles","tackles":"tackles",
+ "foul committed":"foulsCommitted","fouls committed":"foulsCommitted","foul won":"foulsWon","fouls won":"foulsWon",
+ "foul drawn":"foulsWon","fouls drawn":"foulsWon","tackle":"tackles","tackles":"tackles",
  "yellow card":"yellowCards","yellow cards":"yellowCards","red card":"redCards","red cards":"redCards","assist":"assists","assists":"assists","goal":"goals","goals":"goals"};
 const units={shotsOnTarget:'Shots on target',shots:'Shots',foulsCommitted:'Fouls committed',foulsWon:'Fouls won',tackles:'Tackles',yellowCards:'Yellow cards',redCards:'Red cards',assists:'Assists',goals:'Goals'};
 export function parseCountMarket(label){
@@ -240,6 +241,10 @@ export async function playerOutcome(leg,date,game,research,news){
 
 export function validReviewedResult(r){
  if(!r.gameId||!r.label||!['hit','miss','push'].includes(r.result)||!/^https:\/\//.test(String(r.sourceUrl||''))||!Number.isFinite(Date.parse(r.verifiedAt)))return false;
+ if(r.voidReason!==undefined){
+  return r.voidReason==='did_not_start'&&r.result==='push'&&r.observedStat===undefined&&
+   Boolean(parsePlayerMarket(r.label))&&r.evidence?.started===false&&/^https:\/\//.test(r.evidence.rulesUrl||'');
+ }
  if(r.observedStat!==undefined){
   if(typeof r.observedStat!=='number'||!Number.isInteger(r.observedStat)||r.observedStat<0)return false;
   const player=parsePlayerMarket(r.label),market=parseCountMarket(r.label);
@@ -258,6 +263,34 @@ function reviewedLegResults(date){
     results.set(String(r.gameId)+"|"+norm(r.label),r);
   }
   return results;
+}
+export function applyReviewedResults(ticket,results){
+  let latestReview=null;
+  for(const leg of ticket.legs||[]){
+    const review=results.get(leg.gameId+"|"+norm(leg.label));
+    if(!review)continue;
+    // A sourced void can supersede an older stat grade. Ordinary stat reviews
+    // still fill pending legs only, and reruns keep the original correction time.
+    if(leg.result!=="pending"&&(!review.voidReason||Date.parse(leg.verifiedAt)>=Date.parse(review.verifiedAt)))continue;
+    leg.result=review.result;
+    leg.verifiedSource=review.sourceUrl;
+    leg.verifiedAt=review.verifiedAt;
+    if(review.voidReason){
+      leg.voidReason=review.voidReason;
+      delete leg.observedStat;
+      delete leg.observedUnit;
+      delete leg.settlementEvidence;
+    }else{
+      if(review.observedStat!==undefined)leg.observedStat=review.observedStat;
+      if(review.observedUnit)leg.observedUnit=review.observedUnit;
+    }
+    if(!latestReview||Date.parse(review.verifiedAt)>Date.parse(latestReview))latestReview=review.verifiedAt;
+  }
+  if(!latestReview)return;
+  const result=settleTicket(ticket.legs);
+  if(result==="pending")delete ticket.settledAt;
+  else if(result!==ticket.result||!ticket.settledAt)ticket.settledAt=latestReview;
+  ticket.result=result;
 }
 export function summaryOf(items){
   const unique=items.filter(x=>!x.duplicateOf);
@@ -284,7 +317,7 @@ async function run(){
       snapshot={date:day,source:published.path.replace(ROOT+path.sep,""),capturedAt:new Date().toISOString(),tickets:ticketsOf(published.data)};
     }
     // Fill an old empty capture from the actually published desk. Never replace
-    // a saved ticket's selections or its already verified leg results.
+    // a saved ticket's selections.
     if(!snapshot.tickets.length){const published=sourceFor(day);if(published){snapshot.source=published.path.replace(ROOT+path.sep,"");snapshot.tickets=ticketsOf(published.data);}}
     // Existing verified full-time scores can supply a goal count for the exact
     // saved goal market without regrading or rewriting the original selection.
@@ -296,9 +329,13 @@ async function run(){
       if(observed){leg.observedStat=observed.observed;leg.observedUnit=observed.unit;}
     }
     const upcoming=day===dateToday&&snapshot.tickets.flatMap(t=>t.legs||[]).every(l=>l.kickoff&&Date.parse(l.kickoff)>Date.now());
-    if(!snapshot.tickets.some(needsLegResults)||upcoming||process.env.TRACK_CAPTURE_ONLY==='1'){if(!exists(file)||snapshot.tickets.length)write(file,snapshot);continue;}
+    const captureOnly=upcoming||process.env.TRACK_CAPTURE_ONLY==='1';
+    if(!captureOnly){
+      const verified=reviewedLegResults(day);
+      for(const ticket of snapshot.tickets)applyReviewedResults(ticket,verified);
+    }
+    if(captureOnly||!snapshot.tickets.some(needsLegResults)){if(!exists(file)||snapshot.tickets.length)write(file,snapshot);continue;}
     const games=await finalResultsFor(day),byId=new Map(games.map(x=>[x.id,x])),byTeams=new Map(games.map(x=>[matchKey(x.home,x.away),x]));
-    const verified=reviewedLegResults(day);
     const researchPath=path.join(ROOT,"data","research-base-"+day+".json");
     const newsPath=path.join(ROOT,"data","team-intelligence",day+".json");
     const research=exists(researchPath)?read(researchPath):null,news=exists(newsPath)?read(newsPath):null;
@@ -306,8 +343,6 @@ async function run(){
       if(!needsLegResults(ticket))continue;
       for(const leg of ticket.legs){
         if(leg.result!=="pending")continue;
-        const manual=verified.get(leg.gameId+"|"+norm(leg.label));
-        if(manual){leg.result=manual.result;leg.verifiedSource=manual.sourceUrl;leg.verifiedAt=manual.verifiedAt;if(manual.observedStat!==undefined)leg.observedStat=manual.observedStat;if(manual.observedUnit)leg.observedUnit=manual.observedUnit;continue;}
         let game=byId.get(leg.gameId);
         if(!game&&leg.fixture.includes(" vs ")){
           const sides=leg.fixture.split(" vs ");if(sides.length===2)game=byTeams.get(matchKey(sides[0],sides[1]));
