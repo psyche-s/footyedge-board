@@ -61,15 +61,15 @@ export function settleTicket(legs){
 export const ticketsOf=d=>{
   const candidates=[];
   if(d?.sgp?.status==="qualified"&&d.sgp.legs?.length)candidates.push({...d.sgp,id:"sgp",type:"sgp",league:d.sgp.league||d.sgp.legs[0].league||null,bestSgp:true});
-  if(d?.acca?.status==="qualified"&&d.acca.legs?.length)candidates.push({...d.acca,id:"acca",type:"acca",league:null});
+  if(["qualified","hold"].includes(d?.acca?.status)&&d.acca.legs?.length)candidates.push({...d.acca,id:d.acca.status==="hold"?"candidate:acca":"acca",type:"acca",league:null});
   for(const s of d?.sgpsByLeague||[]){
-    if(s.status==="qualified"&&s.legs?.length)candidates.push({...s,id:"league:"+s.league,type:"league_sgp",league:s.league});
+    if(["qualified","hold"].includes(s.status)&&s.legs?.length)candidates.push({...s,id:(s.status==="hold"?"candidate:":"league:")+s.league,type:"league_sgp",league:s.league});
   }
   const seen=new Map();
-  return candidates.map(s=>{
+  return candidates.sort((a,b)=>Number(a.status==="hold")-Number(b.status==="hold")).map(s=>{
     const signature=s.legs.map(x=>String(x.gameId||"")+"|"+norm(x.label)).sort().join("||");
     const duplicateOf=seen.get(signature)||null;if(!duplicateOf)seen.set(signature,s.id);
-    return {...s,signature,duplicateOf,legs:s.legs.map(x=>({gameId:String(x.gameId||""),fixture:String(x.fixture||""),league:x.league||s.league||null,kickoff:x.kickoff||null,label:String(x.label||""),category:String(x.category||""),odds:x.odds??null,referenceOdds:x.publishedReferenceOdds??x.observedReferenceOdds??null,referenceDecimal:x.publishedReferenceDecimal??null,verifiedPrice:x.verifiedPrice===true,result:"pending"})),result:"pending"};
+    return {...s,signature,duplicateOf,...(s.status==="hold"?{trackable:false}:{}),legs:s.legs.map(x=>({gameId:String(x.gameId||""),fixture:String(x.fixture||""),league:x.league||s.league||null,kickoff:x.kickoff||null,label:String(x.label||""),category:String(x.category||""),odds:x.odds??null,referenceOdds:x.publishedReferenceOdds??x.observedReferenceOdds??null,referenceDecimal:x.publishedReferenceDecimal??null,verifiedPrice:x.verifiedPrice===true,result:"pending"})),result:"pending"};
   });
 };
 export function sourceFor(date,root=ROOT){
@@ -293,7 +293,7 @@ export function applyReviewedResults(ticket,results){
   ticket.result=result;
 }
 export function summaryOf(items){
-  const unique=items.filter(x=>!x.duplicateOf);
+  const unique=items.filter(x=>!x.duplicateOf&&x.trackable!==false);
   const hits=unique.filter(x=>x.result==="hit").length,misses=unique.filter(x=>x.result==="miss").length;
   const pushes=unique.filter(x=>x.result==="push").length,pending=unique.filter(x=>x.result==="pending").length;
   return {hits,misses,pushes,pending,settled:hits+misses,hitRate:hits+misses?Math.round(hits/(hits+misses)*10000)/100:null};
@@ -309,16 +309,20 @@ async function run(){
   }
   for(const day of [...days].sort()){
     const file=path.join(DIR,day+".json");
-    let snapshot;
-    if(exists(file))snapshot=read(file);
-    else {
-      const published=sourceFor(day);
-      if(!published||published.data.date!==day)continue;
-      snapshot={date:day,source:published.path.replace(ROOT+path.sep,""),capturedAt:new Date().toISOString(),tickets:ticketsOf(published.data)};
+    const published=sourceFor(day);
+    if(!exists(file)&&!published)continue;
+    const snapshot=exists(file)?read(file):{date:day,capturedAt:new Date().toISOString(),tickets:[]};
+    if(published){
+      if(!snapshot.tickets.length)snapshot.source=published.path.replace(ROOT+path.sep,"");
+      for(const ticket of ticketsOf(published.data)){
+        if(snapshot.tickets.some(saved=>saved.id===ticket.id))continue;
+        // A priced publication may follow a research hold. It has its own
+        // record and takes precedence over a held copy in the carousel.
+        const same=snapshot.tickets.find(saved=>saved.signature===ticket.signature&&!saved.duplicateOf&&(saved.trackable!==false||ticket.trackable===false));
+        ticket.duplicateOf=same?.id||null;
+        snapshot.tickets.push(ticket);
+      }
     }
-    // Fill an old empty capture from the actually published desk. Never replace
-    // a saved ticket's selections.
-    if(!snapshot.tickets.length){const published=sourceFor(day);if(published){snapshot.source=published.path.replace(ROOT+path.sep,"");snapshot.tickets=ticketsOf(published.data);}}
     // Existing verified full-time scores can supply a goal count for the exact
     // saved goal market without regrading or rewriting the original selection.
     for(const leg of snapshot.tickets.flatMap(t=>t.legs||[])){
@@ -372,7 +376,7 @@ async function run(){
   const slipStats={trackingType:"entire-parlay-outcomes",generatedAt:new Date().toISOString(),month:{key:month,...scope(month)},
     year:{key:year,...scope(year)},
     recentDays:docs.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,14)
-      .map(x=>({date:x.date,...summaryOf(x.tickets||[]),tickets:(x.tickets||[]).map(t=>({id:t.id,type:t.type,league:t.league,result:t.result,duplicateOf:t.duplicateOf,legResults:t.legs.map(l=>({label:l.label,result:l.result}))}))})),
+      .map(x=>({date:x.date,...summaryOf(x.tickets||[]),tickets:(x.tickets||[]).filter(t=>t.trackable!==false).map(t=>({id:t.id,type:t.type,league:t.league,result:t.result,duplicateOf:t.duplicateOf,legResults:t.legs.map(l=>({label:l.label,result:l.result}))}))})),
     note:"Each distinct posted slip counts once, not each leg. Unverified shots, fouls and other player markets stay pending."};
   write(path.join(DIR,"summary.json"),slipStats);
   const overallPath=path.join(ROOT,"data","performance","summary.json");
