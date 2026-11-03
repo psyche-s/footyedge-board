@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-import {summaryLegOutcome,scoreObservation,countOutcome,parseCountMarket,validReviewedResult} from '../scripts/track-slip-performance.mjs';
+import {summaryLegOutcome,scoreObservation,countOutcome,parseCountMarket,validReviewedResult,applyReviewedResults} from '../scripts/track-slip-performance.mjs';
 
 const summary=JSON.parse(fs.readFileSync(new URL('./fixtures/settlement-lyon-angers-2026-11-01.json',import.meta.url)));
 const leg=label=>({gameId:'401876418',label});
@@ -55,6 +55,30 @@ test('reviewed numeric outcomes must agree with the exact saved prop threshold',
  assert.equal(validReviewedResult({...result,label:'2nd Half 4+ Corners',observedStat:3}),false);
  assert.equal(validReviewedResult({...result,label:'2nd Half 4+ Corners',observedStat:3,result:'miss'}),true);
 });
+test('a verified non-starter void can correct a settled loss to a win',()=>{
+ const review={gameId:'1',label:'Player One 1+ Foul Committed',result:'push',voidReason:'did_not_start',
+  sourceUrl:'https://example.com/match/1',verifiedAt:'2026-11-03T07:00:00Z',
+  evidence:{started:false,rulesUrl:'https://example.com/rules'}};
+ assert.equal(validReviewedResult(review),true);
+ assert.equal(validReviewedResult({...review,observedStat:0}),false);
+ assert.equal(validReviewedResult({...review,evidence:{...review.evidence,started:true}}),false);
+ const settledAt='2026-11-03T06:00:00Z';
+ const leg={gameId:review.gameId,label:review.label,result:'miss',verifiedAt:settledAt,observedStat:0,observedUnit:'Fouls committed'};
+ const ticket={result:'miss',settledAt,legs:[leg,{result:'hit'},{result:'hit'},{result:'hit'}]};
+ const key='1|player one 1 foul committed';
+ applyReviewedResults(ticket,new Map([[key,{...review,verifiedAt:'2026-11-03T05:00:00Z'}]]));
+ assert.equal(ticket.result,'miss');
+ const reviews=new Map([[key,review]]);
+ applyReviewedResults(ticket,reviews);
+ assert.equal(ticket.result,'hit');
+ assert.equal(ticket.settledAt,review.verifiedAt);
+ assert.equal(leg.voidReason,'did_not_start');
+ assert.equal(leg.observedStat,undefined);
+ assert.equal(leg.observedUnit,undefined);
+ const corrected=structuredClone(ticket);
+ applyReviewedResults(ticket,reviews);
+ assert.deepEqual(ticket,corrected);
+});
 test('full-time goal observations never masquerade as a half or player stat',()=>{
  const event={completed:true,home:'Home',away:'Away',hs:2,as:0};
  assert.equal(scoreObservation(leg('Over 1.5 Goals'),event).observed,2);
@@ -70,6 +94,8 @@ test('prop rows display actual zero/count/unit, never substitute a final score',
  assert.equal(display({...pending,observedStat:null}).value,'—');
  assert.equal(display({...pending,observedStat:0,observedUnit:'Tackles',result:'miss'}).value,'0');
  assert.equal(display({...pending,observedStat:3,observedUnit:'Tackles',result:'hit'}).detail,'Tackles');
+ const voided=display({...pending,result:'push',voidReason:'did_not_start'});
+ assert.equal(voided.value,'Void');assert.equal(voided.detail,'Did not start');
  assert.equal(display({label:'1st Half 4+ Corners',finalScore:'2-0'}).value,'—');
  assert.equal(display({label:'Home ML',finalScore:'2-0'}).value,'2–0');
  assert.equal(display({label:'Over 1.5 Goals',finalScore:'Home 2-0 Away'}).value,'2');

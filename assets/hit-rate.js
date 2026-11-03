@@ -22,6 +22,7 @@
  function ticketTitle(ticket){return ticket.type==='acca'?'Cross-game parlay':(ticket.bestSgp?'Best SGP':leagueName(ticket.league)?leagueName(ticket.league)+' SGP':'Same-game parlay')}
  function markHtml(result){return '<span class="mark '+result+'" role="img" aria-label="'+labels[result]+'"><span class="markGlyph">'+marks[result]+'</span></span>'}
  function legValue(leg){
+  if(leg.result==='push'&&leg.voidReason==='did_not_start')return {value:'Void',detail:'Did not start'};
   const label=String(leg.selection||leg.label||''),hasStat=typeof leg.observedStat==='number'&&Number.isFinite(leg.observedStat);
   if(hasStat)return {value:String(leg.observedStat),detail:leg.observedUnit||label.match(/\d+\+\s+(Shots? on Target|Shots?|Fouls Committed|Fouls Won|Tackles?|Cards?|Goals?|Assists?)$/i)?.[1]||'Recorded'};
   // Match scores describe result markets only. They are never a substitute
