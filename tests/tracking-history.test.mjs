@@ -23,10 +23,17 @@ test('tracking uses the reviewed desk actually displayed on Top Picks, including
 });
 test('daily history includes posted Top 5, distinct slips and unpriced candidates with separate denominators',()=>{
  const first=ticket('first','hit'),duplicate={...first,id:'duplicate',duplicateOf:'first'};
- const result=buildHistory({date:'2026-11-02',performanceDays:[{date:'2026-11-01',top5:[top5('hit'),{...top5('miss'),rank:2}]},{date:'2026-11-02',top5:[top5('pending')]},{date:'2026-10-31',top5:[top5('miss')]}],slipDays:[{date:'2026-11-01',tickets:[first,duplicate]},{date:'2026-11-02',tickets:[ticket('today')]}],candidates:[{date:'2026-11-02',sgpsByLeague:[{league:'fra.1',status:'hold',legs:[leg()]}]}]});
+ const desk={date:'2026-11-02',acca:{status:'hold',legs:[leg('3'),leg('4')]},sgpsByLeague:[{league:'fra.1',status:'hold',legs:[leg('5')]}]};
+ const held=ticketsOf(desk);
+ assert.equal(held.find(t=>t.type==='acca').trackable,false);
+ const settled={...held.find(t=>t.league==='fra.1'),result:'miss',legs:[leg('5','miss')]};
+ const result=buildHistory({date:'2026-11-02',performanceDays:[{date:'2026-11-01',top5:[top5('hit'),{...top5('miss'),rank:2}]},{date:'2026-11-02',top5:[top5('pending')]},{date:'2026-10-31',top5:[top5('miss')]}],slipDays:[{date:'2026-11-01',tickets:[first,duplicate]},{date:'2026-11-02',tickets:[ticket('today'),settled]}],candidates:[desk]});
  assert.deepEqual(result.days.map(d=>d.date),['2026-11-02','2026-11-01']);assert.equal(result.days[1].tickets.length,1);
- assert.equal(result.days[0].tickets.length,2);assert.equal(result.days[0].tickets[1].trackable,false);assert.equal(result.days[0].tickets[1].result,'unpriced');
+ assert.deepEqual(result.days[0].tickets.map(t=>[t.id,t.trackable,t.result]),[
+  ['today',true,'pending'],['candidate:fra.1',false,'miss'],['candidate:acca',false,'pending']
+ ]);
  assert.equal(result.slips.month.hits,1);assert.equal(result.slips.month.pending,1);assert.equal(result.slips.month.hitRate,100);
+ assert.equal(result.slips.month.misses,0);
  assert.equal(result.top5.month.hits,1);assert.equal(result.top5.month.misses,1);assert.equal(result.top5.month.pending,1);assert.equal(result.top5.month.hitRate,50);
  assert.equal(result.top5.year.misses,2);
 });
@@ -48,6 +55,9 @@ test('the carousel renders whole-slip loss independently of pending legs and esc
  assert.match(html,/DIDN’T LAND/);assert.match(html,/1 miss · 1 pending/);assert.match(html,/&lt;img/);assert.doesNotMatch(html,/<img src=x/);
  assert.equal((html.match(/class="railDot(?: active)?"/g)||[]).length,2);assert.match(html,/Next card for NOV 1, 2026/);
  const held=context.FootyEdgeHitRate.slipCard({...ticket('held'),trackable:false},'2026-11-02');assert.match(held,/PRICE PENDING/);assert.match(held,/Not included in the slip hit rate/);
+ assert.match(held,/Matchday ACCA/);
+ const settledHold=context.FootyEdgeHitRate.slipCard({...ticket('held','miss'),trackable:false},'2026-11-02');
+ assert.match(settledHold,/DIDN’T LAND/);assert.match(settledHold,/2 miss · Not included in the slip hit rate/);
 });
 test('publication snapshots current-day picks after archiving them and builds the carousel feed in the same refresh',()=>{
  const workflow=fs.readFileSync('.github/workflows/archive-board.yml','utf8'),start=workflow.indexOf('- name: Capture posted Top 5 and slips');

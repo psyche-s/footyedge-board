@@ -19,7 +19,7 @@
  function dayLabel(date){return new Date(date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).toUpperCase()}
  function leagueName(league){return leagues[league]||''}
  function american(value){const n=Number(value);return value!=null&&Number.isFinite(n)&&Math.abs(n)>=100?(n>0?'+':'')+Math.round(n):null}
- function ticketTitle(ticket){return ticket.type==='acca'?'Cross-game parlay':(ticket.bestSgp?'Best SGP':leagueName(ticket.league)?leagueName(ticket.league)+' SGP':'Same-game parlay')}
+ function ticketTitle(ticket){return ticket.type==='acca'?'Matchday ACCA':(ticket.bestSgp?'Best SGP':leagueName(ticket.league)?leagueName(ticket.league)+' SGP':'Same-game parlay')}
  function markHtml(result){return '<span class="mark '+result+'" role="img" aria-label="'+labels[result]+'"><span class="markGlyph">'+marks[result]+'</span></span>'}
  function legValue(leg){
   if(leg.result==='push'&&leg.voidReason==='did_not_start')return {value:'Void',detail:'Did not start'};
@@ -47,11 +47,12 @@
   return '<article class="trackedTicket top5Ticket" data-ticket-title="Top 5 picks" aria-label="Top 5 picks for '+esc(dayLabel(day.date))+'"><header class="ticketHeader"><div class="ticketTopline"><span class="ticketKicker">THE DAILY FIVE</span><span class="ticketStatus '+(pending?'pending':'neutral')+'">'+tag+'</span></div><h3>Top 5 picks</h3><p>Five individual selections. Every result recorded.</p></header><ol class="trackedLegs">'+day.top5.map(p=>legHtml(p,true)).join('')+'</ol><footer class="ticketFooter"><span>'+esc(footer)+'</span><strong>'+(s.hitRate==null?'Awaiting results':Math.round(s.hitRate)+'% Hit Rate')+'</strong></footer></article>';
  }
  function slipCard(ticket,date){
-  const result=ticket.trackable===false?'unpriced':resultOf(ticket.result),s=stats([{top5:ticket.legs||[]}]);
+  const research=ticket.trackable===false,grade=resultOf(ticket.result),result=research&&grade==='pending'?'unpriced':grade,s=stats([{top5:ticket.legs||[]}]);
   const status={hit:'LANDED',miss:'DIDN’T LAND',push:'VOID / PUSH',pending:'PENDING',unpriced:'PRICE PENDING'}[result];
   const title=ticketTitle(ticket),fixture=ticket.type==='acca'?'Selections across '+new Set((ticket.legs||[]).map(l=>l.gameId||l.fixture)).size+' different fixtures':ticket.legs?.[0]?.fixture||'Published match selections';
-  const price=american(ticket.combinedReferenceAmerican),priceText=price?price+' reference':ticket.trackable===false?'Research only':(ticket.legs||[]).length+' legs';
-  const foot=result==='unpriced'?'Not included in the slip hit rate':s.hits+' hit · '+s.misses+' miss'+(s.pushes?' · '+s.pushes+' void':'')+(s.pending?' · '+s.pending+' pending':'');
+  const price=american(ticket.combinedReferenceAmerican),priceText=research?'Research only':price?price+' reference':(ticket.legs||[]).length+' legs';
+  const counts=s.hits+' hit · '+s.misses+' miss'+(s.pushes?' · '+s.pushes+' void':'')+(s.pending?' · '+s.pending+' pending':'');
+  const foot=research?(result==='unpriced'?'':counts+' · ')+'Not included in the slip hit rate':counts;
   return '<article class="trackedTicket '+result+'Ticket" data-ticket-title="'+esc(title)+'" aria-label="'+esc(title+' for '+dayLabel(date))+'"><header class="ticketHeader"><div class="ticketTopline"><span class="ticketKicker">'+(ticket.type==='acca'?'ACROSS THE SLATE':'MATCHDAY SGP')+'</span><span class="ticketStatus '+result+'">'+status+'</span></div><h3>'+esc(title)+'</h3><p>'+esc(fixture)+'</p></header><ol class="trackedLegs">'+(ticket.legs||[]).map(l=>legHtml(l)).join('')+'</ol><footer class="ticketFooter"><span>'+esc(foot)+'</span><strong class="ticketPrice">'+esc(priceText)+'</strong></footer></article>';
  }
  function historyHtml(days){

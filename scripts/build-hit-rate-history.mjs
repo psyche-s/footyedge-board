@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
-import {summaryOf} from './track-slip-performance.mjs';
+import {summaryOf,ticketsOf} from './track-slip-performance.mjs';
 
 const cleanResult=value=>['hit','miss','push'].includes(value)?value:'pending';
 export function outcomeStats(rows){
@@ -18,28 +18,26 @@ export function buildHistory({date,performanceDays=[],slipDays=[],candidates=[]}
   if(!eligible(record.date))continue;
   dayFor(record.date).top5=(record.top5||[]).slice().sort((a,b)=>a.rank-b.rank).slice(0,5).map(p=>({...p,result:cleanResult(p.result)}));
  }
- for(const record of slipDays){
+ const candidatesByDate=new Map(candidates.map(record=>[record.date,record]));
+ const slipsByDate=new Map(slipDays.map(record=>[record.date,record]));
+ for(const day of new Set([...slipsByDate.keys(),...candidatesByDate.keys()])){
+  const record=slipsByDate.get(day)||{date:day};
   if(!eligible(record.date))continue;
   const seen=new Set();
-  dayFor(record.date).tickets=(record.tickets||[]).filter(t=>{
+  const captured=record.tickets||[];
+  // Older snapshots may lack research slips. Prefer the captured ticket
+  // and its verified results when both the snapshot and desk have a copy.
+  const uncaptured=ticketsOf(candidatesByDate.get(day)).filter(t=>t.trackable===false&&!captured.some(saved=>saved.id===t.id));
+  const tickets=[...captured,...uncaptured].sort((a,b)=>Number(a.trackable===false)-Number(b.trackable===false));
+  dayFor(record.date).tickets=tickets.filter(t=>{
    const signature=t.signature||(t.legs||[]).map(l=>l.gameId+'|'+String(l.label).toLowerCase()).sort().join('||');
    if(t.duplicateOf||seen.has(signature)||!t.legs?.length)return false;seen.add(signature);return true;
-  }).map(t=>({id:t.id,type:t.type,league:t.league,bestSgp:t.bestSgp===true,trackable:true,
+  }).map(t=>({id:t.id,type:t.type,league:t.league,bestSgp:t.bestSgp===true,trackable:t.trackable!==false,
    result:cleanResult(t.result),settledAt:t.settledAt||null,
    combinedReferenceAmerican:t.combinedReferenceAmerican??null,combinedReferenceDecimal:t.combinedReferenceDecimal??null,
    verifiedCombinedPrice:t.verifiedCombinedPrice===true,combinedOntarioOdds:t.combinedOntarioOdds??null,
-   sourcePublishedAt:record.capturedAt||null,
+   sourcePublishedAt:captured.includes(t)?record.capturedAt||null:null,
    legs:t.legs.map(l=>({...l,result:cleanResult(l.result)}))}));
- }
- // A researched but unpriced candidate remains visible without entering the
- // win/loss denominator. Its final score must never turn it into a posted bet.
- for(const record of candidates){
-  if(!eligible(record.date))continue;
-  const day=dayFor(record.date);
-  for(const t of record.sgpsByLeague||[]){
-   if(t.status!=='hold'||!t.legs?.length)continue;
-   day.tickets.push({id:'candidate:'+t.league,type:'league_sgp',league:t.league,trackable:false,result:'unpriced',legs:t.legs.map(l=>({gameId:l.gameId,fixture:l.fixture,league:l.league,label:l.label,category:l.category,result:'pending'}))});
-  }
  }
  const days=[...byDate.values()].filter(d=>d.top5.length||d.tickets.length).sort((a,b)=>b.date.localeCompare(a.date));
  const allTickets=prefix=>slipDays.filter(d=>d.date<=date&&d.date.startsWith(prefix)).flatMap(d=>d.tickets||[]);
