@@ -314,7 +314,7 @@ function printProps(items){
 }
 const chosenDate=()=>localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
-const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1"]);
+const FE_SGP_LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","uefa.champions","uefa.europa"]);
 const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
 let selectedSgpLeague="all";
 function sgpForLeague(desk){
@@ -322,9 +322,11 @@ function sgpForLeague(desk){
  return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
    {status:"pass",legs:[],caution:"No supported, nonredundant same-game parlay qualifies for "+(FE_MAJOR_NAMES[selectedSgpLeague]||selectedSgpLeague)+". A weak or duplicated leg will not be forced."};
 }
-function fillSgpSelect(){
+function fillSgpSelect(desk=displayedDesk){
  const select=document.getElementById("sgpCompetitionSelect");
- const names=Object.entries(FE_MAJOR_NAMES).filter(([key])=>FE_SGP_LEAGUES.has(key)).sort((a,b)=>a[1].localeCompare(b[1]));
+ const available=desk?new Set((desk.sgpsByLeague||[]).map(x=>x.league)):null;
+ const names=Object.entries(FE_MAJOR_NAMES).filter(([key])=>FE_SGP_LEAGUES.has(key)&&(!available||available.has(key))).sort((a,b)=>a[1].localeCompare(b[1]));
+ if(selectedSgpLeague!=="all"&&!names.some(([key])=>key===selectedSgpLeague))selectedSgpLeague="all";
  select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
  select.value=selectedSgpLeague;
 }
@@ -363,6 +365,7 @@ function renderDesk(desk,date,live=false){
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
  }
  displayedDesk=desk;
+ fillSgpSelect(desk);
  drawSlip(sgpForLeague(desk),"sgpSlip","No independent same-game combination qualifies for this league.");
  drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
  renderCompetitionSlips(desk.sgpsByLeague);

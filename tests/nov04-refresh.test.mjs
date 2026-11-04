@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import vm from 'node:vm';
 const read=p=>JSON.parse(fs.readFileSync(p,'utf8'));
 const day='2026-11-04',board=read(`data/boards/${day}.json`),review=read(`data/owner-reviews/${day}.json`),intel=read(`data/team-intelligence/${day}.json`),sim=read(`data/experimental-simulations/${day}-v4.json`),history=read('data/performance/history.json');
 test('all active November 4 fixtures have full coverage or an explicit evidence gap',()=>{
@@ -33,4 +34,21 @@ test('all three candidate SGPs and one cross-game candidate are visible without 
 test('the previous day tackle leg has its explicit numeric final result',()=>{
  const d=read('data/performance/slips/2026-11-03.json');const cash=d.tickets.flatMap(t=>t.legs).find(l=>l.label==='Matty Cash 2+ Tackles');assert.equal(cash.result,'miss');assert.equal(cash.observedStat,1);assert.equal(cash.observedUnit,'Tackles');
  assert.ok(d.tickets.flatMap(t=>t.legs).every(l=>l.result!=='pending'));
+});
+test('the live slip renderer exposes every supported competition candidate with price pending',()=>{
+ const html=fs.readFileSync('top-picks.html','utf8');
+ const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(x=>x[1]).join('\n');
+ const code=scripts.slice(0,scripts.indexOf('\nfillSgpSelect();'));
+ const nodes=new Map(),node=()=>({innerHTML:'',textContent:'',hidden:false,value:'',classList:{toggle(){}}});
+ const desk=read(`data/slips-reviewed/${day}.json`);
+ const context=vm.createContext({Intl,Date,URL,console,document:{getElementById(id){if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);}},fetch:async()=>{throw Error('No network');},desk});
+ vm.runInContext(code,context);
+ vm.runInContext(`renderDesk(desk,'${day}')`,context);
+ assert.equal((nodes.get('sgpCompetitionSelect').innerHTML.match(/<option/g)||[]).length,4);
+ for(const slip of desk.sgpsByLeague){
+  assert.ok(nodes.get('sgpCompetitionSelect').innerHTML.includes(`value="${slip.league}"`));
+  vm.runInContext(`selectedSgpLeague='${slip.league}';renderDesk(desk,'${day}')`,context);
+  for(const leg of slip.legs)assert.ok(nodes.get('sgpSlip').innerHTML.includes(leg.label));
+  assert.equal(nodes.get('sgpLegBadge').textContent,'PRICE PENDING');
+ }
 });
