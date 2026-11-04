@@ -32,7 +32,8 @@
           "referenceOdds": -400,
           "referenceDecimal": 1.25,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "2-3"
         },
         {
           "gameId": "401880182",
@@ -45,7 +46,8 @@
           "referenceOdds": -333,
           "referenceDecimal": 1.3,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "0-4"
         },
         {
           "gameId": "401915308",
@@ -58,7 +60,8 @@
           "referenceOdds": -150,
           "referenceDecimal": 1.6666666666666667,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "3-2"
         },
         {
           "gameId": "401880177",
@@ -71,7 +74,8 @@
           "referenceOdds": -200,
           "referenceDecimal": 1.5,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "1-1"
         }
       ],
       "id": "candidate:acca",
@@ -80,7 +84,8 @@
       "signature": "401880177|southampton or draw||401880180|sheffield united or draw||401880182|norwich city or draw||401915308|as roma or draw",
       "duplicateOf": null,
       "trackable": false,
-      "result": "pending"
+      "result": "miss",
+      "settledAt": "2026-11-04T05:34:06.015Z"
     },
     {
       "league": "uefa.champions",
@@ -115,7 +120,17 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "3-0",
+          "observedStat": 1,
+          "observedUnit": "Shots on target",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/summary?event=401915387",
+          "verifiedAt": "2026-11-04T05:34:06.095Z",
+          "settlementEvidence": {
+            "kind": "verified-match-player-stat",
+            "athleteId": "268782",
+            "metric": "shotsOnTarget"
+          }
         },
         {
           "gameId": "401915387",
@@ -128,7 +143,12 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "3-0",
+          "verifiedSource": "https://scoutingstats.ai/champions-league/fc-barcelona-v-aston-villa/19872595",
+          "verifiedAt": "2026-11-04T05:44:59.019768+00:00",
+          "observedStat": 1,
+          "observedUnit": "Tackles"
         },
         {
           "gameId": "401915387",
@@ -141,7 +161,17 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "3-0",
+          "observedStat": 1,
+          "observedUnit": "Shots",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/summary?event=401915387",
+          "verifiedAt": "2026-11-04T05:34:12.061Z",
+          "settlementEvidence": {
+            "kind": "verified-match-player-stat",
+            "athleteId": "308524",
+            "metric": "shots"
+          }
         }
       ],
       "id": "candidate:uefa.champions",
@@ -149,7 +179,8 @@
       "signature": "401915387|anthony gordon 2 shots on target||401915387|matty cash 2 tackles||401915387|nicolas jackson 2 shots",
       "duplicateOf": null,
       "trackable": false,
-      "result": "pending"
+      "result": "miss",
+      "settledAt": "2026-11-04T05:34:12.061Z"
     }
   ]
 }

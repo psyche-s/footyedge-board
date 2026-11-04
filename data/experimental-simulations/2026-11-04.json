@@ -1,0 +1,927 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-11-04",
+  "generatedAt": "2026-11-04T05:40:20.413Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 140000,
+  "sourceDates": {
+    "research": "2026-11-04T05:30:46.543Z",
+    "analytics": "2026-11-04T05:40:10.903287+00:00",
+    "h2h": "2026-11-04",
+    "teamNews": "2026-11-04T05:38:43.388635+00:00",
+    "standings": "2026-11-04T05:31:05.194Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 14,
+    "preKickoff": 14,
+    "postKickoff": 0,
+    "atLeastEightEach": 13,
+    "shotJoined": 13,
+    "realXg": 0,
+    "projectedXI": 13,
+    "standingsJoined": 3
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401915383",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T17:45Z",
+      "home": "AEK Athens",
+      "away": "Real Madrid",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.874,
+        "away": 1.943
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.22,
+        "draw": 21.16,
+        "awayWin": 40.62
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 8.21,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 8.21
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.91
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.47
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 89.3,
+        "over2_5": 73.41,
+        "under3_5": 47.4,
+        "bttsYes": 72.12
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915382",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T17:45Z",
+      "home": "Fenerbahce",
+      "away": "Liverpool",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.905,
+        "away": 1.638
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.27,
+        "draw": 22.4,
+        "awayWin": 33.33
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.51
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 7.44
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.41,
+        "over2_5": 68.04,
+        "under3_5": 52.86,
+        "bttsYes": 68.2
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915304",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "Borussia Dortmund",
+      "away": "Real Betis",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.88,
+        "away": 1.538
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.2,
+        "draw": 22.1,
+        "awayWin": 31.7
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.37,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.37
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.79
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.59
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.35,
+        "over2_5": 66.17,
+        "under3_5": 55.88,
+        "bttsYes": 66.37
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915301",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "FC Porto",
+      "away": "Napoli",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.058,
+        "away": 1.479
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.59,
+        "draw": 20.69,
+        "awayWin": 27.72
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.13,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.13
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.92
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 6.72
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.09,
+        "over2_5": 68.03,
+        "under3_5": 53.11,
+        "bttsYes": 67.53
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915305",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "Lens",
+      "away": "Como",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.558,
+        "away": 1.784
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.41,
+        "draw": 23.09,
+        "awayWin": 43.5
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.24,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.24
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.28
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.47
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.03,
+        "over2_5": 64.31,
+        "under3_5": 57.93,
+        "bttsYes": 65.87
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915303",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "PSV Eindhoven",
+      "away": "Club Brugge",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.002,
+        "away": 1.735
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.77,
+        "draw": 21.67,
+        "awayWin": 33.56
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.54,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.54
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.49
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.3
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.66,
+        "over2_5": 71.62,
+        "under3_5": 49.54,
+        "bttsYes": 70.78
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 3,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915306",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "RB Leipzig",
+      "away": "Manchester City",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.095,
+        "away": 2.011
+      },
+      "winDrawLossPct": {
+        "homeWin": 41.84,
+        "draw": 20.38,
+        "awayWin": 37.78
+      },
+      "predictedScore": "2-2",
+      "predictedScoreProbabilityPct": 7.35,
+      "mostLikelyScores": [
+        {
+          "score": "2-2",
+          "probabilityPct": 7.35
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.27
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.23
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 91.45,
+        "over2_5": 78.28,
+        "under3_5": 40.93,
+        "bttsYes": 76.27
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915381",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "Slavia Prague",
+      "away": "Arsenal",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.256,
+        "away": 1.941
+      },
+      "winDrawLossPct": {
+        "homeWin": 24.79,
+        "draw": 22.48,
+        "awayWin": 52.73
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.82,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.82
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.62
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 7.75
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.98,
+        "over2_5": 62.39,
+        "under3_5": 60.42,
+        "bttsYes": 61.43
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 3,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915302",
+      "league": "uefa.champions",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "Viking FK",
+      "away": "Sabah FK",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.179,
+        "away": 1.746
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.56,
+        "draw": 20.63,
+        "awayWin": 30.81
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.16,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.16
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.82
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.87
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 90.25,
+        "over2_5": 74.57,
+        "under3_5": 45.16,
+        "bttsYes": 73.06
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401915551",
+      "league": "uefa.europa",
+      "kickoff": "2026-11-04T15:30Z",
+      "home": "Stade Rennais",
+      "away": "Olympiacos",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.312,
+        "away": 1.571
+      },
+      "winDrawLossPct": {
+        "homeWin": 31.85,
+        "draw": 24.51,
+        "awayWin": 43.64
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.17,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.17
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.28
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.18
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.53,
+        "over2_5": 54.92,
+        "under3_5": 67.73,
+        "bttsYes": 57.45
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401880175",
+      "league": "eng.2",
+      "kickoff": "2026-11-04T19:45Z",
+      "home": "Cardiff City",
+      "away": "West Ham United",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.48,
+        "away": 2.099
+      },
+      "winDrawLossPct": {
+        "homeWin": 26.77,
+        "draw": 21.14,
+        "awayWin": 52.09
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 8.98,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 8.98
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.58
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 6.76
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.04,
+        "over2_5": 68.79,
+        "under3_5": 52.62,
+        "bttsYes": 67.29
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401880173",
+      "league": "eng.2",
+      "kickoff": "2026-11-04T19:45Z",
+      "home": "Wrexham",
+      "away": "Middlesbrough",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.219,
+        "away": 2.145
+      },
+      "winDrawLossPct": {
+        "homeWin": 21.03,
+        "draw": 20.29,
+        "awayWin": 58.68
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 9.79,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 9.79
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.86
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 8.38
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.3,
+        "over2_5": 65.67,
+        "under3_5": 56.17,
+        "bttsYes": 62.32
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 3,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401880176",
+      "league": "eng.2",
+      "kickoff": "2026-11-04T20:00Z",
+      "home": "Bristol City",
+      "away": "Wolverhampton Wanderers",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.166,
+        "away": 1.349
+      },
+      "winDrawLossPct": {
+        "homeWin": 32.53,
+        "draw": 26.61,
+        "awayWin": 40.86
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.14,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.14
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.57
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.2
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 72.5,
+        "over2_5": 46.38,
+        "under3_5": 75.16,
+        "bttsYes": 51.6
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": true,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "source_join_verified_team_shots_on_target"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401933098",
+      "league": "fra.coupe_de_france",
+      "kickoff": "2026-11-04T17:00Z",
+      "home": "Sporting Club Baie-Mahault",
+      "away": "Siroco Les Abymes",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.54,
+        "away": 1.316
+      },
+      "winDrawLossPct": {
+        "homeWin": 42.77,
+        "draw": 25.45,
+        "awayWin": 31.78
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.81,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.81
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.91
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.88
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.92,
+        "over2_5": 54.19,
+        "under3_5": 67.57,
+        "bttsYes": 57.96
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 0,
+        "awayHistoryGames": 0,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}

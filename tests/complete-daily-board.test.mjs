@@ -12,7 +12,7 @@ test('published, owner-approved research slate has five-result form and exactly 
  // their original selections to enforce a newer confidence-only contract.
  if(board.date<'2026-10-21'){t.skip('Earlier immutable boards use the historical policy');return}
  assert.ok(board.games.length>0);
- const eligible=new Set(['Goals','Team Goals','BTTS','Double Chance','Match Result','Handicap','Half-Time Result','Half-Time Double Chance']);
+ const eligible=new Set(['Goals','Team Goals','BTTS','Double Chance','Match Result','Handicap','Half-Time Result','Half-Time Double Chance','Corners']);
  for(const g of board.games){
   assert.ok(Array.isArray(g.top3)&&g.top3.length<=3,'Invalid Top3 for '+g.id);
   // A verified form shortfall produces PASS, not invented records or picks.
@@ -21,6 +21,10 @@ test('published, owner-approved research slate has five-result form and exactly 
   const an=g.model?.away?.n??g.model?.sample?.away??g.verifiedForm?.away?.matches?.length??0;
   assert.ok(hn>=5&&an>=5,'Missing verified match research '+g.id);
   assert.ok(g.top3.every(p=>eligible.has(p.category)),'Unexpected market '+g.id);
+  for(const p of g.top3.filter(p=>p.category==='Corners')){
+   assert.ok(p.marketEvidence?.homeSample>=5&&p.marketEvidence?.awaySample>=5,'Corner pick lacks verified team samples '+g.id);
+   assert.ok(Number.isFinite(p.marketEvidence.homeOwnAverage)&&Number.isFinite(p.marketEvidence.awayOwnAverage));
+  }
   assert.equal(g.top?.label,g.top3[0]?.label,'Top and #1 disagree '+g.id);
   const ratings=g.top3.map(p=>p.confidenceRating??p.score);
   assert.ok(ratings.every(Number.isFinite),'Missing rating '+g.id);

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {applyVerifiedFixtureStatuses} from '../assets/verified-fixture-status.mjs';
 const source=fs.readFileSync('assets/board-availability.js','utf8');
 function helper(){const c=vm.createContext({Intl,Date,Map,Set});vm.runInContext(source,c);return c.FootyEdgeAvailability}
 const event=(date,id='g1',league=700)=>({id,date,uid:'s:600~l:'+league+'~e:'+id,status:{type:{name:'STATUS_SCHEDULED'}}});
@@ -50,9 +51,9 @@ test('Home and Picks load the same availability helper',()=>{
   assert.match(fs.readFileSync('ui/part2.html','utf8'),/FootyEdgeAvailability.message/);
 });
 test('Football provider errors use the existing ESPN fallback',async()=>{
-  const c=vm.createContext({console,URLSearchParams,Number,String,Boolean,Object,Array,Date,Math,process:{env:{FOOTBALL:'test-key'}},fetch:async url=>({status:200,ok:true,json:async()=>String(url).includes('api-sports')?{errors:{access:'suspended'},response:[]}:{events:[]}})});
+  const c=vm.createContext({console,URLSearchParams,Number,String,Boolean,Object,Array,Date,Math,applyVerifiedFixtureStatuses,process:{env:{FOOTBALL:'test-key'}},fetch:async url=>({status:200,ok:true,json:async()=>String(url).includes('api-sports')?{errors:{access:'suspended'},response:[]}:{events:[]}})});
   vm.runInContext(source,c);
-  vm.runInContext(fs.readFileSync('api/football.js','utf8').replace(/^import .*\n/,'').replace('export default async function handler','async function handler'),c);
+  vm.runInContext(fs.readFileSync('api/football.js','utf8').replace(/^import .*\n/gm,'').replace('export default async function handler','async function handler'),c);
   const result={};c.req={query:{endpoint:'fixtures',date:'2026-10-07'}};c.res={status(n){result.status=n;return this},setHeader(){},json(x){result.body=x}};
   await vm.runInContext('handler(req,res)',c);
   assert.equal(result.body._footyedgeFallback,'ESPN');assert.equal(result.status,200);

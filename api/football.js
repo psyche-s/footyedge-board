@@ -1,4 +1,5 @@
 import '../assets/board-availability.js';
+import {applyVerifiedFixtureStatuses} from '../assets/verified-fixture-status.mjs';
 const LEAGUE_NAMES = {
   "uefa.nations":"UEFA Nations League",
   "uefa.champions":"UEFA Champions League",
@@ -56,7 +57,7 @@ async function espnBoard(date){
     headers:{"accept":"application/json","user-agent":"FootyEdge/1.0"}
   });
   if(!r.ok) throw new Error("ESPN fallback "+r.status);
-  return r.json();
+  return applyVerifiedFixtureStatuses(await r.json(),date);
 }
 function apiFootballFixtures(board){
   return (board?.events||[]).map(event=>{
