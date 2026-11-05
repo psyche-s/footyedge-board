@@ -1,0 +1,447 @@
+{
+  "schema": "footyedge-model-pick-review-v1",
+  "date": "2026-11-04",
+  "referenceReview": "data/owner-reviews/2026-11-04.json",
+  "referenceSimulation": "data/experimental-simulations/2026-11-04-v4.json",
+  "modelVersion": "opponent-conditioned-analyst-hybrid-v4",
+  "methodology": "Compare only corresponding model markets. Research strength grade is qualitative (not a probability). Do not force weights to match chosen picks.",
+  "autoRetune": false,
+  "backtestRequired": "Chronological pre-kickoff out-of-sample validation against settled verified picks, Brier/log-loss and minimum 50 settled observations per market family before any weight changes.",
+  "archivesUnchanged": true,
+  "counts": {
+    "fixtures": 18,
+    "picks": 30,
+    "comparable": 25,
+    "severeReviewFlags": 2,
+    "noVerifiedLineupDelta": 30
+  },
+  "priorityReview": [
+    {
+      "gameId": "401915383",
+      "league": "uefa.champions",
+      "fixture": "AEK Athens vs Real Madrid",
+      "pick": "Real Madrid ML",
+      "rank": 1,
+      "researchGrade": 78,
+      "modelMarketFrequencyPct": 46.75,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "research_grade_exceeds_model_frequency_20pts",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915381",
+      "league": "uefa.champions",
+      "fixture": "Slavia Prague vs Arsenal",
+      "pick": "BTTS No",
+      "rank": 3,
+      "researchGrade": 65,
+      "modelMarketFrequencyPct": 38.53,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "research_grade_exceeds_model_frequency_20pts",
+        "verified_lineup_delta_missing"
+      ]
+    }
+  ],
+  "allPicks": [
+    {
+      "gameId": "401915383",
+      "league": "uefa.champions",
+      "fixture": "AEK Athens vs Real Madrid",
+      "pick": "Real Madrid ML",
+      "rank": 1,
+      "researchGrade": 78,
+      "modelMarketFrequencyPct": 46.75,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "research_grade_exceeds_model_frequency_20pts",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915383",
+      "league": "uefa.champions",
+      "fixture": "AEK Athens vs Real Madrid",
+      "pick": "Over 2.5 Goals",
+      "rank": 2,
+      "researchGrade": 75,
+      "modelMarketFrequencyPct": 74.71,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915383",
+      "league": "uefa.champions",
+      "fixture": "AEK Athens vs Real Madrid",
+      "pick": "BTTS Yes",
+      "rank": 3,
+      "researchGrade": 68,
+      "modelMarketFrequencyPct": 72.9,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915382",
+      "league": "uefa.champions",
+      "fixture": "Fenerbahce vs Liverpool",
+      "pick": "Over 2.5 Goals",
+      "rank": 1,
+      "researchGrade": 74,
+      "modelMarketFrequencyPct": 70.06,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915382",
+      "league": "uefa.champions",
+      "fixture": "Fenerbahce vs Liverpool",
+      "pick": "Liverpool or Draw",
+      "rank": 2,
+      "researchGrade": 72,
+      "modelMarketFrequencyPct": 62.08,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915382",
+      "league": "uefa.champions",
+      "fixture": "Fenerbahce vs Liverpool",
+      "pick": "BTTS Yes",
+      "rank": 3,
+      "researchGrade": 70,
+      "modelMarketFrequencyPct": 70.79,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915304",
+      "league": "uefa.champions",
+      "fixture": "Borussia Dortmund vs Real Betis",
+      "pick": "Borussia Dortmund or Draw",
+      "rank": 1,
+      "researchGrade": 74,
+      "modelMarketFrequencyPct": 71.31,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915304",
+      "league": "uefa.champions",
+      "fixture": "Borussia Dortmund vs Real Betis",
+      "pick": "Over 2.5 Goals",
+      "rank": 2,
+      "researchGrade": 69,
+      "modelMarketFrequencyPct": 66.31,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915304",
+      "league": "uefa.champions",
+      "fixture": "Borussia Dortmund vs Real Betis",
+      "pick": "Over 8.5 Corners",
+      "rank": 3,
+      "researchGrade": 68,
+      "modelMarketFrequencyPct": null,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "direct_model_market_unavailable",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915301",
+      "league": "uefa.champions",
+      "fixture": "FC Porto vs Napoli",
+      "pick": "FC Porto or Draw",
+      "rank": 1,
+      "researchGrade": 74,
+      "modelMarketFrequencyPct": 72.04,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915301",
+      "league": "uefa.champions",
+      "fixture": "FC Porto vs Napoli",
+      "pick": "Over 2.5 Goals",
+      "rank": 2,
+      "researchGrade": 68,
+      "modelMarketFrequencyPct": 67.98,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915301",
+      "league": "uefa.champions",
+      "fixture": "FC Porto vs Napoli",
+      "pick": "Over 8.5 Corners",
+      "rank": 3,
+      "researchGrade": 64,
+      "modelMarketFrequencyPct": null,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "direct_model_market_unavailable",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915305",
+      "league": "uefa.champions",
+      "fixture": "Lens vs Como",
+      "pick": "Como or Draw",
+      "rank": 1,
+      "researchGrade": 73,
+      "modelMarketFrequencyPct": 66.68,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915305",
+      "league": "uefa.champions",
+      "fixture": "Lens vs Como",
+      "pick": "Over 2.5 Goals",
+      "rank": 2,
+      "researchGrade": 69,
+      "modelMarketFrequencyPct": 64.52,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915305",
+      "league": "uefa.champions",
+      "fixture": "Lens vs Como",
+      "pick": "BTTS Yes",
+      "rank": 3,
+      "researchGrade": 66,
+      "modelMarketFrequencyPct": 65.88,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915303",
+      "league": "uefa.champions",
+      "fixture": "PSV Eindhoven vs Club Brugge",
+      "pick": "Over 2.5 Goals",
+      "rank": 1,
+      "researchGrade": 78,
+      "modelMarketFrequencyPct": 72.51,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915303",
+      "league": "uefa.champions",
+      "fixture": "PSV Eindhoven vs Club Brugge",
+      "pick": "Over 8.5 Corners",
+      "rank": 2,
+      "researchGrade": 75,
+      "modelMarketFrequencyPct": null,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "direct_model_market_unavailable",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915303",
+      "league": "uefa.champions",
+      "fixture": "PSV Eindhoven vs Club Brugge",
+      "pick": "BTTS Yes",
+      "rank": 3,
+      "researchGrade": 73,
+      "modelMarketFrequencyPct": 72.48,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915306",
+      "league": "uefa.champions",
+      "fixture": "RB Leipzig vs Manchester City",
+      "pick": "Over 2.5 Goals",
+      "rank": 1,
+      "researchGrade": 81,
+      "modelMarketFrequencyPct": 78.65,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915306",
+      "league": "uefa.champions",
+      "fixture": "RB Leipzig vs Manchester City",
+      "pick": "BTTS Yes",
+      "rank": 2,
+      "researchGrade": 77,
+      "modelMarketFrequencyPct": 76.44,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915306",
+      "league": "uefa.champions",
+      "fixture": "RB Leipzig vs Manchester City",
+      "pick": "Manchester City or Draw",
+      "rank": 3,
+      "researchGrade": 73,
+      "modelMarketFrequencyPct": 61.17,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915381",
+      "league": "uefa.champions",
+      "fixture": "Slavia Prague vs Arsenal",
+      "pick": "Arsenal ML",
+      "rank": 1,
+      "researchGrade": 78,
+      "modelMarketFrequencyPct": 58.73,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915381",
+      "league": "uefa.champions",
+      "fixture": "Slavia Prague vs Arsenal",
+      "pick": "Under 4.5 Goals",
+      "rank": 2,
+      "researchGrade": 76,
+      "modelMarketFrequencyPct": null,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "direct_model_market_unavailable",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915381",
+      "league": "uefa.champions",
+      "fixture": "Slavia Prague vs Arsenal",
+      "pick": "BTTS No",
+      "rank": 3,
+      "researchGrade": 65,
+      "modelMarketFrequencyPct": 38.53,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "research_grade_exceeds_model_frequency_20pts",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915302",
+      "league": "uefa.champions",
+      "fixture": "Viking FK vs Sabah FK",
+      "pick": "Over 2.5 Goals",
+      "rank": 1,
+      "researchGrade": 76,
+      "modelMarketFrequencyPct": 75.91,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915302",
+      "league": "uefa.champions",
+      "fixture": "Viking FK vs Sabah FK",
+      "pick": "BTTS Yes",
+      "rank": 2,
+      "researchGrade": 73,
+      "modelMarketFrequencyPct": 73.57,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915302",
+      "league": "uefa.champions",
+      "fixture": "Viking FK vs Sabah FK",
+      "pick": "Viking FK or Draw",
+      "rank": 3,
+      "researchGrade": 71,
+      "modelMarketFrequencyPct": 72.74,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915551",
+      "league": "uefa.europa",
+      "fixture": "Stade Rennais vs Olympiacos",
+      "pick": "Under 3.5 Goals",
+      "rank": 1,
+      "researchGrade": 73,
+      "modelMarketFrequencyPct": 66.15,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915551",
+      "league": "uefa.europa",
+      "fixture": "Stade Rennais vs Olympiacos",
+      "pick": "Over 8.5 Corners",
+      "rank": 2,
+      "researchGrade": 69,
+      "modelMarketFrequencyPct": null,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "direct_model_market_unavailable",
+        "verified_lineup_delta_missing"
+      ]
+    },
+    {
+      "gameId": "401915551",
+      "league": "uefa.europa",
+      "fixture": "Stade Rennais vs Olympiacos",
+      "pick": "Stade Rennais or Draw",
+      "rank": 3,
+      "researchGrade": 65,
+      "modelMarketFrequencyPct": 56.94,
+      "gradeIsNotProbability": true,
+      "issues": [
+        "verified_lineup_delta_missing"
+      ]
+    }
+  ]
+}
