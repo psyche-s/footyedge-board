@@ -61,17 +61,36 @@ export function settleTicket(legs){
 export const ticketsOf=d=>{
   const candidates=[];
   if(d?.sgp?.status==="qualified"&&d.sgp.legs?.length)candidates.push({...d.sgp,id:"sgp",type:"sgp",league:d.sgp.league||d.sgp.legs[0].league||null,bestSgp:true});
-  if(["qualified","hold"].includes(d?.acca?.status)&&d.acca.legs?.length)candidates.push({...d.acca,id:d.acca.status==="hold"?"candidate:acca":"acca",type:"acca",league:null});
+  if(["qualified","hold"].includes(d?.acca?.status)&&d.acca.legs?.length)candidates.push({...d.acca,id:d.acca.id||(d.acca.status==="hold"?"candidate:acca":"acca"),type:"acca",league:null});
+  if(["qualified","hold"].includes(d?.evAcca?.status)&&d.evAcca.legs?.length)candidates.push({...d.evAcca,id:d.evAcca.id||"candidate:evacca",type:"ev_acca",league:null});
   for(const s of d?.sgpsByLeague||[]){
-    if(["qualified","hold"].includes(s.status)&&s.legs?.length)candidates.push({...s,id:(s.status==="hold"?"candidate:":"league:")+s.league,type:"league_sgp",league:s.league});
+    if(["qualified","hold"].includes(s.status)&&s.legs?.length)candidates.push({...s,id:s.id||(s.status==="hold"?"candidate:":"league:")+s.league,type:"league_sgp",league:s.league});
   }
   const seen=new Map();
   return candidates.sort((a,b)=>Number(a.status==="hold")-Number(b.status==="hold")).map(s=>{
     const signature=s.legs.map(x=>String(x.gameId||"")+"|"+norm(x.label)).sort().join("||");
     const duplicateOf=seen.get(signature)||null;if(!duplicateOf)seen.set(signature,s.id);
-    return {...s,signature,duplicateOf,...(s.status==="hold"?{trackable:false}:{}),legs:s.legs.map(x=>({gameId:String(x.gameId||""),fixture:String(x.fixture||""),league:x.league||s.league||null,kickoff:x.kickoff||null,label:String(x.label||""),category:String(x.category||""),odds:x.odds??null,referenceOdds:x.publishedReferenceOdds??x.observedReferenceOdds??null,referenceDecimal:x.publishedReferenceDecimal??null,verifiedPrice:x.verifiedPrice===true,result:"pending"})),result:"pending"};
+    return {...s,signature,duplicateOf,...(s.status==="hold"?{trackable:false}:{}),legs:s.legs.map(x=>({gameId:String(x.gameId||""),fixture:String(x.fixture||""),league:x.league||s.league||null,kickoff:x.kickoff||null,label:String(x.label||""),category:String(x.category||""),odds:x.odds??null,referenceOdds:x.publishedReferenceOdds??x.observedReferenceOdds??null,referenceDecimal:x.publishedReferenceDecimal??x.observedReferenceDecimal??null,verifiedPrice:x.verifiedPrice===true,result:"pending"})),result:"pending"};
   });
 };
+export function playerResearchTicketsOf(d){
+ if(d?.schema!=="footyedge-player-goal-slips-v1"||!Array.isArray(d.slips))return [];
+ return d.slips.filter(s=>s.status==="hold"&&Array.isArray(s.legs)&&s.legs.length>0&&["atgs","scoreOrAssist"].includes(s.key)).map(s=>{
+  const type=s.key==="atgs"?"player_atgs":"player_soa";
+  const legs=s.legs.filter(l=>l.gameId&&l.player&&l.kickoff).map(l=>({
+   gameId:String(l.gameId),fixture:l.fixture,league:l.league,kickoff:l.kickoff,label:l.label,
+   category:type==="player_atgs"?"Anytime Goalscorer":"Score or Assist",player:l.player,market:l.market,
+   researchParticipationPolicy:"must_start",odds:null,verifiedPrice:false,result:"pending"
+  }));
+  const signature=legs.map(l=>l.gameId+"|"+norm(l.label)).sort().join("||");
+  return {id:"research:"+s.key,type,status:"hold",title:s.title,trackable:false,researchResultTracked:true,league:null,
+   signature,duplicateOf:null,legs,result:"pending",verifiedCombinedPrice:false,combinedOntarioOdds:null};
+ });
+}
+export function parseGoalContributionMarket(label){
+ const m=String(label||"").trim().match(/^(.+?)\s+(Anytime\s+Goal(?:scorer)?|(?:To\s+)?Score\s+or\s+Assist)$/i);
+ return m?{name:m[1].trim(),kind:/Anytime/i.test(m[2])?"atgs":"soa"}:null;
+}
 export function sourceFor(date,root=ROOT){
   if(!exists(path.join(root,"data","boards",date+".json")))return null;
   for(const kind of ["slips-reviewed","editorial-desk","slips"]){
@@ -161,12 +180,34 @@ export function summaryLegOutcome(leg,summary){
   const outcome=countOutcome(market,value);
   return outcome?{...outcome,evidence:{kind:market.half?'verified-period-count':'verified-match-count',period:market.half,metric:market.metric}}:null;
  }
- const player=parsePlayerMarket(leg.label);if(!player)return null;
- const field=playerFields[player[3].toLowerCase()];
+ const player=parsePlayerMarket(leg.label),scorer=parseGoalContributionMarket(leg.label);
+ if(!player&&!scorer)return null;
+ const field=player?playerFields[player[3].toLowerCase()]:null;
  const names=p=>[p.athlete?.displayName,p.athlete?.fullName].map(norm);
- const matches=(summary.rosters||[]).flatMap(t=>t.roster||[]).filter(p=>names(p).includes(norm(player[1])));
+ const target=scorer?.name||player[1];
+ const matches=(summary.rosters||[]).flatMap(t=>t.roster||[]).filter(p=>names(p).includes(norm(target)));
  if(matches.length!==1)return null;
  const row=matches[0],stats=row.stats||[];
+ if(scorer){
+  if(leg.researchParticipationPolicy==="must_start"){
+   // A research push requires confirmed non-starting status, never an
+   // inferred rotation from a pre-kickoff XI.
+   if(row.starter===false)return {result:"push",voidReason:"did_not_start",evidence:{kind:"verified-nonstarter-research",athleteId:row.athlete?.id,started:false}};
+   if(row.starter!==true)return null;
+  }
+  if(count(stats.find(x=>x.name==="appearances")?.value)!==1)return null;
+  const goals=count(stats.find(x=>x.name==="totalGoals")?.value);
+  const assists=count(stats.find(x=>x.name==="goalAssists")?.value);
+  if(scorer.kind==="atgs"){
+   if(goals===null)return null;
+   return {result:goals>=1?"hit":"miss",observed:goals,unit:"Goals",
+    evidence:{kind:"verified-player-goal",athleteId:row.athlete?.id,started:row.starter===true}};
+  }
+  if((goals===null||assists===null)&&!(goals>=1||assists>=1))return null;
+  const total=(goals||0)+(assists||0);
+  return {result:total>=1?"hit":"miss",observed:total,unit:"Goal contributions",
+   evidence:{kind:"verified-player-goal-or-assist",athleteId:row.athlete?.id,goals,assists,started:row.starter===true}};
+ }
  // Unused substitutes' zero-filled stat lines are not a losing prop.
  if(count(stats.find(s=>s.name==='appearances')?.value)!==1)return null;
  const providerNames={shots:['totalShots'],shotsOnTarget:['shotsOnTarget'],foulsCommitted:['foulsCommitted'],foulsWon:['foulsSuffered'],tackles:['totalTackles','tackles'],yellowCards:['yellowCards'],redCards:['redCards'],assists:['goalAssists'],goals:['totalGoals']}[field]||[];
@@ -243,12 +284,12 @@ export function validReviewedResult(r){
  if(!r.gameId||!r.label||!['hit','miss','push'].includes(r.result)||!/^https:\/\//.test(String(r.sourceUrl||''))||!Number.isFinite(Date.parse(r.verifiedAt)))return false;
  if(r.voidReason!==undefined){
   return r.voidReason==='did_not_start'&&r.result==='push'&&r.observedStat===undefined&&
-   Boolean(parsePlayerMarket(r.label))&&r.evidence?.started===false&&/^https:\/\//.test(r.evidence.rulesUrl||'');
+   (Boolean(parsePlayerMarket(r.label))||Boolean(parseGoalContributionMarket(r.label)))&&r.evidence?.started===false&&/^https:\/\//.test(r.evidence.rulesUrl||'');
  }
  if(r.observedStat!==undefined){
   if(typeof r.observedStat!=='number'||!Number.isInteger(r.observedStat)||r.observedStat<0)return false;
-  const player=parsePlayerMarket(r.label),market=parseCountMarket(r.label);
-  const derived=player?(r.observedStat>=Number(player[2])?'hit':'miss'):market?countOutcome(market,r.observedStat)?.result:null;
+  const player=parsePlayerMarket(r.label),market=parseCountMarket(r.label),contribution=parseGoalContributionMarket(r.label);
+  const derived=player?(r.observedStat>=Number(player[2])?'hit':'miss'):contribution?(r.observedStat>=1?"hit":"miss"):market?countOutcome(market,r.observedStat)?.result:null;
   if(derived&&derived!==r.result)return false;
  }
  return true;
@@ -302,7 +343,7 @@ export const needsLegResults=ticket=>(ticket.legs||[]).some(leg=>(leg.result||"p
 async function run(){
   const dateToday=today();fs.mkdirSync(DIR,{recursive:true});
   const days=new Set();
-  for(const kind of ["slips-reviewed","editorial-desk","slips"]){
+  for(const kind of ["slips-reviewed","editorial-desk","slips","player-goal-slips"]){
     const loc=path.join(ROOT,"data",kind);
     if(!exists(loc))continue;
     for(const name of fs.readdirSync(loc))if(/^\d{4}-\d{2}-\d{2}\.json$/.test(name)&&name.slice(0,10)<=dateToday&&(!process.env.TRACK_SINCE||name.slice(0,10)>=process.env.TRACK_SINCE))days.add(name.slice(0,10));
@@ -310,11 +351,14 @@ async function run(){
   for(const day of [...days].sort()){
     const file=path.join(DIR,day+".json");
     const published=sourceFor(day);
-    if(!exists(file)&&!published)continue;
+    const goalPath=path.join(ROOT,"data","player-goal-slips",day+".json");
+    const goalSource=exists(goalPath)?read(goalPath):null;
+    if(!exists(file)&&!published&&!goalSource)continue;
     const snapshot=exists(file)?read(file):{date:day,capturedAt:new Date().toISOString(),tickets:[]};
-    if(published){
-      if(!snapshot.tickets.length)snapshot.source=published.path.replace(ROOT+path.sep,"");
-      for(const ticket of ticketsOf(published.data)){
+    if(published||goalSource){
+      if(!snapshot.tickets.length)snapshot.source=published?.path.replace(ROOT+path.sep,"")||goalPath.replace(ROOT+path.sep,"");
+      for(const ticket of [...(published?ticketsOf(published.data):[]),...playerResearchTicketsOf(goalSource)]){
+        if(ticket.type==="acca"&&ticket.id!=="candidate:acca")for(const prior of snapshot.tickets)if(prior.id==="candidate:acca"&&prior.trackable===false)prior.supersededBy=ticket.id;
         if(snapshot.tickets.some(saved=>saved.id===ticket.id))continue;
         // A priced publication may follow a research hold. It has its own
         // record and takes precedence over a held copy in the carousel.
@@ -358,7 +402,11 @@ async function run(){
           if(observed){leg.observedStat=observed.observed;leg.observedUnit=observed.unit;}
           if(leg.result==="pending"){
             const summary=await matchSummary(leg),outcome=summary?summaryLegOutcome(leg,summary.data):null;
-            if(outcome){leg.result=outcome.result;leg.observedStat=outcome.observed;leg.observedUnit=outcome.unit;leg.verifiedSource=summary.url;leg.verifiedAt=new Date().toISOString();leg.settlementEvidence=outcome.evidence;continue;}
+            if(outcome){leg.result=outcome.result;
+              if(typeof outcome.observed==="number")leg.observedStat=outcome.observed;
+              if(outcome.unit)leg.observedUnit=outcome.unit;
+              if(outcome.voidReason)leg.voidReason=outcome.voidReason;
+              leg.verifiedSource=summary.url;leg.verifiedAt=new Date().toISOString();leg.settlementEvidence=outcome.evidence;continue;}
             const prop=await playerOutcome(leg,day,game,research,news);
             if(prop){leg.result=prop.result;leg.verifiedSource=prop.source;leg.observedStat=prop.observed;leg.observedUnit=prop.unit;leg.verifiedAt=new Date().toISOString();}
           }
