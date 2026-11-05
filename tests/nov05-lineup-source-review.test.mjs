@@ -24,3 +24,11 @@ test('Only exact competition references and partial verified coverage are claime
   assert.ok(g.lineupReferenceLinks.every(s=>s.url.startsWith('https://')));
  }
 });
+test('Display exposes linked Starting 11 and Sportsgambler as predictions, not confirmed team sheets',()=>{
+ const html=fs.readFileSync('ui/part2.html','utf8');assert.match(html,/function feLineupSourceLinks/);assert.match(html,/feLineupSourceLinks\(g\)/);assert.match(html,/EARLY LINEUPS · 24–48H RESEARCH/);assert.match(html,/A competition listing does not verify all starters/);
+});
+test('Crosschecked reported injuries remain attributed and non-official',()=>{
+ assert.ok(x('401915819').home.out.some(a=>a.includes('Ounahi')&&a.includes('Sportsgambler')));
+ assert.ok(x('401915826').away.out.some(a=>a.includes('Vanzeir')&&a.includes('reported')));
+ assert.ok(x('401915821').away.doubtful.some(a=>a.includes('Cashin')));
+});

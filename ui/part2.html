@@ -2718,6 +2718,30 @@ function feGithubOriginalXI(g){
  return {source:{url:"https://www.api-football.com",checkedAt:p.checkedAt},
   home,away};
 }
+function feLineupSourceLinks(g){
+ const data=g.liveIntel||g.teamIntel||{},items=[],seen=new Set();
+ const add=(label,src)=>{
+  try{
+   const u=new URL(String(src||""));
+   if(u.protocol!=="https:"||!/(^|\.)(sportsmole\.co\.uk|starting11\.com|sportsgambler\.com|oddalerts\.com|betimate\.com|scangoal\.com)$/.test(u.hostname)||seen.has(u.href))return;
+   seen.add(u.href);items.push('<a class="fe-earlyXiLink" href="'+esc(u.href)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>');
+  }catch{}
+ };
+ add("Editorial preview",data.source?.url);
+ for(const x of data.lineupReferenceLinks||[])add(x.provider==="Starting 11"?"Starting 11 · predicted XI":"Sportsgambler · injuries & lineups",x.url);
+ if(!items.length){
+  const urls=g.league==="uefa.europa"?
+   ["https://starting11.com/europa-league","https://www.sportsgambler.com/lineups/football/uefa-europa-league/"]:
+   g.league==="uefa.europa.conf"?
+   ["https://starting11.com/conference-league","https://www.sportsgambler.com/lineups/football/uefa-europa-conference-league/"]:null;
+  if(urls){add("Browse Starting 11 predictions",urls[0]);add("Browse Sportsgambler",urls[1]);}
+ }
+ if(!items.length)return "";
+ const note=data.latestLineupReview?.note?'<p class="fe-earlyXiReview">'+esc(data.latestLineupReview.note)+'</p>':"";
+ return '<aside class="fe-earlyXiSources" aria-label="Predicted and early lineup verification sources">'+
+  '<b>EARLY LINEUPS · 24–48H RESEARCH</b><div class="fe-earlyXiLinks">'+items.join("")+'</div>'+
+  note+'<p>Editorial projections only. A competition listing does not verify all starters. Recheck the official XI near kickoff using Update XIs.</p></aside>';
+}
 function feLineupsPanel(g){
  // Always present the same football pitch for every tracked league. Without
  // a source-backed XI, show the empty team half without a duplicate squad list;
@@ -2753,6 +2777,7 @@ function feLineupsPanel(g){
    feTeamPitchRows(intel.away,g.away,g,"top")+feTeamPitchRows(intel.home,g.home,g,"bottom")+'</div>'+
    '<p class="fe-pitchStatHelp">Five most recent verified appearances, newest first · — means unavailable, not zero. Tap a player for their full profile.</p>'+
    '<p class="fe-lineupCaution">'+caution+'</p>'+
+    feLineupSourceLinks(g)+
    feMatchSourceStatus(g)+'</section>';
 }
 function feMatchSourceStatus(g){
