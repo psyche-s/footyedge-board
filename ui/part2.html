@@ -996,7 +996,9 @@ function viewCandidates(g){
     const picks=g.feEditorialPicks.filter(p=>p?.sourceBackedReason===true&&
       p?.label&&Number.isFinite(Number(p.confidenceRating))&&
       String(p.reason||"").length>=45).sort((a,b)=>
-        Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
+        S.reviewedTop3?.editorialRankingApproved===true?
+          Number(a.rank||99)-Number(b.rank||99):
+          Number(b.confidenceRating)-Number(a.confidenceRating)).slice(0,3);
     if(S.filter==="result"||S.filter==="ml")return picks.filter(p=>
       ["Match Result","Double Chance"].includes(p.category)&&
       (S.filter!=="ml"||p.category==="Match Result"));

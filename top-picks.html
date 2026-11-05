@@ -171,6 +171,9 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
 .ticketPaper .slipHead h2{font-family:inherit!important;font-stretch:normal;font-size:clamp(25px,3vw,32px)!important;letter-spacing:-.045em!important;font-weight:850!important;text-transform:none!important}.ticketPaper .slipTopline{margin-bottom:16px}.ticketPaper .slipIntro{margin-top:12px!important}.ticketPaper .legTitle{font-size:16px!important}.ticketPaper .legMatch{font-size:11px!important}.ticketPaper .slipHead,.ticketPaper .slipBody{padding-left:23px!important;padding-right:23px!important}.ticketPaper .ticketTear:before,.ticketPaper .ticketTear:after{background:var(--bg)}.marketItem{background:#08170e;border-color:var(--line)}.marketRank{background:transparent;border-color:#2a5139}.marketInfo p,.marketInfo .fixture{color:#93a89c}.notice{border-color:var(--line);color:var(--muted)}.sectionTitle span{color:var(--muted)}
 @media(max-width:640px){.nav{height:58px;padding:0 14px;gap:12px}.logo{font-size:19px}.links{gap:10px}.links a{font-size:10px}}
 @media(max-width:550px){.container{padding:24px 16px 40px}.headline{gap:12px;align-items:flex-start}.fe-slipActions{width:auto;padding-top:21px}.fe-refreshBtn{font-size:10px;padding:0 9px;gap:4px;min-height:34px}.subtitle{font-size:12px;line-height:1.6}.eyebrow{font-size:8px}h1{font-size:31px;letter-spacing:-1.1px}.fe-sgpPicker label{flex-basis:auto}.fe-sgpPicker select{flex-basis:100%;order:2}.fe-sgpPicker span{flex-basis:auto;min-width:0;margin-left:auto;font-size:9px}.ticketPaper .slipHead h2{font-size:27px!important}.ticketPaper .legTitle{font-size:16px!important}.sectionTitle{align-items:flex-start}.sectionTitle span{max-width:125px;text-align:right;font-size:10px}.sectionTitle h2{font-size:18px}}
+
+/* Player scoring research, same evergreen identity and paper ticket hierarchy. */
+.fe-playerResearch{margin:31px 0 20px}.fe-playerResearch h2{margin:0 0 6px;font-size:20px}.fe-playerResearch>p{color:var(--muted);font-size:12px;line-height:1.6;max-width:760px}.fe-goalCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:14px}.fe-goalCard{border:1px solid #285a3c;border-radius:17px;background:#081e13;padding:18px;min-width:0}.fe-goalCard h3{margin:4px 0 10px;font-size:19px}.fe-goalStatus{color:#a7ddb7;font-size:10px;letter-spacing:.08em;font-weight:800}.fe-goalItem{border-top:1px solid #284333;padding:12px 0}.fe-goalItem strong{font-size:13px;display:block}.fe-goalItem small{font-size:10px;color:#a4bca9}.fe-goalItem details{margin-top:6px;color:#bbd1c0;font-size:11px;line-height:1.55}.fe-goalItem summary{cursor:pointer;color:#8bddab}.fe-goalRisk{font-size:10px;color:#d2b68d;line-height:1.6;margin-top:11px}@media(max-width:790px){.fe-goalCards{grid-template-columns:1fr}}
 </style></head><body>
 <nav class="nav"><a href="./" class="logo">Footy<span>Edge</span></a><div class="links"><a href="./">Home</a><a href="top-picks.html" class="active">Top Picks</a><a href="picks.html">Fixtures</a><a href="hit-rate.html">Hit Rate</a></div></nav>
 <main class="container">
@@ -196,6 +199,7 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
     <div class="slipFooter"><span id="accaCount">Checking available legs</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span></strong></div>
   </article>
 </section>
+<section class="fe-playerResearch" aria-labelledby="fe-playerResearchTitle"><h2 id="fe-playerResearchTitle">Player goal involvement</h2><p>Separate anytime-scorer and score-or-assist research. All picks depend on the official XI and each Ontario market being available; no unverified +150 payout claims.</p><div class="fe-goalCards"><article class="fe-goalCard"><div class="fe-goalStatus">ATGS · RESEARCH HOLD</div><h3>Anytime Goalscorer</h3><div id="atgsResearchSlip">Loading sourced players…</div></article><article class="fe-goalCard"><div class="fe-goalStatus">SCORE OR ASSIST · RESEARCH HOLD</div><h3>Score or Assist</h3><div id="scoreAssistResearchSlip">Loading sourced players…</div></article></div></section>
   <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>Published reference prices · recheck before placing</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
   <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
   <p class="notice">Confidence grades are research rankings, not guaranteed hit probabilities. Confirm market prices and lineups before betting.</p>
@@ -372,12 +376,23 @@ function renderDesk(desk,date,live=false){
  renderCompetitionSlips(desk.sgpsByLeague);
  printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
 }
+function renderPlayerGoalSlips(payload,date){
+ const show=(target,key)=>{
+  const node=document.getElementById(target);if(!node)return;
+  const slip=payload?.schema==="footyedge-player-goal-slips-v1"&&payload.date===date&&payload.noVerifiedOntarioOdds===true?
+   (payload.slips||[]).find(s=>s.key===key&&s.status==="hold"&&s.priceVerified===false):null;
+  const valid=slip?.legs?.filter(l=>l.player&&l.fixture&&l.verifiedPrice===false&&l.odds==null&&l.officiallyConfirmedStartingXI===false)||[];
+  node.innerHTML=valid.length?valid.map((leg,i)=>'<div class="fe-goalItem"><strong>'+(i+1)+'. '+esc(leg.player)+'</strong><small>'+esc(leg.fixture)+' · Grade '+esc(String(leg.researchGrade))+' (not win probability) · Price pending</small><details><summary>Form, opponent and lineup reasoning</summary><p>'+esc(cleanReason(leg.why||""))+'</p><p>'+esc((leg.risk||[]).join(" "))+'</p></details></div>').join('')+'<p class="fe-goalRisk">'+esc(slip.caution)+'</p>':
+    '<div class="empty">No fully supported player research slip for this date. PASS rather than invent a player, lineup or price.</div>';
+ };
+ show("atgsResearchSlip","atgs");show("scoreAssistResearchSlip","scoreOrAssist");
+}
 async function refresh(){
  const date=chosenDate();document.getElementById("boardStatus").textContent="Checking "+chosenLabel(date)+"…";
 
 
  document.getElementById("refreshStatus").textContent="";
- const [pricedResearch,archive,sgpWatch]=await Promise.all([data("data/slips-reviewed/"+date+".json"),data("data/boards/"+date+".json"),data("data/sgp-watchlist/"+date+".json")]);
+ const [pricedResearch,archive,sgpWatch,goalSlips]=await Promise.all([data("data/slips-reviewed/"+date+".json"),data("data/boards/"+date+".json"),data("data/sgp-watchlist/"+date+".json"),data("data/player-goal-slips/"+date+".json")]);
  displayedFixtureLeagues=archive?.date===date?new Set((archive.games||[]).filter(g=>g.league!=="eng.2"&&g.status!=="postponed").map(g=>g.league)):null;
  const reviewed=pricedResearch||await data("data/editorial-desk/"+date+".json");
  const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
@@ -385,6 +400,7 @@ async function refresh(){
  const holds=useHold?(sgpWatch.sgpsByLeague||[]).filter(x=>x.status==="hold"&&x.verifiedCombinedPrice===false&&x.legs?.length===2&&x.legs.every(l=>l.verifiedPrice===false&&l.odds==null)):[];
  const researchOnly=holds.length?{...desk,sgp:holds[0],sgpsByLeague:holds}:desk;
  renderDesk(researchOnly,date);
+ renderPlayerGoalSlips(goalSlips,date);
 }
 async function refreshLive(){
  const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
