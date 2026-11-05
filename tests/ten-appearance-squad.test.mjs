@@ -51,6 +51,7 @@ test("Every league retains the field when lineups are still pending",()=>{
   ...browserContext,
   feTeamPitchRows:(_intel,t)=>'<div class="fe-sharedHalf">'+t.name+'</div>',
   feMatchSourceStatus:()=>'',
+  feLineupSourceLinks:()=>' ',
   // The production bundle defines this before feLineupsPanel; the isolated
   // unit-test evaluation needs the same dependency, without fabricating an XI.
   feGithubOriginalXI:()=>null,

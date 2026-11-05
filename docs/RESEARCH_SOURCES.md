@@ -89,3 +89,10 @@ This is the research/reference source inventory for the **original FootyEdge**. 
 - No UI, fixture layout, or automated schedule change is made by this document.
 - Original FootyEdge's daily 12:05 AM America/Toronto refresh rule remains unchanged.
 - FootyEdge V2's automatic refreshes remain disabled (manual-only) until explicitly requested otherwise.
+
+
+### Predicted and early match-day lineups (24–48 hours pre-kickoff)
+- **Starting 11 / The Oracle** — public Europa League (https://starting11.com/europa-league) and Conference League (https://starting11.com/conference-league) lineups, predicted formations and editorial rotation/injury notes. The detailed gameweek pages may change without a precise per-player timestamp. Treat these as **editorial predictions, not official XIs**, and keep individual source links and a dated cross-check audit.
+- **Sportsgambler** — Europa (https://www.sportsgambler.com/lineups/football/uefa-europa-league/) and Conference (https://www.sportsgambler.com/lineups/football/uefa-europa-conference-league/) lineup directories and competition injury reports. A fixture appearing in the directory proves listing availability only, **not** the identity of all eleven starters. Injury or suspension reports must retain the provider and date and be confirmed by a club/league match sheet when possible.
+- Workflow: at T−48h/T−24h look for dated editorial projected XIs and reported rotation; at T−90m/T−60m independently check the match provider for **official confirmed** starting XIs. If editorials disagree, preserve the disagreement and prefer no forced "confirmed" player. Don't silently rewrite frozen Top 3 picks or completed match records.
+- FootyEdge may link to these public references for users. **Do not bulk-scrape or republish their proprietary lineup content automatically without authorization.** The existing `sync-team-news.mjs` can ingest a separately configured, rights-approved structured feed with exact fixture identity, checked-at timestamps and full XI validation. Sources absent or unverified remain unknown rather than an inferred lineup.
