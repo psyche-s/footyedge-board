@@ -47,22 +47,55 @@ test("future-dated or started fixtures cannot enter published advice",()=>{
 });
 
 
-test("independent result + goals + verified non-goal event qualifies only with real event evidence",()=>{
+test("source-backed corner market makes a two-leg research HOLD, never a fake priced SGP",()=>{
  const f=fixtures[0];
  const updated=structuredClone(reviews);
  updated.matches[0].picks=[
-  {label:f.home.name+" or Draw",family:"result",category:"Double Chance",confidenceRating:83,reason:"Home side has avoided defeat in eight of its last ten games."},
-  {label:"Over 2.5 Goals",family:"total",category:"Goals",confidenceRating:79,reason:"Both recent attacking records support three match goals."},
-  {label:"Over 8.5 Corners",family:"corners",category:"Corners",confidenceRating:75,reason:"Corner volume and opposing corner allowance both exceed the selected threshold.",marketEvidence:{verified:true,teamSample:10,opponentAllowanceSample:10}}
+  {label:f.home.name+" or Draw",family:"result",category:"Double Chance",confidenceRating:83,sourceBackedReason:true,reason:"Home side has avoided defeat in eight of its last ten games."},
+  {label:"Over 2.5 Goals",family:"total",category:"Goals",confidenceRating:79,sourceBackedReason:true,reason:"Both recent attacking records support three match goals."},
+  {label:"Over 8.5 Corners",family:"corners",category:"Corners",confidenceRating:75,sourceBackedReason:true,reason:"Corner volume and opposing corner allowance both exceed the selected threshold.",marketEvidence:{verified:true,teamSample:10,opponentAllowanceSample:10,sourceUrl:"https://example.org/match-data"}}
  ];
  const d=generateReviewedSlipDesk({date:day,review:updated,research,simulation:sims,markets,asof});
- assert.equal(d.sgp.status,"qualified");
- assert.equal(d.sgp.legs.length,3);
+ assert.equal(d.sgp.status,"hold");
+ assert.equal(d.sgp.researchQualified,true);
+ assert.equal(d.sgp.verifiedCombinedPrice,false);
+ assert.equal(d.sgp.combinedOntarioOdds,null);
+ assert.equal(d.sgp.legs.length,2);
  assert.equal(d.sgp.legs.some(x=>x.label==="Over 8.5 Corners"),true);
 });
 test("event props must have independent verified samples, not market labels",()=>{
  const u=structuredClone(reviews);
  for(const m of u.matches)m.picks[2]={...m.picks[2],label:"Over 8.5 Corners",family:"corners",marketEvidence:{verified:false,teamSample:10,opponentAllowanceSample:10}};
+ const d=generateReviewedSlipDesk({date:day,review:u,research,simulation:sims,markets,asof});
+ assert.equal(d.sgp.status,"pass");
+});
+
+test("separate fouls-won and shots can qualify with player samples, but shots and SOT do not double count",()=>{
+ const u=structuredClone(reviews),m=u.matches[0],source="https://example.org/match-data";
+ const player=(label,family,playerId)=>({label,family,category:"Player",confidenceRating:80,
+  sourceBackedReason:true,reason:"Verified player event history and opponent allowance support the exact selected threshold.",
+  marketEvidence:{verified:true,sourceUrl:source,playerMarket:true,playerSample:10,
+   opponentAllowanceSample:8,playerId,playerName:"Player A",playerAvailable:true,
+   expectedMinutes:78,lineupStatus:"predicted"}});
+ m.picks=[
+  player("Player A 2+ Fouls Won","fouls-won","a"),
+  player("Player A 2+ Shots","shots","a"),
+  player("Player A 1+ Shots on Target","shots-on-target","a")
+ ];
+ const d=generateReviewedSlipDesk({date:day,review:u,research,simulation:sims,markets,asof});
+ assert.equal(d.sgp.status,"hold");
+ assert.equal(d.sgp.legs.length,2);
+ assert.ok(d.sgp.legs.some(x=>x.marketGroup==="fouls-won"));
+ assert.equal(d.sgp.legs.filter(x=>["shots","shots-on-target"].includes(x.marketGroup)).length,1);
+});
+test("missing market sample or named-player evidence makes unsupported SGP a PASS",()=>{
+ const u=structuredClone(reviews),m=u.matches[0];
+ m.picks=[{label:"Over 8.5 Corners",family:"corners",category:"Corners",confidenceRating:82,
+  sourceBackedReason:true,reason:"This is a long enough rationale but carries no observed corner data.",
+  marketEvidence:{verified:true,teamSample:0,opponentAllowanceSample:10,sourceUrl:"https://example.org/match-data"}},
+ {label:"Over 3.5 Bookings",family:"cards",category:"Cards",confidenceRating:80,
+  sourceBackedReason:true,reason:"The published market alone is not evidence of a likely booking count.",
+  marketEvidence:{verified:true,teamSample:10,opponentAllowanceSample:0,sourceUrl:"https://example.org/match-data"}}];
  const d=generateReviewedSlipDesk({date:day,review:u,research,simulation:sims,markets,asof});
  assert.equal(d.sgp.status,"pass");
 });
