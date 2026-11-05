@@ -58,7 +58,7 @@
   const title=ticketTitle(ticket),fixture=['acca','ev_acca','player_atgs','player_soa'].includes(ticket.type)?'Selections across '+new Set((ticket.legs||[]).map(l=>l.gameId||l.fixture)).size+' different fixtures':ticket.legs?.[0]?.fixture||'Published match selections';
   const price=american(ticket.combinedReferenceAmerican),priceText=isPlayer?'Player research, no wager price':research?'Research only'+(price?' · '+price+' US reference':''):price?price+' reference':(ticket.legs||[]).length+' legs';
   const counts=s.hits+' hit · '+s.misses+' miss'+(s.pushes?' · '+s.pushes+' void':'')+(s.pending?' · '+s.pending+' pending':'');
-  const foot=isPlayer?counts+' · Player research results (not official wager returns)':research?(result==='unpriced'?'':counts+' · ')+'Not included in the official slip hit rate':counts;
+  const foot=isPlayer?counts+' · Player research results (not official wager returns)':research?(result==='unpriced'?'':counts+' · ')+'Not included in the slip hit rate':counts;
   return '<article class="trackedTicket '+result+'Ticket" data-ticket-title="'+esc(title)+'" aria-label="'+esc(title+' for '+dayLabel(date))+'"><header class="ticketHeader"><div class="ticketTopline"><span class="ticketKicker">'+(['acca','ev_acca'].includes(ticket.type)?'ACROSS THE SLATE':isPlayer?'PLAYER GOAL RESEARCH':'MATCHDAY SGP')+'</span><span class="ticketStatus '+result+'">'+status+'</span></div><h3>'+esc(title)+'</h3><p>'+esc(fixture)+'</p></header><ol class="trackedLegs">'+(ticket.legs||[]).map(l=>legHtml(l)).join('')+'</ol><footer class="ticketFooter"><span>'+esc(foot)+'</span><strong class="ticketPrice">'+esc(priceText)+'</strong></footer></article>';
  }
  function historyHtml(days){

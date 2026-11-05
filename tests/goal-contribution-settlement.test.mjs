@@ -21,7 +21,7 @@ test("only exact verified roster goal and assist results settle research props",
 test("verified did not start is a void for explicit research starter-only policy",()=>{
  const g={gameId:"401915525",label:"Vangelis Pavlidis Anytime Goal",researchParticipationPolicy:"must_start"};
  assert.equal(summaryLegOutcome(g,summary(1,0,false)).voidReason,"did_not_start");
- assert.equal(summaryLegOutcome(g,summary(1,0,undefined)),null);
+ assert.equal(summaryLegOutcome(g,summary(1,0,null)),null);
  assert.equal(summaryLegOutcome(g,summary(1,0,true,0)),null);
 });
 test("research goal slips have separate category IDs and do not count as priced wager returns",()=>{
