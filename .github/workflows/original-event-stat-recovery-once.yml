@@ -24,6 +24,20 @@ jobs:
           node-version: "22"
       - name: Validate exact historical event joins
         run: node --test tests/verified-event-projections.test.mjs
+      - name: Diagnose provider team-fouls field with one previously completed verified match
+        shell: bash
+        run: |
+          node --input-type=module <<'JS'
+          const endpoint='https://site.api.espn.com/apis/site/v2/sports/soccer/all/summary?event=401874795';
+          const response=await fetch(endpoint,{signal:AbortSignal.timeout(18000)});
+          if(!response.ok)throw Error('ESPN historic event request '+response.status);
+          const data=await response.json();
+          console.log('Event completion',data.header?.competitions?.[0]?.status?.type?.completed);
+          for(const row of data.boxscore?.teams||[]){
+            console.log('Team',row.team?.displayName,row.team?.id,'stat key/label examples',
+              (row.statistics||[]).map(x=>({name:x.name,abbreviation:x.abbreviation,label:x.label,displayName:x.displayName})));
+          }
+          JS
       - name: Capture completed events prior to each fixture and build isolated stat overlay
         shell: bash
         run: |
