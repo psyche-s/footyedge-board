@@ -1,3 +1,10 @@
+## Latest owner SGP research standard — November 5, 2026
+
+- The binding quality, exact-market and price rules are in [docs/SGP_QUALITY_STANDARD.md](docs/SGP_QUALITY_STANDARD.md). For each major men's fixture, compare realistic markets across fouls WON and COMMITTED, shots and SOT, corners, goals O/U, ML/DC and BTTS using date-gated team/player evidence, opponent allowances, expected role and lineups. Minimum five reliable player/team observations AND five opponent allowance observations for event props, preferably 8–10; otherwise PASS that event market.
+- A published price is not trend evidence. Never include unvalidated corners/cards/fouls/shots, generic filler explanations, same-player overlapping shots/SOT, fake source votes, unverified odds or bookmaker-unavailable legs. Strengthen or remove individual legs, never force a target count.
+- Only a verified Ontario bet-builder combination is an executable SGP price. Keep any foreign/reference odds and experimental, uncalibrated EV separate from confirmed local prices and empirically validated value; mark the whole candidate HOLD / PRICE PENDING until verified. Model-vs-implied-probability contradictions demand scrutiny, not a fake confidence raise.
+- The new SGP builder screens evidence and constructs research-only HOLD candidates, allowing two genuinely supported legs rather than padding to three. Historical frozen boards and FootyEdge V2 remain untouched; no unapproved production deploy.
+
 ## Latest owner refresh instruction — November 2, 2026
 
 - Owner profile/Top Picks polish: Top Picks is today-only with a compact header, refresh and competition filter; do not restore Tomorrow. Player sheets use neutral charcoal table/panel surfaces with restrained green accents, aligned SVG close controls, and the existing Mbappé-scale club portrait. Official club/league portraits are identity- and dimension-checked before replacing an existing sharper image. Keep unsupported minutes blank; only display explicitly sourced minutes, never infer them from a Started badge.
