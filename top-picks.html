@@ -314,8 +314,8 @@ function printProps(items){
 }
 const chosenDate=()=>localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
-const FE_SGP_LEAGUES=new Set(["eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","uefa.champions","uefa.europa"]);
-const FE_MAJOR_NAMES={"eng.1":"Premier League","eng.2":"Championship","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
+const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"]);
+const FE_MAJOR_NAMES={"eng.1":"Premier League","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
 let selectedSgpLeague="all";
 function sgpForLeague(desk){
  if(selectedSgpLeague==="all")return desk.sgp;
@@ -357,7 +357,7 @@ function renderDesk(desk,date,live=false){
  function drawSlip(result,id,empty){
   const isSgp=id==="sgpSlip";
   const eligible=(result?.status==="qualified"||result?.status==="hold")&&(isSgp?(result.legs||[]).length>=2:true);
-  const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1"].includes(l.league)).map(viewLeg):[];
+  const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1","eng.2"].includes(l.league)).map(viewLeg):[];
   printSlip(id,legs,result?.caution||empty);
   renderSlipPrice(legs.length?result:null,isSgp?"sgpPrice":"accaPrice",isSgp?150:300);
   if(result?.status==="hold"&&legs.length){const prefix=isSgp?"sgp":"acca";document.getElementById(prefix+"Count").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById(prefix+"LegBadge").textContent="PRICE PENDING";}

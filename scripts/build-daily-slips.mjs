@@ -153,7 +153,7 @@ function correlation(a,b){
 // SGP/ACCA are the marquee competitions only. J1, K League 1, Saudi
 // Pro League, Czech and friendly slates remain on Fixtures, not on the slips.
 const MAJOR_SLIP_LEAGUES=new Set([
- "eng.1","eng.2","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1",
+ "eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1",
  "uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"
 ]);
 function isMajor(league){return MAJOR_SLIP_LEAGUES.has(String(league||""));}
@@ -243,7 +243,7 @@ function build({date,board,research,h2h,intel}){
    noSportsbookOdds:true,confidenceCalibrated:false,originalMatchBoardsUnchanged:true,
    method:"10-match base plus weighted last-five, home/away checks, source-backed H2H, known availability, compatible markets",
    eligibleSlipLegs:all.filter(x=>isMajor(x.league)).sort((a,b)=>b.rating-a.rating),
-   excludedSlipLeagues:["jpn.1","kor.1","ksa.1"],majorLeagueRule:true,
+   excludedSlipLeagues:["jpn.1","kor.1","ksa.1","eng.2"],majorLeagueRule:true,
    sgp:sgp(all),acca:acca(all),sgpsByLeague:sgpsByLeague(all),props,notes:[
     "Selection percentages are evidence grades, not calibrated probabilities or a combined parlay chance.",
     "No sportsbook odds, payout, implied probabilities or EV. Market availability must be checked separately.",

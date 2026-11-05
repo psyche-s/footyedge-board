@@ -7,7 +7,7 @@ import path from "node:path";
 import {pathToFileURL} from "node:url";
 const safe=number=>Number.isFinite(number)?Math.round(number*100)/100:null;
 const clip=(x,a,b)=>Math.min(b,Math.max(a,x));
-const E=["jpn.1","kor.1","ksa.1"];
+const E=["jpn.1","kor.1","ksa.1","eng.2"];
 function marketProbability(label,m){
  const n=m.marketsPct||{},w=m.winDrawLossPct||{};
  if(label===m.home+" ML")return w.homeWin;

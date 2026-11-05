@@ -152,7 +152,7 @@ async function main(){
     (editorial.matches||[]).filter(x=>Array.isArray(x.sources)&&x.sources.every(s=>/^https:\/\//.test(s.url))).map(x=>[String(x.fixtureId),x]):[]);
   const research=await read(R);
   if(research.date!==DATE||!Array.isArray(research.fixtures)||research.fixtures.length<1)throw new Error('Invalid matching-date research');
-  const games=research.fixtures.map(generate);
+  const games=research.fixtures.filter(f=>f.league!=="eng.2").map(generate);
   const ownerOverride=process.env.OWNER_OVERRIDE_DATE===DATE&&DATE===TODAY;
   // Move dated 10k research and verified last-ten trends into the ACTUAL board.
   // Previously the richer reviewed picks existed only in unused overlays.

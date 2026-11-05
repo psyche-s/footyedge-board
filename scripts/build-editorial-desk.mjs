@@ -148,6 +148,7 @@ export function buildEditorialDesk({date,board,research,evidence=[]}){
  }
  const matches=[];
  for(const g of board.games){
+    if(g.league==="eng.2")continue;
    const f=refs.get(String(g.id));
    if(!f||norm(identity(g,"home"))!==norm(f.home.name)||norm(identity(g,"away"))!==norm(f.away.name))continue;
    const H=(f.last10?.home||[]).filter(r=>r?.date&&Date.parse(r.date)<Date.parse(f.date)
@@ -194,7 +195,7 @@ export function buildEditorialDesk({date,board,research,evidence=[]}){
  }
  // Asian research is shown as fixture picks, not misleadingly fed into
  // the European/major-league matchday SGP builder.
- const slip=tickets(matches.filter(m=>!["jpn.1","kor.1"].includes(m.league)));
+ const slip=tickets(matches.filter(m=>!["jpn.1","kor.1","eng.2"].includes(m.league)));
  return {schema:"footyedge-editorial-desk-v1",date,
    state:matches.length?"reviewed":"pass",researchGradeNotProbability:true,
    noSportsbookOdds:true,confidenceCalibrated:false,originalMatchBoardsUnchanged:true,

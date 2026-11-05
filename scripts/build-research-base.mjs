@@ -10,7 +10,7 @@ const TZ="America/Toronto";
 
 const TRACKED=new Set([
   "uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","uefa.europa","uefa.europa.conf",
-  "cze.1","jpn.1","kor.1","eng.1","eng.2","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
+  "cze.1","jpn.1","kor.1","eng.1","tur.1","ksa.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","usa.1",
   "sco.1","eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.tennents","sco.cis",
   "uefa.euro","uefa.euroq","fifa.world","fifa.worldq.uefa","fifa.worldq.conmebol","fifa.worldq.concacaf"
 ]);
@@ -249,7 +249,7 @@ async function buildFixture(g){
 }
 // Source-labelled fallback for research continuity only; never treat snapshots as live.
 function datedSnapshotEvents(snapshot){
-  const codes=new Map([[750,"jpn.1"],[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"]]);
+  const codes=new Map([[750,"jpn.1"],[700,"eng.1"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"]]);
   return (snapshot?.response||[]).flatMap(row=>{
     const home=row?.teams?.home,away=row?.teams?.away,fixture=row?.fixture;
     const code=codes.get(Number(row?.league?.id));

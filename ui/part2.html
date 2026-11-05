@@ -1699,7 +1699,7 @@ function filterLeagueIconHtml(id){
   return '<span class="leagueIcon league-'+safeId+'" aria-hidden="true"><img class="leagueLogoImg'+extra+'" src="'+esc(src)+'" alt="" loading="eager" decoding="async" onerror="this.parentElement.outerHTML=leagueFallbackHtml()"></span>'
 }
 function renderLeagues(){
-  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.filter(g=>g?.league&&FootyEdgeAvailability.eventDay(g)===S.date&&!FootyEdgeAvailability.excludedTaggedEvent?.(g)).map(g=>g.league))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","eng.2","tur.1","ksa.1","cze.1","jpn.1","kor.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
+  const row=document.getElementById("leagueRow"),available=[...new Set(S.games.filter(g=>g?.league&&g.league!=="eng.2"&&FootyEdgeAvailability.eventDay(g)===S.date&&!FootyEdgeAvailability.excludedTaggedEvent?.(g)).map(g=>g.league))],order=["uefa.nations","fifa.friendly","concacaf.nations.league","uefa.champions","eng.1","tur.1","ksa.1","cze.1","jpn.1","kor.1","esp.1","ita.1","ger.1","fra.1","uefa.europa","uefa.europa.conf"];
   available.sort((a,b)=>{const ai=order.indexOf(a),bi=order.indexOf(b);return(ai<0?999:ai)-(bi<0?999:bi)});
   if(S.league!=="all"&&!available.includes(S.league))S.league="all";
   const defs=[["all","All Leagues"],...available.map(id=>[id,displayLeagueName(id)])];
@@ -1936,14 +1936,14 @@ async function load(date=S.date){
       const apiPrimary=Boolean(apiFixture)&&!fixturesPayload?._footyedgeFallback,apiStatus=apiFixture?.fixture?.status||{},apiShort=String(apiStatus.short||"");
       const apiLive=/^(1H|2H|HT|ET|P|LIVE)$/i.test(apiShort),apiDone=/^(FT|AET|PEN)$/i.test(apiShort);
       return{id:String(e.id),apiFixtureId,date:apiPrimary&&apiFixture?.fixture?.date?apiFixture.fixture.date:e.date,year:Number(apiFixture?.league?.season||e.season?.year||S.date.slice(0,4)),league:l,leagueName:displayLeagueName(l,apiFixture?.league?.name),leagueLogo:apiFixture?.league?.logo||LEAGUE_LOGOS[l]||null,home:{id:String(h?.id??h?.team?.id??""),name:homeName,logo:apiFixture?.teams?.home?.logo||h?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.home):scoreVal(h?.score)},away:{id:String(a?.id??a?.team?.id??""),name:awayName,logo:apiFixture?.teams?.away?.logo||a?.team?.logo||null,score:apiPrimary?scoreVal(apiFixture?.goals?.away):scoreVal(a?.score)},odds:mergeOdds(base,extra),live:apiPrimary?apiLive:String(st.name||"").includes("IN_PROGRESS"),done:apiPrimary?apiDone:!!st.completed,detail:apiPrimary?(apiStatus.long||apiStatus.elapsed||apiShort):st.detail||"",model:null,context:null,apiPrediction:null,availability:null,availabilityLoaded:false,dailyInsight:insightMap.get(fixtureMatchKey(homeName,awayName))||null,baseResearch:researchBaseMap.get(fixtureMatchKey(homeName,awayName))||null}
-    }).filter(g=>isMajorLeague(g.league)&&FootyEdgeAvailability.eventDay(g)===S.date);
+    }).filter(g=>isMajorLeague(g.league)&&g.league!=="eng.2"&&FootyEdgeAvailability.eventDay(g)===S.date);
 
     // Recover dated men's fixtures that the ESPN scoreboard did not include.
     // Fixture-only cards never manufacture odds, confidence or betting picks.
     const eligibleFixtureLeagues={
       "Premier League":"eng.1","La Liga":"esp.1","Serie A":"ita.1",
       "Bundesliga":"ger.1","Ligue 1":"fra.1","Eredivisie":"ned.1",
-      "eng.2":"eng.2","tur.1":"tur.1","ksa.1":"ksa.1",
+      "tur.1":"tur.1","ksa.1":"ksa.1",
       "sco.1":"sco.1","EFL Cup":"eng.league_cup","League Cup":"eng.league_cup","Carabao Cup":"eng.league_cup",
       "FA Cup":"eng.fa_cup","DFB Pokal":"ger.dfb_pokal","DFB-Pokal":"ger.dfb_pokal","Copa del Rey":"esp.copa_del_rey",
       "Coppa Italia":"ita.coppa_italia","Coupe de France":"fra.coupe_de_france","KNVB Beker":"ned.cup",
@@ -2071,7 +2071,7 @@ async function load(date=S.date){
           g.model.top=null;
         }else g.model={top:null,top3:[],candidates:[],rankedCandidates:[],researchCandidates:[]};
       }
-      S.games=games;attachSavedH2H(S.games);S.dataSource="Verified historical research · waiting for official board";render();
+      S.games=games.filter(g=>g.league!=="eng.2");attachSavedH2H(S.games);S.dataSource="Verified historical research · waiting for official board";render();
       if(!games.length){
         const info=await FootyEdgeAvailability.load(date,json,p);
         if(S.date!==date)return;
@@ -2122,7 +2122,7 @@ async function load(date=S.date){
     }
     for(const g of games){applyInstinctCalibration(g);applyTrackedPerformanceCalibration(g)}
     S.boardReady=true;
-    S.games=games;attachSavedH2H(S.games);S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
+    S.games=games.filter(g=>g.league!=="eng.2");attachSavedH2H(S.games);S.dataSource=dailyOddsPayload?.events?.length?"Daily posted odds · frozen for "+S.date:liveOddsPayload?.events?.length?"Live soccer + The Odds API CA market":oddsPayload?(oddsPayload._footyedgeFallback?"Live market fallback":"Live soccer + bookmaker odds"):"Live soccer";render();planRefresh()
   }catch(e){console.error(e);document.getElementById("best").innerHTML='<div class="error">Live ranking is temporarily unavailable.</div>';document.getElementById("games").innerHTML=`<div class="error">Could not load live soccer data: ${esc(e.message||e)} <button type="button" onclick="load(S.date)">Retry</button></div>`}
   finally{clearTimeout(loadingWatchdog)}
 }
