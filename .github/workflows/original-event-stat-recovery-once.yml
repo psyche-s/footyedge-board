@@ -1,0 +1,48 @@
+name: Original one-time historical event-stat recovery
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/original-event-stat-recovery-once.yml"
+      - "scripts/build-verified-event-projections.mjs"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: original-event-stats-20261105
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate exact historical event joins
+        run: node --test tests/verified-event-projections.test.mjs
+      - name: Capture completed events prior to each fixture and build isolated stat overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s data/boards/2026-11-05.json
+          if [[ -s data/event-projection-overlays/2026-11-05.json ]]; then
+            echo "Preserving previously completed event-stat recovery."
+            exit 0
+          fi
+          node scripts/build-verified-event-projections.mjs --date=2026-11-05
+          jq -e '.date=="2026-11-05" and .immutableOriginalBoardPreserved and .originalGoalPredictionsPreserved and .coverage.projected>0' data/event-projection-overlays/2026-11-05.json
+      - name: Publish only verified event-stat files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -f data/style-matchups/2026-11-05.json data/event-projection-overlays/2026-11-05.json
+          if git diff --cached --quiet; then echo "No new event files";exit 0;fi
+          git config user.name "FootyEdge Events"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -m "Backfill November 5 verified event shots corners fouls projection data"
+          git pull --rebase origin main
+          git push origin HEAD:main
