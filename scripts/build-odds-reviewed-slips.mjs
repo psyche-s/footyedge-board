@@ -72,15 +72,15 @@ function shortlistPriceCandidates(fixture,sim,quotes){
 // overlapping goal and shot-on-target exposure.
 function marketGroup(p){
  const k=(String(p.family||"")+" "+String(p.category||"")+" "+String(p.label||"")).toLowerCase();
- if(/shots? on target|\\bsot\\b/.test(k))return "shots-on-target";
- if(/shots?\\b/.test(k))return "shots";
+ if(/shots? on target|\bsot\b/.test(k))return "shots-on-target";
+ if(/shots?\b/.test(k))return "shots";
  if(/fouls? won|fouls? drawn/.test(k))return "fouls-won";
  if(/fouls? committed|fouls? conceded/.test(k))return "fouls-committed";
  if(/corners?/.test(k))return "corners";
  if(/cards?|bookings?/.test(k))return "cards";
  if(/tackles?/.test(k))return "tackles";
  if(/assists?/.test(k))return "assists";
- if(/btts|both teams to score|team.goal|goal|scorer|\\btotal\\b/.test(k))return "goals";
+ if(/btts|both teams to score|team.goal|goal|scorer|\btotal\b/.test(k))return "goals";
  if(/result|winner|double.chance| or draw| ml$|match result/.test(k))return "result";
  return "unknown";
 }
@@ -97,7 +97,7 @@ export function independentSgpPair(a,b){
 }
 function sourceReferenced(p){
  return p.sourceBackedReason===true||
-  (Array.isArray(p.sourceProvenance)&&p.sourceProvenance.some(x=>/^https:\\/\\//.test(x?.url||"")));
+  (Array.isArray(p.sourceProvenance)&&p.sourceProvenance.some(x=>/^https:\/\//.test(x?.url||"")));
 }
 export function verifiedIndependentEvent(p){
  const group=marketGroup(p),e=p.marketEvidence||{};
@@ -105,9 +105,9 @@ export function verifiedIndependentEvent(p){
  const sample=Number(e.playerMarket===true?e.playerSample:e.teamSample);
  if(!Number.isFinite(sample)||sample<5||
    !Number.isFinite(Number(e.opponentAllowanceSample))||Number(e.opponentAllowanceSample)<5)return false;
- if(!/^https:\\/\\//.test(String(e.sourceUrl||"")))return false;
+ if(!/^https:\/\//.test(String(e.sourceUrl||"")))return false;
  const label=String(p.label||"");
- if(!/(?:over|under)\\s+\\d+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?\\+/i.test(label)&&
+ if(!/(?:over|under)\s+\d+(?:\.\d+)?|\d+(?:\.\d+)?\+/i.test(label)&&
     !Number.isFinite(e.line))return false;
  // A player market needs an identified player, an expected role, and
  // historical minutes; merely naming a prop or projecting a XI is not proof.
