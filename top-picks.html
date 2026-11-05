@@ -265,6 +265,7 @@ function viewLeg(x){
  return {p:{label:x.label,reason:x.why,evidence:x.evidence},g:{home:parts[0]||"Club",away:parts.slice(1).join(" vs ")||"Club",date:x.kickoff||null,league:x.league},
    rating:x.rating==null?null:Number(x.rating),recentHits:x.recentHits,recentSample:x.recentSample,risk:x.risk||[],evidence:x.evidence||"",
    observedReferenceOdds:Number.isInteger(x.publishedReferenceOdds)?x.publishedReferenceOdds:Number.isInteger(x.observedReferenceOdds)?x.observedReferenceOdds:null,
+   observedReferenceDecimal:Number.isFinite(Number(x.observedReferenceDecimal))&&Number(x.observedReferenceDecimal)>1?Number(x.observedReferenceDecimal):null,
    referenceRegion:x.referenceRegion||"US reference",
    referenceQuoteStatus:String(x.priceStatus||""),verifiedOntarioPrice:x.verifiedPrice===true?x.odds:null};
 }
@@ -277,7 +278,7 @@ function legHTML(x,i){
   '<div class="legMatch">'+esc(matches(g))+' <span class="legFixtureTime">· '+esc(legKickoff(g))+'</span></div>'+
   (sample?'<div class="fe-priceSnapshot">Recent record '+x.recentHits+'/'+x.recentSample+'</div>':'')+
   (Number.isInteger(x.observedReferenceOdds)?'<div class="fe-priceSnapshot" title="Published reference only; current Ontario availability is unverified">Reference '+esc((x.observedReferenceOdds>0?'+':'')+x.observedReferenceOdds)+'</div>':
-   '<div class="fe-priceSnapshotUnverified">Individual price pending</div>')+
+   (Number.isFinite(x.observedReferenceDecimal)?'<div class="fe-priceSnapshot" title="Standalone reference only, Ontario availability unconfirmed">Reference '+esc(x.observedReferenceDecimal.toFixed(2))+' decimal · Ontario unverified</div>':'<div class="fe-priceSnapshotUnverified">Individual price pending</div>'))+
   '<details class="legWhy"><summary>Why this leg</summary><p>'+esc(cleanReason(p.reason||"See the match analysis."))+'</p>'+
   (x.risk?.length?'<span class="legEvidence">Watch: '+esc(cleanReason(x.risk.join("; ")))+'</span>':'')+'</details></div>';
 }
@@ -339,12 +340,12 @@ function fillSgpSelect(desk=displayedDesk){
 let displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);renderSlipPrice(null,"evAccaPrice",300);
 function renderCompetitionSlips(list){
  const target=document.getElementById("sgpLeagueList");
- const accepted=(list||[]).filter(x=>["qualified","hold"].includes(x.status)&&FE_SGP_LEAGUES.has(x.league)&&[3,4].includes(x.legs?.length)&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
+ const accepted=(list||[]).filter(x=>["qualified","hold"].includes(x.status)&&FE_SGP_LEAGUES.has(x.league)&&[2,3,4,5].includes(x.legs?.length)&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
  target.innerHTML=accepted.length?accepted.map(x=>'<article class="fe-leagueReceipt">'+
  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+(x.verifiedCombinedPrice&&referencePrice(x,150)?'+'+Number(x.combinedReferenceAmerican):'PRICE HOLD')+'</strong></div>'+
  '<h3>'+esc(x.title||x.legs[0].fixture)+'</h3><small>'+esc(x.legs[0].fixture)+'</small>'+
- x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.observedReferenceBook||'Book unknown')+' standalone '+esc(l.observedReferenceDecimal||'pending')+' · '+esc(cleanReason(l.why||''))+'</small></div></div>').join("")+
- '<footer>'+esc(x.caution||'No confirmed same-game quote')+'</footer></article>').join(""):'<div class="fe-sgpEmpty">No 3–4 leg SGP has sufficient source evidence for this date.</div>';
+ x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.observedReferenceBook||'Reference source')+' standalone '+esc(l.observedReferenceDecimal||'pending')+' decimal (Ontario unverified) · '+esc(cleanReason(l.why||''))+'</small></div></div>').join("")+
+ '<footer>'+esc(x.caution||'No confirmed same-game quote')+'</footer></article>').join(""):'<div class="fe-sgpEmpty">No SGP has sufficient research evidence and verified pricing for this date.</div>';
 }
 
 function renderDesk(desk,date,live=false){
