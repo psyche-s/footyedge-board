@@ -3,6 +3,7 @@
 // Does NOT edit frozen boards, official picks or the published goal model.
 import fs from "node:fs/promises";
 import {pathToFileURL} from "node:url";
+import path from "node:path";
 import {buildAdvancedSimulations} from "./simulate-matchups-v3.mjs";
 const metrics=["shots","shotsOnTarget","corners","fouls","yellowCards","tackles","passes","shotsAllowed","shotsOnTargetAllowed"];
 const names={shots:["totalshots","shots"],shotsOnTarget:["shotsontarget","shotsongoal"],corners:["woncorners","corners","cornerkicks"],
@@ -147,5 +148,5 @@ async function main(){
  await fs.writeFile(outPath,JSON.stringify(out,null,2)+"\n");
  console.log("Event overlay coverage:",JSON.stringify(out.coverage));
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(new URL("file://"+process.argv[1]).pathname).href)
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)
  main().catch(e=>{console.error(e);process.exitCode=1});
