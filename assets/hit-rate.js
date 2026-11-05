@@ -19,7 +19,13 @@
  function dayLabel(date){return new Date(date+'T12:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).toUpperCase()}
  function leagueName(league){return leagues[league]||''}
  function american(value){const n=Number(value);return value!=null&&Number.isFinite(n)&&Math.abs(n)>=100?(n>0?'+':'')+Math.round(n):null}
- function ticketTitle(ticket){return ticket.type==='acca'?'Matchday ACCA':(ticket.bestSgp?'Best SGP':leagueName(ticket.league)?leagueName(ticket.league)+' SGP':'Same-game parlay')}
+ function ticketTitle(ticket){
+   if(ticket.type==='acca')return 'Matchday ACCA';
+   if(ticket.type==='ev_acca')return 'Model-Edge ACCA';
+   if(ticket.type==='player_atgs')return 'Anytime goalscorers';
+   if(ticket.type==='player_soa')return 'Score or assist';
+   return ticket.bestSgp?'Best SGP':leagueName(ticket.league)?leagueName(ticket.league)+' SGP':'Same-game parlay';
+ }
  function markHtml(result){return '<span class="mark '+result+'" role="img" aria-label="'+labels[result]+'"><span class="markGlyph">'+marks[result]+'</span></span>'}
  function legValue(leg){
   if(leg.result==='push'&&leg.voidReason==='did_not_start')return {value:'Void',detail:'Did not start'};
@@ -47,13 +53,13 @@
   return '<article class="trackedTicket top5Ticket" data-ticket-title="Top 5 picks" aria-label="Top 5 picks for '+esc(dayLabel(day.date))+'"><header class="ticketHeader"><div class="ticketTopline"><span class="ticketKicker">THE DAILY FIVE</span><span class="ticketStatus '+(pending?'pending':'neutral')+'">'+tag+'</span></div><h3>Top 5 picks</h3><p>Five individual selections. Every result recorded.</p></header><ol class="trackedLegs">'+day.top5.map(p=>legHtml(p,true)).join('')+'</ol><footer class="ticketFooter"><span>'+esc(footer)+'</span><strong>'+(s.hitRate==null?'Awaiting results':Math.round(s.hitRate)+'% Hit Rate')+'</strong></footer></article>';
  }
  function slipCard(ticket,date){
-  const research=ticket.trackable===false,grade=resultOf(ticket.result),result=research&&grade==='pending'?'unpriced':grade,s=stats([{top5:ticket.legs||[]}]);
+  const isPlayer=['player_atgs','player_soa'].includes(ticket.type),research=ticket.trackable===false,grade=resultOf(ticket.result),result=research&&grade==='pending'&&!isPlayer?'unpriced':grade,s=stats([{top5:ticket.legs||[]}]);
   const status={hit:'LANDED',miss:'DIDN’T LAND',push:'VOID / PUSH',pending:'PENDING',unpriced:'PRICE PENDING'}[result];
-  const title=ticketTitle(ticket),fixture=ticket.type==='acca'?'Selections across '+new Set((ticket.legs||[]).map(l=>l.gameId||l.fixture)).size+' different fixtures':ticket.legs?.[0]?.fixture||'Published match selections';
-  const price=american(ticket.combinedReferenceAmerican),priceText=research?'Research only':price?price+' reference':(ticket.legs||[]).length+' legs';
+  const title=ticketTitle(ticket),fixture=['acca','ev_acca','player_atgs','player_soa'].includes(ticket.type)?'Selections across '+new Set((ticket.legs||[]).map(l=>l.gameId||l.fixture)).size+' different fixtures':ticket.legs?.[0]?.fixture||'Published match selections';
+  const price=american(ticket.combinedReferenceAmerican),priceText=isPlayer?'Player research, no wager price':research?'Research only'+(price?' · '+price+' US reference':''):price?price+' reference':(ticket.legs||[]).length+' legs';
   const counts=s.hits+' hit · '+s.misses+' miss'+(s.pushes?' · '+s.pushes+' void':'')+(s.pending?' · '+s.pending+' pending':'');
-  const foot=research?(result==='unpriced'?'':counts+' · ')+'Not included in the slip hit rate':counts;
-  return '<article class="trackedTicket '+result+'Ticket" data-ticket-title="'+esc(title)+'" aria-label="'+esc(title+' for '+dayLabel(date))+'"><header class="ticketHeader"><div class="ticketTopline"><span class="ticketKicker">'+(ticket.type==='acca'?'ACROSS THE SLATE':'MATCHDAY SGP')+'</span><span class="ticketStatus '+result+'">'+status+'</span></div><h3>'+esc(title)+'</h3><p>'+esc(fixture)+'</p></header><ol class="trackedLegs">'+(ticket.legs||[]).map(l=>legHtml(l)).join('')+'</ol><footer class="ticketFooter"><span>'+esc(foot)+'</span><strong class="ticketPrice">'+esc(priceText)+'</strong></footer></article>';
+  const foot=isPlayer?counts+' · Player research results (not official wager returns)':research?(result==='unpriced'?'':counts+' · ')+'Not included in the official slip hit rate':counts;
+  return '<article class="trackedTicket '+result+'Ticket" data-ticket-title="'+esc(title)+'" aria-label="'+esc(title+' for '+dayLabel(date))+'"><header class="ticketHeader"><div class="ticketTopline"><span class="ticketKicker">'+(['acca','ev_acca'].includes(ticket.type)?'ACROSS THE SLATE':isPlayer?'PLAYER GOAL RESEARCH':'MATCHDAY SGP')+'</span><span class="ticketStatus '+result+'">'+status+'</span></div><h3>'+esc(title)+'</h3><p>'+esc(fixture)+'</p></header><ol class="trackedLegs">'+(ticket.legs||[]).map(l=>legHtml(l)).join('')+'</ol><footer class="ticketFooter"><span>'+esc(foot)+'</span><strong class="ticketPrice">'+esc(priceText)+'</strong></footer></article>';
  }
  function historyHtml(days){
   if(!days.length)return '<p class="empty">No official picks tracked this month yet.</p>';
@@ -102,6 +108,14 @@
    const labelNode=document.getElementById(prefix+'Label'),recordNode=document.getElementById(prefix+'Record'),rateNode=document.getElementById(prefix+'Rate');
    if(labelNode)labelNode.textContent=label;if(recordNode)recordNode.textContent=(p.hits||0)+'–'+(p.misses||0);
    if(rateNode)rateNode.textContent=(p.hitRate==null?'Awaiting results':Math.round(p.hitRate)+'% Hit Rate')+(p.pending?' · '+p.pending+' pending':'');
+  }
+  const playerStats=history?.playerGoals?.month;
+  for(const [key,id,label] of [['atgs','atgs','ATGS'],['scoreOrAssist','soa','Score or assist']]){
+   const p=playerStats?.[key]||stats([{top5:days.flatMap(d=>(d.tickets||[]).filter(t=>t.type===(key==='atgs'?'player_atgs':'player_soa')).flatMap(t=>t.legs||[]))}]);
+   const record=document.getElementById(id+'Record'),rate=document.getElementById(id+'Rate');
+   if(record)record.textContent=(p.hits||0)+'–'+(p.misses||0);
+   if(rate)rate.textContent=(p.hitRate==null?'Awaiting verified outcomes':Math.round(p.hitRate)+'% hit rate')+
+    (p.pending?' · '+p.pending+' pending':'')+(p.pushes?' · '+p.pushes+' void':'');
   }
   document.getElementById('history').innerHTML=historyHtml(days);bindCarousels();
  }
