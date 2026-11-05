@@ -44,8 +44,8 @@ test('the live slip renderer exposes every supported competition candidate with 
  const context=vm.createContext({Intl,Date,URL,console,document:{getElementById(id){if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);}},fetch:async()=>{throw Error('No network');},desk});
  vm.runInContext(code,context);
  vm.runInContext(`renderDesk(desk,'${day}')`,context);
- assert.equal((nodes.get('sgpCompetitionSelect').innerHTML.match(/<option/g)||[]).length,4);
- for(const slip of desk.sgpsByLeague){
+ assert.equal((nodes.get('sgpCompetitionSelect').innerHTML.match(/<option/g)||[]).length,3);
+ for(const slip of desk.sgpsByLeague.filter(s=>s.league!=='eng.2')){
   assert.ok(nodes.get('sgpCompetitionSelect').innerHTML.includes(`value="${slip.league}"`));
   vm.runInContext(`selectedSgpLeague='${slip.league}';renderDesk(desk,'${day}')`,context);
   for(const leg of slip.legs)assert.ok(nodes.get('sgpSlip').innerHTML.includes(leg.label));

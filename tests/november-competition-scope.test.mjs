@@ -15,7 +15,7 @@ test("Daily research, picks, and SGP filter enforce the new competition scope",(
   const board=fs.readFileSync("scripts/build-evidence-only-board.mjs","utf8");
   const slips=fs.readFileSync("scripts/build-daily-slips.mjs","utf8");
   const picks=fs.readFileSync("top-picks.html","utf8");
-  assert.ok(!research.includes('"eng.1","eng.2"'));
+  assert.ok(!research.match(/const TRACKED=new Set\(\[([\s\S]*?)\]\)/)?.[1]?.includes('"eng.2"'));
   assert.ok(board.includes('research.fixtures.filter(f=>f.league!=="eng.2")'));
   assert.ok(!slips.includes('"eng.1","eng.2"'));
   const line=picks.split("\n").find(s=>s.includes("const FE_SGP_LEAGUES="));
