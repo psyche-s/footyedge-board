@@ -1761,6 +1761,17 @@ async function load(date=S.date){
   // A late provider must not leave an indefinite spinner. Keep date-scoped
   // loading state so switching days never paints another day's data.
   const loadingDate=S.date;
+  // Async, dated event-only sample estimates; never touch archived score/WDL.
+  S.feEventProjectionsById=new Map();
+  repoData("data/event-projection-overlays/"+loadingDate+".json").then(payload=>{
+   if(S.date!==loadingDate||payload?.schema!=="footyedge-event-stat-projection-overlay-v1"||
+      payload.date!==loadingDate||payload.originalGoalPredictionsPreserved!==true||
+      payload.immutableOriginalBoardPreserved!==true||!Array.isArray(payload.matches))return;
+   S.feEventProjectionsById=new Map(payload.matches.filter(x=>x.notGoalModel===true&&x.statTotals&&x.fixtureId)
+     .map(x=>[String(x.fixtureId),x]));
+   const open=(S.games||[]).find(g=>String(g.id)===String(S.openGameId));
+   if(open&&document.getElementById("drawer")?.classList.contains("on"))renderModal(open);
+  }).catch(()=>{});
   // Small, read-only metadata produced by GitHub Actions with its own FSAPI secret.
   // An unavailable or outdated snapshot never blocks the primary fixture board.
   S.feGithubApiSnapshot=null;
@@ -2859,13 +2870,14 @@ function feProjectionTeamStats(g,sim){
   ["fouls","Fouls"],["tackles","Tackles"],["passes","Passes"]];
  const rows=defs.filter(([k])=>Number.isFinite(Number(h[k]))&&h[k]!==null&&
   Number.isFinite(Number(a[k]))&&a[k]!==null);
- if(!rows.length)return '<p class="fe-projUnavailable">Team-level event projections require verified match histories. No unsupported stats are substituted.</p>';
+ if(!rows.length)return '<p class="fe-projUnavailable">Shots, corners, fouls and other event projections require five independently verified previous match samples for each team. Missing values are not zeros.</p>';
  const badge=(value,side)=>'<strong>'+Number(value).toFixed(value>=10?1:2)+'</strong>';
- return '<section class="fe-projExtra"><div class="fe-panelHeading"><h3>PROJECTED TEAM STATS</h3><span>Model estimate · not a box score</span></div>'+
+ const obs=sim?.eventEvidence;
+ return '<section class="fe-projExtra"><div class="fe-panelHeading"><h3>PROJECTED TEAM STATS</h3><span>Verified history · experimental estimate</span></div>'+
   '<div class="fe-projCompareHead"><span>'+esc(g.home.name)+'</span><span>'+esc(g.away.name)+'</span></div>'+
   '<div class="fe-projCompareRows">'+rows.map(([k,label])=>{
    const x=Number(h[k]),y=Number(a[k]),top=Math.max(1,x+y);
-   return '<div class="fe-projCompareRow">'+
+   return '<div class="fe-projCompareRow" title="'+esc((obs?.metricSamplesHome?.[k]??'—')+' home and '+(obs?.metricSamplesAway?.[k]??'—')+' away verified past match samples')+'">'+
     '<div class="fe-projCompareValue fe-homeValue">'+badge(x)+'</div>'+
     '<div class="fe-projCompareLabel">'+esc(label)+'</div>'+
     '<div class="fe-projCompareValue fe-awayValue">'+badge(y)+'</div>'+
@@ -2886,7 +2898,7 @@ function feProjectionMatchTotals(sim){
    '<div class="fe-projTotalHead"><strong>'+esc(label)+'</strong><span>'+Number(v.projection).toFixed(2)+' projected</span></div>'+
    '<div class="fe-projTotalOptions">'+v.lines.slice(0,3).map(l=>'<div><span>Over '+esc(l.line)+'</span><strong>'+Number(l.overPct).toFixed(1)+'%</strong></div>').join("")+'</div>'+
    '</div>'}).join("")+
-  '<p class="fe-projDisclaimer">Only verified team-stat input families are displayed. An unreported measurement is missing, not zero; these percentages are exploratory simulations.</p></section>';
+  '<p class="fe-projDisclaimer">Only verified pre-match event-stat samples are shown. Missing values are not treated as zero; percentages are exploratory, uncalibrated simulations rather than bookmaker lines.</p></section>';
 }
 function feProjectionFormation(g){
  const raw=g.liveIntel||g.teamIntel;
@@ -2944,7 +2956,19 @@ function feBarTextColor(hex){
 }
 
 function feProjectionsPanel(g){
- const sim=S.feSimById?.get(String(g.id||g.apiFixtureId||""))||null;
+ const id=String(g.id||g.apiFixtureId||"");
+ const published=S.feSimById?.get(id)||null;
+ const additional=S.feEventProjectionsById?.get(id)||null;
+ // Overlay event market stats only. Original score projection, WDL, model
+ // version, goal probabilities and immutable official picks stay unchanged.
+ const eligible=published&&additional?.notGoalModel===true&&additional.fixtureId===id&&
+   additional.kickoff===published.kickoff;
+ const sim=eligible?{...published,
+   statTotals:{...(published.statTotals||{}),...additional.statTotals},
+   teamProjections:{...(published.teamProjections||{}),
+    home:{...(published.teamProjections?.home||{}),...(additional.teamProjections?.home||{})},
+    away:{...(published.teamProjections?.away||{}),...(additional.teamProjections?.away||{})}},
+   eventEvidence:additional.evidence,eventResearchDerivedLater:true}:published;
  const old=feExperimentalProjection(g);
  if(!sim&&!old)return '<section class="fe-panel"><h3>PROJECTIONS</h3><p class="fe-panelNote">Not enough verified match data for a supported projection.</p></section>';
  const pct=n=>Number.isFinite(Number(n))?Math.max(0,Math.min(100,Number(n))):null;
@@ -2975,7 +2999,9 @@ function feProjectionsPanel(g){
    '<div class="fe-projBars" aria-label="Result estimates"><div style="width:'+a+'%;background:'+esc(fePalette(g.home).primary)+';color:'+feBarTextColor(fePalette(g.home).primary)+'">'+format(a)+'</div><div style="width:'+d+'%;background:#66726f;color:#ffffff">'+format(d)+'</div><div style="width:'+b+'%;background:'+esc(fePalette(g.away).primary)+';color:'+feBarTextColor(fePalette(g.away).primary)+'">'+format(b)+'</div></div>'+
    '<div class="fe-projResultLabels"><span>'+esc(g.home.name)+' WIN</span><span>DRAW</span><span>'+esc(g.away.name)+' WIN</span></div>'+
    '<div class="fe-simMetrics">'+p.map(q=>tile(q[0],q[1])).join("")+'</div>'+
-   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+  (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionPlayerFouls(g,sim)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
+   '<p class="fe-projDisclaimer">Experimental, uncalibrated goal-model estimates; not guarantees, sportsbook prices, or official pick confidence. Most likely exact score is only the most common simulated result.</p>'+
+    (sim?.eventResearchDerivedLater?'<p class="fe-projDisclaimer">Shots, corners, fouls and other event stats were recovered later from completed pre-fixture matches. They are not original publication-time forecasts.</p>':'')+
+    (sim?feProjectionTeamStats(g,sim)+feProjectionMatchTotals(sim)+feProjectionFormation(g)+feProjectionPlayerFouls(g,sim)+feProjectionFactorNotes(sim):feProjectionFormation(g))+'</section>';
 }
 
 const feStandingsCache=new Map();

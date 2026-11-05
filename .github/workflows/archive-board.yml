@@ -156,6 +156,9 @@ jobs:
           FOOTYEDGE_STYLE_FEED_APPROVED: ${{ vars.FOOTYEDGE_STYLE_FEED_APPROVED }}
         run: |
           node scripts/sync-experimental-standings.mjs || echo "::warning::Optional standings unavailable; run conservative history-only model."
+          # Verified historic match event observations before v3 modeling;
+          # unavailable metrics remain null, with the immutable board untouched.
+          node scripts/build-verified-event-projections.mjs --date="$(TZ=America/Toronto date +%F)" || echo "::warning::Verified shot/corner/foul data unavailable; keep those metrics unknown."
           node scripts/sync-style-matchups.mjs || echo "::warning::Optional verified style-event feed unavailable."
           node --test tests/experimental-simulations.test.mjs tests/advanced-matchups.test.mjs
           node scripts/simulate-fixtures.mjs
