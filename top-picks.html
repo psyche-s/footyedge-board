@@ -377,11 +377,14 @@ async function refresh(){
 
 
  document.getElementById("refreshStatus").textContent="";
- const [pricedResearch,archive]=await Promise.all([data("data/slips-reviewed/"+date+".json"),data("data/boards/"+date+".json")]);
+ const [pricedResearch,archive,sgpWatch]=await Promise.all([data("data/slips-reviewed/"+date+".json"),data("data/boards/"+date+".json"),data("data/sgp-watchlist/"+date+".json")]);
  displayedFixtureLeagues=archive?.date===date?new Set((archive.games||[]).filter(g=>g.league!=="eng.2"&&g.status!=="postponed").map(g=>g.league)):null;
  const reviewed=pricedResearch||await data("data/editorial-desk/"+date+".json");
  const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
- renderDesk(desk,date);
+ const useHold=desk?.sgp?.status==="pass"&&!(desk.sgpsByLeague||[]).length&&sgpWatch?.schema==="footyedge-unpriced-sgp-watch-v1"&&sgpWatch.date===date&&sgpWatch.status==="unpriced_research_only";
+ const holds=useHold?(sgpWatch.sgpsByLeague||[]).filter(x=>x.status==="hold"&&x.verifiedCombinedPrice===false&&x.legs?.length===2&&x.legs.every(l=>l.verifiedPrice===false&&l.odds==null)):[];
+ const researchOnly=holds.length?{...desk,sgp:holds[0],sgpsByLeague:holds}:desk;
+ renderDesk(researchOnly,date);
 }
 async function refreshLive(){
  const button=document.getElementById("refreshBtn"),note=document.getElementById("refreshStatus");
