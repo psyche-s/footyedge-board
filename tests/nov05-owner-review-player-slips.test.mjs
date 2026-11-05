@@ -24,4 +24,7 @@ test("Player scoring and goal-contribution slips have source-specific predicted 
  for(const slip of goals.slips){assert.equal(slip.status,"hold");assert.ok(slip.legs.length>=3);assert.ok(slip.legs.every(x=>x.lineupSource.startsWith("https://")&&x.playerEvidenceSource.startsWith("https://")&&x.projectedStartingXI&&x.officiallyConfirmedStartingXI===false&&x.odds===null&&x.gradeNotHitProbability));}
  const page=fs.readFileSync("top-picks.html","utf8");
  assert.match(page,/id="atgsResearchSlip"/);assert.match(page,/id="scoreAssistResearchSlip"/);
+ const ui=fs.readFileSync("ui/part2.html","utf8");
+ assert.match(ui,/S\.reviewedTop3\?\.editorialRankingApproved===true/);
+ assert.match(ui,/return "RESEARCH GRADE"/);
 });

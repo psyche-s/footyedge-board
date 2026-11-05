@@ -1129,10 +1129,12 @@ function emptyBoardMessage(){
   return FootyEdgeAvailability.message(S.games.length?{kind:"games",date:S.date,count:S.games.length}:S.availability,S.date===etDate(),!!S.archive);
 }
 function pickScoreLabel(p){
+  if(p?.ownerReviewed===true)return "RESEARCH GRADE";
   if(p&&Number.isFinite(Number(p.confidenceRating))&&!p.probabilityCalibrated)return "CONFIDENCE";
   return "CONF";
 }
 function pickScoreValue(p){
+  if(p?.ownerReviewed===true&&Number.isFinite(Number(p.confidenceRating)))return Math.round(Number(p.confidenceRating))+"/100";
   if(p&&Number.isFinite(Number(p.confidenceRating))&&!p.probabilityCalibrated)
     return Math.round(Number(p.confidenceRating))+"%";
   const n=Number(p?.confidenceRating??p?.score);
@@ -1742,7 +1744,7 @@ function renderLanding(){
   const el=document.getElementById("landingTopPicks");if(!el)return;
   const picks=topPicks();
   if(!picks.length){el.innerHTML='<div class="landingEmpty">No pick has cleared today’s strict Top Pick rules yet.</div>';return}
-  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top;return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+'</div></div><div class="landingPickScore"><b>'+esc(String(p?.score??"—"))+(p?.score!=null?"%":"")+'</b><small>'+pickScoreLabel(p)+'</small></div></div>'}).join("")
+  el.innerHTML=picks.map((g,i)=>{const p=g.archiveTopPick||g.model?.top;return '<div class="landingPick"><div class="landingPickRank">'+(i+1)+'</div><div class="landingPickCore"><div class="landingPickFixture">'+esc(teamDisplayName(g,g.home))+' vs '+esc(teamDisplayName(g,g.away))+'</div><div class="landingPickLabel">'+esc(displayPickLabel(g,p)||"Pick")+'</div></div><div class="landingPickScore"><b>'+(p?.ownerReviewed===true?esc(pickScoreValue(p)):esc(String(p?.score??"—"))+(p?.score!=null?"%":""))+'</b><small>'+pickScoreLabel(p)+'</small></div></div>'}).join("")
 }
 
 function render(){
@@ -3249,7 +3251,7 @@ function renderModal(g){
     return '<article class="modalPick fe-selection">'+
       '<div class="fe-pickBadge '+(i===0?"fe-first":"")+'">#'+(i+1)+'</div>'+
       '<div class="fe-pickText"><h4>'+esc(displayPickLabel(g,x))+'</h4>'+(i===0?'<span class="fe-whyLabel">WHY THIS PICK</span>':'')+'<p>'+esc(feReviewedReason(g,x))+'</p>'+feForecastReviewChip(x)+'</div>'+
-      '<span class="fe-pickConf" aria-label="Confidence rating">'+pickScoreValue(x)+'</span>'+
+      '<span class="fe-pickConf" aria-label="'+(x.ownerReviewed?"Research strength grade":"Confidence rating")+'">'+pickScoreValue(x)+'</span>'+
     '</article>';
   }).join(""):'<div class="fe-empty">PASS — 0 qualified picks. Independent evidence for a distinct market is unavailable.</div>';
   const allNews=latestNewsItems(g);
