@@ -67,54 +67,104 @@ function shortlistPriceCandidates(fixture,sim,quotes){
  return result.sort((a,b)=>b.rating-a.rating||b.researchModelPct-a.researchModelPct);
 }
 // A risk family is not independent just because the market label differs.
-export function independentSgpPair(a,b){
- const bucket=p=>{
-  const f=String(p.family||"").toLowerCase(),l=String(p.label||"").toLowerCase();
-  if(f==="result"||/( or draw| ml$|match result)/.test(l))return "result";
-  if(["total","team-goal","btts","goals","scorer"].includes(f)||/(btts|both teams|goal|to score)/.test(l))return "goals";
-  if(/(corner|tackle|foul|card|assist|pass|shot)/.test(f+" "+l))return "events";
-  return "unknown";
- };
- const x=bucket(a),y=bucket(b);
- return x!=="unknown"&&y!=="unknown"&&x!==y;
+// A different label does not imply an independent betting outcome. This
+// taxonomy preserves genuinely different event markets while rejecting
+// overlapping goal and shot-on-target exposure.
+function marketGroup(p){
+ const k=(String(p.family||"")+" "+String(p.category||"")+" "+String(p.label||"")).toLowerCase();
+ if(/shots? on target|\\bsot\\b/.test(k))return "shots-on-target";
+ if(/shots?\\b/.test(k))return "shots";
+ if(/fouls? won|fouls? drawn/.test(k))return "fouls-won";
+ if(/fouls? committed|fouls? conceded/.test(k))return "fouls-committed";
+ if(/corners?/.test(k))return "corners";
+ if(/cards?|bookings?/.test(k))return "cards";
+ if(/tackles?/.test(k))return "tackles";
+ if(/assists?/.test(k))return "assists";
+ if(/btts|both teams to score|team.goal|goal|scorer|\\btotal\\b/.test(k))return "goals";
+ if(/result|winner|double.chance| or draw| ml$|match result/.test(k))return "result";
+ return "unknown";
 }
-function verifiedIndependentEvent(p){
- const key=String(p.family||"")+" "+String(p.label||"");
- const e=p.marketEvidence||{};
- return /(corner|tackle|foul|card|assist|pass|shot)/i.test(key)
-  &&e.verified===true&&Number(e.playerSample||e.teamSample||0)>=5
-  &&Number(e.opponentAllowanceSample||0)>=5
-  &&(e.playerMarket!==true||e.playerAvailable===true);
+const EVENT_GROUPS=new Set(["shots","shots-on-target","fouls-won","fouls-committed","corners","cards","tackles","assists"]);
+export function independentSgpPair(a,b){
+ const x=marketGroup(a),y=marketGroup(b);
+ if(x==="unknown"||y==="unknown"||x===y)return false;
+ const aShot=x==="shots"||x==="shots-on-target";
+ const bShot=y==="shots"||y==="shots-on-target";
+ // A player's SOT is contained within their shots; do not advertise both
+ // as independent legs, even if the price feed labels them separately.
+ if(aShot&&bShot)return false;
+ return true;
+}
+function sourceReferenced(p){
+ return p.sourceBackedReason===true||
+  (Array.isArray(p.sourceProvenance)&&p.sourceProvenance.some(x=>/^https:\\/\\//.test(x?.url||"")));
+}
+export function verifiedIndependentEvent(p){
+ const group=marketGroup(p),e=p.marketEvidence||{};
+ if(!EVENT_GROUPS.has(group)||e.verified!==true||!sourceReferenced(p))return false;
+ const sample=Number(e.playerMarket===true?e.playerSample:e.teamSample);
+ if(!Number.isFinite(sample)||sample<5||
+   !Number.isFinite(Number(e.opponentAllowanceSample))||Number(e.opponentAllowanceSample)<5)return false;
+ if(!/^https:\\/\\//.test(String(e.sourceUrl||"")))return false;
+ const label=String(p.label||"");
+ if(!/(?:over|under)\\s+\\d+(?:\\.\\d+)?|\\d+(?:\\.\\d+)?\\+/i.test(label)&&
+    !Number.isFinite(e.line))return false;
+ // A player market needs an identified player, an expected role, and
+ // historical minutes; merely naming a prop or projecting a XI is not proof.
+ if(e.playerMarket===true&&
+   !(e.playerId&&e.playerName&&label.toLowerCase().includes(String(e.playerName).toLowerCase())&&
+     e.playerAvailable===true&&Number(e.expectedMinutes)>=45&&
+     ["confirmed","predicted"].includes(e.lineupStatus)))return false;
+ return true;
+}
+function validSgpPick(p){
+ if(!Number.isFinite(p.confidenceRating)||p.confidenceRating<65||
+    typeof p.reason!=="string"||p.reason.trim().length<35||!sourceReferenced(p))return false;
+ const group=marketGroup(p);
+ if(group==="unknown")return false;
+ return EVENT_GROUPS.has(group)?verifiedIndependentEvent(p):true;
 }
 function suitableSgp(m){
- if(E.includes(m.league)||!Array.isArray(m.picks)||m.picks.length<3)return null;
- const pool=m.picks.filter(p=>Number.isFinite(p.confidenceRating)&&p.confidenceRating>=65
-  &&typeof p.reason==="string"&&p.reason.length>30);
- const events=pool.filter(verifiedIndependentEvent);
- // No supported third event market? PASS, rather than stacking team 1+,
- // Over 1.5 and double-chance to manufacture a 3-leg SGP.
- if(!events.length)return null;
- let chosen=null;
- for(const event of events){
-  const rest=pool.filter(x=>x!==event);
-  for(let i=0;i<rest.length;i++)for(let j=i+1;j<rest.length;j++){
-   const combo=[event,rest[i],rest[j]];
-   if(combo.every((x,n)=>combo.slice(n+1).every(y=>independentSgpPair(x,y)))&&
-      (!chosen||Math.min(...combo.map(z=>z.confidenceRating))>Math.min(...chosen.map(z=>z.confidenceRating))))chosen=combo;
+ if(E.includes(m.league)||!Array.isArray(m.picks)||m.picks.length<2)return null;
+ const pool=m.picks.filter(validSgpPick).sort((a,b)=>b.confidenceRating-a.confidenceRating).slice(0,10);
+ if(pool.length<2||!pool.some(p=>EVENT_GROUPS.has(marketGroup(p))))return null;
+ let best=null;
+ // Flexible leg counts: two defensible legs beat padding to reach three.
+ // A third/fourth leg is added only when its evidence is similarly strong.
+ function consider(chosen){
+  if(chosen.length<2||!chosen.some(p=>EVENT_GROUPS.has(marketGroup(p))))return;
+  const min=Math.min(...chosen.map(p=>p.confidenceRating));
+  const score=min-4*(chosen.length-2);
+  if(!best||score>best.score||(score===best.score&&chosen.length<best.picks.length))
+   best={score,picks:[...chosen]};
+ }
+ function search(from,chosen){
+  if(chosen.length>=2)consider(chosen);
+  if(chosen.length>=5)return;
+  for(let i=from;i<pool.length;i++){
+   if(chosen.every(p=>independentSgpPair(p,pool[i]))){
+    chosen.push(pool[i]);search(i+1,chosen);chosen.pop();
+   }
   }
  }
- if(!chosen)return null;
- const legs=chosen.sort((x,y)=>y.confidenceRating-x.confidenceRating).map(p=>({
+ search(0,[]);
+ if(!best)return null;
+ const legs=best.picks.sort((x,y)=>y.confidenceRating-x.confidenceRating).map(p=>({
   gameId:String(m.gameId),fixture:m.home+" vs "+m.away,league:m.league,
   kickoff:m.kickoff,label:p.label,category:p.category,family:p.family,
   rating:p.confidenceRating,why:p.reason,verifiedPrice:false,odds:null,
-  priceStatus:"bet_builder_quote_not_verified",
-  risk:["Same-game legs may correlate; grade percentages are not joint probabilities.",
-    "An exact bet-builder market and combined Ontario payout must be verified."]}));
- return {status:"qualified",format:"Same-game parlay",gameId:String(m.gameId),
+  marketGroup:marketGroup(p),
+  evidenceCoverage:EVENT_GROUPS.has(marketGroup(p))?{
+   sample:Number(p.marketEvidence.playerMarket===true?p.marketEvidence.playerSample:p.marketEvidence.teamSample),
+   opposingSample:Number(p.marketEvidence.opponentAllowanceSample)}:null,
+  priceStatus:"joint_bet_builder_quote_not_verified",
+  risk:["The same-game selections may correlate; research grades are not joint win probabilities.",
+    "No exact Ontario SGP combination/payout has been verified."]}));
+ return {status:"hold",researchQualified:true,verifiedCombinedPrice:false,
+  combinedOntarioOdds:null,format:"Same-game parlay",gameId:String(m.gameId),
   fixture:m.home+" vs "+m.away,league:m.league,legs,
-  overallResearchRating:clip(Math.round(Math.min(...legs.map(x=>x.rating))-12),40,80),
-  caution:"Independent result/goals/event research screen only. No verified bet365 Ontario combined price."};
+  overallResearchRating:clip(Math.round(Math.min(...legs.map(x=>x.rating))-6*(legs.length-1)),40,80),
+  caution:"RESEARCH HOLD: verify each exact market and the combined Ontario SGP price. Market-specific statistics support event legs, but joint confidence and payout are unknown."};
 }
 
 export function generateReviewedSlipDesk({date,review,research,simulation,markets,asof}){
