@@ -198,11 +198,12 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
     <div class="ticketTear" aria-hidden="true"></div>
     <div class="slipFooter"><span id="accaCount">Checking available legs</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span></strong></div>
   </article>
+<article class="slip ticketPaper" aria-labelledby="evAccaTitle"><header class="slipHead"><div class="slipTopline"><span class="slipEyebrow" id="evAccaMeta">VALUE RESEARCH · MATCHDAY</span><span class="slipBadge" id="evAccaLegBadge">MODEL EDGE</span></div><h2 id="evAccaTitle">MODEL-EDGE ACCA</h2><p class="slipIntro">Higher-variance model-versus-price research. Positive model EV is not proven profit.</p><div class="fe-slipPrice" id="evAccaPrice"></div></header><div class="slipBody" id="evAccaSlip"><div class="empty">Checking price-screened legs…</div></div><p class="slipRisk" id="evAccaCaution" hidden></p><div class="ticketTear" aria-hidden="true"></div><div class="slipFooter"><span id="evAccaCount">Model-edge research</span><strong>FOOTYEDGE <span class="slipFootmark">◆</span></strong></div></article>
 </section>
 <section class="fe-playerResearch" aria-labelledby="fe-playerResearchTitle"><h2 id="fe-playerResearchTitle">Player goal involvement</h2><p>Separate anytime-scorer and score-or-assist research. All picks depend on the official XI and each Ontario market being available; no unverified +150 payout claims.</p><div class="fe-goalCards"><article class="fe-goalCard"><div class="fe-goalStatus">ATGS · RESEARCH HOLD</div><h3>Anytime Goalscorer</h3><div id="atgsResearchSlip">Loading sourced players…</div></article><article class="fe-goalCard"><div class="fe-goalStatus">SCORE OR ASSIST · RESEARCH HOLD</div><h3>Score or Assist</h3><div id="scoreAssistResearchSlip">Loading sourced players…</div></article></div></section>
   <section id="competitionSgps"><div class="sectionTitle"><h2>Best SGPs by Competition</h2><span>Published reference prices · recheck before placing</span></div><div class="fe-competitionSlips" id="sgpLeagueList"></div></section>
   <section><div class="sectionTitle"><h2>Top 10 Market Props</h2><span>Ranked by evidence strength</span></div><div class="marketList" id="props"><div class="empty">Loading supported goals, player and other match markets…</div></div></section>
-  <p class="notice">Confidence grades are research rankings, not guaranteed hit probabilities. Confirm market prices and lineups before betting.</p>
+  <p class="notice">Published US DraftKings standalone odds are reference prices only, not confirmed Ontario tickets. Model-edge percentages are uncalibrated research hypotheses, not proven positive EV. SGP lines were checked individually but no correlated 3–4-leg builder payout was confirmed. Recheck exact lines, rules and starters.</p>
 </main>
 <script>
 const GH="https://raw.githubusercontent.com/psyche-s/footyedge-board/main/";
@@ -323,7 +324,7 @@ const FE_MAJOR_NAMES={"eng.1":"Premier League","esp.1":"La Liga","ita.1":"Serie 
 let selectedSgpLeague="all";
 let displayedFixtureLeagues=null; // Exact-date competition scope.
 function sgpForLeague(desk){
- if(selectedSgpLeague==="all")return desk.sgp;
+ if(selectedSgpLeague==="all")return desk.sgp?.legs?.length?desk.sgp:(desk.sgpsByLeague||[])[0]||desk.sgp;
  return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
    {status:"pass",legs:[],caution:"No supported, nonredundant same-game parlay qualifies for "+(FE_MAJOR_NAMES[selectedSgpLeague]||selectedSgpLeague)+". A weak or duplicated leg will not be forced."};
 }
@@ -335,16 +336,15 @@ function fillSgpSelect(desk=displayedDesk){
  select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
  select.value=selectedSgpLeague;
 }
-let displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);
+let displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);renderSlipPrice(null,"evAccaPrice",300);
 function renderCompetitionSlips(list){
  const target=document.getElementById("sgpLeagueList");
- const valid=(list||[]).filter(x=>x?.status==="qualified"&&FE_SGP_LEAGUES.has(x.league)&&referencePrice(x,150)&&Array.isArray(x.legs)&&x.legs.length>=2&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
- target.innerHTML=valid.length?valid.map(x=>'<article class="fe-leagueReceipt">'+
-  '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>+'+Number(x.combinedReferenceAmerican)+'</strong></div>'+
-  '<h3>'+esc(x.legs[0].fixture)+'</h3>'+
-  x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong>'+(l.recentSample?'<small>'+l.recentHits+'/'+l.recentSample+' recent matches</small>':'')+'</div><span title="Observed recent hit rate; not a joint win forecast">'+(l.rating==null?'—':esc(l.rating)+'%')+'</span></div>').join("")+
-  '<footer>Published reference · target +150 or higher. Joint hit rate unverified.</footer><details class="legWhy"><summary>Matchup and team-news checks</summary><p>'+esc(cleanReason(x.caution||"Confirm all starting players and the final price."))+'</p></details></article>').join(""):
-  '<div class="fe-sgpEmpty">No major-league SGP with a qualifying published reference price is available for this date.</div>';
+ const accepted=(list||[]).filter(x=>["qualified","hold"].includes(x.status)&&FE_SGP_LEAGUES.has(x.league)&&[3,4].includes(x.legs?.length)&&new Set(x.legs.map(l=>l.gameId)).size===1&&x.legs.every(l=>l.league===x.league));
+ target.innerHTML=accepted.length?accepted.map(x=>'<article class="fe-leagueReceipt">'+
+ '<div class="fe-leagueReceiptTop"><span>SGP · '+esc(FE_MAJOR_NAMES[x.league]||x.league)+'</span><strong>'+(x.verifiedCombinedPrice&&referencePrice(x,150)?'+'+Number(x.combinedReferenceAmerican):'PRICE HOLD')+'</strong></div>'+
+ '<h3>'+esc(x.title||x.legs[0].fixture)+'</h3><small>'+esc(x.legs[0].fixture)+'</small>'+
+ x.legs.map(l=>'<div class="fe-leagueReceiptLeg"><div><strong>'+esc(l.label)+'</strong><small>'+esc(l.observedReferenceBook||'Book unknown')+' standalone '+esc(l.observedReferenceDecimal||'pending')+' · '+esc(cleanReason(l.why||''))+'</small></div></div>').join("")+
+ '<footer>'+esc(x.caution||'No confirmed same-game quote')+'</footer></article>').join(""):'<div class="fe-sgpEmpty">No 3–4 leg SGP has sufficient source evidence for this date.</div>';
 }
 
 function renderDesk(desk,date,live=false){
@@ -353,9 +353,10 @@ function renderDesk(desk,date,live=false){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
   printSlip("accaSlip",[],"No qualifying major-league ticket has been published.");
-  displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);
+  printSlip("evAccaSlip",[],"No model-edge research ticket available.");
+  displayedDesk=null;renderSlipPrice(null,"sgpPrice",150);renderSlipPrice(null,"accaPrice",300);renderSlipPrice(null,"evAccaPrice",300);
   printProps([]);renderCompetitionSlips([]);
-  for(const id of ["sgpCaution","accaCaution"])document.getElementById(id).hidden=true;
+  for(const id of ["sgpCaution","accaCaution","evAccaCaution"])document.getElementById(id).hidden=true;
   return;
  }
  document.getElementById("boardStatus").textContent=chosenLabel(date);
@@ -364,15 +365,16 @@ function renderDesk(desk,date,live=false){
   const eligible=(result?.status==="qualified"||result?.status==="hold")&&(isSgp?(result.legs||[]).length>=2:true);
   const legs=eligible?(result.legs||[]).filter(l=>!["jpn.1","kor.1","ksa.1","eng.2"].includes(l.league)).map(viewLeg):[];
   printSlip(id,legs,result?.caution||empty);
-  renderSlipPrice(legs.length?result:null,isSgp?"sgpPrice":"accaPrice",isSgp?150:300);
-  if(result?.status==="hold"&&legs.length){const prefix=isSgp?"sgp":"acca";document.getElementById(prefix+"Count").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById(prefix+"LegBadge").textContent="PRICE PENDING";}
-  const caution=document.getElementById(id==="sgpSlip"?"sgpCaution":"accaCaution");
+  renderSlipPrice(legs.length?result:null,id==="evAccaSlip"?"evAccaPrice":isSgp?"sgpPrice":"accaPrice",isSgp?150:300);
+  if(result?.status==="hold"&&legs.length){const prefix=id==="evAccaSlip"?"evAcca":isSgp?"sgp":"acca";document.getElementById(prefix+"Count").textContent="HOLD · "+legs.length+" RESEARCH LEGS";document.getElementById(prefix+"LegBadge").textContent="PRICE PENDING";}
+  const caution=document.getElementById(id==="evAccaSlip"?"evAccaCaution":id==="sgpSlip"?"sgpCaution":"accaCaution");
   caution.hidden=legs.length===0;caution.textContent=result?.caution||"";
  }
  displayedDesk=desk;
  fillSgpSelect(desk);
  drawSlip(sgpForLeague(desk),"sgpSlip","No independent same-game combination qualifies for this league.");
  drawSlip(desk.acca,"accaSlip","Not enough independent major-league matches qualify.");
+ drawSlip(desk.evAcca,"evAccaSlip","No separately price-checked model-edge research candidate.");
  renderCompetitionSlips(desk.sgpsByLeague);
  printProps((desk.props||[]).filter(x=>Number.isFinite(Number(x.rating))).map(viewLeg));
 }
