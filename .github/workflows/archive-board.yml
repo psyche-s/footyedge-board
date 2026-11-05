@@ -177,6 +177,8 @@ jobs:
           node scripts/audit-source-consensus.mjs
           node scripts/build-source-coverage.mjs
           node scripts/build-consensus-reviewed.mjs
+          node --test tests/pick-model-coherence.test.mjs
+          node scripts/audit-pick-model-coherence.mjs
           node scripts/snapshot-slip-market-reference.mjs
           node scripts/build-odds-reviewed-slips.mjs
           # Primary public display picks are built from genuine dated publisher
@@ -312,7 +314,7 @@ jobs:
           node scripts/validate-public-metrics.mjs
           git config user.name "FootyEdge Board Bot"
           git config user.email "actions@users.noreply.github.com"
-          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed data/source-led data/source-coverage data/league-tables)
+          files=(data/performance data/postmortems data/football-hub data/h2h data/analytics data/market-reviews data/experimental-simulations data/experimental-inputs data/pick-reviews data/slips-reviewed data/slip-market-snapshots data/source-opinions data/consensus-audits data/consensus-reviewed data/source-led data/source-coverage data/league-tables data/model-reviews)
           if [[ -d data/github-api-football ]]; then files+=(data/github-api-football); fi
           if [[ -d data/owner-reviews ]]; then files+=(data/owner-reviews); fi
           if [[ -d data/source-provenance ]]; then files+=(data/source-provenance); fi
