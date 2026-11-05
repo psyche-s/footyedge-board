@@ -6,13 +6,6 @@ on:
     - cron: "15 0 * * *"
       timezone: "America/Toronto"
   workflow_dispatch:
-  # Single-use owner-authorized recovery trigger for the current missing board.
-  # This exact dated request path is never reused; all publication runs share
-  # the existing concurrency guard and the write-once daily-board gate.
-  push:
-    branches: [main]
-    paths:
-      - 'data/refresh-requests/2026-11-05-owner-publish.request'
 
 permissions:
   contents: write

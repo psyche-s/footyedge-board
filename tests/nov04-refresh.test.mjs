@@ -29,7 +29,7 @@ test('all three candidate SGPs and one cross-game candidate are visible without 
  for(const s of [...slips.sgpsByLeague,slips.acca]){assert.equal(s.status,'hold');assert.equal(s.verifiedCombinedPrice,false);assert.equal(s.combinedOntarioOdds,null);assert.equal(s.jointHitProbability,null);assert.ok(s.experimentalJointScenarioPct>0&&s.experimentalJointScenarioPct<100);}
  assert.ok(slips.acca.estimatedFromIndependentReferenceSingles.american>=300);
  assert.equal(new Set(slips.acca.legs.map(l=>l.gameId)).size,slips.acca.legs.length);
- const d=history.days.find(d=>d.date===day);assert.equal(d.top5.length,5);assert.equal(d.tickets.length,4);assert.ok(d.top5.every(x=>x.result==='pending'));assert.ok(d.tickets.every(t=>t.trackable===false));
+ const d=history.days.find(d=>d.date===day);assert.equal(d.top5.length,5);assert.equal(d.tickets.length,4);assert.ok(d.top5.every(x=>['pending','hit','miss','void','push'].includes(x.result)),'November 4 results may settle after archival');assert.ok(d.tickets.every(t=>t.trackable===false));
 });
 test('the previous day tackle leg has its explicit numeric final result',()=>{
  const d=read('data/performance/slips/2026-11-03.json');const cash=d.tickets.flatMap(t=>t.legs).find(l=>l.label==='Matty Cash 2+ Tackles');assert.equal(cash.result,'miss');assert.equal(cash.observedStat,1);assert.equal(cash.observedUnit,'Tackles');
