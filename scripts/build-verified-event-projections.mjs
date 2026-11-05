@@ -7,7 +7,7 @@ import path from "node:path";
 import {buildAdvancedSimulations} from "./simulate-matchups-v3.mjs";
 const metrics=["shots","shotsOnTarget","corners","fouls","yellowCards","tackles","passes","shotsAllowed","shotsOnTargetAllowed"];
 const names={shots:["totalshots","shots"],shotsOnTarget:["shotsontarget","shotsongoal"],corners:["woncorners","corners","cornerkicks"],
- fouls:["fouls","totalfouls"],yellowCards:["yellowcards"],tackles:["totaltackles","tackles"],passes:["totalpasses","passes"]};
+ fouls:["foulscommitted","fouls","totalfouls"],yellowCards:["yellowcards"],tackles:["totaltackles","tackles"],passes:["totalpasses","passes"]};
 const norm=x=>String(x||"").toLowerCase().replace(/[^a-z0-9]/g,"");
 const timestamp=x=>{const t=Date.parse(x);return Number.isFinite(t)?t:null};
 const count=x=>{
@@ -102,7 +102,7 @@ async function main(){
  if(!research?.fixtures?.length||research.date!==date)throw Error("Exact-date research is required");
  const stylePath="data/style-matchups/"+date+".json",outPath="data/event-projection-overlays/"+date+".json",captured=new Date().toISOString();
  let style=await read(stylePath);
- if(style?.date!==date||!Array.isArray(style.matches)||!style.matches.length){
+ if(process.env.FORCE_EVENT_STAT_CORRECTION==="1"||style?.date!==date||!Array.isArray(style.matches)||!style.matches.length){
   const ids=new Set();
   for(const f of research.fixtures)for(const side of ["home","away"])for(const row of (f.last10?.[side]||[]).slice(0,10))
    if(/^\d+$/.test(String(row.id||""))&&timestamp(row.date)<timestamp(f.date))ids.add(String(row.id));

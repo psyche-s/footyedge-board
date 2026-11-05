@@ -24,31 +24,19 @@ jobs:
           node-version: "22"
       - name: Validate exact historical event joins
         run: node --test tests/verified-event-projections.test.mjs
-      - name: Diagnose provider team-fouls field with one previously completed verified match
-        shell: bash
-        run: |
-          node --input-type=module <<'JS'
-          const endpoint='https://site.api.espn.com/apis/site/v2/sports/soccer/all/summary?event=401874795';
-          const response=await fetch(endpoint,{signal:AbortSignal.timeout(18000)});
-          if(!response.ok)throw Error('ESPN historic event request '+response.status);
-          const data=await response.json();
-          console.log('Event completion',data.header?.competitions?.[0]?.status?.type?.completed);
-          for(const row of data.boxscore?.teams||[]){
-            console.log('Team',row.team?.displayName,row.team?.id,'stat key/label examples',
-              (row.statistics||[]).map(x=>({name:x.name,abbreviation:x.abbreviation,label:x.label,displayName:x.displayName})));
-          }
-          JS
       - name: Capture completed events prior to each fixture and build isolated stat overlay
         shell: bash
         run: |
           set -euo pipefail
           test -s data/boards/2026-11-05.json
-          if [[ -s data/event-projection-overlays/2026-11-05.json ]]; then
-            echo "Preserving previously completed event-stat recovery."
+          if [[ -s data/event-projection-overlays/2026-11-05.json ]] &&
+             jq -e '.coverage.byMarket.fouls > 0' data/event-projection-overlays/2026-11-05.json >/dev/null; then
+            echo "Verified foul observations already recovered; retain existing overlay."
             exit 0
           fi
-          node scripts/build-verified-event-projections.mjs --date=2026-11-05
-          jq -e '.date=="2026-11-05" and .immutableOriginalBoardPreserved and .originalGoalPredictionsPreserved and .coverage.projected>0' data/event-projection-overlays/2026-11-05.json
+          echo "Correcting verified foul-field mapping only, preserving frozen original picks and goal model."
+          FORCE_EVENT_STAT_CORRECTION=1 node scripts/build-verified-event-projections.mjs --date=2026-11-05
+          jq -e '.date=="2026-11-05" and .immutableOriginalBoardPreserved and .originalGoalPredictionsPreserved and .coverage.projected>0 and .coverage.byMarket.fouls>0' data/event-projection-overlays/2026-11-05.json
       - name: Publish only verified event-stat files
         shell: bash
         run: |

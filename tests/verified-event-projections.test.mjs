@@ -3,7 +3,7 @@ import {verifyHistoryEvent,summarizeEvents,makeDatedStyle} from "../scripts/buil
 const final=(id="123",when="2026-10-20T15:00:00Z",completed=true)=>({
  header:{competitions:[{id,date:when,status:{type:{completed}},competitors:[{team:{id:"77"},score:"2"},{team:{id:"88"},score:"1"}]}]},
  boxscore:{teams:[{team:{id:"77"},statistics:[{name:"totalShots",displayValue:"18"},{name:"shotsOnTarget",displayValue:"7"},
- {name:"fouls",displayValue:"12"},{name:"wonCorners",displayValue:"6"},{name:"yellowCards",displayValue:"2"}]},
+ {name:"foulsCommitted",displayValue:"12"},{name:"wonCorners",displayValue:"6"},{name:"yellowCards",displayValue:"2"}]},
  {team:{id:"88"},statistics:[{name:"totalShots",displayValue:"11"},{name:"shotsOnTarget",displayValue:"3"}]}]}});
 const old={id:"123",date:"2026-10-20T15:00:00Z",gf:2,ga:1,oppId:"88"},cutoff=Date.parse("2026-11-05T17:45:00Z");
 test("exact event/team/score join, opponent shots allowed, no guessed missing stats",()=>{
