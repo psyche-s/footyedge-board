@@ -317,6 +317,7 @@ const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto"
 const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"]);
 const FE_MAJOR_NAMES={"eng.1":"Premier League","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
 let selectedSgpLeague="all";
+let displayedFixtureLeagues=null; // Exact-date competition scope.
 function sgpForLeague(desk){
  if(selectedSgpLeague==="all")return desk.sgp;
  return (desk.sgpsByLeague||[]).find(x=>x.league===selectedSgpLeague)||
@@ -324,7 +325,7 @@ function sgpForLeague(desk){
 }
 function fillSgpSelect(desk=displayedDesk){
  const select=document.getElementById("sgpCompetitionSelect");
- const available=desk?new Set((desk.sgpsByLeague||[]).map(x=>x.league)):null;
+ const available=desk?new Set([...(desk.sgpsByLeague||[]).map(x=>x.league),...(displayedFixtureLeagues||[])]):null;
  const names=Object.entries(FE_MAJOR_NAMES).filter(([key])=>FE_SGP_LEAGUES.has(key)&&(!available||available.has(key))).sort((a,b)=>a[1].localeCompare(b[1]));
  if(selectedSgpLeague!=="all"&&!names.some(([key])=>key===selectedSgpLeague))selectedSgpLeague="all";
  select.innerHTML='<option value="all">All major competitions</option>'+names.map(([key,name])=>'<option value="'+esc(key)+'">'+esc(name)+'</option>').join("");
@@ -376,7 +377,8 @@ async function refresh(){
 
 
  document.getElementById("refreshStatus").textContent="";
- const pricedResearch=await data("data/slips-reviewed/"+date+".json");
+ const [pricedResearch,archive]=await Promise.all([data("data/slips-reviewed/"+date+".json"),data("data/boards/"+date+".json")]);
+ displayedFixtureLeagues=archive?.date===date?new Set((archive.games||[]).filter(g=>g.league!=="eng.2"&&g.status!=="postponed").map(g=>g.league)):null;
  const reviewed=pricedResearch||await data("data/editorial-desk/"+date+".json");
  const desk=reviewed||(date<localDate()?await data("data/slips/"+date+".json"):null);
  renderDesk(desk,date);
