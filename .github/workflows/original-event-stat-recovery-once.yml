@@ -1,10 +1,6 @@
 name: Original one-time historical event-stat recovery
+# Event recovery complete. Manual audit only; sole daily publisher handles the next date.
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/original-event-stat-recovery-once.yml"
-      - "scripts/build-verified-event-projections.mjs"
   workflow_dispatch:
 permissions:
   contents: write
