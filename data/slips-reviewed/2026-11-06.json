@@ -1,7 +1,7 @@
 {
   "schema": "footyedge-odds-reviewed-slips-v1",
   "date": "2026-11-06",
-  "checkedAt": "2026-11-06T12:59:46.201Z",
+  "checkedAt": "2026-11-06T13:26:40.127Z",
   "state": "reviewed_research",
   "quotesObservedAt": "2026-11-06T12:59:45.925Z",
   "priceSource": "ESPN-reported book quotes",
@@ -9,14 +9,69 @@
   "noSportsbookOddsOnMatchCards": true,
   "gradedResearchNotCalibrated": true,
   "sgp": {
-    "status": "pass",
-    "format": "Same-game parlay",
-    "legs": [],
-    "caution": "No supported three-market same-game research combination is qualified; do not force an SGP."
+    "id": "candidate:sgp:401888256:20261106",
+    "gameId": "401888256",
+    "league": "tur.1",
+    "title": "Gaziantep FK vs Kasimpasa · model-supported market watch",
+    "fixture": "Gaziantep FK vs Kasimpasa",
+    "format": "Same-game research watchlist",
+    "status": "hold",
+    "researchQualified": true,
+    "trackable": false,
+    "why": "Turkish Super Lig: Kasimpasa result protection and total goals have 10-match model/history coverage.",
+    "legs": [
+      {
+        "gameId": "401888256",
+        "fixture": "Gaziantep FK vs Kasimpasa",
+        "league": "tur.1",
+        "kickoff": "2026-11-06T17:00Z",
+        "label": "Under 4.5 Goals",
+        "category": "Goals",
+        "family": "total",
+        "rating": 87,
+        "why": "Gaziantep FK met the under 4.5 goals line in 9/10 recent matches and Kasimpasa in 9/10. Across their latest five, it landed 5/5 and 4/5, respectively. The independent goal model produced this outcome in 84.1% of runs.",
+        "experimentalFrequencyPct": 84.14,
+        "verifiedPrice": false,
+        "odds": null,
+        "priceStatus": "ontario_joint_price_pending",
+        "risk": [
+          "Ontario executable market and combined SGP quote not verified.",
+          "Model event frequencies are uncalibrated; legs may be positively correlated."
+        ]
+      },
+      {
+        "gameId": "401888256",
+        "fixture": "Gaziantep FK vs Kasimpasa",
+        "league": "tur.1",
+        "kickoff": "2026-11-06T17:00Z",
+        "label": "Kasimpasa or Draw",
+        "category": "Double Chance",
+        "family": "result",
+        "rating": 82,
+        "why": "Kasimpasa avoided defeat in 9/10 recent games and Gaziantep FK failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 79.2%. They enter with league positions 16 and 5, respectively.",
+        "experimentalFrequencyPct": 79.2,
+        "verifiedPrice": false,
+        "odds": null,
+        "priceStatus": "ontario_joint_price_pending",
+        "risk": [
+          "Ontario executable market and combined SGP quote not verified.",
+          "Model event frequencies are uncalibrated; legs may be positively correlated."
+        ]
+      }
+    ],
+    "overallResearchRating": null,
+    "verifiedCombinedPrice": false,
+    "combinedOntarioOdds": null,
+    "combinedReferenceAmerican": null,
+    "jointProbability": null,
+    "modelCalibrated": false,
+    "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
   },
   "acca": {
     "status": "hold",
-    "format": "Cross-game parlay",
+    "format": "Cross-game research candidate",
+    "id": "candidate:acca:2026-11-06-reviewed",
+    "trackable": false,
     "legs": [
       {
         "gameId": "401885399",
@@ -28,11 +83,12 @@
         "family": "total",
         "rating": 88,
         "why": "FC Famalicao met the under 4.5 goals line in 9/10 recent matches and Arouca in 9/10. Across their latest five, it landed 4/5 and 4/5, respectively. The independent goal model produced this outcome in 86.9% of runs.",
+        "experimentalFrequencyPct": 86.88,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "no_exact_reference_quote",
+        "priceStatus": "ontario_price_pending",
         "risk": [
-          "Exact sportsbook line and price unavailable. This leg remains a research watch."
+          "Exact Ontario line and price unavailable; experimental probabilities are not calibrated."
         ]
       },
       {
@@ -45,11 +101,12 @@
         "family": "total",
         "rating": 87,
         "why": "Gaziantep FK met the under 4.5 goals line in 9/10 recent matches and Kasimpasa in 9/10. Across their latest five, it landed 5/5 and 4/5, respectively. The independent goal model produced this outcome in 84.1% of runs.",
+        "experimentalFrequencyPct": 84.14,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "no_exact_reference_quote",
+        "priceStatus": "ontario_price_pending",
         "risk": [
-          "Exact sportsbook line and price unavailable. This leg remains a research watch."
+          "Exact Ontario line and price unavailable; experimental probabilities are not calibrated."
         ]
       },
       {
@@ -57,57 +114,520 @@
         "fixture": "Everton vs Coventry City",
         "kickoff": "2026-11-06T20:00Z",
         "league": "eng.1",
-        "label": "Under 4.5 Goals",
-        "category": "Goals",
-        "family": "total",
-        "rating": 84,
-        "why": "Everton met the under 4.5 goals line in 10/10 recent matches and Coventry City in 7/10. Across their latest five, it landed 5/5 and 4/5, respectively. The independent goal model produced this outcome in 84.0% of runs.",
+        "label": "Everton or Draw",
+        "category": "Double Chance",
+        "family": "result",
+        "rating": 73,
+        "why": "Everton avoided defeat in 8/10 recent matches, while Coventry City failed to win 6/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 75.6% of its scenarios. They enter with league positions 7 and 16, respectively.",
+        "experimentalFrequencyPct": 75.58,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "no_exact_reference_quote",
+        "priceStatus": "ontario_price_pending",
         "risk": [
-          "Exact sportsbook line and price unavailable. This leg remains a research watch."
+          "Exact Ontario line and price unavailable; experimental probabilities are not calibrated."
         ]
       },
       {
-        "gameId": "401876405",
-        "fixture": "Toulouse vs Strasbourg",
-        "kickoff": "2026-11-06T19:45Z",
-        "league": "fra.1",
-        "label": "Strasbourg 1+ Goal",
-        "category": "Team Goals",
-        "family": "team-goal",
-        "rating": 80,
-        "why": "Strasbourg scored in 8/10 recent fixtures, while Toulouse conceded in 8/10. The simulated chance of at least one goal for that side was 79.2%, leaving room for a narrow match.",
+        "gameId": "401875556",
+        "fixture": "Willem II vs PEC Zwolle",
+        "kickoff": "2026-11-06T19:00Z",
+        "league": "ned.1",
+        "label": "PEC Zwolle or Draw",
+        "category": "Double Chance",
+        "family": "result",
+        "rating": 75,
+        "why": "PEC Zwolle avoided defeat in 5/10 recent games and Willem II failed to win 9/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 78.7%. They enter with league positions 18 and 14, respectively.",
+        "experimentalFrequencyPct": 78.67,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "no_exact_reference_quote",
+        "priceStatus": "ontario_price_pending",
         "risk": [
-          "Exact sportsbook line and price unavailable. This leg remains a research watch."
-        ]
-      },
-      {
-        "gameId": "401884739",
-        "fixture": "Hamburg SV vs Borussia Mönchengladbach",
-        "kickoff": "2026-11-06T19:30Z",
-        "league": "ger.1",
-        "label": "Borussia Mönchengladbach 1+ Goal",
-        "category": "Team Goals",
-        "family": "team-goal",
-        "rating": 79,
-        "why": "Borussia Mönchengladbach scored in 8/10 recent fixtures, while Hamburg SV conceded in 8/10. The simulated chance of at least one goal for that side was 78.6%, leaving room for a narrow match.",
-        "verifiedPrice": false,
-        "odds": null,
-        "priceStatus": "no_exact_reference_quote",
-        "risk": [
-          "Exact sportsbook line and price unavailable. This leg remains a research watch."
+          "Exact Ontario line and price unavailable; experimental probabilities are not calibrated."
         ]
       }
     ],
-    "overallResearchRating": 63,
-    "caution": "HOLD — this is a cross-game research watchlist, not an executable parlay. Verify each Ontario price and the combined payout."
+    "verifiedCombinedPrice": false,
+    "combinedOntarioOdds": null,
+    "combinedReferenceAmerican": null,
+    "jointProbability": null,
+    "modelCalibrated": false,
+    "overallResearchRating": null,
+    "caution": "PRICE PENDING — 4 distinct fixtures, no executable Ontario combined price; +300 target unverified. This is not a settled or placed bet."
   },
-  "sgpsByLeague": [],
+  "sgpsByLeague": [
+    {
+      "id": "candidate:sgp:401888256:20261106",
+      "gameId": "401888256",
+      "league": "tur.1",
+      "title": "Gaziantep FK vs Kasimpasa · model-supported market watch",
+      "fixture": "Gaziantep FK vs Kasimpasa",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Turkish Super Lig: Kasimpasa result protection and total goals have 10-match model/history coverage.",
+      "legs": [
+        {
+          "gameId": "401888256",
+          "fixture": "Gaziantep FK vs Kasimpasa",
+          "league": "tur.1",
+          "kickoff": "2026-11-06T17:00Z",
+          "label": "Under 4.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 87,
+          "why": "Gaziantep FK met the under 4.5 goals line in 9/10 recent matches and Kasimpasa in 9/10. Across their latest five, it landed 5/5 and 4/5, respectively. The independent goal model produced this outcome in 84.1% of runs.",
+          "experimentalFrequencyPct": 84.14,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401888256",
+          "fixture": "Gaziantep FK vs Kasimpasa",
+          "league": "tur.1",
+          "kickoff": "2026-11-06T17:00Z",
+          "label": "Kasimpasa or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 82,
+          "why": "Kasimpasa avoided defeat in 9/10 recent games and Gaziantep FK failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 79.2%. They enter with league positions 16 and 5, respectively.",
+          "experimentalFrequencyPct": 79.2,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401875556:20261106",
+      "gameId": "401875556",
+      "league": "ned.1",
+      "title": "Willem II vs PEC Zwolle · model-supported market watch",
+      "fixture": "Willem II vs PEC Zwolle",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Eredivisie: model favours Zwolle away-or-draw, while Willem II's defensive form supports a goals watch.",
+      "legs": [
+        {
+          "gameId": "401875556",
+          "fixture": "Willem II vs PEC Zwolle",
+          "league": "ned.1",
+          "kickoff": "2026-11-06T19:00Z",
+          "label": "PEC Zwolle or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 75,
+          "why": "PEC Zwolle avoided defeat in 5/10 recent games and Willem II failed to win 9/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 78.7%. They enter with league positions 18 and 14, respectively.",
+          "experimentalFrequencyPct": 78.67,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401875556",
+          "fixture": "Willem II vs PEC Zwolle",
+          "league": "ned.1",
+          "kickoff": "2026-11-06T19:00Z",
+          "label": "Over 2.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 69,
+          "why": "Willem II met the over 2.5 goals line in 8/10 recent matches and PEC Zwolle in 6/10. Across their latest five, it landed 5/5 and 2/5, respectively. The independent goal model produced this outcome in 67.6% of runs.",
+          "experimentalFrequencyPct": 67.61,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401885399:20261106",
+      "gameId": "401885399",
+      "league": "por.1",
+      "title": "FC Famalicao vs Arouca · model-supported market watch",
+      "fixture": "FC Famalicao vs Arouca",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Primeira Liga: under 4.5 from both 10-match scoring samples, Arouca unbeaten cover supported by form.",
+      "legs": [
+        {
+          "gameId": "401885399",
+          "fixture": "FC Famalicao vs Arouca",
+          "league": "por.1",
+          "kickoff": "2026-11-06T20:45Z",
+          "label": "Under 4.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 88,
+          "why": "FC Famalicao met the under 4.5 goals line in 9/10 recent matches and Arouca in 9/10. Across their latest five, it landed 4/5 and 4/5, respectively. The independent goal model produced this outcome in 86.9% of runs.",
+          "experimentalFrequencyPct": 86.88,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401885399",
+          "fixture": "FC Famalicao vs Arouca",
+          "league": "por.1",
+          "kickoff": "2026-11-06T20:45Z",
+          "label": "Arouca or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 76,
+          "why": "Arouca avoided defeat in 8/10 recent games and FC Famalicao failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 72.6%. They enter with league positions 11 and 5, respectively.",
+          "experimentalFrequencyPct": 72.57,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401879242:20261106",
+      "gameId": "401879242",
+      "league": "eng.1",
+      "title": "Everton vs Coventry City · model-supported market watch",
+      "fixture": "Everton vs Coventry City",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Premier League: recent low total and Everton not-to-lose are backed by history and 10k model; Opta home-win direction agrees.",
+      "legs": [
+        {
+          "gameId": "401879242",
+          "fixture": "Everton vs Coventry City",
+          "league": "eng.1",
+          "kickoff": "2026-11-06T20:00Z",
+          "label": "Under 4.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 84,
+          "why": "Everton met the under 4.5 goals line in 10/10 recent matches and Coventry City in 7/10. Across their latest five, it landed 5/5 and 4/5, respectively. The independent goal model produced this outcome in 84.0% of runs.",
+          "experimentalFrequencyPct": 83.98,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401879242",
+          "fixture": "Everton vs Coventry City",
+          "league": "eng.1",
+          "kickoff": "2026-11-06T20:00Z",
+          "label": "Everton or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 73,
+          "why": "Everton avoided defeat in 8/10 recent matches, while Coventry City failed to win 6/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 75.6% of its scenarios. They enter with league positions 7 and 16, respectively.",
+          "experimentalFrequencyPct": 75.58,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401882809:20261106",
+      "gameId": "401882809",
+      "league": "esp.1",
+      "title": "Sevilla vs Alavés · model-supported market watch",
+      "fixture": "Sevilla vs Alavés",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "La Liga: Sevilla result cover and moderate goals outlook; independent publishers favour Sevilla ML but disagree on BTTS.",
+      "legs": [
+        {
+          "gameId": "401882809",
+          "fixture": "Sevilla vs Alavés",
+          "league": "esp.1",
+          "kickoff": "2026-11-06T20:00Z",
+          "label": "Sevilla or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 73,
+          "why": "Sevilla avoided defeat in 6/10 recent matches, while Alavés failed to win 8/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 75.8% of its scenarios. They enter with league positions 6 and 11, respectively.",
+          "experimentalFrequencyPct": 75.84,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401882809",
+          "fixture": "Sevilla vs Alavés",
+          "league": "esp.1",
+          "kickoff": "2026-11-06T20:00Z",
+          "label": "Under 3.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 65,
+          "why": "Sevilla met the under 3.5 goals line in 5/10 recent matches and Alavés in 8/10. Across their latest five, it landed 2/5 and 4/5, respectively. The independent goal model produced this outcome in 64.1% of runs.",
+          "experimentalFrequencyPct": 64.11,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401874815:20261106",
+      "gameId": "401874815",
+      "league": "ita.1",
+      "title": "Venezia vs Udinese · model-supported market watch",
+      "fixture": "Venezia vs Udinese",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Serie A: both sides have weak recent form; preferred outcome and total remain model-researched only.",
+      "legs": [
+        {
+          "gameId": "401874815",
+          "fixture": "Venezia vs Udinese",
+          "league": "ita.1",
+          "kickoff": "2026-11-06T19:45Z",
+          "label": "Under 3.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 71,
+          "why": "Venezia met the under 3.5 goals line in 7/10 recent matches and Udinese in 8/10. Across their latest five, it landed 4/5 and 4/5, respectively. The independent goal model produced this outcome in 68.4% of runs.",
+          "experimentalFrequencyPct": 68.44,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401874815",
+          "fixture": "Venezia vs Udinese",
+          "league": "ita.1",
+          "kickoff": "2026-11-06T19:45Z",
+          "label": "Udinese or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 62,
+          "why": "Udinese avoided defeat in 3/10 recent games and Venezia failed to win 9/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 64.3%. They enter with league positions 20 and 19, respectively.",
+          "experimentalFrequencyPct": 64.35,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401884739:20261106",
+      "gameId": "401884739",
+      "league": "ger.1",
+      "title": "Hamburg SV vs Borussia Mönchengladbach · model-supported market watch",
+      "fixture": "Hamburg SV vs Borussia Mönchengladbach",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Bundesliga: two scoring outcomes are positively correlated; a book-specific combination is required.",
+      "legs": [
+        {
+          "gameId": "401884739",
+          "fixture": "Hamburg SV vs Borussia Mönchengladbach",
+          "league": "ger.1",
+          "kickoff": "2026-11-06T19:30Z",
+          "label": "Borussia Mönchengladbach 1+ Goal",
+          "category": "Team Goals",
+          "family": "team-goal",
+          "rating": 79,
+          "why": "Borussia Mönchengladbach scored in 8/10 recent fixtures, while Hamburg SV conceded in 8/10. The simulated chance of at least one goal for that side was 78.6%, leaving room for a narrow match.",
+          "experimentalFrequencyPct": 78.56,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401884739",
+          "fixture": "Hamburg SV vs Borussia Mönchengladbach",
+          "league": "ger.1",
+          "kickoff": "2026-11-06T19:30Z",
+          "label": "Over 2.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 62,
+          "why": "Hamburg SV met the over 2.5 goals line in 6/10 recent matches and Borussia Mönchengladbach in 7/10. Across their latest five, it landed 3/5 and 3/5, respectively. The independent goal model produced this outcome in 60.0% of runs.",
+          "experimentalFrequencyPct": 59.98,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    },
+    {
+      "id": "candidate:sgp:401876405:20261106",
+      "gameId": "401876405",
+      "league": "fra.1",
+      "title": "Toulouse vs Strasbourg · model-supported market watch",
+      "fixture": "Toulouse vs Strasbourg",
+      "format": "Same-game research watchlist",
+      "status": "hold",
+      "researchQualified": true,
+      "trackable": false,
+      "why": "Ligue 1: both scoring outcomes are related; no implied separate-leg multiplication permitted.",
+      "legs": [
+        {
+          "gameId": "401876405",
+          "fixture": "Toulouse vs Strasbourg",
+          "league": "fra.1",
+          "kickoff": "2026-11-06T19:45Z",
+          "label": "Strasbourg 1+ Goal",
+          "category": "Team Goals",
+          "family": "team-goal",
+          "rating": 80,
+          "why": "Strasbourg scored in 8/10 recent fixtures, while Toulouse conceded in 8/10. The simulated chance of at least one goal for that side was 79.2%, leaving room for a narrow match.",
+          "experimentalFrequencyPct": 79.2,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        },
+        {
+          "gameId": "401876405",
+          "fixture": "Toulouse vs Strasbourg",
+          "league": "fra.1",
+          "kickoff": "2026-11-06T19:45Z",
+          "label": "Over 2.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 66,
+          "why": "Toulouse met the over 2.5 goals line in 6/10 recent matches and Strasbourg in 8/10. Across their latest five, it landed 3/5 and 5/5, respectively. The independent goal model produced this outcome in 62.4% of runs.",
+          "experimentalFrequencyPct": 62.37,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_joint_price_pending",
+          "risk": [
+            "Ontario executable market and combined SGP quote not verified.",
+            "Model event frequencies are uncalibrated; legs may be positively correlated."
+          ]
+        }
+      ],
+      "overallResearchRating": null,
+      "verifiedCombinedPrice": false,
+      "combinedOntarioOdds": null,
+      "combinedReferenceAmerican": null,
+      "jointProbability": null,
+      "modelCalibrated": false,
+      "caution": "PRICE PENDING — two independently researched markets, not an executable bookmaker SGP. Correlation-adjusted joint price unavailable."
+    }
+  ],
   "props": [],
   "audits": {
     "eligibleMajorFixtures": 8,
@@ -121,5 +641,8 @@
       "ksa.1",
       "eng.2"
     ]
-  }
+  },
+  "sportsBookAvailability": "Ontario executable lines / combined SGP quotes not independently verified",
+  "auditNote": "Saudi match postponement discrepancies found on FotMob. Saudi fixtures excluded from candidate slips until official fixture status resolves. J1/K1 also excluded.",
+  "publicationStatus": "research_candidates_not_executable"
 }
