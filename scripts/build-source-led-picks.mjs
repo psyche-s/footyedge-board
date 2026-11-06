@@ -254,6 +254,63 @@ function generate({date,research,curated,opinions}){
     rejectedUnverifiedMarkets:rejected.length},
   top5,matches:output,rejectedInternal:rejected};
 }
+
+/**
+ * Safely promote independently reviewed, date-matched match-history/model
+ * candidates into the display overlay when editorial picks do not cover the
+ * market. These remain MODEL RESEARCH, not publisher tips or calibrated odds.
+ * Historical frozen board/Top 5 is never touched.
+ */
+export function mergeModelReviewed({doc,review,simulation}){
+ if(!doc||!review||!simulation||doc.date!==review.date||doc.date!==simulation.date||
+   simulation.simulationsPerFixture!==10000||!Array.isArray(review.matches)||!Array.isArray(simulation.fixtures))
+   throw Error("Date-matched 10,000-draw research required");
+ const reviewed=new Map(review.matches.map(x=>[String(x.gameId),x]));
+ const simulated=new Map(simulation.fixtures.map(x=>[String(x.fixtureId),x]));
+ const next={...doc,matches:doc.matches.map(row=>{
+  const r=reviewed.get(String(row.gameId)),s=simulated.get(String(row.gameId));
+  if(!r||!s||s.status!=="pre_kickoff_experimental"||r.home!==row.home||r.away!==row.away||
+    r.league!==row.league||!Array.isArray(r.picks))return row;
+  const original=row.picks||[],result=[],families=new Set();
+  for(const pick of r.picks){
+   if(result.length>=3)break;
+   if(!pick||!pick.label||!pick.family||families.has(pick.family)||
+     !Number.isFinite(pick.experimentalFrequencyPct)||pick.experimentalFrequencyPct<55||
+     !Number.isFinite(pick.homeSample)||pick.homeSample<5||
+     !Number.isFinite(pick.awaySample)||pick.awaySample<5||
+     pick.probabilityCalibrated!==false)continue;
+   const exact=original.find(x=>x.label===pick.label&&x.family===pick.family);
+   const item={...pick,key:pick.key||"model_"+norm(pick.label).replace(/\s+/g,"_"),
+     sourceProvenance:exact?.sourceProvenance||[],
+     editorialSupport:exact?.editorialSupport||0,editorialOpposition:exact?.editorialOpposition||0,
+     modelResearchOnly:!exact,sourceBackedReason:true,researchOnly:true,odds:null,ev:null,
+     verifiedPrice:false,priceStatus:"not_verified",
+     confidenceType:"research_strength_not_calibrated_probability",
+     marketEvidence:{...pick.marketEvidence,modelBacked:true,draws:10000,
+      exactEditorialMarketSources:exact?.editorialSupport||0,sourceDate:doc.date}};
+   result.push({...item,rank:result.length+1});families.add(pick.family);
+  }
+  return {...row,reviewed:result.length>0,
+   reviewStatus:result.length===3?"three_distinct_model_crosschecked_picks_editorial_coverage_partial":
+     result.length?"partial_model_reviewed_picks":"pass_missing_verified_model_support",
+   qualifyingInputs:{...row.qualifyingInputs,modelReviewedPicks:result.length,simulationsVerified:10000},
+   picks:result};
+ })};
+ next.mode="model_research_with_independent_editorial_crosschecks";
+ next.method="Pre-kickoff verified history and exact-date V3 model-backed research; publisher opinions and exact-market endorsements are recorded separately. Historical frozen picks are untouched.";
+ next.calibration="Research-grade percentages are NOT calibrated win probabilities; 10,000-run event frequencies are experimental.";
+ next.top5=[];
+ next.top5FrozenBoardPreserved=true;
+ next.totals={...next.totals,
+  three:next.matches.filter(x=>x.picks.length===3).length,
+  two:next.matches.filter(x=>x.picks.length===2).length,
+  one:next.matches.filter(x=>x.picks.length===1).length,
+  zero:next.matches.filter(x=>x.picks.length===0).length,
+  modelResearchedPicks:next.matches.reduce((n,x)=>n+x.picks.length,0),
+  independentlyExactMarketSupportedSelections:next.matches.reduce((n,x)=>n+x.picks.filter(p=>p.editorialSupport>0).length,0)};
+ return next;
+}
+
 export {generate};
 async function main(){
  const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
@@ -273,7 +330,18 @@ async function main(){
  // An absent market-level file is NOT permission to infer extra publisher bets.
  // A result-only opinion can support one result thesis, not three model tips.
  const curated=curatedPayload?.date===date?curatedPayload:{date,fixtures:[]};
- const doc=generate({date,research,curated,opinions:verifiedOpinions});
+ let doc=generate({date,research,curated,opinions:verifiedOpinions});
+ if(process.env.OWNER_MODEL_RESEARCH_FALLBACK==="1"){
+  const [review,simulation]=await Promise.all([
+   read(path.join("data","pick-reviews",date+".json")),
+   read(path.join("data","experimental-simulations",date+"-v3.json"))]);
+  if(review&&simulation){
+   doc=mergeModelReviewed({doc,review,simulation});
+   console.log("Model-research fallback:",JSON.stringify(doc.totals));
+  }else{
+   console.log("::warning::Verified date-matched model pick review missing; source-led PASS retained.");
+  }
+ }
  const target=path.join("data","source-led",date+".json");
  await fs.mkdir(path.dirname(target),{recursive:true});
  await fs.writeFile(target,JSON.stringify(doc,null,2)+"\n");
