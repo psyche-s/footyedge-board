@@ -141,6 +141,18 @@
       "can_publish_completed_scores": false,
       "module": "scripts/analytics_pipeline.py",
       "source_url": "https://www.football-data.co.uk/"
+    },
+    {
+      "id": "bigballsdata",
+      "name": "Big Balls Sports Data",
+      "role": "Optional independently sourced EPL fixture identity corroboration; not a prediction, player-prop, lineup or odds feed for public reproduction",
+      "mode": "secret_backed_private_runner_cache_derived_research_flags_only",
+      "secret": "BBS_API_KEY (GitHub Actions only; rotate key shared in chat)",
+      "data_license": "Provider Terms permit internal storage/model use; prohibit public raw field feeds/exports",
+      "can_publish_completed_scores": false,
+      "module": "scripts/bigballsdata-research.mjs",
+      "source_url": "https://bigballsdata.com/docs/quickstart",
+      "restrictions": "Only exact team + kickoff matches; missing provider records mean unknown, not absent; never infer pick confidence from API meta.confidence."
     }
   ],
   "reference_only": [
