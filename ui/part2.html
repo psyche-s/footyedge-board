@@ -1862,16 +1862,20 @@ async function load(date=S.date){
     // frozen historical Top 5 or the original daily board JSON.
     const independentMarketPicks=ARCHIVE_CAPTURE?null:await repoData('data/source-led/'+S.date+'.json').catch(()=>null);
     if(independentMarketPicks?.schema==='footyedge-dated-researched-top3-v1'&&
-       independentMarketPicks.mode==='independent_publisher_market_tips'&&
+       (independentMarketPicks.mode==='independent_publisher_market_tips'||
+        independentMarketPicks.mode==='model_research_with_independent_editorial_crosschecks')&&
        independentMarketPicks.sourceLedDisplayOnly===true&&independentMarketPicks.archiveUnmodified===true&&
        independentMarketPicks.date===S.date&&Array.isArray(independentMarketPicks.matches)){
       S.sourceLed=independentMarketPicks;
       // Keep the separately modeled and externally audited research overlay.
       // Publisher tips supplement it; they do not erase missing-fixture picks.
     }
-    S.reviewedTop3=reviewedPicksPayload?.schema==='footyedge-dated-researched-top3-v1'&&
+    const ownerModelOverlay=S.sourceLed?.mode==='model_research_with_independent_editorial_crosschecks'&&
+      S.sourceLed.date===S.date&&S.sourceLed.totals?.fixtures===S.sourceLed.matches?.length&&
+      S.sourceLed.matches.length>0&&S.sourceLed.matches.every(x=>Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3)?S.sourceLed:null;
+    S.reviewedTop3=ownerModelOverlay||(reviewedPicksPayload?.schema==='footyedge-dated-researched-top3-v1'&&
       reviewedPicksPayload.date===S.date&&reviewedPicksPayload.archiveUnmodified===true&&
-      Array.isArray(reviewedPicksPayload.matches)?reviewedPicksPayload:null;
+      Array.isArray(reviewedPicksPayload.matches)?reviewedPicksPayload:null);
     const analyticsOverlay=await repoData('data/analytics/'+S.date+'.json').catch(()=>null);
     if(S.date!==date)return;
     const advancedById=new Map(analyticsOverlay?.date===S.date?(analyticsOverlay.matches||[]).filter(x=>x.verifiedJoin===true).map(x=>[String(x.fixtureId),x]):[]);
@@ -1897,9 +1901,10 @@ async function load(date=S.date){
       });
     }
     // Re-reviewed current-day Top 3 are a dated overlay; preserve the immutable original picks for settlement.
-    const feReviewById=new Map((reviewedPicksPayload?.schema==="footyedge-dated-researched-top3-v1"&&
-      reviewedPicksPayload.date===S.date&&reviewedPicksPayload.archiveUnmodified===true?
-      reviewedPicksPayload.matches:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3
+    const activeReview=S.reviewedTop3;
+    const feReviewById=new Map((activeReview?.schema==="footyedge-dated-researched-top3-v1"&&
+      activeReview.date===S.date&&activeReview.archiveUnmodified===true?
+      activeReview.matches:[]).filter(x=>x.reviewed===true&&Array.isArray(x.picks)&&x.picks.length>=1&&x.picks.length<=3
         &&x.picks.every(p=>p.sourceBackedReason===true&&Number.isFinite(Number(p.confidenceRating))&&p.reason))
       .map(x=>[String(x.gameId),x]));
     const editorPicksById=new Map((!S.sourceLed&&editorialDeskPayload?.schema==='footyedge-editorial-desk-v1'&&editorialDeskPayload.date===S.date?
