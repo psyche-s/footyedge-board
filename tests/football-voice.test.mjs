@@ -24,6 +24,12 @@ test("weak recent history is not presented as strong for under or team goals",()
  assert.match(team,/patchy/i);
  assert.match(team,/Manchester City/);
 });
+test("away ML keeps selected team's wins and opponent's defeats in the right order",()=>{
+ const reason=naturalFootballReason({label:"Real Madrid ML",home:"Valencia",away:"Real Madrid",homeHits:9,homeSample:10,awayHits:6,awaySample:10,variationKey:"401882808"});
+ assert.match(reason,/9 wins in 10|9 of 10/);
+ assert.match(reason,/6 defeats|lost 6 of 10/);
+ assert.doesNotMatch(reason,/6 wins in 10|9 defeats/);
+});
 test("model and source-free, short BTTS copy; missing figures retain original editorial copy",()=>{
  const btts=naturalFootballReason({label:"BTTS Yes",home:"AS Roma",away:"Sassuolo",homeHits:6,homeSample:10,awayHits:9,awaySample:10,variationKey:"401874803"});
  assert.match(btts,/Roma/);assert.match(btts,/Sassuolo/);assert.ok(btts.length<300);
