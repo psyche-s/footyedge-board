@@ -9,6 +9,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {naturalFootballReason} from "./football-voice.mjs";
 const allowed={
  football_whispers:"footballwhispers.com",
  forebet:"forebet.com",
@@ -286,7 +287,7 @@ export function mergeModelReviewed({doc,review,simulation}){
      !Number.isFinite(pick.awaySample)||pick.awaySample<5||
      pick.probabilityCalibrated!==false)continue;
    const exact=original.find(x=>x.label===pick.label&&x.family===pick.family);
-   const item={...pick,key:pick.key||"model_"+norm(pick.label).replace(/\s+/g,"_"),
+   const item={...pick,reason:naturalFootballReason({label:pick.label,home:row.home,away:row.away,homeHits:pick.homeHits,homeSample:pick.homeSample,awayHits:pick.awayHits,awaySample:pick.awaySample,raw:pick.reason,variationKey:row.gameId}),key:pick.key||"model_"+norm(pick.label).replace(/\s+/g,"_"),
      sourceProvenance:exact?.sourceProvenance||[],
      editorialSupport:exact?.editorialSupport||0,editorialOpposition:exact?.editorialOpposition||0,
      modelResearchOnly:!exact,sourceBackedReason:true,researchOnly:true,odds:null,ev:null,
