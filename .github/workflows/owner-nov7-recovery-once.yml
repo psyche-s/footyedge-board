@@ -1,0 +1,88 @@
+name: Owner one-time November 7 research recovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/owner-nov7-recovery-once.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: footyedge-original-sole-daily-refresh
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    if: contains(github.event.head_commit.message, '[owner-nov7-recovery]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Retrieve exact prevalidated date-gated research from temporary owner sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 75 --silent --show-error \
+            "https://sb-42hxhtkg8t6e.vercel.run/footyedge-nov7-reviewed.tgz" \
+            -o /tmp/footyedge-nov7-reviewed.tgz
+          echo "cfc4aa9dc265ba79dd8540792ffca02de965e6059c4998dddd5a3ef89381bbe9  /tmp/footyedge-nov7-reviewed.tgz" | sha256sum -c -
+          test "$(tar -tzf /tmp/footyedge-nov7-reviewed.tgz | wc -l)" -eq 18
+          tar -xzf /tmp/footyedge-nov7-reviewed.tgz
+          git diff --check
+      - name: Run all tests, check immutable archives and verify unpriced candidate guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/*.test.mjs
+          node scripts/validate-published-boards.mjs --base "$GITHUB_SHA"
+          node scripts/validate-public-metrics.mjs
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const date='2026-11-07';
+          const research=JSON.parse(fs.readFileSync('data/source-led/'+date+'.json'));
+          const slips=JSON.parse(fs.readFileSync('data/slips-reviewed/'+date+'.json'));
+          if(research.totals.fixtures!==56||research.totals.three!==54||
+             research.totals.two!==2||slips.sgpsByLeague.length!==10||
+             slips.acca.legs.length!==5)throw Error('Research coverage mismatch');
+          for(const s of [...slips.sgpsByLeague,slips.acca]){
+            if(s.status!=='hold'||s.verifiedCombinedPrice!==false||
+               s.legs.some(x=>x.odds!==null||x.verifiedPrice!==false))throw Error('Unverified sportsbook prices');
+          }
+          if(fs.existsSync('data/boards/2026-11-07.json'))throw Error('Future dated board must not be published early');
+          console.log('Verified Nov 7 research, unpriced SGPs and frozen board integrity.');
+          NODE
+      - name: Publish only Nov 7 research and remove one-time writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FootyEdge Owner Research Bot"
+          git config user.email "actions@users.noreply.github.com"
+          rm .github/workflows/owner-nov7-recovery-once.yml
+          git add -A data/research-base-2026-11-07.json \
+            data/consensus-reviewed/2026-11-07.json \
+            data/event-projection-overlays/2026-11-07.json \
+            data/experimental-simulations/2026-11-07-v3.json \
+            data/experimental-simulations/2026-11-07-v4.json \
+            data/experimental-simulations/2026-11-07.json \
+            data/market-reviews/2026-11-07.json \
+            data/pick-reviews/2026-11-07.json \
+            data/slip-market-snapshots/2026-11-07.json \
+            data/slips-reviewed/2026-11-07.json \
+            data/source-led/2026-11-07.json \
+            data/style-matchups/2026-11-07.json \
+            scripts/build-source-led-picks.mjs \
+            scripts/build-top3-review.mjs \
+            scripts/owner-top3-ranking.mjs \
+            scripts/build-research-hold-watchlists.mjs \
+            tests/ml-outright-preference.test.mjs \
+            tests/research-hold-watchlists.test.mjs \
+            .github/workflows/owner-nov7-recovery-once.yml
+          git commit -m "data(original): publish Nov 7 reviewed model picks and 10 unpriced league SGP watches"
+          git push origin HEAD:main
