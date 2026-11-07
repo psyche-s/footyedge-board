@@ -22,7 +22,7 @@ export function naturalFootballReason({label,home,away,homeHits,homeSample,awayH
   }
   if(name===h+" ML"||name===a+" ML"){
     const isHome=name===h+" ML",team=isHome?h:a,opp=isHome?a:h;
-    const ownWins=isHome?hh:ah,ownN=isHome?hn:an,oppLosses=isHome?ah:hh,oppN=isHome?an:hn;
+    const ownWins=hh,ownN=hn,oppLosses=ah,oppN=an; // ML review counts are selection-side wins, then opponent losses for both home and away.
     if(variant===0)return team+" have won "+r(ownWins,ownN)+"; "+opp+" have lost "+r(oppLosses,oppN)+". That points towards "+team+", with the draw still the main risk.";
     if(variant===1)return "The recent results lean "+team+"'s way: "+ownWins+" wins in "+ownN+", compared with "+oppLosses+" defeats in "+opp+"'s last "+oppN+". A win is the call, not a guarantee.";
     return team+" come in with "+ownWins+" wins from "+ownN+", while "+opp+" have been beaten "+oppLosses+" times in "+oppN+". There's a case for the straight win, though the draw can spoil it.";
