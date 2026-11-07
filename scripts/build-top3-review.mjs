@@ -3,6 +3,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {pathToFileURL} from "node:url";
+import {naturalFootballReason} from "./football-voice.mjs";
 import {distinctPickSet} from "./independent-picks.mjs";
 import {takeOwnerTop3,ownerPickCompatible} from "./owner-top3-ranking.mjs";
 export function buildReviewedPicks({research,simulation,news,standings,editorialCrosschecks}){
@@ -31,7 +32,7 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
       confidenceRating:score(trim(.55*modelRate+.45*both(lh,la),45,(nh<8||na<8)?76:94)),
       researchStrength:score(trim(.55*modelRate+.45*both(lh,la),45,(nh<8||na<8)?76:94)),limitedSample:nh<8||na<8,
      historicalSupportPct:score(both(lh,la)),experimentalFrequencyPct:Number(modelRate.toFixed(2)),homeHits:lh,homeSample:nh,awayHits:la,awaySample:na,
-     reason,rank:null,sourceBackedReason:true,probabilityCalibrated:false,confidenceType:"researched_strength_not_calibrated_win_probability",score:null,odds:null,ev:null,verifiedPrice:false,researchOnly:true,marketEvidence:stat
+     reason:naturalFootballReason({label:mode.label,home:h,away:a,homeHits:lh,homeSample:nh,awayHits:la,awaySample:na,raw:reason,variationKey:f.id}),rank:null,sourceBackedReason:true,probabilityCalibrated:false,confidenceType:"researched_strength_not_calibrated_win_probability",score:null,odds:null,ev:null,verifiedPrice:false,researchOnly:true,marketEvidence:stat
    });
    const result=[];
    const sideH=c(H,x=>x.gf>=x.ga),sideA=c(A,x=>x.gf>=x.ga),notWinA=c(A,x=>x.gf<=x.ga),notWinH=c(H,x=>x.gf<=x.ga);
