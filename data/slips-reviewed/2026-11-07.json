@@ -1,62 +1,130 @@
 {
   "schema": "footyedge-odds-reviewed-slips-v1",
   "date": "2026-11-07",
-  "checkedAt": "2026-11-07T04:31:02.516Z",
-  "state": "reviewed_research",
-  "quotesObservedAt": null,
-  "priceSource": "ESPN-reported book quotes",
+  "checkedAt": "2026-11-07T06:22:07.333Z",
+  "state": "research_vetted_with_reference_odds",
+  "quotesObservedAt": "2026-11-07T06:22:07.333Z",
+  "priceSource": "Public bookmaker-comparison snapshots, reference only, not Ontario joint executable quotes",
   "sportsbookAvailability": "Exact individual and combined bet365 Ontario markets unverified",
   "noSportsbookOddsOnMatchCards": true,
   "gradedResearchNotCalibrated": true,
   "sgp": {
-    "id": "candidate:sgp:cz1-20261107-slovan-liberec-bohemians-1905:20261107",
-    "gameId": "cz1-20261107-slovan-liberec-bohemians-1905",
-    "league": "cze.1",
-    "title": "Slovan Liberec vs Bohemians 1905 · source-sample research watch",
-    "fixture": "Slovan Liberec vs Bohemians 1905",
+    "id": "candidate:sgp:401874803:20261107",
+    "gameId": "401874803",
+    "league": "ita.1",
+    "title": "AS Roma vs Sassuolo · source-sample research watch",
+    "fixture": "AS Roma vs Sassuolo",
     "format": "Same-game research watchlist",
     "status": "hold",
     "researchQualified": true,
     "trackable": false,
-    "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+    "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
     "legs": [
       {
-        "gameId": "cz1-20261107-slovan-liberec-bohemians-1905",
-        "fixture": "Slovan Liberec vs Bohemians 1905",
-        "league": "cze.1",
-        "kickoff": "2026-11-07T14:00:00.000Z",
-        "label": "Under 4.5 Goals",
+        "gameId": "401874803",
+        "fixture": "AS Roma vs Sassuolo",
+        "league": "ita.1",
+        "kickoff": "2026-11-07T19:45Z",
+        "label": "Over 2.5 Goals",
         "category": "Goals",
         "family": "total",
-        "rating": 94,
-        "why": "Slovan Liberec met the under 4.5 goals line in 9/9 recent matches and Bohemians 1905 in 8/8. Across their latest five, it landed 5/5 and 5/5, respectively. The independent goal model produced this outcome in 92.1% of runs.",
-        "experimentalFrequencyPct": 92.09,
+        "rating": 74,
+        "why": "AS Roma met the over 2.5 goals line in 7/10 recent matches and Sassuolo in 7/10. Across their latest five, it landed 5/5 and 3/5, respectively. The independent goal model produced this outcome in 76.6% of runs.",
+        "experimentalFrequencyPct": 76.56,
+        "homeSample": 10,
+        "awaySample": 10,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          },
+          {
+            "type": "external_reference_price_only",
+            "url": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+            "asof": "2026-11-07T06:22:07.333Z"
+          }
+        ],
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
         "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-        ]
+          "Pre-kickoff experimental simulation is not a calibrated win probability.",
+          "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+        ],
+        "referenceSingle": {
+          "decimal": 1.36,
+          "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+          "sourceUrl": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+          "observedOn": "2026-11-07T06:22:07.333Z",
+          "jurisdiction": "not-confirmed-Ontario",
+          "providerTimestamp": "unavailable",
+          "bookmakerExecutable": false,
+          "breakEvenPct": 73.53,
+          "experimentalModelMinusImpliedPp": 3.03
+        }
       },
       {
-        "gameId": "cz1-20261107-slovan-liberec-bohemians-1905",
-        "fixture": "Slovan Liberec vs Bohemians 1905",
-        "league": "cze.1",
-        "kickoff": "2026-11-07T14:00:00.000Z",
-        "label": "Slovan Liberec or Draw",
-        "category": "Double Chance",
-        "family": "result",
-        "rating": 81,
-        "why": "Slovan Liberec avoided defeat in 8/9 recent matches, while Bohemians 1905 failed to win 6/8. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 79.8% of its scenarios.",
-        "experimentalFrequencyPct": 79.81,
+        "gameId": "401874803",
+        "fixture": "AS Roma vs Sassuolo",
+        "league": "ita.1",
+        "kickoff": "2026-11-07T19:45Z",
+        "label": "BTTS Yes",
+        "category": "Goals",
+        "family": "both-teams-score",
+        "rating": null,
+        "why": "Roma have scored and conceded in 6/10 pre-match games; Sassuolo in 9/10. Roma's recent attack has created high-total matches, but either side failing to score loses this leg. Experimental 10,000-draw model: 71.0%.",
+        "experimentalFrequencyPct": 71.01,
+        "homeSample": 10,
+        "awaySample": 10,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          },
+          {
+            "type": "pre_kickoff_independent_market_crosscheck",
+            "url": "https://www.sportsmole.co.uk/football/roma/preview/roma-vs-sassuolo-prediction-team-news-lineups_608516.html"
+          },
+          {
+            "type": "external_reference_price_only",
+            "url": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+            "asof": "2026-11-07T06:22:07.333Z"
+          }
+        ],
         "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-        ]
+          "Correlated with Over 2.5 goals; no defensible joint price without a live Ontario bet-builder.",
+          "Experimental model event frequencies are not empirically calibrated."
+        ],
+        "referenceSingle": {
+          "decimal": 1.67,
+          "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+          "sourceUrl": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+          "observedOn": "2026-11-07T06:22:07.333Z",
+          "jurisdiction": "not-confirmed-Ontario",
+          "providerTimestamp": "unavailable",
+          "bookmakerExecutable": false,
+          "breakEvenPct": 59.88,
+          "experimentalModelMinusImpliedPp": 11.13
+        }
       }
     ],
     "overallResearchRating": null,
@@ -65,94 +133,205 @@
     "combinedReferenceAmerican": null,
     "jointProbability": null,
     "modelCalibrated": false,
-    "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+    "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+    "lineupNewsStatus": "dated_predicted_not_confirmed",
+    "reviewedAt": "2026-11-07T06:22:07.333Z",
+    "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
   },
   "acca": {
     "id": "candidate:acca:2026-11-07-reviewed",
-    "title": "Cross-game · model research watch",
+    "title": "Cross-game · five supported separate-fixture markets",
     "format": "Cross-game research candidate",
     "status": "hold",
     "trackable": false,
     "legs": [
       {
-        "gameId": "761940",
-        "fixture": "Orlando City SC vs New England Revolution",
-        "league": "usa.1",
-        "kickoff": "2026-11-07T21:00Z",
-        "label": "Orlando City SC 1+ Goal",
-        "category": "Team Goals",
-        "family": "team-goal",
-        "rating": 89,
-        "why": "Orlando City SC scored in 9/10 recent fixtures, while New England Revolution conceded in 9/10. The simulated chance of at least one goal for that side was 87.9%, leaving room for a narrow match.",
-        "experimentalFrequencyPct": 87.88,
+        "gameId": "401874803",
+        "fixture": "AS Roma vs Sassuolo",
+        "league": "ita.1",
+        "kickoff": "2026-11-07T19:45Z",
+        "label": "Over 2.5 Goals",
+        "category": "Goals",
+        "family": "total",
+        "rating": 74,
+        "why": "AS Roma met the over 2.5 goals line in 7/10 recent matches and Sassuolo in 7/10. Across their latest five, it landed 5/5 and 3/5, respectively. The independent goal model produced this outcome in 76.6% of runs.",
+        "experimentalFrequencyPct": 76.56,
+        "homeSample": 10,
+        "awaySample": 10,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
-        "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          },
+          {
+            "type": "external_reference_price_only",
+            "url": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+            "asof": "2026-11-07T06:22:07.333Z"
+          }
         ],
-        "crossScore": 89
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
+        "risk": [
+          "Pre-kickoff experimental simulation is not a calibrated win probability.",
+          "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+        ],
+        "referenceSingle": {
+          "decimal": 1.36,
+          "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+          "sourceUrl": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+          "observedOn": "2026-11-07T06:22:07.333Z",
+          "jurisdiction": "not-confirmed-Ontario",
+          "providerTimestamp": "unavailable",
+          "bookmakerExecutable": false,
+          "breakEvenPct": 73.53,
+          "experimentalModelMinusImpliedPp": 3.03
+        }
       },
       {
-        "gameId": "401875552",
-        "fixture": "ADO Den Haag vs Sparta Rotterdam",
-        "league": "ned.1",
-        "kickoff": "2026-11-07T17:45Z",
-        "label": "ADO Den Haag 1+ Goal",
-        "category": "Team Goals",
-        "family": "team-goal",
-        "rating": 88,
-        "why": "ADO Den Haag scored in 8/10 recent fixtures, while Sparta Rotterdam conceded in 10/10. The simulated chance of at least one goal for that side was 85.9%, leaving room for a narrow match.",
-        "experimentalFrequencyPct": 85.91,
-        "verifiedPrice": false,
-        "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
-        "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-        ],
-        "crossScore": 88
-      },
-      {
-        "gameId": "401878760",
-        "fixture": "Arsenal vs Hull City",
+        "gameId": "401878758",
+        "fixture": "Leeds United vs Tottenham Hotspur",
         "league": "eng.1",
-        "kickoff": "2026-11-07T15:00Z",
-        "label": "Arsenal or Draw",
+        "kickoff": "2026-11-07T12:30Z",
+        "label": "Tottenham Hotspur or Draw",
         "category": "Double Chance",
         "family": "result",
-        "rating": 82,
-        "why": "Arsenal avoided defeat in 9/10 recent matches, while Hull City failed to win 9/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 76.1% of its scenarios.",
-        "experimentalFrequencyPct": 76.14,
+        "rating": 70,
+        "why": "Tottenham Hotspur avoided defeat in 7/10 recent games and Leeds United failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 65.0%. They enter with league positions 12 and 9, respectively.",
+        "experimentalFrequencyPct": 65.02,
+        "homeSample": 10,
+        "awaySample": 10,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
-        "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          },
+          {
+            "type": "external_reference_price_only",
+            "url": "https://www.footballbetbuilder.co.uk/match/leeds-united-vs-tottenham-hotspur-2026-11-07",
+            "asof": "2026-11-07T06:22:07.333Z"
+          }
         ],
-        "crossScore": 86
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
+        "risk": [
+          "Pre-kickoff experimental simulation is not a calibrated win probability.",
+          "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+        ],
+        "referenceSingle": {
+          "decimal": 1.44,
+          "sourceBook": "William Hill",
+          "sourceUrl": "https://www.footballbetbuilder.co.uk/match/leeds-united-vs-tottenham-hotspur-2026-11-07",
+          "observedOn": "2026-11-07T06:22:07.333Z",
+          "jurisdiction": "not-confirmed-Ontario",
+          "providerTimestamp": "unavailable",
+          "bookmakerExecutable": false,
+          "breakEvenPct": 69.44,
+          "experimentalModelMinusImpliedPp": -4.42
+        }
       },
       {
-        "gameId": "cz1-20261107-slovan-liberec-bohemians-1905",
-        "fixture": "Slovan Liberec vs Bohemians 1905",
-        "league": "cze.1",
-        "kickoff": "2026-11-07T14:00:00.000Z",
-        "label": "Slovan Liberec or Draw",
+        "gameId": "401882813",
+        "fixture": "Espanyol vs Deportivo",
+        "league": "esp.1",
+        "kickoff": "2026-11-07T15:15Z",
+        "label": "Deportivo or Draw",
         "category": "Double Chance",
         "family": "result",
-        "rating": 81,
-        "why": "Slovan Liberec avoided defeat in 8/9 recent matches, while Bohemians 1905 failed to win 6/8. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 79.8% of its scenarios.",
-        "experimentalFrequencyPct": 79.81,
+        "rating": 70,
+        "why": "Deportivo avoided defeat in 7/10 recent games and Espanyol failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 65.1%. They enter with league positions 14 and 8, respectively.",
+        "experimentalFrequencyPct": 65.08,
+        "homeSample": 10,
+        "awaySample": 10,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
-        "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          },
+          {
+            "type": "external_reference_price_only",
+            "url": "https://www.footballbetbuilder.co.uk/match/espanyol-vs-deportivo-la-coruna-2026-11-07",
+            "asof": "2026-11-07T06:22:07.333Z"
+          }
         ],
-        "crossScore": 85
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
+        "risk": [
+          "Pre-kickoff experimental simulation is not a calibrated win probability.",
+          "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+        ],
+        "referenceSingle": {
+          "decimal": 1.65,
+          "sourceBook": "Aggregated best price (book not attributed)",
+          "sourceUrl": "https://www.footballbetbuilder.co.uk/match/espanyol-vs-deportivo-la-coruna-2026-11-07",
+          "observedOn": "2026-11-07T06:22:07.333Z",
+          "jurisdiction": "not-confirmed-Ontario",
+          "providerTimestamp": "unavailable",
+          "bookmakerExecutable": false,
+          "breakEvenPct": 60.61,
+          "experimentalModelMinusImpliedPp": 4.47
+        }
+      },
+      {
+        "gameId": "401884740",
+        "fixture": "Mainz vs Bayern Munich",
+        "league": "ger.1",
+        "kickoff": "2026-11-07T14:30Z",
+        "label": "Mainz 1+ Goal",
+        "category": "Team Goals",
+        "family": "team-goal",
+        "rating": 82,
+        "why": "Mainz scored in 8/10 recent fixtures, while Bayern Munich conceded in 8/10. The simulated chance of at least one goal for that side was 83.0%, leaving room for a narrow match.",
+        "experimentalFrequencyPct": 82.97,
+        "homeSample": 10,
+        "awaySample": 10,
+        "verifiedPrice": false,
+        "odds": null,
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          }
+        ],
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
+        "risk": [
+          "Pre-kickoff experimental simulation is not a calibrated win probability.",
+          "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+        ]
       },
       {
         "gameId": "401876411",
@@ -165,14 +344,29 @@
         "rating": 84,
         "why": "AJ Auxerre scored in 10/10 recent fixtures, while Paris FC conceded in 7/10. The simulated chance of at least one goal for that side was 82.4%, leaving room for a narrow match.",
         "experimentalFrequencyPct": 82.45,
+        "homeSample": 10,
+        "awaySample": 10,
         "verifiedPrice": false,
         "odds": null,
-        "priceStatus": "ontario_joint_price_pending",
-        "risk": [
-          "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-          "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+        "priceStatus": "ontario_combined_quote_not_verified",
+        "modelCalibrated": false,
+        "researchSource": "dated_original_last10_and_10k_v3",
+        "sourceProvenance": [
+          {
+            "type": "internal_verified_history",
+            "path": "data/research-base-2026-11-07.json"
+          },
+          {
+            "type": "internal_experimental_model",
+            "path": "data/experimental-simulations/2026-11-07-v3.json"
+          }
         ],
-        "crossScore": 84
+        "predictedXiCoverage": "dated_predicted_pair",
+        "sampleCriteriaMet": true,
+        "risk": [
+          "Pre-kickoff experimental simulation is not a calibrated win probability.",
+          "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+        ]
       }
     ],
     "verifiedCombinedPrice": false,
@@ -181,7 +375,8 @@
     "jointProbability": null,
     "modelCalibrated": false,
     "overallResearchRating": null,
-    "caution": "HOLD / PRICE PENDING — distinct fixtures only, no verified executable Ontario price; +300 target unverified. This is not a placed or settled bet."
+    "caution": "HOLD / PRICE PENDING — five different fixtures; exact five-leg executable Ontario accumulator quote unavailable. +300 target not verified. Experimental leg frequencies are not a validated full-ticket win rate.",
+    "reviewedAt": "2026-11-07T06:22:07.333Z"
   },
   "sgpsByLeague": [
     {
@@ -194,7 +389,7 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
           "gameId": "cz1-20261107-slovan-liberec-bohemians-1905",
@@ -207,12 +402,28 @@
           "rating": 94,
           "why": "Slovan Liberec met the under 4.5 goals line in 9/9 recent matches and Bohemians 1905 in 8/8. Across their latest five, it landed 5/5 and 5/5, respectively. The independent goal model produced this outcome in 92.1% of runs.",
           "experimentalFrequencyPct": 92.09,
+          "homeSample": 9,
+          "awaySample": 8,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
@@ -226,12 +437,28 @@
           "rating": 81,
           "why": "Slovan Liberec avoided defeat in 8/9 recent matches, while Bohemians 1905 failed to win 6/8. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 79.8% of its scenarios.",
           "experimentalFrequencyPct": 79.81,
+          "homeSample": 9,
+          "awaySample": 8,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         }
       ],
@@ -241,57 +468,124 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "no_verified_date_matched_xi",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
-      "id": "candidate:sgp:401878760:20261107",
-      "gameId": "401878760",
+      "id": "candidate:sgp:401878758:20261107",
+      "gameId": "401878758",
       "league": "eng.1",
-      "title": "Arsenal vs Hull City · source-sample research watch",
-      "fixture": "Arsenal vs Hull City",
+      "title": "Leeds United vs Tottenham Hotspur · verified-history research watch",
+      "fixture": "Leeds United vs Tottenham Hotspur",
       "format": "Same-game research watchlist",
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
-          "gameId": "401878760",
-          "fixture": "Arsenal vs Hull City",
+          "gameId": "401878758",
+          "fixture": "Leeds United vs Tottenham Hotspur",
           "league": "eng.1",
-          "kickoff": "2026-11-07T15:00Z",
-          "label": "Under 4.5 Goals",
-          "category": "Goals",
-          "family": "total",
-          "rating": 90,
-          "why": "Arsenal met the under 4.5 goals line in 9/10 recent matches and Hull City in 10/10. Across their latest five, it landed 5/5 and 5/5, respectively. The independent goal model produced this outcome in 85.8% of runs.",
-          "experimentalFrequencyPct": 85.84,
-          "verifiedPrice": false,
-          "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
-          "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
-        },
-        {
-          "gameId": "401878760",
-          "fixture": "Arsenal vs Hull City",
-          "league": "eng.1",
-          "kickoff": "2026-11-07T15:00Z",
-          "label": "Arsenal or Draw",
+          "kickoff": "2026-11-07T12:30Z",
+          "label": "Tottenham Hotspur or Draw",
           "category": "Double Chance",
           "family": "result",
-          "rating": 82,
-          "why": "Arsenal avoided defeat in 9/10 recent matches, while Hull City failed to win 9/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 76.1% of its scenarios.",
-          "experimentalFrequencyPct": 76.14,
+          "rating": 70,
+          "why": "Tottenham Hotspur avoided defeat in 7/10 recent games and Leeds United failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 65.0%. They enter with league positions 12 and 9, respectively.",
+          "experimentalFrequencyPct": 65.02,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://www.footballbetbuilder.co.uk/match/leeds-united-vs-tottenham-hotspur-2026-11-07",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+          ],
+          "referenceSingle": {
+            "decimal": 1.44,
+            "sourceBook": "William Hill",
+            "sourceUrl": "https://www.footballbetbuilder.co.uk/match/leeds-united-vs-tottenham-hotspur-2026-11-07",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 69.44,
+            "experimentalModelMinusImpliedPp": -4.42
+          }
+        },
+        {
+          "gameId": "401878758",
+          "fixture": "Leeds United vs Tottenham Hotspur",
+          "league": "eng.1",
+          "kickoff": "2026-11-07T12:30Z",
+          "label": "Under 3.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 70,
+          "why": "Leeds United met the under 3.5 goals line in 8/10 recent matches and Tottenham Hotspur in 6/10. Across their latest five, it landed 5/5 and 3/5, respectively. The independent goal model produced this outcome in 70.1% of runs.",
+          "experimentalFrequencyPct": 70.11,
+          "homeSample": 10,
+          "awaySample": 10,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://www.footballbetbuilder.co.uk/match/leeds-united-vs-tottenham-hotspur-2026-11-07",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
+          "risk": [
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+          ],
+          "referenceSingle": {
+            "decimal": 1.33,
+            "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+            "sourceUrl": "https://www.footballbetbuilder.co.uk/match/leeds-united-vs-tottenham-hotspur-2026-11-07",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 75.19,
+            "experimentalModelMinusImpliedPp": -5.08
+          }
         }
       ],
       "overallResearchRating": null,
@@ -300,20 +594,74 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "dated_predicted_not_confirmed",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:401882813:20261107",
       "gameId": "401882813",
       "league": "esp.1",
-      "title": "Espanyol vs Deportivo · source-sample research watch",
+      "title": "Espanyol vs Deportivo · verified-history research watch",
       "fixture": "Espanyol vs Deportivo",
       "format": "Same-game research watchlist",
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
+        {
+          "gameId": "401882813",
+          "fixture": "Espanyol vs Deportivo",
+          "league": "esp.1",
+          "kickoff": "2026-11-07T15:15Z",
+          "label": "Deportivo or Draw",
+          "category": "Double Chance",
+          "family": "result",
+          "rating": 70,
+          "why": "Deportivo avoided defeat in 7/10 recent games and Espanyol failed to win 8/10. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached 65.1%. They enter with league positions 14 and 8, respectively.",
+          "experimentalFrequencyPct": 65.08,
+          "homeSample": 10,
+          "awaySample": 10,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://www.footballbetbuilder.co.uk/match/espanyol-vs-deportivo-la-coruna-2026-11-07",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
+          "risk": [
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+          ],
+          "referenceSingle": {
+            "decimal": 1.65,
+            "sourceBook": "Aggregated best price (book not attributed)",
+            "sourceUrl": "https://www.footballbetbuilder.co.uk/match/espanyol-vs-deportivo-la-coruna-2026-11-07",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 60.61,
+            "experimentalModelMinusImpliedPp": 4.47
+          }
+        },
         {
           "gameId": "401882813",
           "fixture": "Espanyol vs Deportivo",
@@ -325,32 +673,45 @@
           "rating": 82,
           "why": "Espanyol scored in 9/10 recent fixtures, while Deportivo conceded in 9/10. The simulated chance of at least one goal for that side was 74.8%, leaving room for a narrow match.",
           "experimentalFrequencyPct": 74.84,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://www.footballbetbuilder.co.uk/match/espanyol-vs-deportivo-la-coruna-2026-11-07",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
-        },
-        {
-          "gameId": "401882813",
-          "fixture": "Espanyol vs Deportivo",
-          "league": "esp.1",
-          "kickoff": "2026-11-07T15:15Z",
-          "label": "Under 3.5 Goals",
-          "category": "Goals",
-          "family": "total",
-          "rating": 70,
-          "why": "Espanyol met the under 3.5 goals line in 8/10 recent matches and Deportivo in 7/10. Across their latest five, it landed 4/5 and 4/5, respectively. The independent goal model produced this outcome in 66.7% of runs.",
-          "experimentalFrequencyPct": 66.67,
-          "verifiedPrice": false,
-          "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
-          "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+          ],
+          "referenceSingle": {
+            "decimal": 1.25,
+            "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+            "sourceUrl": "https://www.footballbetbuilder.co.uk/match/espanyol-vs-deportivo-la-coruna-2026-11-07",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 80,
+            "experimentalModelMinusImpliedPp": -5.16
+          }
         }
       ],
       "overallResearchRating": null,
@@ -359,7 +720,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "dated_predicted_not_confirmed",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:401876411:20261107",
@@ -371,7 +735,7 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
           "gameId": "401876411",
@@ -384,12 +748,28 @@
           "rating": 84,
           "why": "AJ Auxerre scored in 10/10 recent fixtures, while Paris FC conceded in 7/10. The simulated chance of at least one goal for that side was 82.4%, leaving room for a narrow match.",
           "experimentalFrequencyPct": 82.45,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
@@ -403,12 +783,28 @@
           "rating": 72,
           "why": "AJ Auxerre met the over 2.5 goals line in 8/10 recent matches and Paris FC in 7/10. Across their latest five, it landed 4/5 and 4/5, respectively. The independent goal model produced this outcome in 70.3% of runs.",
           "experimentalFrequencyPct": 70.32,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         }
       ],
@@ -418,7 +814,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "dated_predicted_not_confirmed",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:401884740:20261107",
@@ -430,7 +829,7 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
           "gameId": "401884740",
@@ -443,12 +842,28 @@
           "rating": 82,
           "why": "Mainz scored in 8/10 recent fixtures, while Bayern Munich conceded in 8/10. The simulated chance of at least one goal for that side was 83.0%, leaving room for a narrow match.",
           "experimentalFrequencyPct": 82.97,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
@@ -462,13 +877,45 @@
           "rating": 78,
           "why": "Mainz met the over 2.5 goals line in 7/10 recent matches and Bayern Munich in 9/10. Across their latest five, it landed 3/5 and 4/5, respectively. The independent goal model produced this outcome in 77.1% of runs.",
           "experimentalFrequencyPct": 77.11,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://over25tipstoday.com/match/2026-11-07/fsv-mainz-05-vs-bayern-munchen-fb_1575217",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+          ],
+          "referenceSingle": {
+            "decimal": 1.22,
+            "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+            "sourceUrl": "https://over25tipstoday.com/match/2026-11-07/fsv-mainz-05-vs-bayern-munchen-fb_1575217",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 81.97,
+            "experimentalModelMinusImpliedPp": -4.86
+          }
         }
       ],
       "overallResearchRating": null,
@@ -477,7 +924,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "dated_predicted_not_confirmed",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:401874803:20261107",
@@ -489,27 +939,8 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
-        {
-          "gameId": "401874803",
-          "fixture": "AS Roma vs Sassuolo",
-          "league": "ita.1",
-          "kickoff": "2026-11-07T19:45Z",
-          "label": "AS Roma 2+ Goals",
-          "category": "Team Goals",
-          "family": "team-goal",
-          "rating": 76,
-          "why": "AS Roma scored twice or more in 9/10 recent matches; Sassuolo conceded at least twice in 7/10. The date-gated scoring model reached two home goals in 73.5% of scenarios; this does not follow from an ML.",
-          "experimentalFrequencyPct": 73.45,
-          "verifiedPrice": false,
-          "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
-          "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
-        },
         {
           "gameId": "401874803",
           "fixture": "AS Roma vs Sassuolo",
@@ -521,13 +952,100 @@
           "rating": 74,
           "why": "AS Roma met the over 2.5 goals line in 7/10 recent matches and Sassuolo in 7/10. Across their latest five, it landed 5/5 and 3/5, respectively. The independent goal model produced this outcome in 76.6% of runs.",
           "experimentalFrequencyPct": 76.56,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
-          ]
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
+          ],
+          "referenceSingle": {
+            "decimal": 1.36,
+            "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+            "sourceUrl": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 73.53,
+            "experimentalModelMinusImpliedPp": 3.03
+          }
+        },
+        {
+          "gameId": "401874803",
+          "fixture": "AS Roma vs Sassuolo",
+          "league": "ita.1",
+          "kickoff": "2026-11-07T19:45Z",
+          "label": "BTTS Yes",
+          "category": "Goals",
+          "family": "both-teams-score",
+          "rating": null,
+          "why": "Roma have scored and conceded in 6/10 pre-match games; Sassuolo in 9/10. Roma's recent attack has created high-total matches, but either side failing to score loses this leg. Experimental 10,000-draw model: 71.0%.",
+          "experimentalFrequencyPct": 71.01,
+          "homeSample": 10,
+          "awaySample": 10,
+          "verifiedPrice": false,
+          "odds": null,
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "predictedXiCoverage": "dated_predicted_pair",
+          "sampleCriteriaMet": true,
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            },
+            {
+              "type": "pre_kickoff_independent_market_crosscheck",
+              "url": "https://www.sportsmole.co.uk/football/roma/preview/roma-vs-sassuolo-prediction-team-news-lineups_608516.html"
+            },
+            {
+              "type": "external_reference_price_only",
+              "url": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+              "asof": "2026-11-07T06:22:07.333Z"
+            }
+          ],
+          "risk": [
+            "Correlated with Over 2.5 goals; no defensible joint price without a live Ontario bet-builder.",
+            "Experimental model event frequencies are not empirically calibrated."
+          ],
+          "referenceSingle": {
+            "decimal": 1.67,
+            "sourceBook": "Bet365 (jurisdiction unconfirmed)",
+            "sourceUrl": "https://1x2.expert/en/match/180034-roma-vs-sassuolo",
+            "observedOn": "2026-11-07T06:22:07.333Z",
+            "jurisdiction": "not-confirmed-Ontario",
+            "providerTimestamp": "unavailable",
+            "bookmakerExecutable": false,
+            "breakEvenPct": 59.88,
+            "experimentalModelMinusImpliedPp": 11.13
+          }
         }
       ],
       "overallResearchRating": null,
@@ -536,7 +1054,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "dated_predicted_not_confirmed",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:401875552:20261107",
@@ -548,7 +1069,7 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
           "gameId": "401875552",
@@ -561,12 +1082,28 @@
           "rating": 88,
           "why": "ADO Den Haag scored in 8/10 recent fixtures, while Sparta Rotterdam conceded in 10/10. The simulated chance of at least one goal for that side was 85.9%, leaving room for a narrow match.",
           "experimentalFrequencyPct": 85.91,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
@@ -580,12 +1117,28 @@
           "rating": 75,
           "why": "ADO Den Haag met the over 2.5 goals line in 6/10 recent matches and Sparta Rotterdam in 10/10. Across their latest five, it landed 3/5 and 5/5, respectively. The independent goal model produced this outcome in 71.0% of runs.",
           "experimentalFrequencyPct": 71.03,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         }
       ],
@@ -595,7 +1148,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "no_verified_date_matched_xi",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:401885395:20261107",
@@ -607,7 +1163,7 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
           "gameId": "401885395",
@@ -620,12 +1176,28 @@
           "rating": 90,
           "why": "Sporting CP met the under 4.5 goals line in 9/10 recent matches and Moreirense in 10/10. Across their latest five, it landed 4/5 and 5/5, respectively. The independent goal model produced this outcome in 85.8% of runs.",
           "experimentalFrequencyPct": 85.84,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
@@ -637,14 +1209,30 @@
           "category": "Double Chance",
           "family": "result",
           "rating": 75,
-          "why": "Sporting CP avoided defeat in 8/10 recent matches, while Moreirense failed to win 6/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 78.9% of its scenarios.",
+          "why": "Sporting CP avoided defeat in 8/10 recent matches, while Moreirense failed to win 6/10. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in 78.9% of its scenarios. They enter with league positions 3 and 9, respectively.",
           "experimentalFrequencyPct": 78.93,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         }
       ],
@@ -654,56 +1242,91 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "no_verified_date_matched_xi",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
-      "id": "candidate:sgp:401888371:20261107",
-      "gameId": "401888371",
+      "id": "candidate:sgp:401888250:20261107",
+      "gameId": "401888250",
       "league": "tur.1",
-      "title": "Galatasaray vs Amed SFK · source-sample research watch",
-      "fixture": "Galatasaray vs Amed SFK",
+      "title": "Samsunspor vs Konyaspor · verified-history research watch",
+      "fixture": "Samsunspor vs Konyaspor",
       "format": "Same-game research watchlist",
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
-          "gameId": "401888371",
-          "fixture": "Galatasaray vs Amed SFK",
+          "gameId": "401888250",
+          "fixture": "Samsunspor vs Konyaspor",
           "league": "tur.1",
-          "kickoff": "2026-11-07T16:00Z",
-          "label": "Galatasaray 1+ Goal",
-          "category": "Team Goals",
-          "family": "team-goal",
-          "rating": 81,
-          "why": "Galatasaray scored in 9/10 recent fixtures, while Amed SFK conceded in 7/10. The simulated chance of at least one goal for that side was 81.0%, leaving room for a narrow match.",
-          "experimentalFrequencyPct": 80.99,
+          "kickoff": "2026-11-07T13:00Z",
+          "label": "Under 4.5 Goals",
+          "category": "Goals",
+          "family": "total",
+          "rating": 82,
+          "why": "Samsunspor met the under 4.5 goals line in 6/10 recent matches and Konyaspor in 9/10. Across their latest five, it landed 3/5 and 5/5, respectively. The independent goal model produced this outcome in 87.0% of runs.",
+          "experimentalFrequencyPct": 87.03,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
-          "gameId": "401888371",
-          "fixture": "Galatasaray vs Amed SFK",
+          "gameId": "401888250",
+          "fixture": "Samsunspor vs Konyaspor",
           "league": "tur.1",
-          "kickoff": "2026-11-07T16:00Z",
-          "label": "Over 2.5 Goals",
-          "category": "Goals",
-          "family": "total",
-          "rating": 68,
-          "why": "Galatasaray met the over 2.5 goals line in 7/10 recent matches and Amed SFK in 8/10. Across their latest five, it landed 3/5 and 4/5, respectively. The independent goal model produced this outcome in 62.2% of runs.",
-          "experimentalFrequencyPct": 62.21,
+          "kickoff": "2026-11-07T13:00Z",
+          "label": "Samsunspor 1+ Goal",
+          "category": "Team Goals",
+          "family": "team-goal",
+          "rating": 67,
+          "why": "Samsunspor scored in 6/10 recent fixtures, while Konyaspor conceded in 6/10. The simulated chance of at least one goal for that side was 73.3%, leaving room for a narrow match.",
+          "experimentalFrequencyPct": 73.29,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         }
       ],
@@ -713,7 +1336,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "no_verified_date_matched_xi",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     },
     {
       "id": "candidate:sgp:761940:20261107",
@@ -725,7 +1351,7 @@
       "status": "hold",
       "researchQualified": true,
       "trackable": false,
-      "why": "Both markets have pre-kickoff date-matched team histories (at least eight matches each) and exploratory model context; check current lineup, odds and availability before use.",
+      "why": "Date-gated last-10 match evidence and matching 10,000-draw experimental score model support the listed market lines. No player-event legs were added without 5+ player and opponent allowance samples.",
       "legs": [
         {
           "gameId": "761940",
@@ -738,12 +1364,28 @@
           "rating": 89,
           "why": "Orlando City SC scored in 9/10 recent fixtures, while New England Revolution conceded in 9/10. The simulated chance of at least one goal for that side was 87.9%, leaving room for a narrow match.",
           "experimentalFrequencyPct": 87.88,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         },
         {
@@ -757,12 +1399,28 @@
           "rating": 84,
           "why": "Orlando City SC met the over 2.5 goals line in 10/10 recent matches and New England Revolution in 9/10. Across their latest five, it landed 5/5 and 4/5, respectively. The independent goal model produced this outcome in 75.4% of runs.",
           "experimentalFrequencyPct": 75.42,
+          "homeSample": 10,
+          "awaySample": 10,
           "verifiedPrice": false,
           "odds": null,
-          "priceStatus": "ontario_joint_price_pending",
+          "priceStatus": "ontario_combined_quote_not_verified",
+          "modelCalibrated": false,
+          "researchSource": "dated_original_last10_and_10k_v3",
+          "sourceProvenance": [
+            {
+              "type": "internal_verified_history",
+              "path": "data/research-base-2026-11-07.json"
+            },
+            {
+              "type": "internal_experimental_model",
+              "path": "data/experimental-simulations/2026-11-07-v3.json"
+            }
+          ],
+          "predictedXiCoverage": "missing",
+          "sampleCriteriaMet": true,
           "risk": [
-            "Combined Ontario bet-builder price and exact executable leg lines are not verified.",
-            "10,000-draw model event frequencies are not calibrated hit probabilities; within-game legs can correlate."
+            "Pre-kickoff experimental simulation is not a calibrated win probability.",
+            "Exact Ontario individual line and jointly priced SGP have not been confirmed."
           ]
         }
       ],
@@ -772,7 +1430,10 @@
       "combinedReferenceAmerican": null,
       "jointProbability": null,
       "modelCalibrated": false,
-      "caution": "HOLD / PRICE PENDING — this is not an executable Ontario SGP. Target +150 unverified."
+      "caution": "HOLD / PRICE PENDING — independent match-market research only. No verified bet365 Ontario executable SGP quote; +150 target unverified. Actual XI and betting market must be rechecked before kickoff.",
+      "lineupNewsStatus": "no_verified_date_matched_xi",
+      "reviewedAt": "2026-11-07T06:22:07.333Z",
+      "correlationStatus": "within_game_dependent_no_calibrated_joint_estimate"
     }
   ],
   "props": [],
@@ -792,8 +1453,39 @@
     "crossGameDistinctFixtureLegs": 5,
     "pricedOntarioSgpTickets": 0,
     "sourceOpinionRecords": 0,
-    "missingXisAreNotInferred": true
+    "missingXisAreNotInferred": true,
+    "sgpQualityReviewedAt": "2026-11-07T06:22:07.333Z",
+    "eligibleMajorLeagueCandidates": 10,
+    "verifiedOntarioCombinedTickets": 0,
+    "datedProjectedXiPairs": 19,
+    "totalDatedFixtures": 56,
+    "exactlyTwoDifferentMarketFamilies": 10,
+    "actualOntarioBetBuilderQuotes": "none_accessible",
+    "referenceSinglesObserved": 7,
+    "rejectedMarkets": [
+      {
+        "gameId": "401878760",
+        "market": "Arsenal or Draw",
+        "reason": "Experimental 76.14% versus displayed Bet365 reference double chance around 1.03 (97.1% implied); contradictory and removed from preferred English SGP.",
+        "sourceUrl": "https://www.oddsator.com/football/england/premier-league/arsenal-vs-hull-city-2026-11-07"
+      },
+      {
+        "gameId": "401874803",
+        "market": "AS Roma 2+ goals + Over 2.5 goals",
+        "reason": "Overlapping goal-production thesis; replaced with separately measured BTTS and Over 2.5, with explicit correlation risk."
+      },
+      {
+        "gameId": "401888371",
+        "market": "Galatasaray outright or draw",
+        "reason": "Independent market prices strongly favored Galatasaray but V3 only 40.53% home win; no high-confidence favorite claim. Switched league SGP research fixture.",
+        "sourceUrl": "https://oddsrun.com/match/football/tr/39111/12205701/turkiye-super-lig/galatasaray-vs-amedspor/"
+      },
+      {
+        "market": "Player shots/SOT/fouls won/fouls committed/tackles/cards",
+        "reason": "No independently verified per-player last-five/ten event and opponent-allowance samples plus executable Ontario exact-market lines; PASS rather than fabricate."
+      }
+    ]
   },
   "sportsBookAvailability": "Exact individual and combined bet365 Ontario markets unverified",
-  "publicationStatus": "research_candidates_not_executable"
+  "publicationStatus": "reviewed_unpriced_watchlists"
 }
