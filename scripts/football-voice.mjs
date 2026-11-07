@@ -18,7 +18,7 @@ export function naturalFootballReason({label,home,away,homeHits,homeSample,awayH
     const oppForm=opponentWins<=oppPlayed*.4?"won just "+opponentWins:"won "+opponentWins;
     if(variant===0)return team+" have avoided defeat in "+r(unbeaten,played)+", while "+opp+" have "+oppForm+" of their last "+oppPlayed+". I'd rather have the draw covered than need an outright win.";
     if(variant===1)return opp+" have "+oppForm+" of their last "+oppPlayed+"; "+team+" have lost "+(played-unbeaten)+" of "+played+". The double chance fits that form better than an outright call.";
-    return team+" have lost only "+(played-unbeaten)+" of "+played+" recently, and "+opp+" have "+oppForm+" of "+oppPlayed+". Covering the draw makes sense here.";
+    return team+" have "+((played-unbeaten)<=played*.4?"lost only ":"lost ")+(played-unbeaten)+" of "+played+" recently, and "+opp+" have "+oppForm+" of "+oppPlayed+". Covering the draw makes sense here.";
   }
   if(name===h+" ML"||name===a+" ML"){
     const isHome=name===h+" ML",team=isHome?h:a,opp=isHome?a:h;
@@ -45,12 +45,12 @@ export function naturalFootballReason({label,home,away,homeHits,homeSample,awayH
   if(/^BTTS (Yes|No)$/i.test(name)){
     const yes=/Yes$/i.test(name);
     if(yes){
-      if(variant===0)return "Both teams scored in "+r(hh,hn)+" of "+possess(h)+" recent games and "+r(ah,an)+" of "+possess(a)+". Goals at both ends have been a regular feature.";
+      if(variant===0)return "Both teams scored in "+hh+" of "+possess(h)+" last "+hn+" games and "+ah+" of "+possess(a)+" last "+an+". Both sides have been involved in games with goals at each end.";
       if(variant===1)return h+" have seen both sides score "+hh+" times in "+hn+"; "+a+" have seen it "+ah+" times in "+an+". The BTTS angle comes from both teams' match trends.";
       return "BTTS has landed "+hh+"/"+hn+" for "+h+" and "+ah+"/"+an+" for "+a+". Either attack drawing a blank is the obvious risk.";
     }
-    if(variant===0)return "At least one side failed to score in "+r(hh,hn)+" of "+possess(h)+" recent games and "+r(ah,an)+" of "+possess(a)+". That's the case against BTTS.";
-    if(variant===1)return "Both teams haven't scored in "+hh+"/"+hn+" of "+possess(h)+" games and "+ah+"/"+an+" of "+possess(a)+". One blank is enough for this pick.";
+    if(variant===0)return "At least one side failed to score in "+hh+" of "+possess(h)+" last "+hn+" games and "+ah+" of "+possess(a)+" last "+an+". That's the case against BTTS.";
+    if(variant===1)return "At least one team drew a blank in "+hh+"/"+hn+" "+h+" matches and "+ah+"/"+an+" "+a+" matches. One blank is enough for this pick.";
     return "A goal at both ends hasn't been the norm: no BTTS in "+hh+"/"+hn+" "+h+" matches and "+ah+"/"+an+" "+a+" matches.";
   }
   const teamGoal=name.match(/^(.*?) (1\+ Goal|2\+ Goals|Under 1\.5 Goals)$/i);
@@ -60,6 +60,7 @@ export function naturalFootballReason({label,home,away,homeHits,homeSample,awayH
     const own=isHome?hh:ah,ownN=isHome?hn:an,oppAllow=isHome?ah:hh,oppN=isHome?an:hn,opp=isHome?a:h;
     const first=kind.startsWith("1+"),two=kind.startsWith("2+");
     if(first){
+      if(own/ownN<.5&&oppAllow/oppN>=.6)return team+" have scored in only "+r(own,ownN)+", so their own form is patchy. But "+opp+" have conceded in "+r(oppAllow,oppN)+", which gives the one-goal pick a case.";
       if(variant===0)return team+" have scored in "+r(own,ownN)+", and "+opp+" have conceded in "+r(oppAllow,oppN)+". One goal is the ask; they don't have to win.";
       if(variant===1)return opp+" have conceded in "+r(oppAllow,oppN)+" recently. With "+team+" scoring in "+r(own,ownN)+", backing them for one looks more sensible than needing the result.";
       return team+" have found the net "+own+" times in their last "+ownN+", while "+opp+" have let one in "+oppAllow+" times in "+oppN+". The one-goal line keeps the ask modest.";
@@ -70,7 +71,7 @@ export function naturalFootballReason({label,home,away,homeHits,homeSample,awayH
       return team+" have reached two goals "+own+" times in "+ownN+" games, and "+opp+" have allowed two "+oppAllow+" times in "+oppN+". That's the matchup case for 2+.";
     }
     if(variant===0)return team+" have scored no more than once in "+r(own,ownN)+"; "+opp+" have allowed at most one in "+r(oppAllow,oppN)+". This is a bet against a big scoring night.";
-    if(variant===1)return "Two goals have been hard to come by for "+team+" ("+own+"/"+ownN+" with one or fewer). "+opp+" have allowed at most one in "+oppAllow+"/"+oppN+".";
+    if(variant===1)return team+" have scored one or fewer in "+own+"/"+ownN+" recent matches. "+opp+" have kept opponents to one or fewer in "+oppAllow+"/"+oppN+".";
     return team+" have stayed below two goals in "+r(own,ownN)+", and "+opp+" have kept opponents there in "+r(oppAllow,oppN)+". That supports the team under.";
   }
   return text(raw);
