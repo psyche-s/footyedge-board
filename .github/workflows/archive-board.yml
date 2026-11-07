@@ -1,6 +1,11 @@
 name: Publish FootyEdge Daily Frozen Board
 
 on:
+  # Owner-authorized, date-guarded November 7 completion trigger; remove after recovery.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/archive-board.yml"
   schedule:
     # Owner schedule: 00:15 Toronto, including daylight-saving changes.
     - cron: "15 0 * * *"
@@ -38,7 +43,9 @@ jobs:
           # guard prevent a second publication of an already completed board.
           if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
             RUN=true
-          elif (( MINUTES_SINCE_MIDNIGHT >= 15 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
+          elif [[ "$GITHUB_EVENT_NAME" == "push" && "$TODAY" == "2026-11-07" && ! -f "data/boards/$TODAY.json" ]]; then
+            RUN=true
+          elif [[ "$GITHUB_EVENT_NAME" == "schedule" ]] && (( MINUTES_SINCE_MIDNIGHT >= 15 && MINUTES_SINCE_MIDNIGHT < 720 )) && [[ ! -f "data/boards/$TODAY.json" ]]; then
             RUN=true
           fi
           echo "run=$RUN" >> "$GITHUB_OUTPUT"
