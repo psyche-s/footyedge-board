@@ -274,8 +274,14 @@ export function mergeModelReviewed({doc,review,simulation}){
   const original=row.picks||[],result=[],families=new Set();
   for(const pick of r.picks){
    if(result.length>=3)break;
+   // Independently documented outright form dominance may qualify a result
+   // research thesis at a 52% experimental model rate, without treating that
+   // model frequency as a calibrated probability or available bookmaker line.
+   const isSupportedOutright=pick?.family==="result"&&/ ML$/.test(pick.label||"")&&
+     pick.marketEvidence?.verifiedFormDominance===true;
+   const modelFloor=isSupportedOutright?52:55;
    if(!pick||!pick.label||!pick.family||families.has(pick.family)||
-     !Number.isFinite(pick.experimentalFrequencyPct)||pick.experimentalFrequencyPct<55||
+     !Number.isFinite(pick.experimentalFrequencyPct)||pick.experimentalFrequencyPct<modelFloor||
      !Number.isFinite(pick.homeSample)||pick.homeSample<5||
      !Number.isFinite(pick.awaySample)||pick.awaySample<5||
      pick.probabilityCalibrated!==false)continue;

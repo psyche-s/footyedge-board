@@ -41,7 +41,8 @@ export function takeOwnerTop3(picks,limit=3){
  const candidates=[...(picks||[])].filter(p=>{
   if(!p?.label||p.sourceBackedReason!==true||!String(p.reason||"").trim())return false;
   const rating=Number(p.confidenceRating??p.score);
-  if(!Number.isFinite(rating)||rating<58||rating>100)return false;
+  if(!Number.isFinite(rating)||rating>100)return false;
+  if(rating<58 && !(ownerThesis(p)==="result" && p.marketEvidence?.verifiedFormDominance===true && rating>=55))return false;
   const t=ownerThesis(p),e=p.marketEvidence||{};
   if(t==="other")return false;
   if(["shots","shots on target","fouls","cards","corners","tackles","passes"].includes(t))

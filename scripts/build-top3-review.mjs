@@ -41,22 +41,25 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    const standingContext=ht&&at?` They enter with league positions ${ht.rank} and ${at.rank}, respectively.`:"";
    result.push(q({label:h+" or Draw",category:"Double Chance",family:"result"},pct(w.homeWin+w.draw),sideH,notWinA,{},`${h} avoided defeat in ${sideH}/${nh} recent matches, while ${a} failed to win ${notWinA}/${na}. Draw cover protects against a close contest; the 10,000-draw model supported the home-or-draw outcome in ${pct(w.homeWin+w.draw).toFixed(1)}% of its scenarios.${standingContext}`));
    result.push(q({label:a+" or Draw",category:"Double Chance",family:"result"},pct(w.awayWin+w.draw),sideA,notWinH,{},`${a} avoided defeat in ${sideA}/${na} recent games and ${h} failed to win ${notWinH}/${nh}. Draw protection reduces the need to pick an outright winner; simulated away-or-draw outcomes reached ${pct(w.awayWin+w.draw).toFixed(1)}%.${standingContext}`));
-   if(w.homeWin>=56&&hwin>=5&&homeOppLoss>=3)result.push(q({label:h+" ML",category:"Match Result",family:"result"},pct(w.homeWin),hwin,homeOppLoss,{},`${h} won ${hwin}/${nh} recent matches while ${a} lost ${homeOppLoss}/${na}. Home win is supported in ${pct(w.homeWin).toFixed(1)}% of simulated outcomes, though the draw still presents risk.${standingContext}`));
-   if(w.awayWin>=56&&awin>=5&&awayOppLoss>=3)result.push(q({label:a+" ML",category:"Match Result",family:"result"},pct(w.awayWin),awin,awayOppLoss,{},`${a} won ${awin}/${na} recent games and ${h} lost ${awayOppLoss}/${nh}. The modeled away-win rate was ${pct(w.awayWin).toFixed(1)}%; the straight win is less protected than double chance.${standingContext}`));
-   // A dominant, independently modeled ML is a distinct and more informative
-   // recommendation than the almost-certain double-chance version of that side.
-   // This is an editorial research-strength grade, NOT a calibrated win rate.
-   const dominantHome=w.homeWin>=72&&hwin/nh>=.6&&homeOppLoss/na>=.5;
-   const dominantAway=w.awayWin>=72&&awin/na>=.6&&awayOppLoss/nh>=.5;
-   if(dominantHome||dominantAway){
-     const preferred=result.find(p=>p.label===(dominantHome?h:a)+" ML");
-     if(preferred){
-       preferred.confidenceRating=Math.min(94,Math.max(preferred.confidenceRating,
-         Math.round(.82*(dominantHome?w.homeWin:w.awayWin)+23)));
-       preferred.researchStrength=preferred.confidenceRating;
-       preferred.reason+=" The strong outright-win direction is preferred to a redundant double-chance selection; the grade is not a win probability.";
-     }
-   }
+   // An outright winner is eligible when the date-gated 10-match model and
+   // BOTH teams' pre-match form support the direction. Strong winning form OR
+   // repeated opponent defeats can justify considering a 52–56% model ML,
+   // but this must never be advertised as a calibrated win probability.
+   const strongHome=w.homeWin>=52&&hwin/nh>=.5&&homeOppLoss/na>=.4&&
+     (hwin/nh>=.7||homeOppLoss/na>=.6||w.homeWin>=60);
+   const strongAway=w.awayWin>=52&&awin/na>=.5&&awayOppLoss/nh>=.4&&
+     (awin/na>=.7||awayOppLoss/nh>=.6||w.awayWin>=60);
+   if(strongHome)result.push(q({label:h+" ML",category:"Match Result",family:"result"},pct(w.homeWin),hwin,homeOppLoss,
+     {verifiedFormDominance:true},
+     `${h} won ${hwin}/${nh} recent matches while ${a} lost ${homeOppLoss}/${na}. Our 10,000-draw pre-match model favoured a home win in ${pct(w.homeWin).toFixed(1)}% of scenarios, with draw risk still material.${standingContext}`));
+   if(strongAway)result.push(q({label:a+" ML",category:"Match Result",family:"result"},pct(w.awayWin),awin,awayOppLoss,
+     {verifiedFormDominance:true},
+     `${a} won ${awin}/${na} recent matches while ${h} lost ${awayOppLoss}/${nh}. Our 10,000-draw pre-match model favoured an away win in ${pct(w.awayWin).toFixed(1)}% of scenarios; draw protection remains the safer market.${standingContext}`));
+   // A single result-family thesis can enter the final Top 3. When form and
+   // model both support the outright winner, prefer its informative ML to a
+   // redundant same-side double chance, keeping the *actual* research grade.
+   const dominantHome=strongHome;
+   const dominantAway=strongAway;
    result.sort((x,y)=>y.confidenceRating-x.confidenceRating||y.historicalSupportPct-x.historicalSupportPct);
    const chooseResult=result.find(x=>x.confidenceRating>=58)||result[0];
    const goals=[];
@@ -130,7 +133,10 @@ export function buildReviewedPicks({research,simulation,news,standings,editorial
    // to pair with a scoring leg that a straight win already implies.
    const ownerResults=(dominantHome||dominantAway)?
      result.filter(x=>x.label===(dominantHome?h:a)+" ML"):result;
-   const ownerPool=[...ownerResults,...meaningfulGoals,...scoring].filter(x=>x.confidenceRating>=58);
+   const preferredOutright=ownerResults.find(x=>x.label.endsWith(" ML")&&x.marketEvidence?.verifiedFormDominance===true);
+   const ownerPool=[...ownerResults,...meaningfulGoals,...scoring].filter(x=>
+     (x.confidenceRating>=58||(x.marketEvidence?.verifiedFormDominance===true&&x.confidenceRating>=55))&&
+     (!preferredOutright||x===preferredOutright||ownerPickCompatible(preferredOutright,x)));
    let distinct=ownerReviewed?takeOwnerTop3(ownerPool,3):distinctPickSet(picked,3);
    // Only when fewer than three genuinely distinct markets qualify, consider
    // team under-1.5 goals. Unlike a trivial 1+ goal, this does not follow
