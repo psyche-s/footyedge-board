@@ -26,4 +26,326 @@ const definitions={
  home_win:["result","Match Result"],away_win:["result","Match Result"],draw:["result","Match Result"],
  home_or_draw:["result","Double Chance"],away_or_draw:["result","Double Chance"],
  over_1_5:["total","Goals"],over_2_5:["total","Goals"],over_3_5:["total","Goals"],over_4_5:["total","Goals"],
- under_2_5:["to¶»§q«^
+ under_2_5:["total","Goals"],under_3_5:["total","Goals"],
+ btts_yes:["btts","BTTS"],btts_no:["btts","BTTS"],
+ ht_draw:["halftime","Half-Time Result"],ht_away_loses:["halftime","Half-Time Result"],
+ ht_away_or_draw:["halftime","Half-Time Double Chance"],
+ home_first_half_goal:["firsthalf","First-Half Goals"],
+ home_first_goal:["firstgoal","First Team to Score"],away_first_goal:["firstgoal","First Team to Score"],
+ brighton_first_goal:["firstgoal","First Team to Score"],
+ liverpool_over_2_5:["teamtotal","Team Goals"],
+ over_4_5_cards:["cards","Cards"],
+ over_10_5_corners:["corners","Corners"],
+ under_8_5_corners:["corners","Corners"],
+ under_10_5_corners:["corners","Corners"],
+ under_10_corners:["corners","Corners"],
+ away_win_btts_yes:["combo","Match Builder"]
+};
+const skipped=key=>key.startsWith("player_")||key.startsWith("exact_score_");
+const label=(key,f)=>{
+ const h=f.home.name,a=f.away.name;
+ if(key==="home_win")return h+" ML";
+ if(key==="away_win")return a+" ML";
+ if(key==="draw")return "Draw";
+ if(key==="home_or_draw")return h+" or Draw";
+ if(key==="away_or_draw")return a+" or Draw";
+ if(key==="btts_yes")return "BTTS Yes";
+ if(key==="btts_no")return "BTTS No";
+ if(key==="ht_draw")return "Half-Time Draw";
+ if(key==="ht_away_loses")return a+" to Trail at Half-Time";
+ if(key==="ht_away_or_draw")return a+" or Draw at Half-Time";
+ if(key==="home_first_half_goal")return h+" 1+ First-Half Goal";
+ if(key==="home_first_goal")return h+" to Score First";
+ if(key==="away_first_goal")return a+" to Score First";
+ if(key==="brighton_first_goal")return a+" to Score First";
+ if(key==="liverpool_over_2_5")return h+" Over 2.5 Team Goals";
+ if(key==="away_win_btts_yes")return a+" Win & BTTS Yes";
+ let z=key.match(/^(over|under)_(\d+)_(\d+)$/);
+ if(z)return z[1].replace(/^./,s=>s.toUpperCase())+" "+z[2]+"."+z[3]+
+   (["cards","corners"].some(x=>key.endsWith("_"+x))?"":" Goals");
+ z=key.match(/^(over|under)_(\d+)_(\d+)_(cards|corners)$/);
+ if(z)return z[1].replace(/^./,s=>s.toUpperCase())+" "+z[2]+"."+z[3]+" "+z[4][0].toUpperCase()+z[4].slice(1);
+ if(key==="under_10_corners")return "Under 10 Corners";
+ return null;
+};
+function trend(key,f){
+ const cutoff=Date.parse(f.date),h=(f.last10?.home||[]).filter(x=>Number.isFinite(x.gf)&&Number.isFinite(x.ga)&&Date.parse(x.date)<cutoff).slice(0,10);
+ const a=(f.last10?.away||[]).filter(x=>Number.isFinite(x.gf)&&Number.isFinite(x.ga)&&Date.parse(x.date)<cutoff).slice(0,10);
+ if(h.length<5||a.length<5)return null;
+ let tests=null;
+ if(key==="home_win")tests=[x=>x.gf>x.ga,x=>x.gf<x.ga];
+ else if(key==="away_win")tests=[x=>x.gf<x.ga,x=>x.gf>x.ga];
+ else if(key==="draw")tests=[x=>x.gf===x.ga,x=>x.gf===x.ga];
+ else if(key==="btts_yes")tests=[x=>x.gf>0&&x.ga>0,x=>x.gf>0&&x.ga>0];
+ else if(key==="btts_no")tests=[x=>x.gf===0||x.ga===0,x=>x.gf===0||x.ga===0];
+ else if(key==="home_or_draw")tests=[x=>x.gf>=x.ga,x=>x.gf<=x.ga];
+ else if(key==="away_or_draw")tests=[x=>x.gf<=x.ga,x=>x.gf>=x.ga];
+ else if(key==="liverpool_over_2_5")tests=[x=>x.gf>=3,x=>x.ga>=3];
+ else {
+  const t=key.match(/^(under|over)_(\d+)_(\d+)$/);
+  if(t){const v=Number(t[2]+"."+t[3]);if(t[1]==="over")tests=[x=>x.gf+x.ga>v,x=>x.gf+x.ga>v];else tests=[x=>x.gf+x.ga<v,x=>x.gf+x.ga<v];}
+ }
+ if(!tests)return null;
+ const hc=h.filter(tests[0]).length,ac=a.filter(tests[1]).length;
+ return {homeHits:hc,awayHits:ac,homeGames:h.length,awayGames:a.length,combined:(hc/h.length+ac/a.length)/2};
+}
+function compatible(a,b){
+ if(a.family===b.family)return false;
+ const x=a.key,y=b.key;
+ if((x==="over_1_5"&&y==="btts_yes")||(y==="over_1_5"&&x==="btts_yes"))return false;
+ // BTTS + Under 2.5 requires exactly 1-1: too narrow and redundant as
+ // independent recommendations, even though that score is mathematically possible.
+ if((x==="under_2_5"&&y==="btts_yes")||(y==="under_2_5"&&x==="btts_yes"))return false;
+ if((a.family==="combo"&&["result","btts"].includes(b.family))||(b.family==="combo"&&["result","btts"].includes(a.family)))return false;
+ if((a.family==="firstgoal"&&b.family==="firsthalf")||(b.family==="firstgoal"&&a.family==="firsthalf"))return false;
+ if((x==="away_win"&&y==="away_win_btts_yes")||(x==="away_win_btts_yes"&&y==="away_win"))return false;
+ return true;
+}
+// Reject jointly impossible Top 3 sets, not just incompatible pairs.
+// Example: BTTS Yes + Under 2.5 + Away ML cannot all settle successfully.
+function scoreFeasible(picks){
+ for(let home=0;home<=9;home++)for(let away=0;away<=9;away++){
+  const accepted=picks.every(p=>{
+   const key=p.key;
+   if(key==="home_win")return home>away;
+   if(key==="away_win")return away>home;
+   if(key==="draw")return home===away;
+   if(key==="home_or_draw")return home>=away;
+   if(key==="away_or_draw")return away>=home;
+   if(key==="btts_yes")return home>0&&away>0;
+   if(key==="btts_no")return home===0||away===0;
+   if(key==="liverpool_over_2_5")return home>=3;
+   if(key==="away_win_btts_yes")return away>home&&away>0&&home>0;
+   const total=key.match(/^(over|under)_(\d+)_(\d+)$/);
+   if(total){
+    const line=Number(total[2]+"."+total[3]);
+    return total[1]==="over"?home+away>line:home+away<line;
+   }
+   if(key==="home_first_goal"||key==="home_first_half_goal")return home>=1;
+   if(key==="away_first_goal"||key==="brighton_first_goal")return away>=1;
+   return true;
+  });
+  if(accepted)return true;
+ }
+ return false;
+}
+function generate({date,research,curated,opinions}){
+ if(research?.date!==date||curated?.date!==date||opinions?.date!==date)throw Error("Exact-date matched research and source captures required");
+ const fixtures=research.fixtures||[],byId=new Map(fixtures.map(f=>[String(f.id),f]));
+ const votes=new Map(),rejected=[];
+ function add(id,key,source,url,mode,fact=null){
+  const f=byId.get(String(id)),spec=definitions[key];
+  if(!f||!spec||!hostOk(url,source)){rejected.push({id,key,source,reason:"unknown fixture, market, or source"});return}
+  const k=String(id)+"|"+key;
+  const v=votes.get(k)||{key,fixtureId:String(id),support:new Map(),mode:new Set(),facts:[]};
+  if(v.support.has(source))return;
+  v.support.set(source,url);v.mode.add(mode);
+  if(typeof fact==="string"&&fact.length>=15&&fact.length<=140&&
+    !/https?:|sports.?mole|football.?whispers|forebet/i.test(fact)&&
+    !v.facts.includes(fact))v.facts.push(fact.trim());
+  votes.set(k,v);
+ }
+ for(const item of curated.fixtures||[]){
+  const f=byId.get(String(item.fixtureId));
+  if(!f||norm(item.home)!==norm(f.home.name)||norm(item.away)!==norm(f.away.name)||
+    item.publicationDate!==date||!hostOk(item.url,item.source)){rejected.push({id:item.fixtureId,reason:"unverified match or date"});continue}
+  for(const p of item.marketPicks||[]){
+   if(!p.explicitPreMatchTip)continue;
+   if(skipped(p.market)){rejected.push({id:item.fixtureId,key:p.market,reason:"unverified player/event precision or exact score"});continue}
+   add(item.fixtureId,p.market,item.source,item.url,"direct_markets",p.fact);
+  }
+ }
+ const translated={home:"home_win",away:"away_win",draw:"draw",yes:"btts_yes",no:"btts_no",home_or_draw:"home_or_draw",away_or_draw:"away_or_draw"};
+ for(const o of opinions.opinions||[]){
+  if(o.fixtureDate!==date||o.kind!=="explicit_pre_match_prediction"||!["match_winner","btts","double_chance"].includes(o.market))continue;
+  const key=translated[o.prediction];
+  if(!key||!((o.market==="match_winner"&&["home_win","away_win","draw"].includes(key))||
+    (o.market==="btts"&&["btts_yes","btts_no"].includes(key))||
+    (o.market==="double_chance"&&["home_or_draw","away_or_draw"].includes(key))))continue;
+  add(o.fixtureId,key,o.source,o.url,"winner_or_btts");
+ }
+ const output=[];
+ for(const f of fixtures){
+  const candidates=[...votes.values()].filter(v=>v.fixtureId===String(f.id));
+  const direction=candidates.filter(x=>["home_win","away_win","draw","home_or_draw","away_or_draw"].includes(x.key));
+  const directResult=direction.filter(x=>["home_win","away_win","draw"].includes(x.key));
+  const resultOpposition=(key)=>directResult.filter(x=>x.key!==key).reduce((n,x)=>n+x.support.size,0);
+  const oppositeMarket=key=>key==="btts_yes"?"btts_no":key==="btts_no"?"btts_yes":
+    key.startsWith("over_")?"under_"+key.slice(5):key.startsWith("under_")?"over_"+key.slice(6):null;
+  const marketOpposition=key=>candidates.filter(x=>x.key===oppositeMarket(key)).reduce((n,x)=>n+x.support.size,0);
+  const picks=candidates.map(v=>{
+   const spec=definitions[v.key],name=label(v.key,f);
+   if(!name)return null;
+   const nums=trend(v.key,f),count=v.support.size,opposed=spec[0]==="result"?resultOpposition(v.key):
+     ["total","btts"].includes(spec[0])?marketOpposition(v.key):0;
+   const event=["corners","cards","firstgoal","firsthalf","halftime","combo","teamtotal"].includes(spec[0]);
+   const grade=Math.max(50,Math.min(80,Math.round(55+8*(count-1)+(nums?Math.max(-5,Math.min(9,(nums.combined-.5)*21)):0)-(event?3:0)-Math.min(14,opposed*5))));
+   const basis=count>=2?count+" independently recorded pre-match predictions support this market.":"A dated match-specific preview explicitly recommends this market.";
+   const numbers=nums?" Recent verified results match the selection in "+nums.homeHits+"/"+nums.homeGames+" "+f.home.name+" games and "+nums.awayHits+"/"+nums.awayGames+" "+f.away.name+" games.":"";
+   const particular=v.facts?.length?" Match-specific research: "+v.facts[0]:"";
+   const disagreement=opposed?" "+opposed+" independent opposing market forecast"+(opposed===1?" was":"s were")+" also recorded; the evidence is not unanimous.":"";
+   const caveat=event?" The selection is editorially sourced; matching event-level hit rates or confirmed player roles were not available for independent verification.":"";
+   return {key:v.key,label:name,category:spec[1],family:spec[0],confidenceRating:grade,
+    researchStrength:grade,sourceBackedReason:true,probabilityCalibrated:false,
+    confidenceType:"editorial_research_grade_not_outcome_probability",
+    score:null,odds:null,ev:null,verifiedPrice:false,researchOnly:true,
+    editorialSupport:count,editorialOpposition:opposed,
+    marketEvidence:{explicitEditorialTip:true,verifiedPublisherCount:count,opposingPublisherCount:opposed,
+     researchContradiction:opposed>0,verified:event===false&&!!nums,sourceCheckedAt:date},
+    sourceProvenance:[...v.support].map(([source,url])=>({source,url,fixtureDate:date})),
+    reason:basis+particular+numbers+disagreement+caveat
+   };
+  }).filter(Boolean).filter(p=>{
+   // An evenly split or outvoted 1X2 thesis is a PASS, not a qualified ML.
+   // Preserve opposing opinions in the internal audit; never choose a side
+   // solely from historical trend when publishers contradict one another.
+   return !["result","total","btts"].includes(p.family)||p.editorialOpposition<p.editorialSupport;
+  }).sort((a,b)=>b.editorialSupport-a.editorialSupport||b.confidenceRating-a.confidenceRating);
+  // A competing winner forecast is an important signal, not a second independent leg.
+  // Pick one strongest outcome thesis, then genuinely different supported markets.
+  let best=[];
+  const choose=(selected,start)=>{
+   // When independently sourced options are similarly supported, prefer
+   // genuinely different scoring/event markets over default 1X2/DC chalk.
+   // This is a ranking tie-break, never a fabricated odds or value estimate.
+   const score=xs=>xs.reduce((n,x)=>n+x.editorialSupport*10+x.confidenceRating+
+     (["result"].includes(x.family)?-8:0)+(x.editorialOpposition?-8:0),0);
+   if(selected.length>best.length||(selected.length===best.length&&score(selected)>score(best)))best=[...selected];
+   if(selected.length===3)return;
+   for(let i=start;i<picks.length;i++)if(selected.every(x=>compatible(x,picks[i]))&&scoreFeasible([...selected,picks[i]]))choose([...selected,picks[i]],i+1);
+  };
+  choose([],0);
+  best.sort((a,b)=>b.editorialSupport-a.editorialSupport||
+    (a.family==="result"?1:0)-(b.family==="result"?1:0)||
+    b.confidenceRating-a.confidenceRating);
+  for(let i=0;i<best.length;i++)best[i].rank=i+1;
+  output.push({gameId:String(f.id),league:f.league,home:f.home.name,away:f.away.name,
+   kickoff:f.date,reviewed:best.length>0,reviewStatus:best.length===3?"three_distinct_sourced_market_tips":best.length?"partial_sourced_market_tips":"pass_no_independent_market_tip",
+   editorialSourceCount:new Set(best.flatMap(x=>x.sourceProvenance.map(y=>y.source))).size,
+   qualifyingInputs:{sourcedMarketPicks:best.length,standingsAndLineupsNotImputed:true},
+   picks:best
+  });
+ }
+ const ranked=output.flatMap(m=>m.picks.map(p=>({gameId:m.gameId,home:m.home,away:m.away,league:m.league,kickoff:m.kickoff,pick:p})))
+  .sort((a,b)=>b.pick.editorialSupport-a.pick.editorialSupport||
+    a.pick.editorialOpposition-b.pick.editorialOpposition||b.pick.confidenceRating-a.pick.confidenceRating);
+ const top5=[],seen=new Set(),familyCount=new Map();
+ // Avoid an entire global Top 5 consisting of the same 1X2 thesis.
+ // Keep result consensus prominent, but reserve two slots for independent
+ // scoring or event markets when those were explicitly published.
+ const quotas={result:3,total:1,btts:1};
+ const addTop=x=>{
+  if(seen.has(x.gameId)||top5.length===5)return false;
+  seen.add(x.gameId);top5.push({...x,rank:top5.length+1});
+  familyCount.set(x.pick.family,(familyCount.get(x.pick.family)||0)+1);
+  return true;
+ };
+ for(const [family,quota] of Object.entries(quotas)){
+  for(const x of ranked)if(x.pick.family===family&&(familyCount.get(family)||0)<quota)addTop(x);
+ }
+ for(const x of ranked)if(top5.length<5)addTop(x);
+ return {schema:"footyedge-dated-researched-top3-v1",mode:"independent_publisher_market_tips",
+  date,generatedAt:new Date().toISOString(),archiveUnmodified:true,sourceNamesOnUi:false,sourceLedDisplayOnly:true,
+  researchGradeNotProbability:true,method:"Verified match-specific publisher tips first; exact market votes and dissent retained, distinct market screening; verified last-ten form used as a cross-check, not as a source prediction.",
+  calibration:"Confidence figures are research-quality grades, NOT calibrated probabilities and must not be treated as actual win rates.",
+  totals:{fixtures:output.length,three:output.filter(x=>x.picks.length===3).length,two:output.filter(x=>x.picks.length===2).length,one:output.filter(x=>x.picks.length===1).length,zero:output.filter(x=>x.picks.length===0).length,
+    sourceMarketTips:(curated.fixtures||[]).reduce((n,x)=>n+(x.marketPicks||[]).length,0),
+    sourceOpinionRecords:(opinions.opinions||[]).length,
+    rejectedUnverifiedMarkets:rejected.length},
+  top5,matches:output,rejectedInternal:rejected};
+}
+
+/**
+ * Safely promote independently reviewed, date-matched match-history/model
+ * candidates into the display overlay when editorial picks do not cover the
+ * market. These remain MODEL RESEARCH, not publisher tips or calibrated odds.
+ * Historical frozen board/Top 5 is never touched.
+ */
+export function mergeModelReviewed({doc,review,simulation}){
+ if(!doc||!review||!simulation||doc.date!==review.date||doc.date!==simulation.date||
+   simulation.simulationsPerFixture!==10000||!Array.isArray(review.matches)||!Array.isArray(simulation.fixtures))
+   throw Error("Date-matched 10,000-draw research required");
+ const reviewed=new Map(review.matches.map(x=>[String(x.gameId),x]));
+ const simulated=new Map(simulation.fixtures.map(x=>[String(x.fixtureId),x]));
+ const next={...doc,matches:doc.matches.map(row=>{
+  const r=reviewed.get(String(row.gameId)),s=simulated.get(String(row.gameId));
+  if(!r||!s||s.status!=="pre_kickoff_experimental"||r.home!==row.home||r.away!==row.away||
+    r.league!==row.league||!Array.isArray(r.picks))return row;
+  const original=row.picks||[],result=[],families=new Set();
+  for(const pick of r.picks){
+   if(result.length>=3)break;
+   if(!pick||!pick.label||!pick.family||families.has(pick.family)||
+     !Number.isFinite(pick.experimentalFrequencyPct)||pick.experimentalFrequencyPct<55||
+     !Number.isFinite(pick.homeSample)||pick.homeSample<5||
+     !Number.isFinite(pick.awaySample)||pick.awaySample<5||
+     pick.probabilityCalibrated!==false)continue;
+   const exact=original.find(x=>x.label===pick.label&&x.family===pick.family);
+   const item={...pick,key:pick.key||"model_"+norm(pick.label).replace(/\s+/g,"_"),
+     sourceProvenance:exact?.sourceProvenance||[],
+     editorialSupport:exact?.editorialSupport||0,editorialOpposition:exact?.editorialOpposition||0,
+     modelResearchOnly:!exact,sourceBackedReason:true,researchOnly:true,odds:null,ev:null,
+     verifiedPrice:false,priceStatus:"not_verified",
+     confidenceType:"research_strength_not_calibrated_probability",
+     marketEvidence:{...pick.marketEvidence,modelBacked:true,draws:10000,
+      exactEditorialMarketSources:exact?.editorialSupport||0,sourceDate:doc.date}};
+   result.push({...item,rank:result.length+1});families.add(pick.family);
+  }
+  return {...row,reviewed:result.length>0,
+   reviewStatus:result.length===3?"three_distinct_model_crosschecked_picks_editorial_coverage_partial":
+     result.length?"partial_model_reviewed_picks":"pass_missing_verified_model_support",
+   qualifyingInputs:{...row.qualifyingInputs,modelReviewedPicks:result.length,simulationsVerified:10000},
+   picks:result};
+ })};
+ next.mode="model_research_with_independent_editorial_crosschecks";
+ next.method="Pre-kickoff verified history and exact-date V3 model-backed research; publisher opinions and exact-market endorsements are recorded separately. Historical frozen picks are untouched.";
+ next.calibration="Research-grade percentages are NOT calibrated win probabilities; 10,000-run event frequencies are experimental.";
+ next.top5=[];
+ next.top5FrozenBoardPreserved=true;
+ next.totals={...next.totals,
+  three:next.matches.filter(x=>x.picks.length===3).length,
+  two:next.matches.filter(x=>x.picks.length===2).length,
+  one:next.matches.filter(x=>x.picks.length===1).length,
+  zero:next.matches.filter(x=>x.picks.length===0).length,
+  modelResearchedPicks:next.matches.reduce((n,x)=>n+x.picks.length,0),
+  independentlyExactMarketSupportedSelections:next.matches.reduce((n,x)=>n+x.picks.filter(p=>p.editorialSupport>0).length,0)};
+ return next;
+}
+
+export {generate};
+async function main(){
+ const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:"America/Toronto",year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date()).map(x=>[x.type,x.value]));
+ const date=process.env.REVIEW_DATE||p.year+"-"+p.month+"-"+p.day;
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error("Invalid date");
+ const [research,curatedPayload,opinions]=await Promise.all([
+  read(path.join("data","research-base-"+date+".json")),
+  read(path.join("data","source-market-picks",date+".json")),
+  read(path.join("data","source-opinions",date+".json"))]);
+ if(!research||research.date!==date||!Array.isArray(research.fixtures)||!research.fixtures.length){
+  throw Error("Date-matched fixture research is required for a Top Picks PASS/coverage overlay");
+ }
+ // Missing publisher evidence is an explicit PASS, never a reason to leave
+ // the public Top Picks status blank or to fabricate an editorial forecast.
+ const verifiedOpinions=opinions?.date===date&&Array.isArray(opinions.opinions)?opinions:
+  {schema:"footyedge-source-opinions-v1",date,opinions:[]};
+ // An absent market-level file is NOT permission to infer extra publisher bets.
+ // A result-only opinion can support one result thesis, not three model tips.
+ const curated=curatedPayload?.date===date?curatedPayload:{date,fixtures:[]};
+ let doc=generate({date,research,curated,opinions:verifiedOpinions});
+ if(process.env.OWNER_MODEL_RESEARCH_FALLBACK==="1"){
+  const [review,simulation]=await Promise.all([
+   read(path.join("data","pick-reviews",date+".json")),
+   read(path.join("data","experimental-simulations",date+"-v3.json"))]);
+  if(review&&simulation){
+   doc=mergeModelReviewed({doc,review,simulation});
+   console.log("Model-research fallback:",JSON.stringify(doc.totals));
+  }else{
+   console.log("::warning::Verified date-matched model pick review missing; source-led PASS retained.");
+  }
+ }
+ const target=path.join("data","source-led",date+".json");
+ await fs.mkdir(path.dirname(target),{recursive:true});
+ await fs.writeFile(target,JSON.stringify(doc,null,2)+"\n");
+ console.log("Sourced Top 3 review:",JSON.stringify(doc.totals),"Top 5:",doc.top5.map(x=>x.pick.label));
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href)
+ main().catch(e=>{console.error(e);process.exitCode=1});
