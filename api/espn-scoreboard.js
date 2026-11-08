@@ -1,4 +1,3 @@
-import {applyVerifiedFixtureStatuses} from '../assets/verified-fixture-status.mjs';
 // A previously captured ESPN-derived fixture snapshot is a labelled FALLBACK,
 // never a fresh/live scoreboard or proof of confirmed lineups, results or odds.
 const VERIFIED_CLUB_LEAGUES=new Map([[750,"jpn.1"],[700,"eng.1"],[3914,"eng.2"],[3946,"tur.1"],[21231,"ksa.1"],[740,"esp.1"],[730,"ita.1"],[720,"ger.1"],[710,"fra.1"],[725,"ned.1"],[715,"por.1"],[770,"usa.1"],[775,"uefa.champions"],[776,"uefa.europa"],[20296,"uefa.europa.conf"],[2310,"uefa.europa.conf"]]);
@@ -101,6 +100,9 @@ export default async function handler(req,res){
         note:"Delayed public-domain schedule/results, not a live Czech scoreboard",
       }
     };
+    // Vercel compiles this entry point as CommonJS. Keep the ESM helper behind
+    // a native dynamic import so requiring the serverless function can boot.
+    const {applyVerifiedFixtureStatuses}=await import('../assets/verified-fixture-status.mjs');
     applyVerifiedFixtureStatuses(payload,day);
     res.setHeader("Content-Type","application/json; charset=utf-8");
     res.setHeader("Cache-Control","public, s-maxage=60, stale-while-revalidate=120");
