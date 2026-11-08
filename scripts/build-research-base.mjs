@@ -328,7 +328,8 @@ async function main(){
   const cupCodes=["eng.league_cup","eng.fa_cup","ger.dfb_pokal","esp.copa_del_rey","ita.coppa_italia","fra.coupe_de_france","ned.cup","por.taca.portugal","sco.1"];
   for(const code of cupCodes){
     try{
-      const response=await json("https://site.api.espn.com/apis/site/v2/sports/soccer/"+encodeURIComponent(code)+"/scoreboard?dates="+DATE.replaceAll("-","")+"&limit=250");
+      const providerCode=code==="eng.fa_cup"?"eng.fa":code;
+      const response=await json("https://site.api.espn.com/apis/site/v2/sports/soccer/"+encodeURIComponent(providerCode)+"/scoreboard?dates="+DATE.replaceAll("-","")+"&limit=250");
       let count=0;
       for(const e of response.events||[]){
         if(globalThis.FootyEdgeAvailability.eventDay(e)!==DATE||globalThis.FootyEdgeAvailability.excludedTaggedEvent(e))continue;
