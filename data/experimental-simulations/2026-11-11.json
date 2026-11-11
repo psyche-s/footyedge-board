@@ -1,0 +1,104 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-11-11",
+  "generatedAt": "2026-11-11T12:46:19.539Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 10000,
+  "sourceDates": {
+    "research": "2026-11-11T12:45:57.423Z",
+    "analytics": "2026-11-11T12:46:17.981048+00:00",
+    "h2h": "2026-11-11",
+    "teamNews": null,
+    "standings": "2026-11-11T12:46:18.157Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 1,
+    "preKickoff": 0,
+    "postKickoff": 1,
+    "atLeastEightEach": 0,
+    "shotJoined": 0,
+    "realXg": 0,
+    "projectedXI": 0,
+    "standingsJoined": 0
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401930244",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-11T12:00Z",
+      "home": "Vietnam",
+      "away": "Chinese Taipei",
+      "status": "post_kickoff_research_run_not_valid_pre_match",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.401,
+        "away": 0.887
+      },
+      "winDrawLossPct": {
+        "homeWin": 70.86,
+        "draw": 17.04,
+        "awayWin": 12.1
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 10.74,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 10.74
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.5
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.97
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.12,
+        "over2_5": 64.4,
+        "under3_5": 57.55,
+        "bttsYes": 54.36
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 1,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
