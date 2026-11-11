@@ -1,0 +1,144 @@
+{
+  "schema": "footyedge-league-coverage-config-v1",
+  "purpose": "Detection and safe fallbacks only. Cached logos do not establish reuse rights; candidate URLs are not enabled asset downloads.",
+  "competitions": [
+    {
+      "code": "eng.1",
+      "name": "Premier League",
+      "short": "PL",
+      "logo": "/assets/logos/competitions/eng.1.png"
+    },
+    {
+      "code": "eng.2",
+      "name": "EFL Championship",
+      "short": "EFL",
+      "logo": null
+    },
+    {
+      "code": "esp.1",
+      "name": "La Liga",
+      "short": "LL",
+      "logo": "/assets/logos/competitions/esp.1.png"
+    },
+    {
+      "code": "ita.1",
+      "name": "Serie A",
+      "short": "SA",
+      "logo": "/assets/logos/competitions/ita.1.png"
+    },
+    {
+      "code": "ger.1",
+      "name": "Bundesliga",
+      "short": "BL",
+      "logo": "/assets/logos/competitions/ger.1.png"
+    },
+    {
+      "code": "fra.1",
+      "name": "Ligue 1",
+      "short": "L1",
+      "logo": "/assets/logos/competitions/fra.1.png"
+    },
+    {
+      "code": "ned.1",
+      "name": "Eredivisie",
+      "short": "ER",
+      "logo": "/assets/logos/competitions/ned.1.png"
+    },
+    {
+      "code": "por.1",
+      "name": "Liga Portugal",
+      "short": "LP",
+      "logo": "/assets/logos/competitions/por.1.png"
+    },
+    {
+      "code": "tur.1",
+      "name": "Turkish Süper Lig",
+      "short": "TSL",
+      "logo": null,
+      "candidate": "https://assets.football-logos.cc/logos/turkey/512x512/super-lig.e5930ec5.png"
+    },
+    {
+      "code": "ksa.1",
+      "name": "Saudi Pro League",
+      "short": "SPL",
+      "logo": null,
+      "candidate": "https://assets.football-logos.cc/logos/saudi-arabia/512x512/saudi-professional-league.59d5c8af.png"
+    },
+    {
+      "code": "cze.1",
+      "name": "Czech First League",
+      "short": "CZ1",
+      "logo": null,
+      "candidate": "https://assets.football-logos.cc/logos/czech-republic/512x512/chance-liga.8511af91.png"
+    },
+    {
+      "code": "uefa.champions",
+      "name": "UEFA Champions League",
+      "short": "UCL",
+      "logo": "/assets/logos/competitions/uefa.champions.png"
+    },
+    {
+      "code": "uefa.europa",
+      "name": "UEFA Europa League",
+      "short": "UEL",
+      "logo": "/assets/logos/competitions/uefa.europa.png"
+    },
+    {
+      "code": "uefa.nations",
+      "name": "UEFA Nations League",
+      "short": "UNL",
+      "logo": "/assets/logos/competitions/uefa.nations.png"
+    },
+    {
+      "code": "usa.1",
+      "name": "MLS",
+      "short": "MLS",
+      "logo": "/assets/logos/competitions/usa.1.png"
+    },
+    {
+      "code": "fifa.world",
+      "name": "FIFA World Cup",
+      "short": "WC",
+      "logo": "/assets/logos/competitions/fifa.world.png"
+    },
+    {
+      "code": "concacaf.nations.league",
+      "name": "CONCACAF Nations League",
+      "short": "CNL",
+      "logo": "/assets/logos/competitions/concacaf.nations.league.png"
+    }
+  ],
+  "licensing": {
+    "cachedAssetRights": "review_required",
+    "candidateAssetRights": "review_required",
+    "statusMeaning": "This catalog tracks file presence, not a trademark or copyright grant."
+  },
+  "fields": {
+    "historicalMatchGoals": "hub_verified_cc0",
+    "recentForm": "hub_verified_cc0",
+    "historicalH2H": "conditional_on_resolved_teams",
+    "teamShots": "requires_licensed_event_feed",
+    "shotsOnTarget": "requires_licensed_event_feed",
+    "foulsCommitted": "requires_licensed_event_feed",
+    "foulsWon": "requires_licensed_event_feed",
+    "playerGoals": "requires_licensed_player_feed",
+    "playerAssists": "requires_licensed_player_feed",
+    "yellowCards": "requires_licensed_event_feed",
+    "redCards": "requires_licensed_event_feed",
+    "tackles": "requires_licensed_event_feed",
+    "passes": "requires_licensed_event_feed",
+    "interceptions": "requires_licensed_event_feed",
+    "corners": "requires_licensed_event_feed",
+    "goalkeeperSaves": "requires_licensed_event_feed",
+    "minutes": "requires_licensed_player_feed",
+    "confirmedLineups": "requires_authorized_matchday_feed",
+    "injuries": "requires_authorized_matchday_feed",
+    "referee": "requires_authorized_matchday_feed",
+    "standings": "requires_authorized_competition_feed",
+    "expectedGoals": "requires_licensed_xg_feed",
+    "calibratedMarketProbabilities": "requires_healthy_backtested_model",
+    "verifiedOdds": "requires_authorized_bookmaker_quote",
+    "sameGameParlayPrice": "requires_bookmaker_combined_quote",
+    "expectedValue": "requires_calibrated_probability_and_verified_price"
+  }
+}
