@@ -7,8 +7,8 @@ const js=fs.readFileSync("ui/part2.html","utf8");
 const css=fs.readFileSync("assets/footyedge-match-v3.css","utf8");
 
 test("2026 official-shirt palettes have independent home and away rules",()=>{
- const a=js.indexOf("const FE_2026_KIT_STYLES="),b=js.indexOf("function feUpcoming(g){",a);
- assert.ok(a>=0&&b>a,"missing kit palette mapping");
+ const a=js.indexOf("const FE_NATIONAL_TEAM_COLOURS="),b=js.indexOf("function feUpcoming(g){",a);
+ assert.ok(a>=0&&b>a&&js.slice(a,b).includes("const FE_2026_KIT_STYLES="),"missing national or club kit palette mapping");
  const get=vm.runInNewContext(js.slice(a,b)+";({get:feKitPalette})",{
   fePalette:()=>({primary:"#245B4A",secondary:"#102C39"})
  }).get;
