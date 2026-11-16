@@ -116,13 +116,32 @@ test("all-competition history includes older club and country rows without chang
  assert.ok(legacy.recent.every(r=>r.competition==="Premier League"));
 
  const ui=fs.readFileSync(new URL("../ui/part2.html",import.meta.url),"utf8");
+ const shared=fs.readFileSync(new URL("../ui/part1.html",import.meta.url),"utf8");
  const context=vm.createContext({esc:String});
+ vm.runInContext(shared.slice(shared.indexOf("const leagueNames="),shared.indexOf("const uidLeague=")),context);
+ vm.runInContext(shared.match(/^function normName.*$/m)[0],context);
  vm.runInContext(ui.slice(ui.indexOf("function fePlayerImageUrl("),ui.indexOf("\nasync function feOpenPlayerProfile(")),context);
- vm.runInContext(ui.slice(ui.indexOf("function fePitchFive("),ui.indexOf("function fePitchMetric(")),context);
+ vm.runInContext(ui.slice(ui.indexOf("const FE_PITCH_COMPETITION_ALIASES="),ui.indexOf("function fePitchMetric(")),context);
  const html=context.fePlayerProfileMarkup(profile,{name:athlete.displayName});
  assert.match(html,/data-fe-recent-filter="Nations League"/);
  assert.equal((html.match(/data-fe-recent-comp="Nations League" hidden/g)||[]).length,6);
- const cells=context.fePitchCells(profile,"goals","2026-10-01T15:00:00Z","Nations League");
+ const fixture={league:"uefa.nations",leagueName:"UEFA Nations League"};
+ const options=context.fePitchCompetitionOptions(fixture);
+ assert.match(options,/<option value="all">All competitions<\/option><option value="fixture" selected>UEFA Nations League<\/option>/);
+ assert.doesNotMatch(options,/Premier League/);
+ assert.match(context.fePitchCompetitionOptions({...fixture,fePitchAllCompetitions:true}),
+  /<option value="all" selected>All competitions<\/option><option value="fixture">UEFA Nations League<\/option>/);
+ const fixtureNames=context.fePitchCompetitionNames(fixture,context.fePitchFixtureCompetition(fixture));
+ const cells=context.fePitchCells(profile,"goals","2026-10-15T15:00:00Z",fixtureNames);
  assert.equal((cells.match(/Nations League opponent/g)||[]).length,5);
  assert.doesNotMatch(cells,/Premier League opponent/);
+ const allCells=context.fePitchCells(profile,"goals","2026-10-15T15:00:00Z");
+ assert.equal((allCells.match(/Premier League opponent/g)||[]).length,5);
+ const cup={league:"eng.league_cup"};
+ const cupNames=context.fePitchCompetitionNames(cup,context.fePitchFixtureCompetition(cup));
+ assert.ok(cupNames.includes("carabao cup"));
+ const qualifier={league:"fifa.worldq.concacaf"};
+ const qualifierNames=context.fePitchCompetitionNames(qualifier,context.fePitchFixtureCompetition(qualifier));
+ assert.ok(qualifierNames.includes("wcq concacaf"));
+ assert.ok(!qualifierNames.includes("world cup qualifying"));
 });

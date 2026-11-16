@@ -2591,14 +2591,52 @@ function fePitchHistoryKey(g,team,player){
  const id=typeof player==="object"?String(player?.id||""):"";
  return [g.league,String(team?.id||""),id||name.toLowerCase().trim()].join("|");
 }
-function fePitchFive(history,kickoff,competition=""){
+const FE_PITCH_COMPETITION_ALIASES={
+ "eng.1":["English Premier League"],
+ "eng.league_cup":["Carabao Cup","English Carabao Cup"],
+ "eng.fa_cup":["English FA Cup"],
+ "ger.1":["German Bundesliga"],
+ "ger.dfb_pokal":["German Cup"],
+ "esp.1":["Spanish LALIGA"],
+ "esp.copa_del_rey":["Spanish Copa del Rey"],
+ "ita.1":["Italian Serie A"],
+ "fra.1":["French Ligue 1"],
+ "ned.1":["Dutch Eredivisie"],
+ "ned.cup":["Dutch KNVB Beker"],
+ "por.1":["Portuguese Liga","Portuguese Primeira Liga","Primeira Liga"],
+ "sco.1":["Scottish Premier League"],
+ "sco.cis":["SLC"],
+ "cze.1":["Gambrinus Liga","Czech Liga","CMFS"],
+ "jpn.1":["Japanese J1 League","Japanese J.League"],
+ "uefa.euro":["EURO","UEFA European Championship"],
+ "uefa.euroq":["UEFA European Championship Qualifying"],
+ "uefa.nations":["Nations League"],
+ "fifa.friendly":["International Friendly","Men's International Friendly"],
+ "fifa.worldq.uefa":["FIFA World Cup Qualifying - UEFA","WCQ - UEFA"],
+ "fifa.worldq.conmebol":["FIFA World Cup Qualifying - CONMEBOL","WCQ - CONMEBOL"],
+ "fifa.worldq.concacaf":["FIFA World Cup Qualifying - CONCACAF","WCQ - CONCACAF"]
+};
+function fePitchFixtureCompetition(g){
+ return g.league||g.leagueName?displayLeagueName(g.league,g.leagueName):"";
+}
+function fePitchCompetitionNames(g,label){
+ const aliases=FE_PITCH_COMPETITION_ALIASES[g.league]||[];
+ return (String(g.league||"").startsWith("fifa.worldq.")?aliases:[label,g.leagueName,...aliases])
+  .filter(Boolean).map(normName);
+}
+function fePitchCompetitionOptions(g){
+ const label=fePitchFixtureCompetition(g);
+ return '<option value="all"'+(!label||g.fePitchAllCompetitions?' selected':'')+'>All competitions</option>'+
+  (label?'<option value="fixture"'+(g.fePitchAllCompetitions?'':' selected')+'>'+esc(label)+'</option>':'');
+}
+function fePitchFive(history,kickoff,competitionNames=[]){
  // Never use results from the forecast fixture or any later fixture.
  const cut=String(kickoff||"").slice(0,10),cutoff=Date.parse(kickoff);
  const unique=new Set();
  return (Array.isArray(history)?history:[])
   .filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(String(r.date||""))&&
     (!cut||(r.playedAt&&Number.isFinite(cutoff)?Date.parse(r.playedAt)<cutoff:r.date<cut))&&
-    (!competition||r.competition===competition)
+    (!competitionNames.length||competitionNames.includes(normName(r.competition)))
     &&String(r.opponent||"").trim())
   .sort((a,b)=>b.date.localeCompare(a.date))
   .filter(r=>{const k=r.eventId||r.date+"|"+r.opponent;if(unique.has(k))return false;unique.add(k);return true})
@@ -2608,8 +2646,8 @@ function fePitchValue(n){
  if(n===null||n===undefined||n===""||!Number.isFinite(Number(n))||Number(n)<0)return "—";
  return String(Number(n));
 }
-function fePitchCells(info,metric,kickoff,competition){
- const entries=info?.status==="verified"?fePitchFive(info.appearanceHistory||info.recent,kickoff,competition):[];
+function fePitchCells(info,metric,kickoff,competitionNames){
+ const entries=info?.status==="verified"?fePitchFive(info.appearanceHistory||info.recent,kickoff,competitionNames):[];
  return Array.from({length:5},(_,i)=>{
   const match=entries[i],val=match?fePitchValue(match[metric]):"—";
   const label=match?[match.date+" vs "+match.opponent,match.competition,metric+": "+val].filter(Boolean).join(" · "):"No verified appearance";
@@ -2621,28 +2659,14 @@ function fePitchMetric(g){return FE_PITCH_STATS.some(x=>x[0]===g.fePitchMetric)?
 function fePaintPitchStats(g){
  const body=document.getElementById("modalBody");
  if(!body||!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
- const field=fePitchMetric(g),competition=g.fePitchCompetition||"";
- const competitions=new Set();
+ const field=fePitchMetric(g);
+ const competition=g.fePitchAllCompetitions?"":fePitchFixtureCompetition(g);
+ const names=competition?fePitchCompetitionNames(g,competition):[];
  for(const button of body.querySelectorAll(".fe-sharedPitch [data-fe-pitch-key]")){
   const key=button.dataset.fePitchKey,strip=button.querySelector("[data-fe-pitch-strip]");
   if(!strip)continue;
-  const result=fePitchHistoryCache.get(key);
-  const history=result?.value?.appearanceHistory||result?.value?.recent||[];
-  for(const name of new Set(history.map(row=>row.competition).filter(Boolean))){
-   if(fePitchFive(history,g.date,name).length)competitions.add(name);
-  }
-  strip.innerHTML=fePitchCells(result?.value,field,g.date,competition);
+  strip.innerHTML=fePitchCells(fePitchHistoryCache.get(key)?.value,field,g.date,names);
   strip.setAttribute("aria-label",FE_PITCH_STATS.find(x=>x[0]===field)[1]+": last five appearances, "+(competition||"all competitions"));
- }
- const select=body.querySelector("[data-fe-pitch-competition]");
- if(select){
-  if(competition)competitions.add(competition);
-  const names=[...competitions].sort((a,b)=>a.localeCompare(b));
-  if(JSON.stringify([...select.options].slice(1).map(option=>option.value))!==JSON.stringify(names)){
-   select.innerHTML='<option value="">All competitions</option>'+names.map(name=>
-    '<option value="'+esc(name)+'">'+esc(name)+'</option>').join("");
-   select.value=competition;
-  }
  }
 }
 function feRunPitchHistoryQueue(){
@@ -2880,7 +2904,7 @@ function feLineupsPanel(g){
     '<select id="fe-pitchMetricSelect" data-fe-pitch-metric aria-label="Select player statistic for the last five appearances">'+
     FE_PITCH_STATS.map(([key,label])=>'<option value="'+key+'"'+(fePitchMetric(g)===key?' selected':'')+'>'+esc(label)+'</option>').join("")+
     '</select></div><div class="fe-pitchMetricControl"><label for="fe-pitchCompetitionSelect">COMPETITION</label>'+
-    '<select id="fe-pitchCompetitionSelect" data-fe-pitch-competition><option value="">All competitions</option></select></div><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
+    '<select id="fe-pitchCompetitionSelect" data-fe-pitch-competition>'+fePitchCompetitionOptions(g)+'</select></div><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
     (hasHome||hasAway?'Update XIs':'Check lineups')+'</button></div>'+
    '<div class="fe-sharedPitch" role="group" aria-label="Football pitch showing available starting XIs for '+esc(g.home.name)+' and '+esc(g.away.name)+'">'+
    '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
@@ -3473,7 +3497,7 @@ document.getElementById("modalBody").onchange=event=>{
   const g=S.games.find(x=>String(x.id)===String(S.openGameId));
   if(!g)return;
   const v=event.target.value;
-  if(event.target.matches("[data-fe-pitch-competition]"))g.fePitchCompetition=v;
+  if(event.target.matches("[data-fe-pitch-competition]"))g.fePitchAllCompetitions=v==="all";
   else if(FE_PITCH_STATS.some(x=>x[0]===v))g.fePitchMetric=v;
   fePaintPitchStats(g);
 };
