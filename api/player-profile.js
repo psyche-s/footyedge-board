@@ -163,43 +163,43 @@ function parseOverviewSeason(overview,league,teamId,gameLog){
 }
 /* Different ESPN pages expose compact per-game stat arrays with separate
    labels and an eventId->game metadata map, not an entries[] array. */
-// All currently available club games in chronological order; never infer minutes.
-function parseESPNLastTen(overview,gameLogs,teamId,now=Date.now()){
+// Keep the source history until the caller applies its competition and row limit.
+function parseESPNAppearances(overview,gameLogs,teamId,now=Date.now()){
  const logs=(Array.isArray(gameLogs)?gameLogs:[gameLogs]).filter(Boolean);
  const events=new Map(),team=String(teamId||"");
- function ingest(names,rows,meta,rank,competition){
+ function ingest(names,rows,meta,competition){
   if(!Array.isArray(names)||!Array.isArray(rows)||!meta)return;
   for(const row of rows){
    const id=String(row?.eventId||""),m=meta[id];if(!m||!Array.isArray(row.stats))continue;
    if(team&&String(m.team?.id||"")!==team)continue;
    const date=String(m.gameDate||m.date||"");
-   if(!/^\d{4}-\d{2}-\d{2}/.test(date)||Date.parse(date)>now)continue;
+   const playedAt=Date.parse(date);
+   if(!/^\d{4}-\d{2}-\d{2}/.test(date)||!Number.isFinite(playedAt)||playedAt>now)continue;
    const opponent=txt(m.opponent?.displayName||m.opponent?.name);if(!opponent)continue;
    const vals={};
    names.forEach((n,i)=>{const label=STAT_NAMES.get(key(n)),v=num(row.stats[i]);
      if(label&&v!=null&&v>=0)vals[label]=v;});
-   const tag=String(row.stats[0]||"").toLowerCase();
+   const tag=String(row.stats[names.findIndex(n=>key(n)==="appearances")]||"").toLowerCase();
+   if(["unused","bench","did not play","dnp"].includes(tag)||!Object.keys(vals).length&&!["started","sub","substitute"].includes(tag))continue;
    const status=tag==="started"?"Started":tag==="sub"||tag==="substitute"?"Sub":null;
    const prev=events.get(id);
-   events.set(id,{eventId:id,date:date.slice(0,10),opponent,
+   events.set(id,{eventId:id,date:date.slice(0,10),playedAt,opponent,
     competition:txt(m.leagueShortName||m.leagueName||m.leagueAbbreviation)||
-      (competition==="Last 5 Matches"?prev?.competition:competition)||null,
-    appearance:status||prev?.appearance||null,values:{...(prev?.values||{}),...vals},
-    rank:Math.max(prev?.rank||0,rank)});
+      prev?.competition||txt(String(competition||"").replace(/^\d{4}(?:[-–]\d{2,4})?\s+/,""))||null,
+    appearance:status||prev?.appearance||null,values:{...(prev?.values||{}),...vals}});
   }
  }
  for(const log of logs)for(const season of log.seasonTypes||[]){
-  if(!/2026[-–]27|2026/.test(String(season.displayName||"")))continue;
   for(const part of season.categories||[])
-   ingest(log.names,part.events,log.events,2,season.displayName);
+   ingest(log.names,part.events,log.events,season.displayName);
  }
  const ov=overview?.gameLog;
  for(const part of ov?.statistics||[])
-  ingest(part.names,part.events,ov.events,1,ov.displayName);
- return [...events.values()].sort((a,b)=>b.date.localeCompare(a.date)||b.eventId.localeCompare(a.eventId))
-  .slice(0,10).map(x=>{
+  ingest(part.names,part.events,ov.events,null);
+ return [...events.values()].sort((a,b)=>b.playedAt-a.playedAt||b.eventId.localeCompare(a.eventId))
+  .map(x=>{
    const v=x.values;
-   return {date:x.date,opponent:x.opponent,competition:x.competition,
+   return {eventId:x.eventId,date:x.date,playedAt:new Date(x.playedAt).toISOString(),opponent:x.opponent,competition:x.competition,
     appearance:x.appearance,minutes:v["Minutes played"]??null,
     goals:v.Goals??null,assists:v.Assists??null,
     shotsOnTarget:v["Shots on target"]??null,shots:v.Shots??null,
@@ -207,6 +207,9 @@ function parseESPNLastTen(overview,gameLogs,teamId,now=Date.now()){
     yellowCards:v["Yellow cards"]??null,redCards:v["Red cards"]??null,
     tackles:v.Tackles??null,passes:v.Passes??null};
   });
+}
+function parseESPNLastTen(overview,gameLogs,teamId,now=Date.now()){
+ return parseESPNAppearances(overview,gameLogs,teamId,now).slice(0,10);
 }
 function parseESPNLastFive(overview,gameLog,competition){
  const id=Object.values(gameLog?.events||overview?.gameLog?.events||{}).find(x=>x?.team?.id)?.team?.id||"";
@@ -231,6 +234,7 @@ export default async function handler(req,res){
  if(req.method!=="GET")return res.status(405).json({error:"GET required"});
  const league=String(req.query.league||""),teamId=String(req.query.teamId||""),
   name=txt(req.query.name),playerId=String(req.query.playerId||""),fallbackLeague=String(req.query.fallbackLeague||"");
+ const allHistory=req.query.history==="all";
  if(!LEAGUES.has(league)||! /^\d{1,10}$/.test(teamId)||
   (playerId&&!/^\d{1,12}$/.test(playerId))||(!name&&!playerId)||name.length>80||
   (fallbackLeague&&!LEAGUES.has(fallbackLeague)))
@@ -270,23 +274,23 @@ export default async function handler(req,res){
   const verified=from(overview),matches=from(gameLog);
   const summary=parseOverviewSeason(verified,matchedLeague,teamId,matches);
   const season=summary.stats.length?summary.stats:statEntries(from(stats));
-  // Champions League records and domestic-club games share a verified athlete
-  // identity. Query at most one additional club competition to fill ten apps.
-  const additionalLeague=verified?.statistics?.splits?.find(x=>
-    String(x.teamId)===String(teamId)&&x.leagueSlug!==matchedLeague&&
-    /2026[-–]27|2026/.test(String(x.displayName||""))&&
-    !/nations|friendly/i.test(String(x.leagueSlug||""))&&
-    LEAGUES.has(String(x.leagueSlug||"")))?.leagueSlug;
-  let extra=null;
-  if(additionalLeague){
-    try{extra=await getJSON("https://site.web.api.espn.com/apis/common/v3/sports/soccer/"+additionalLeague+"/athletes/"+id+"/gamelog",3300)}
-    catch{extra=null}
-  }
-  const actualRecent=parseESPNLastTen(verified,[matches,extra],teamId);
-  const oldRecent=actualRecent.length?actualRecent:parseRecent(from(log));
+  // Discovery uses the splits for the roster-verified athlete, including other
+  // teams they represented. Keep fixture settlement's team-scoped query intact.
+  const splits=Array.isArray(verified?.statistics?.splits)?verified.statistics.splits:[];
+  const extraLeagues=[...new Set(splits.filter(x=>x.leagueSlug!==matchedLeague&&
+   (allHistory?/^[a-z0-9]+(?:[.-][a-z0-9]+)+$/.test(String(x.leagueSlug||"")):
+    String(x.teamId)===teamId&&/2026[-–]27|2026/.test(String(x.displayName||""))&&
+    !/nations|friendly/i.test(String(x.leagueSlug||""))&&LEAGUES.has(x.leagueSlug)))
+   .map(x=>x.leagueSlug))].slice(0,allHistory?20:1);
+  const extra=await Promise.allSettled(extraLeagues.map(comp=>
+   getJSON("https://site.web.api.espn.com/apis/common/v3/sports/soccer/"+comp+"/athletes/"+id+"/gamelog",3300)));
+  const actualHistory=parseESPNAppearances(verified,[matches,...extra.map(from)],allHistory?null:teamId);
+  const appearanceHistory=actualHistory.length?actualHistory:parseRecent(from(log));
+  const oldRecent=appearanceHistory.slice(0,10);
   // Every number comes from a dated, independently retrieved provider field.
   return res.status(200).json({schema:"footyedge-player-profile-v1",status:"verified",
    player:profile,competition:summary.competition,stats:season,recent:oldRecent,
+   ...(allHistory?{appearanceHistory}:{}),
    lastTenAvailable:oldRecent.length,minutesAvailable:oldRecent.some(g=>g.minutes!=null),
    statsVerified:season.length>0,recentVerified:oldRecent.length>0,
    checkedAt:new Date().toISOString()});

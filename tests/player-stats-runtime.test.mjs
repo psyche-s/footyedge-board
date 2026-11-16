@@ -72,3 +72,57 @@ test("profile response populates season stats, ten appearances and lineup goals/
  assert.match(context.fePitchCells(data,"goals","2026-11-01T15:00:00Z"),/>0<\/i>/);
  assert.match(context.fePitchCells(data,"minutes","2026-11-01T15:00:00Z"),/>—<\/i>/);
 });
+
+test("all-competition history includes older club and country rows without changing settlement scope",async t=>{
+ const athlete={id:"99812",displayName:"Regression Striker",
+  headshot:{href:"https://a.espncdn.com/i/headshots/soccer/players/full/99812.png"}};
+ const names=["appearances","totalGoals"];
+ const makeLog=(teamId,competition,month,count)=>{
+  const events={},rows=[];
+  for(let i=1;i<=count;i++){
+   const eventId=month+"-"+i;
+   events[eventId]={gameDate:"2026-"+month+"-"+String(i).padStart(2,"0")+"T12:00:00Z",
+    team:{id:teamId},opponent:{displayName:competition+" opponent "+i},leagueName:competition};
+   rows.push({eventId,stats:["Started","1"]});
+  }
+  rows.push({eventId:month+"-unused",stats:["Did not play","0"]});
+  events[month+"-unused"]={gameDate:"2026-"+month+"-28T12:00:00Z",
+   team:{id:teamId},opponent:{displayName:"Unused substitute"},leagueName:competition};
+  return {names,events,seasonTypes:[{displayName:"2026-27 "+competition,categories:[{events:rows}]}]};
+ };
+ const club=makeLog("42","Premier League","10",12);
+ const country=makeLog("84","Nations League","09",6);
+ const priorFetch=globalThis.fetch;
+ globalThis.fetch=async url=>{
+  const path=String(url);
+  const data=path.endsWith("/roster")?{team:{id:"42"},athletes:[athlete]}:
+   path.endsWith("/overview")?{statistics:{splits:[{teamId:"84",leagueSlug:"uefa.nations"}]}}:
+   path.endsWith("/gamelog")?(path.includes("/uefa.nations/")?country:club):{};
+  return {ok:true,json:async()=>data};
+ };
+ t.after(()=>{globalThis.fetch=priorFetch});
+ const request=async query=>{
+  const response={setHeader(){},status(){return this},json(body){this.body=body;return this}};
+  await profileHandler({method:"GET",query:{league:"eng.1",teamId:"42",name:athlete.displayName,...query}},response);
+  return response.body;
+ };
+ const profile=await request({history:"all"});
+ assert.equal(profile.recent.length,10);
+ assert.ok(profile.recent.every(r=>r.competition==="Premier League"));
+ assert.equal(profile.appearanceHistory.filter(r=>r.competition==="Nations League").length,6);
+ assert.equal(profile.appearanceHistory.length,18);
+ const legacy=await request({});
+ assert.equal(legacy.appearanceHistory,undefined);
+ assert.ok(legacy.recent.every(r=>r.competition==="Premier League"));
+
+ const ui=fs.readFileSync(new URL("../ui/part2.html",import.meta.url),"utf8");
+ const context=vm.createContext({esc:String});
+ vm.runInContext(ui.slice(ui.indexOf("function fePlayerImageUrl("),ui.indexOf("\nasync function feOpenPlayerProfile(")),context);
+ vm.runInContext(ui.slice(ui.indexOf("function fePitchFive("),ui.indexOf("function fePitchMetric(")),context);
+ const html=context.fePlayerProfileMarkup(profile,{name:athlete.displayName});
+ assert.match(html,/data-fe-recent-filter="Nations League"/);
+ assert.equal((html.match(/data-fe-recent-comp="Nations League" hidden/g)||[]).length,6);
+ const cells=context.fePitchCells(profile,"goals","2026-10-01T15:00:00Z","Nations League");
+ assert.equal((cells.match(/Nations League opponent/g)||[]).length,5);
+ assert.doesNotMatch(cells,/Premier League opponent/);
+});

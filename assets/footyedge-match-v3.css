@@ -360,7 +360,7 @@
 .fe-matchCard .fe-hero:after{background:linear-gradient(270deg,color-mix(in srgb,var(--fe-away) 57%,transparent),color-mix(in srgb,var(--fe-away) 20%,transparent) 58%,transparent 100%),repeating-linear-gradient(52deg,rgba(255,255,255,.018) 0 12px,transparent 12px 33px)!important}
 
 /* Dual-team football pitch — lineup view, no statistical widgets */
-.fe-lineupToolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 0 10px;color:#b5d8c0;font-size:11px}
+.fe-lineupToolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:8px;margin:0 0 10px;color:#b5d8c0;font-size:11px}
 .fe-sharedPitch{position:relative;isolation:isolate;overflow:hidden;width:100%;max-width:610px;min-height:790px;margin:0 auto;border:2px solid #9fd3ab;border-radius:13px;padding:6px;background:repeating-linear-gradient(180deg,#1d764f 0%,#1d764f 10%,#176b45 10%,#176b45 20%)!important;display:flex;flex-direction:column}
 .fe-sharedPitch:before{content:"";position:absolute;inset:9px 9px;border:1px solid rgba(236,255,234,.64);pointer-events:none;z-index:-1}
 .fe-sharedPitch>.fe-pitchStripe{top:50%!important;left:8px!important;right:8px!important}
@@ -1588,9 +1588,9 @@
 
 /* Optional match-by-match player-stat strips on the verified lineup pitch.
    Keep the pitch and portraits; missing ESPN event values remain dashes. */
-.fe-pitchMetricControl{display:flex;align-items:center;gap:9px;min-width:0}
+.fe-pitchMetricControl{display:flex;flex:1 1 130px;flex-direction:column;align-items:stretch;gap:4px;min-width:0}
 .fe-pitchMetricControl label{font-size:10px;font-weight:850;letter-spacing:.08em;color:#b9d5c4;white-space:nowrap}
-.fe-pitchMetricControl select{appearance:auto;max-width:min(210px,57vw);min-height:39px;background:#0b261a;color:#dfffea;border:1px solid #4c956b;border-radius:10px;padding:7px 9px;font:750 12px system-ui,-apple-system,sans-serif;cursor:pointer}
+.fe-pitchMetricControl select{appearance:auto;width:100%;min-width:0;min-height:39px;background:#0b261a;color:#dfffea;border:1px solid #4c956b;border-radius:10px;padding:7px 9px;font:750 12px system-ui,-apple-system,sans-serif;cursor:pointer}
 .fe-pitchMetricControl select:focus-visible{outline:2px solid #78e7a2;outline-offset:2px}
 .fe-lineupPanel .fe-sharedPitch{min-height:900px}
 .fe-pitchStatStrip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;width:min(100%,88px);min-height:16px;align-self:center;pointer-events:none}

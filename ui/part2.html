@@ -2462,7 +2462,8 @@ function fePlayerProfileMarkup(result,fallback){
  const number=new Map((verified?result.stats||[]:[]).filter(x=>Number.isFinite(x.value)&&x.value>=0).map(x=>[x.label,x.value]));
  const priority=["Appearances","Starts","Minutes played","Goals","Assists","Shots on target","Shots",
   "Fouls committed","Fouls won","Yellow cards","Red cards"];
- const last=(verified?result.recent||[]:[]).slice(0,10);
+ const history=verified?result.appearanceHistory||result.recent||[]:[];
+ const last=history.slice(0,10);
  const activeCompetition=result?.competition||"Season";
  const performance='<section class="fe-playerPanel fe-playerPerformance" aria-labelledby="fe-playerSeasonTitle"><div class="fe-playerSectionHead"><h3 id="fe-playerSeasonTitle">Season performance</h3></div>'+
   '<p class="fe-playerSeasonLabel">'+display(activeCompetition)+'</p>'+
@@ -2474,7 +2475,13 @@ function fePlayerProfileMarkup(result,fallback){
   ["minutes","MIN","Minutes played"],["foulsCommitted","FC","Fouls committed"],
   ["foulsWon","FW","Fouls won"],["yellowCards","YC","Yellow cards"],
   ["redCards","RC","Red cards"]];
- const recentCompetitions=[...new Set(last.map(x=>x.competition).filter(Boolean))];
+ const recentCompetitions=[...new Set(history.map(x=>x.competition).filter(Boolean))];
+ const competitionCounts=new Map();
+ const tableRows=history.filter((row,i)=>{
+  const count=competitionCounts.get(row.competition)||0;
+  competitionCounts.set(row.competition,count+1);
+  return i<10||(row.competition&&count<10);
+ });
  const lastMarkup=last.length?
   '<div class="fe-playerRecentFilters" role="group" aria-label="Filter appearances by competition">'+
    '<button type="button" class="fe-playerRecentFilter is-active" aria-pressed="true" data-fe-recent-filter="all">All competitions</button>'+
@@ -2483,8 +2490,8 @@ function fePlayerProfileMarkup(result,fallback){
   '<div class="fe-playerTableScroll" role="region" tabindex="0" aria-label="Last 10 appearances table, scroll horizontally for additional statistics">'+
   '<table class="fe-playerLastTenTable"><thead><tr><th scope="col">Match</th>'+
    columns.map(([,abbr,label])=>'<th scope="col" title="'+esc(label)+'">'+esc(abbr)+'</th>').join('')+
-   '</tr></thead><tbody>'+last.map(r=>
-    '<tr data-fe-recent-comp="'+esc(r.competition||"")+'"><th scope="row" class="fe-playerOpponent">'+
+   '</tr></thead><tbody>'+tableRows.map((r,i)=>
+    '<tr data-fe-recent-comp="'+esc(r.competition||"")+'"'+(i>=10?' hidden':'')+'><th scope="row" class="fe-playerOpponent">'+
      '<strong title="'+display(r.opponent)+'">'+display(r.opponent)+'</strong>'+
      '<span class="fe-playerMatchMeta"><span class="fe-playerMatchDate">'+display(r.date)+'</span>'+
      (r.appearance?'<span class="fe-playerAppearance">'+display(r.appearance)+'</span>':'')+'</span>'+
@@ -2500,7 +2507,7 @@ function fePlayerProfileMarkup(result,fallback){
  return hero+'<div class="fe-playerScroll" data-fe-profile-view="appearances">'+
   '<div class="fe-playerViewSwitch" role="group" aria-label="Player profile section"><button type="button" class="is-active" data-fe-player-view="appearances" aria-pressed="true">Appearances</button><button type="button" data-fe-player-view="season" aria-pressed="false">Season stats</button></div>'+
   '<div class="fe-playerDashboard">'+
-  '<section class="fe-playerPanel fe-playerAppearances" aria-labelledby="fe-playerAppearancesTitle"><div class="fe-playerSectionHead"><h3 id="fe-playerAppearancesTitle">Last 10 appearances</h3><span class="fe-playerPanelHint">'+last.length+' available</span></div>'+lastMarkup+'</section>'+
+  '<section class="fe-playerPanel fe-playerAppearances" aria-labelledby="fe-playerAppearancesTitle"><div class="fe-playerSectionHead"><h3 id="fe-playerAppearancesTitle">Last 10 appearances</h3><span class="fe-playerPanelHint" data-fe-appearance-count aria-live="polite">'+last.length+' shown</span></div>'+lastMarkup+'</section>'+
   performance+
   (career.length?'<section class="fe-playerPanel fe-playerCareerPanel"><h3>Career history</h3>'+careerMarkup+'</section>':'')+
   '</div>'+(!verified?'<p class="fe-playerHint">'+esc(result?.note||"Player verification is unavailable.")+'</p>':'')+'</div>';
@@ -2536,7 +2543,12 @@ async function feOpenPlayerProfile(g,button){
   const filter=event.target.closest("[data-fe-recent-filter]");
   if(filter){const selected=filter.dataset.feRecentFilter;
    root.querySelectorAll(".fe-playerRecentFilter").forEach(el=>{el.classList.toggle("is-active",el===filter);el.setAttribute("aria-pressed",String(el===filter))});
-   root.querySelectorAll(".fe-playerLastTenTable tbody tr").forEach(row=>{row.hidden=selected!=="all"&&row.dataset.feRecentComp!==selected});
+   let shown=0;
+   root.querySelectorAll(".fe-playerLastTenTable tbody tr").forEach(row=>{
+    row.hidden=shown>=10||(selected!=="all"&&row.dataset.feRecentComp!==selected);
+    if(!row.hidden)shown++;
+   });
+   root.querySelector("[data-fe-appearance-count]").textContent=shown+" shown";
   }
  });
  document.addEventListener("keydown",onKey);
@@ -2547,7 +2559,7 @@ async function feOpenPlayerProfile(g,button){
     {status:"unverified",note:"Club ID is not verified, so no player record was requested."},fallback);
    return;
  }
- const qs=new URLSearchParams({league:g.league,teamId:side,name});
+ const qs=new URLSearchParams({league:g.league,teamId:side,name,history:"all"});
  const fallbackLeague=feRosterLeague(g,team);
  if(fallbackLeague&&fallbackLeague!==g.league)qs.set("fallbackLeague",fallbackLeague);
  const athlete=String(button.dataset.fePlayerId||"");
@@ -2579,26 +2591,28 @@ function fePitchHistoryKey(g,team,player){
  const id=typeof player==="object"?String(player?.id||""):"";
  return [g.league,String(team?.id||""),id||name.toLowerCase().trim()].join("|");
 }
-function fePitchFive(history,kickoff){
+function fePitchFive(history,kickoff,competition=""){
  // Never use results from the forecast fixture or any later fixture.
- const cut=String(kickoff||"").slice(0,10);
+ const cut=String(kickoff||"").slice(0,10),cutoff=Date.parse(kickoff);
  const unique=new Set();
  return (Array.isArray(history)?history:[])
-  .filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(String(r.date||""))&&(!cut||r.date<cut)
+  .filter(r=>r&&/^\d{4}-\d{2}-\d{2}$/.test(String(r.date||""))&&
+    (!cut||(r.playedAt&&Number.isFinite(cutoff)?Date.parse(r.playedAt)<cutoff:r.date<cut))&&
+    (!competition||r.competition===competition)
     &&String(r.opponent||"").trim())
   .sort((a,b)=>b.date.localeCompare(a.date))
-  .filter(r=>{const k=r.date+"|"+r.opponent;if(unique.has(k))return false;unique.add(k);return true})
+  .filter(r=>{const k=r.eventId||r.date+"|"+r.opponent;if(unique.has(k))return false;unique.add(k);return true})
   .slice(0,5);
 }
 function fePitchValue(n){
  if(n===null||n===undefined||n===""||!Number.isFinite(Number(n))||Number(n)<0)return "—";
  return String(Number(n));
 }
-function fePitchCells(info,metric,kickoff){
- const entries=info?.status==="verified"?fePitchFive(info.recent,kickoff):[];
+function fePitchCells(info,metric,kickoff,competition){
+ const entries=info?.status==="verified"?fePitchFive(info.appearanceHistory||info.recent,kickoff,competition):[];
  return Array.from({length:5},(_,i)=>{
   const match=entries[i],val=match?fePitchValue(match[metric]):"—";
-  const label=match?match.date+" vs "+match.opponent+" · "+metric+": "+val:"No verified appearance";
+  const label=match?[match.date+" vs "+match.opponent,match.competition,metric+": "+val].filter(Boolean).join(" · "):"No verified appearance";
   return '<i class="fe-pitchStatCell'+(val==="—"?' fe-pitchStatEmpty':Number(val)>0?' fe-pitchStatHit':'')+
     '" title="'+esc(label)+'">'+esc(val)+'</i>';
  }).join("");
@@ -2607,13 +2621,28 @@ function fePitchMetric(g){return FE_PITCH_STATS.some(x=>x[0]===g.fePitchMetric)?
 function fePaintPitchStats(g){
  const body=document.getElementById("modalBody");
  if(!body||!g||g.feTab!=="lineups"||String(S.openGameId)!==String(g.id))return;
- const field=fePitchMetric(g);
+ const field=fePitchMetric(g),competition=g.fePitchCompetition||"";
+ const competitions=new Set();
  for(const button of body.querySelectorAll(".fe-sharedPitch [data-fe-pitch-key]")){
   const key=button.dataset.fePitchKey,strip=button.querySelector("[data-fe-pitch-strip]");
   if(!strip)continue;
   const result=fePitchHistoryCache.get(key);
-  strip.innerHTML=fePitchCells(result?.value,field,g.date);
-  strip.setAttribute("aria-label",FE_PITCH_STATS.find(x=>x[0]===field)[1]+": last five available appearances, newest first");
+  const history=result?.value?.appearanceHistory||result?.value?.recent||[];
+  for(const name of new Set(history.map(row=>row.competition).filter(Boolean))){
+   if(fePitchFive(history,g.date,name).length)competitions.add(name);
+  }
+  strip.innerHTML=fePitchCells(result?.value,field,g.date,competition);
+  strip.setAttribute("aria-label",FE_PITCH_STATS.find(x=>x[0]===field)[1]+": last five appearances, "+(competition||"all competitions"));
+ }
+ const select=body.querySelector("[data-fe-pitch-competition]");
+ if(select){
+  if(competition)competitions.add(competition);
+  const names=[...competitions].sort((a,b)=>a.localeCompare(b));
+  if(JSON.stringify([...select.options].slice(1).map(option=>option.value))!==JSON.stringify(names)){
+   select.innerHTML='<option value="">All competitions</option>'+names.map(name=>
+    '<option value="'+esc(name)+'">'+esc(name)+'</option>').join("");
+   select.value=competition;
+  }
  }
 }
 function feRunPitchHistoryQueue(){
@@ -2622,8 +2651,8 @@ function feRunPitchHistoryQueue(){
   if(!job||job.entry.state!=="queued")continue;
   fePitchHistoryActive++;job.entry.state="loading";
   const abort=new AbortController();
-  const timer=setTimeout(()=>abort.abort(),9500);
-  const qs=new URLSearchParams({league:job.league,teamId:job.teamId,name:job.name});
+  const timer=setTimeout(()=>abort.abort(),15000);
+  const qs=new URLSearchParams({league:job.league,teamId:job.teamId,name:job.name,history:"all"});
   if(job.fallbackLeague&&job.fallbackLeague!==job.league)qs.set("fallbackLeague",job.fallbackLeague);
   if(/^\d{1,12}$/.test(job.id))qs.set("playerId",job.id);
   fetch("/api/player-profile?"+qs.toString(),{headers:{accept:"application/json"},signal:abort.signal})
@@ -2850,7 +2879,8 @@ function feLineupsPanel(g){
    '<div class="fe-lineupToolbar"><div class="fe-pitchMetricControl"><label for="fe-pitchMetricSelect">PLAYER STAT</label>'+
     '<select id="fe-pitchMetricSelect" data-fe-pitch-metric aria-label="Select player statistic for the last five appearances">'+
     FE_PITCH_STATS.map(([key,label])=>'<option value="'+key+'"'+(fePitchMetric(g)===key?' selected':'')+'>'+esc(label)+'</option>').join("")+
-    '</select></div><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
+    '</select></div><div class="fe-pitchMetricControl"><label for="fe-pitchCompetitionSelect">COMPETITION</label>'+
+    '<select id="fe-pitchCompetitionSelect" data-fe-pitch-competition><option value="">All competitions</option></select></div><button type="button" class="fe-matchRefresh" data-refresh-match>↻ '+
     (hasHome||hasAway?'Update XIs':'Check lineups')+'</button></div>'+
    '<div class="fe-sharedPitch" role="group" aria-label="Football pitch showing available starting XIs for '+esc(g.home.name)+' and '+esc(g.away.name)+'">'+
    '<div class="fe-pitchStripe"></div><div class="fe-pitchCenter"></div><div class="fe-goalTop"></div><div class="fe-goalBottom"></div>'+
@@ -3439,12 +3469,12 @@ function renderModal(g){
   if(g.feTab==="lineups")fePrimePitchHistory(g);
 }
 document.getElementById("modalBody").onchange=event=>{
-  if(!event.target?.matches?.("[data-fe-pitch-metric]"))return;
+  if(!event.target?.matches?.("[data-fe-pitch-metric],[data-fe-pitch-competition]"))return;
   const g=S.games.find(x=>String(x.id)===String(S.openGameId));
   if(!g)return;
-  const v=String(event.target.value||"goals");
-  if(!FE_PITCH_STATS.some(x=>x[0]===v))return;
-  g.fePitchMetric=v;
+  const v=event.target.value;
+  if(event.target.matches("[data-fe-pitch-competition]"))g.fePitchCompetition=v;
+  else if(FE_PITCH_STATS.some(x=>x[0]===v))g.fePitchMetric=v;
   fePaintPitchStats(g);
 };
 document.getElementById("modalBody").onclick=event=>{
