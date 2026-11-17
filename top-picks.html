@@ -304,13 +304,13 @@ function kickoffCountdown(items){
 }
 function printSlip(id,items,empty){
  document.getElementById(id).innerHTML=items.length?items.map(legHTML).join(""):'<div class="empty">'+esc(empty)+'</div>';
- const isSgp=id==="sgpSlip",prefix=isSgp?"sgp":"acca";
+ const isSgp=id==="sgpSlip",isValue=id==="evAccaSlip",prefix=isSgp?"sgp":isValue?"evAcca":"acca";
  const hasTicket=items.length>0;
  document.getElementById(prefix+"Count").textContent=!hasTicket?"NO PUBLISHED TICKET":items.length+" LEGS";
  document.getElementById(prefix+"LegBadge").textContent=kickoffCountdown(items);
  if(isSgp)document.getElementById("sgpTitle").textContent=items.length&&items[0].g.league==="uefa.champions"?"THE UCL NIGHT FLYER":"THE MATCHDAY SGP";
- document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":"CROSS-GAME ACCA")+" · "+slipDate(items);
- document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
+ document.getElementById(prefix+"Meta").textContent=(isSgp?"SAME-GAME PARLAY":isValue?"VALUE RESEARCH":"CROSS-GAME ACCA")+" · "+slipDate(items);
+ if(!isValue)document.getElementById(prefix+"Intro").textContent=items.length?(isSgp?matches(items[0].g)+" · "+legKickoff(items[0].g):"Distinct fixtures · "+slipDate(items)):(isSgp?"No evidence-backed same-game combination qualifies today.":"No evidence-backed cross-game combination qualifies today.");
 }
 
 function printProps(items){
@@ -320,8 +320,8 @@ function printProps(items){
 }
 const chosenDate=()=>localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
-const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","usa.1"]);
-const FE_MAJOR_NAMES={"eng.1":"Premier League","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"Nations League","usa.1":"MLS"};
+const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","concacaf.nations.league","usa.1"]);
+const FE_MAJOR_NAMES={"eng.1":"Premier League","esp.1":"La Liga","ita.1":"Serie A","ger.1":"Bundesliga","fra.1":"Ligue 1","ned.1":"Eredivisie","por.1":"Liga Portugal","tur.1":"Süper Lig","uefa.champions":"Champions League","uefa.europa":"Europa League","uefa.europa.conf":"Conference League","uefa.nations":"UEFA Nations League","concacaf.nations.league":"CONCACAF Nations League","usa.1":"MLS"};
 let selectedSgpLeague="all";
 let displayedFixtureLeagues=null; // Exact-date competition scope.
 function sgpForLeague(desk){
