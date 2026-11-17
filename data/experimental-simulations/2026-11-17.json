@@ -1,0 +1,2216 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-11-17",
+  "generatedAt": "2026-11-17T05:29:19.687Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 350000,
+  "sourceDates": {
+    "research": "2026-11-17T05:24:52.928Z",
+    "analytics": "2026-11-17T05:27:21.397939+00:00",
+    "h2h": "2026-11-17",
+    "teamNews": "2026-11-17T05:29:06.026Z",
+    "standings": "2026-11-17T05:25:23.493Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 35,
+    "preKickoff": 35,
+    "postKickoff": 0,
+    "atLeastEightEach": 33,
+    "shotJoined": 0,
+    "realXg": 0,
+    "projectedXI": 35,
+    "standingsJoined": 0
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401929704",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-17T19:00Z",
+      "home": "Belize",
+      "away": "Sint Maarten",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.623,
+        "away": 1.211
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.69,
+        "draw": 24.48,
+        "awayWin": 28.83
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.14,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.14
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.52
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.06,
+        "over2_5": 53.69,
+        "under3_5": 67.87,
+        "bttsYes": 56.1
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929769",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-17T19:00Z",
+      "home": "Dominica",
+      "away": "Cayman Islands",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.52,
+        "away": 1.416
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.93,
+        "draw": 23.46,
+        "awayWin": 35.61
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.86,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.86
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.32
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.31
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.8,
+        "over2_5": 56.8,
+        "under3_5": 66.07,
+        "bttsYes": 59.33
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929767",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-17T19:00Z",
+      "home": "St. Kitts and Nevis",
+      "away": "Bonaire",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.404,
+        "away": 1.626
+      },
+      "winDrawLossPct": {
+        "homeWin": 54.88,
+        "draw": 19.08,
+        "awayWin": 26.04
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.5,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.5
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.2
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.56
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 91.2,
+        "over2_5": 76.48,
+        "under3_5": 42.96,
+        "bttsYes": 73.19
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929768",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-17T19:00Z",
+      "home": "St. Lucia",
+      "away": "Barbados",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.863,
+        "away": 1.648
+      },
+      "winDrawLossPct": {
+        "homeWin": 42.78,
+        "draw": 22.27,
+        "awayWin": 34.95
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.21,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.21
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.57
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.38
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.26,
+        "over2_5": 67.55,
+        "under3_5": 53.94,
+        "bttsYes": 67.74
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929765",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-18T00:00Z",
+      "home": "French Guiana",
+      "away": "St. Vincent and the Grenadines",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.59,
+        "away": 1.335
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.61,
+        "draw": 23.87,
+        "awayWin": 31.52
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.93,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.93
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.28
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.43
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.41,
+        "over2_5": 56.8,
+        "under3_5": 65.66,
+        "bttsYes": 58.94
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 5,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929766",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-18T00:00Z",
+      "home": "United States",
+      "away": "Haiti",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.413,
+        "away": 1.295
+      },
+      "winDrawLossPct": {
+        "homeWin": 62.1,
+        "draw": 19.01,
+        "awayWin": 18.89
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 8.93,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 8.93
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 7.8
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.38
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.03,
+        "over2_5": 71.14,
+        "under3_5": 49.87,
+        "bttsYes": 65.5
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929764",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-18T01:00Z",
+      "home": "El Salvador",
+      "away": "St. Martin",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.223,
+        "away": 1.937
+      },
+      "winDrawLossPct": {
+        "homeWin": 24.18,
+        "draw": 22.44,
+        "awayWin": 53.38
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.22,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.22
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.46
+        },
+        {
+          "score": "0-2",
+          "probabilityPct": 8.09
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 83.29,
+        "over2_5": 61.64,
+        "under3_5": 60.35,
+        "bttsYes": 60.95
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929763",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-18T02:30Z",
+      "home": "Mexico",
+      "away": "Jamaica",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.451,
+        "away": 1.327
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.12,
+        "draw": 25.53,
+        "awayWin": 34.35
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.14,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.14
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.05
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.56
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.76,
+        "over2_5": 52.63,
+        "under3_5": 69.26,
+        "bttsYes": 56.46
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401929703",
+      "league": "concacaf.nations.league",
+      "kickoff": "2026-11-18T03:00Z",
+      "home": "Nicaragua",
+      "away": "Montserrat",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.253,
+        "away": 1.73
+      },
+      "winDrawLossPct": {
+        "homeWin": 27.51,
+        "draw": 23.36,
+        "awayWin": 49.13
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.6,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.6
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.47
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.65
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.93,
+        "over2_5": 57.98,
+        "under3_5": 64.41,
+        "bttsYes": 59.02
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861196",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Bosnia-Herzegovina",
+      "away": "Romania",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.843,
+        "away": 1.347
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.93,
+        "draw": 22.74,
+        "awayWin": 28.33
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.54,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.54
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.11
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 7.66
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.54,
+        "over2_5": 61.25,
+        "under3_5": 61.33,
+        "bttsYes": 62.08
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 3,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861194",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Denmark",
+      "away": "Norway",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.003,
+        "away": 1.493
+      },
+      "winDrawLossPct": {
+        "homeWin": 49.38,
+        "draw": 22.47,
+        "awayWin": 28.15
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.93,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.93
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.86
+        },
+        {
+          "score": "2-2",
+          "probabilityPct": 6.83
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 86.52,
+        "over2_5": 67.03,
+        "under3_5": 54.02,
+        "bttsYes": 67.69
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861191",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Hungary",
+      "away": "Northern Ireland",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.133,
+        "away": 0.941
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.08,
+        "draw": 30.55,
+        "awayWin": 29.37
+      },
+      "predictedScore": "1-0",
+      "predictedScoreProbabilityPct": 13.73,
+      "mostLikelyScores": [
+        {
+          "score": "1-0",
+          "probabilityPct": 13.73
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 13.61
+        },
+        {
+          "score": "0-0",
+          "probabilityPct": 12.81
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 61.82,
+        "over2_5": 34.33,
+        "under3_5": 83.96,
+        "bttsYes": 41.96
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861193",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Israel",
+      "away": "Austria",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.301,
+        "away": 1.414
+      },
+      "winDrawLossPct": {
+        "homeWin": 34.38,
+        "draw": 25.7,
+        "awayWin": 39.92
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.14,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.14
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.36
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.02
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.02,
+        "over2_5": 51.09,
+        "under3_5": 70.98,
+        "bttsYes": 55.23
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861195",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Poland",
+      "away": "Sweden",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.732,
+        "away": 1.534
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.51,
+        "draw": 22.56,
+        "awayWin": 33.93
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.93,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.93
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.69
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.49
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.1,
+        "over2_5": 63.31,
+        "under3_5": 59.2,
+        "bttsYes": 64.88
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861192",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Republic of Ireland",
+      "away": "Kosovo",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.435,
+        "away": 1.054
+      },
+      "winDrawLossPct": {
+        "homeWin": 45.63,
+        "draw": 26.38,
+        "awayWin": 27.99
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.58,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.58
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 12.24
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.95
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 70.71,
+        "over2_5": 44.76,
+        "under3_5": 75.91,
+        "bttsYes": 49.08
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861190",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Ukraine",
+      "away": "Georgia",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.144,
+        "away": 0.989
+      },
+      "winDrawLossPct": {
+        "homeWin": 39.47,
+        "draw": 30.88,
+        "awayWin": 29.65
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 14.23,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 14.23
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 13.92
+        },
+        {
+          "score": "0-0",
+          "probabilityPct": 12.27
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 63.14,
+        "over2_5": 35.74,
+        "under3_5": 82.51,
+        "bttsYes": 43.32
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 3,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401861189",
+      "league": "uefa.nations",
+      "kickoff": "2026-11-17T19:45Z",
+      "home": "Wales",
+      "away": "Portugal",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.439,
+        "away": 1.465
+      },
+      "winDrawLossPct": {
+        "homeWin": 37.55,
+        "draw": 24.91,
+        "awayWin": 37.54
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.71,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.71
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.51
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.32
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.05,
+        "over2_5": 55.65,
+        "under3_5": 66.78,
+        "bttsYes": 58.81
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401933879",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T05:30Z",
+      "home": "Tahiti",
+      "away": "Cook Islands",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.63,
+        "away": 0.954
+      },
+      "winDrawLossPct": {
+        "homeWin": 73.42,
+        "draw": 15.5,
+        "awayWin": 11.08
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 9.7,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 9.7
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.01
+        },
+        {
+          "score": "3-0",
+          "probabilityPct": 8.44
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.37,
+        "over2_5": 69.62,
+        "under3_5": 51.57,
+        "bttsYes": 57.7
+      },
+      "dataQuality": {
+        "level": "insufficient_history",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 6,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401930237",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T06:00Z",
+      "home": "Malaysia",
+      "away": "Yemen",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.442,
+        "away": 1.672
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.22,
+        "draw": 23.33,
+        "awayWin": 43.45
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.25,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.25
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.94
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.86
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.34,
+        "over2_5": 60.26,
+        "under3_5": 62.6,
+        "bttsYes": 61.2
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401916335",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T10:00Z",
+      "home": "Singapore",
+      "away": "Brazil",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.523,
+        "away": 1.592
+      },
+      "winDrawLossPct": {
+        "homeWin": 36.97,
+        "draw": 23.58,
+        "awayWin": 39.45
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.36,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.36
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.33
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.31
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.51,
+        "over2_5": 59.74,
+        "under3_5": 62.74,
+        "bttsYes": 62.38
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401930880",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T12:00Z",
+      "home": "China",
+      "away": "Bahrain",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.704,
+        "away": 1.2
+      },
+      "winDrawLossPct": {
+        "homeWin": 49.55,
+        "draw": 23.93,
+        "awayWin": 26.52
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.34,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.34
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.98
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.28
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.44,
+        "over2_5": 55.89,
+        "under3_5": 67.12,
+        "bttsYes": 57.84
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401930242",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T12:00Z",
+      "home": "Kyrgyz Republic",
+      "away": "Vietnam",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.34,
+        "away": 1.595
+      },
+      "winDrawLossPct": {
+        "homeWin": 32.52,
+        "draw": 24.09,
+        "awayWin": 43.39
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.83,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.83
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.66
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.52
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.87,
+        "over2_5": 56.2,
+        "under3_5": 65.99,
+        "bttsYes": 58.22
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401933635",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T13:00Z",
+      "home": "Lebanon",
+      "away": "Palestine",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.642,
+        "away": 1.172
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.41,
+        "draw": 24.27,
+        "awayWin": 27.32
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.63,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.63
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.72
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.4
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.85,
+        "over2_5": 53.01,
+        "under3_5": 69.46,
+        "bttsYes": 54.97
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401916336",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T13:10Z",
+      "home": "Japan",
+      "away": "Paraguay",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.536,
+        "away": 1.261
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.8,
+        "draw": 24.77,
+        "awayWin": 31.43
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.33,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.33
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.55
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.6
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 76.49,
+        "over2_5": 52.03,
+        "under3_5": 69.8,
+        "bttsYes": 54.57
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401931477",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T14:00Z",
+      "home": "Qatar",
+      "away": "South Korea",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.183,
+        "away": 1.424
+      },
+      "winDrawLossPct": {
+        "homeWin": 31.02,
+        "draw": 25.53,
+        "awayWin": 43.45
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.78,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.78
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.75
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 9.11
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 73.52,
+        "over2_5": 49.93,
+        "under3_5": 72.24,
+        "bttsYes": 53.18
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401932718",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T14:10Z",
+      "home": "United Arab Emirates",
+      "away": "Syria",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.92,
+        "away": 1.453
+      },
+      "winDrawLossPct": {
+        "homeWin": 47.87,
+        "draw": 22.88,
+        "awayWin": 29.25
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.78,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.78
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.11
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.14
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.32,
+        "over2_5": 65.44,
+        "under3_5": 56.74,
+        "bttsYes": 65.61
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401931495",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T15:30Z",
+      "home": "Saudi Arabia",
+      "away": "Uzbekistan",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.823,
+        "away": 1.096
+      },
+      "winDrawLossPct": {
+        "homeWin": 53.87,
+        "draw": 23.47,
+        "awayWin": 22.66
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.79,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.79
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.02
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.98
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 78.62,
+        "over2_5": 55.82,
+        "under3_5": 66.42,
+        "bttsYes": 56.38
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401919974",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T16:00Z",
+      "home": "Jordan",
+      "away": "Australia",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.309,
+        "away": 1.54
+      },
+      "winDrawLossPct": {
+        "homeWin": 32.77,
+        "draw": 24.89,
+        "awayWin": 42.34
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.57,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.57
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 8.76
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.69
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.88,
+        "over2_5": 54.84,
+        "under3_5": 67.46,
+        "bttsYes": 57.87
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401930978",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T16:00Z",
+      "home": "Russia",
+      "away": "Venezuela",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.657,
+        "away": 1.045
+      },
+      "winDrawLossPct": {
+        "homeWin": 51.53,
+        "draw": 24.15,
+        "awayWin": 24.32
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.57,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.57
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.33
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 9.14
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 74.88,
+        "over2_5": 50.5,
+        "under3_5": 71.56,
+        "bttsYes": 51.67
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401933615",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T16:15Z",
+      "home": "Iraq",
+      "away": "Iran",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.205,
+        "away": 1.508
+      },
+      "winDrawLossPct": {
+        "homeWin": 29.77,
+        "draw": 25.48,
+        "awayWin": 44.75
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.02,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.02
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.07
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.79
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.16,
+        "over2_5": 51.64,
+        "under3_5": 69.96,
+        "bttsYes": 54.73
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401931956",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T16:30Z",
+      "home": "Kuwait",
+      "away": "Honduras",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.671,
+        "away": 1.456
+      },
+      "winDrawLossPct": {
+        "homeWin": 43.05,
+        "draw": 23.22,
+        "awayWin": 33.73
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.67,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.67
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.45
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 7.8
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 82.11,
+        "over2_5": 61.08,
+        "under3_5": 62.1,
+        "bttsYes": 62.66
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401930895",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T23:00Z",
+      "home": "Argentina",
+      "away": "Costa Rica",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.362,
+        "away": 1.154
+      },
+      "winDrawLossPct": {
+        "homeWin": 64.31,
+        "draw": 18.29,
+        "awayWin": 17.4
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.63,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.63
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.21
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.01
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.04,
+        "over2_5": 68.77,
+        "under3_5": 53.06,
+        "bttsYes": 62.29
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401921304",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T23:00Z",
+      "home": "Chile",
+      "away": "Colombia",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.17,
+        "away": 1.298
+      },
+      "winDrawLossPct": {
+        "homeWin": 32.46,
+        "draw": 27.01,
+        "awayWin": 40.53
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.7,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.7
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 11.37
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.56
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 70.32,
+        "over2_5": 44.74,
+        "under3_5": 76.94,
+        "bttsYes": 49.97
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401930899",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T23:30Z",
+      "home": "Ecuador",
+      "away": "Bolivia",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.745,
+        "away": 0.982
+      },
+      "winDrawLossPct": {
+        "homeWin": 54.78,
+        "draw": 23.16,
+        "awayWin": 22.06
+      },
+      "predictedScore": "1-0",
+      "predictedScoreProbabilityPct": 11.19,
+      "mostLikelyScores": [
+        {
+          "score": "1-0",
+          "probabilityPct": 11.19
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 10.93
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 10.1
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 75.2,
+        "over2_5": 51.41,
+        "under3_5": 71.43,
+        "bttsYes": 51.94
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401932215",
+      "league": "fifa.friendly",
+      "kickoff": "2026-11-17T23:30Z",
+      "home": "Uruguay",
+      "away": "Dominican Republic",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.91,
+        "away": 1.475
+      },
+      "winDrawLossPct": {
+        "homeWin": 48.07,
+        "draw": 22.32,
+        "awayWin": 29.61
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.48,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.48
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.14
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 6.97
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.22,
+        "over2_5": 65.97,
+        "under3_5": 55.98,
+        "bttsYes": 65.64
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}

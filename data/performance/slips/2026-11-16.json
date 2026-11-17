@@ -21,7 +21,8 @@
           "referenceOdds": -400,
           "referenceDecimal": 1.25,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "9-0"
         },
         {
           "gameId": "401929708",
@@ -34,7 +35,8 @@
           "referenceOdds": -143,
           "referenceDecimal": 1.7,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "4-2"
         },
         {
           "gameId": "401861186",
@@ -47,7 +49,8 @@
           "referenceOdds": -125,
           "referenceDecimal": 1.8,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "4-0"
         },
         {
           "gameId": "401861187",
@@ -60,7 +63,10 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "0-3",
+          "observedStat": 3,
+          "observedUnit": "goals"
         }
       ],
       "caution": "Ontario combined quote pending. The ticket needs +300 or better. Three individual moneylines have international reference prices.",
@@ -68,7 +74,8 @@
       "league": null,
       "signature": "401861186|switzerland ml||401861187|under 4 5 goals||401929707|cuba ml||401929708|guyana ml",
       "duplicateOf": null,
-      "result": "pending"
+      "result": "hit",
+      "settledAt": "2026-11-17T05:24:49.409Z"
     },
     {
       "id": "candidate:sgp:2026-11-16:401861185",
@@ -90,7 +97,19 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "5-0",
+          "observedStat": 2,
+          "observedUnit": "Goal contributions",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/summary?event=401861185",
+          "verifiedAt": "2026-11-17T05:24:49.491Z",
+          "settlementEvidence": {
+            "kind": "verified-player-goal-or-assist",
+            "athleteId": "303748",
+            "goals": 2,
+            "assists": 0,
+            "started": true
+          }
         },
         {
           "gameId": "401861185",
@@ -103,14 +122,18 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "5-0",
+          "observedStat": 5,
+          "observedUnit": "goals"
         }
       ],
       "caution": "Ontario bet-builder quote pending. The combined quote must reach +150. Wirtz is projected to start.",
       "type": "league_sgp",
       "signature": "401861185|florian wirtz score or assist||401861185|under 3 5 goals",
       "duplicateOf": null,
-      "result": "pending"
+      "result": "miss",
+      "settledAt": "2026-11-17T05:24:49.491Z"
     },
     {
       "id": "research:atgs",
@@ -134,12 +157,23 @@
           "researchParticipationPolicy": "must_start",
           "odds": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "1-0",
+          "observedStat": 0,
+          "observedUnit": "Goals",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/summary?event=401861188",
+          "verifiedAt": "2026-11-17T05:24:49.598Z",
+          "settlementEvidence": {
+            "kind": "verified-player-goal",
+            "athleteId": "220819",
+            "started": true
+          }
         }
       ],
-      "result": "pending",
+      "result": "miss",
       "verifiedCombinedPrice": false,
-      "combinedOntarioOdds": null
+      "combinedOntarioOdds": null,
+      "settledAt": "2026-11-17T05:24:49.598Z"
     },
     {
       "id": "research:scoreOrAssist",
@@ -163,12 +197,25 @@
           "researchParticipationPolicy": "must_start",
           "odds": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "5-0",
+          "observedStat": 2,
+          "observedUnit": "Goal contributions",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.nations/summary?event=401861185",
+          "verifiedAt": "2026-11-17T05:24:49.598Z",
+          "settlementEvidence": {
+            "kind": "verified-player-goal-or-assist",
+            "athleteId": "303748",
+            "goals": 2,
+            "assists": 0,
+            "started": true
+          }
         }
       ],
-      "result": "pending",
+      "result": "hit",
       "verifiedCombinedPrice": false,
-      "combinedOntarioOdds": null
+      "combinedOntarioOdds": null,
+      "settledAt": "2026-11-17T05:24:49.598Z"
     }
   ],
   "source": "data/slips-reviewed/2026-11-16.json"

@@ -1998,7 +1998,10 @@ async function load(date=S.date){
         game.feEditorialPicks=currentReview&&normName(currentReview.home)===normName(game.home?.name)&&
           normName(currentReview.away)===normName(game.away?.name)?currentReview.picks:
           edited&&normName(edited.home)===normName(game.home?.name)&&normName(edited.away)===normName(game.away?.name)?edited.picks:null;
-        const snapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
+        const leagueSnapshot=leagueTablePayload?.schema==='footyedge-season-table-snapshot-v1'&&leagueTablePayload.date===S.date?leagueTablePayload.standings?.[game.league]:null;
+        const group=Object.values(leagueSnapshot?.groups||{}).find(entry=>
+          [game.home,game.away].every(team=>entry.table?.some(row=>String(row.id)===String(team.id))));
+        const snapshot=group?{...leagueSnapshot,...group}:leagueSnapshot;
         if(snapshot?.season===Number(game.year||S.date.slice(0,4))&&Array.isArray(snapshot.table)){
           game.feTable={...snapshot,status:'verified',source:leagueTablePayload.source?.label,sourceUrl:leagueTablePayload.source?.url,asOf:leagueTablePayload.asOf};
           const hs=snapshot.table.find(t=>String(t.id)===String(game.home?.id))||snapshot.table.find(t=>normName(t.name)===normName(game.home?.name));
@@ -3200,7 +3203,7 @@ function feTableTab(g){
      '<td>'+display(row.gd)+'</td><td><b>'+display(row.points)+'</b></td></tr>';
  }).join('');
  const provenance='';
- return '<section class="fe-panel"><h3>LEAGUE TABLE · '+esc(displayLeagueName(g.league))+'</h3><div class="fe-tableWrap">'+
+ return '<section class="fe-panel"><h3>LEAGUE TABLE · '+esc(displayLeagueName(g.league))+(g.feTable.group?' · Group '+esc(g.feTable.group):'')+'</h3><div class="fe-tableWrap">'+
    '<table class="fe-leagueTable"><thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead>'+
    '<tbody>'+body+'</tbody></table></div>'+provenance+'</section>';
 }
