@@ -1,0 +1,415 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-11-18",
+  "generatedAt": "2026-11-18T05:41:31.731Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 60000,
+  "sourceDates": {
+    "research": "2026-11-18T05:35:22.505Z",
+    "analytics": null,
+    "h2h": "2026-11-18",
+    "teamNews": "2026-11-18T05:41:05.128Z",
+    "standings": null
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 6,
+    "preKickoff": 6,
+    "postKickoff": 0,
+    "atLeastEightEach": 6,
+    "shotJoined": 0,
+    "realXg": 0,
+    "projectedXI": 6,
+    "standingsJoined": 0
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401928518",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-11-18T18:00Z",
+      "home": "Portugalete",
+      "away": "Real Unión Irun",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.722,
+        "away": 1.183
+      },
+      "winDrawLossPct": {
+        "homeWin": 49.68,
+        "draw": 23.55,
+        "awayWin": 26.77
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.12,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.12
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.48
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.48
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 79.2,
+        "over2_5": 56.1,
+        "under3_5": 66.4,
+        "bttsYes": 57.81
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 4,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928497",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-11-18T18:00Z",
+      "home": "Utebo",
+      "away": "CD Sabadell",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.236,
+        "away": 0.968
+      },
+      "winDrawLossPct": {
+        "homeWin": 42.96,
+        "draw": 28.46,
+        "awayWin": 28.58
+      },
+      "predictedScore": "1-0",
+      "predictedScoreProbabilityPct": 13.63,
+      "mostLikelyScores": [
+        {
+          "score": "1-0",
+          "probabilityPct": 13.63
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 13.04
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 10.93
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 64.73,
+        "over2_5": 37.88,
+        "under3_5": 81.19,
+        "bttsYes": 43.41
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928505",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-11-18T19:00Z",
+      "home": "Alcoyano",
+      "away": "Mallorca",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.354,
+        "away": 1.295
+      },
+      "winDrawLossPct": {
+        "homeWin": 38.91,
+        "draw": 25.96,
+        "awayWin": 35.13
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.28,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.28
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.78
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.3
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 74.04,
+        "over2_5": 49.49,
+        "under3_5": 72.13,
+        "bttsYes": 53.32
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928532",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-11-18T19:00Z",
+      "home": "Badajoz",
+      "away": "Tenerife",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.328,
+        "away": 0.999
+      },
+      "winDrawLossPct": {
+        "homeWin": 44.68,
+        "draw": 28.1,
+        "awayWin": 27.22
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.09,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.09
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 13
+        },
+        {
+          "score": "0-0",
+          "probabilityPct": 10.04
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 67.49,
+        "over2_5": 40.76,
+        "under3_5": 79.51,
+        "bttsYes": 45.99
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928524",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-11-18T19:30Z",
+      "home": "CD Minera",
+      "away": "FC Cartagena",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.437,
+        "away": 1.087
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.01,
+        "draw": 25.79,
+        "awayWin": 28.2
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 12.11,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 12.11
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 11.91
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 9.05
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 71.27,
+        "over2_5": 45.71,
+        "under3_5": 74.64,
+        "bttsYes": 50.01
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 1,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401928500",
+      "league": "esp.copa_del_rey",
+      "kickoff": "2026-11-18T19:30Z",
+      "home": "Reus FC Reddis",
+      "away": "Barakaldo",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.111,
+        "away": 1.073
+      },
+      "winDrawLossPct": {
+        "homeWin": 36.51,
+        "draw": 28.61,
+        "awayWin": 34.88
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 13.37,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 13.37
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 12.67
+        },
+        {
+          "score": "0-1",
+          "probabilityPct": 12.6
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 63.9,
+        "over2_5": 37.1,
+        "under3_5": 82.22,
+        "bttsYes": 43.96
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
