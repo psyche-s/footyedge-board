@@ -1,0 +1,168 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-11-19",
+  "generatedAt": "2026-11-19T14:28:33.208Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 20000,
+  "sourceDates": {
+    "research": "2026-11-19T14:28:11.800Z",
+    "analytics": "2026-11-19T14:28:30.697007+00:00",
+    "h2h": "2026-11-19",
+    "teamNews": null,
+    "standings": "2026-11-19T14:28:30.880Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 2,
+    "preKickoff": 2,
+    "postKickoff": 0,
+    "atLeastEightEach": 2,
+    "shotJoined": 0,
+    "realXg": 0,
+    "projectedXI": 0,
+    "standingsJoined": 2
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401933535",
+      "league": "usa.1",
+      "kickoff": "2026-11-20T00:30Z",
+      "home": "Orlando City SC",
+      "away": "FC Cincinnati",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.85,
+        "away": 1.713
+      },
+      "winDrawLossPct": {
+        "homeWin": 41.58,
+        "draw": 22.42,
+        "awayWin": 36
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 9.21,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 9.21
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.08
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.98
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.1,
+        "over2_5": 68.68,
+        "under3_5": 52.73,
+        "bttsYes": 68.71
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401933555",
+      "league": "usa.1",
+      "kickoff": "2026-11-20T03:00Z",
+      "home": "Seattle Sounders FC",
+      "away": "Real Salt Lake",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.608,
+        "away": 1.479
+      },
+      "winDrawLossPct": {
+        "homeWin": 41.04,
+        "draw": 23.4,
+        "awayWin": 35.56
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 10.72,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 10.72
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.56
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.28
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.68,
+        "over2_5": 59.92,
+        "under3_5": 62.41,
+        "bttsYes": 61.62
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": false,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "No verified matching XI/news in dated provider cache; no lineup adjustment.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
