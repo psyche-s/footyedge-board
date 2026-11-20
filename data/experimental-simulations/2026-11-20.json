@@ -1,0 +1,543 @@
+{
+  "schema": "footyedge-experimental-monte-carlo-v1",
+  "modelVersion": "experimental-poisson-10000-v2",
+  "date": "2026-11-20",
+  "generatedAt": "2026-11-20T05:56:16.778Z",
+  "mode": "shadow_only",
+  "usedForOfficialPicks": false,
+  "simulationsPerFixture": 10000,
+  "totalSimulations": 80000,
+  "sourceDates": {
+    "research": "2026-11-20T05:51:09.893Z",
+    "analytics": null,
+    "h2h": "2026-11-20",
+    "teamNews": "2026-11-20T05:56:02.821Z",
+    "standings": "2026-11-20T05:51:27.514Z"
+  },
+  "assumptions": {
+    "goalDistribution": "independent Poisson with mildly shrunk recency-weighted scoring/conceding rates",
+    "homeAdvantageMultiplier": 1.1,
+    "awayAdjustmentMultiplier": 0.94,
+    "leagueGoalBaseline": "current date-qualified prior match snapshots in research base",
+    "xgAndShots": "only verified matched team stats; xG absent for most fixtures",
+    "h2h": "3% blend when at least three verified prior meetings",
+    "standingsStrength": "ESPN season table PPG and goal difference, sample-size damped, capped goal rate adjustment",
+    "playerLineups": "context-only; no invented quantitative effect",
+    "marketOdds": "excluded",
+    "scope": "men only, all archived league fixtures"
+  },
+  "coverage": {
+    "fixtures": 8,
+    "preKickoff": 8,
+    "postKickoff": 0,
+    "atLeastEightEach": 8,
+    "shotJoined": 0,
+    "realXg": 0,
+    "projectedXI": 8,
+    "standingsJoined": 7
+  },
+  "note": "Each result is a Monte Carlo simulation count, not independently validated or calibrated betting confidence. Backtests needed before production picks or price comparisons.",
+  "fixtures": [
+    {
+      "fixtureId": "401882805",
+      "league": "esp.1",
+      "kickoff": "2026-11-20T20:00Z",
+      "home": "Athletic Club",
+      "away": "Espanyol",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.919,
+        "away": 0.949
+      },
+      "winDrawLossPct": {
+        "homeWin": 59.94,
+        "draw": 22.42,
+        "awayWin": 17.64
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.08,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.08
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 10.76
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 10.71
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 77.69,
+        "over2_5": 53.43,
+        "under3_5": 68.26,
+        "bttsYes": 52.1
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401884736",
+      "league": "ger.1",
+      "kickoff": "2026-11-20T19:30Z",
+      "home": "Bayern Munich",
+      "away": "FC Cologne",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.633,
+        "away": 1.009
+      },
+      "winDrawLossPct": {
+        "homeWin": 73.26,
+        "draw": 15.05,
+        "awayWin": 11.69
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.46,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.46
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 9.06
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 8.23
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 88.46,
+        "over2_5": 71.85,
+        "under3_5": 49.59,
+        "bttsYes": 59.16
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401876395",
+      "league": "fra.1",
+      "kickoff": "2026-11-20T19:45Z",
+      "home": "Troyes",
+      "away": "Le Havre AC",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.727,
+        "away": 1.326
+      },
+      "winDrawLossPct": {
+        "homeWin": 46.87,
+        "draw": 23.87,
+        "awayWin": 29.26
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.1,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.1
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.43
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.01
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 81.49,
+        "over2_5": 59.23,
+        "under3_5": 63.62,
+        "bttsYes": 60.79
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401900905",
+      "league": "ksa.1",
+      "kickoff": "2026-11-20T17:30Z",
+      "home": "Al Ahli",
+      "away": "Al Nassr",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.624,
+        "away": 1.94
+      },
+      "winDrawLossPct": {
+        "homeWin": 33.7,
+        "draw": 21.05,
+        "awayWin": 45.25
+      },
+      "predictedScore": "1-2",
+      "predictedScoreProbabilityPct": 8.74,
+      "mostLikelyScores": [
+        {
+          "score": "1-2",
+          "probabilityPct": 8.74
+        },
+        {
+          "score": "1-1",
+          "probabilityPct": 8.5
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 7.59
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 87.55,
+        "over2_5": 70.13,
+        "under3_5": 51.77,
+        "bttsYes": 69.12
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401931821",
+      "league": "por.taca.portugal",
+      "kickoff": "2026-11-20T20:45Z",
+      "home": "FC Porto",
+      "away": "Paredes",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 1.585,
+        "away": 1.434
+      },
+      "winDrawLossPct": {
+        "homeWin": 40.88,
+        "draw": 24.04,
+        "awayWin": 35.08
+      },
+      "predictedScore": "1-1",
+      "predictedScoreProbabilityPct": 11.13,
+      "mostLikelyScores": [
+        {
+          "score": "1-1",
+          "probabilityPct": 11.13
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 8.79
+        },
+        {
+          "score": "1-2",
+          "probabilityPct": 8.44
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 80.75,
+        "over2_5": 58.37,
+        "under3_5": 64.62,
+        "bttsYes": 60.74
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": false,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "current_season_standings_strength",
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877534",
+      "league": "jpn.1",
+      "kickoff": "2026-11-20T10:00Z",
+      "home": "Kashima Antlers",
+      "away": "Shimizu S-Pulse",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.352,
+        "away": 0.97
+      },
+      "winDrawLossPct": {
+        "homeWin": 69.15,
+        "draw": 17.41,
+        "awayWin": 13.44
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 10.33,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 10.33
+        },
+        {
+          "score": "2-1",
+          "probabilityPct": 9.94
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 8.39
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 84.51,
+        "over2_5": 64.84,
+        "under3_5": 56.84,
+        "bttsYes": 56.1
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 5,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength",
+        "last_5_h2h_small_weight"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877553",
+      "league": "jpn.1",
+      "kickoff": "2026-11-20T10:00Z",
+      "home": "Kashiwa Reysol",
+      "away": "JEF United Ichihara-Chiba",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.392,
+        "away": 1.032
+      },
+      "winDrawLossPct": {
+        "homeWin": 67.34,
+        "draw": 17.63,
+        "awayWin": 15.03
+      },
+      "predictedScore": "2-1",
+      "predictedScoreProbabilityPct": 9.89,
+      "mostLikelyScores": [
+        {
+          "score": "2-1",
+          "probabilityPct": 9.89
+        },
+        {
+          "score": "2-0",
+          "probabilityPct": 8.71
+        },
+        {
+          "score": "3-1",
+          "probabilityPct": 7.97
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 85.72,
+        "over2_5": 67.2,
+        "under3_5": 55.14,
+        "bttsYes": 58.77
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 2,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    },
+    {
+      "fixtureId": "401877548",
+      "league": "jpn.1",
+      "kickoff": "2026-11-20T10:00Z",
+      "home": "Vissel Kobe",
+      "away": "Mito Hollyhock",
+      "status": "pre_kickoff_experimental",
+      "simulations": 10000,
+      "expectedGoals": {
+        "home": 2.432,
+        "away": 0.853
+      },
+      "winDrawLossPct": {
+        "homeWin": 72,
+        "draw": 16.57,
+        "awayWin": 11.43
+      },
+      "predictedScore": "2-0",
+      "predictedScoreProbabilityPct": 10.5,
+      "mostLikelyScores": [
+        {
+          "score": "2-0",
+          "probabilityPct": 10.5
+        },
+        {
+          "score": "3-0",
+          "probabilityPct": 9.42
+        },
+        {
+          "score": "1-0",
+          "probabilityPct": 9.36
+        }
+      ],
+      "marketsPct": {
+        "over1_5": 83.8,
+        "over2_5": 64.11,
+        "under3_5": 58.43,
+        "bttsYes": 52.6
+      },
+      "dataQuality": {
+        "level": "limited_experimental",
+        "homeHistoryGames": 10,
+        "awayHistoryGames": 10,
+        "verifiedStandings": true,
+        "verifiedShotJoin": false,
+        "verifiedXg": false,
+        "h2hGames": 0,
+        "datedProjectedXI": true,
+        "missingInputs": [
+          "calibrated_player_absence_impact",
+          "verified_xg"
+        ]
+      },
+      "usedFactors": [
+        "last_10_recency_weighted_goals_for_against",
+        "venue_home_advantage",
+        "league_sample_shrinkage",
+        "verified_season_strength"
+      ],
+      "teamNewsContext": "Projected XIs and absences stored as context; no player-specific numerical adjustment without independently quantified impact.",
+      "warning": "Exploratory Poisson Monte Carlo estimates, not calibrated probabilities or betting guarantees."
+    }
+  ]
+}
