@@ -29,6 +29,31 @@ test("catalogue requires exact athlete ID and a verified name, and restricts pho
   assert.equal(validPlayerImageURL(bad),"");
 });
 
+test("Sporting's Suárez uses his own portrait in the API and projected lineup",()=>{
+ const expected="https://images.fotmob.com/image_resources/playerimages/792303.png";
+ const old="https://media.api-sports.io/football/players/157.png";
+ const catalog={"272722":{id:"272722",name:"Luis Suárez",url:old}};
+ assert.equal(photoForIdentity({id:"272722",displayName:"Luis Suárez"},catalog),expected);
+ assert.equal(photoForIdentity({id:"157",displayName:"Luis Suárez"},catalog),"");
+
+ const intelligence=JSON.parse(fs.readFileSync("data/team-intelligence/2026-11-25.json","utf8"));
+ const sporting=intelligence.fixtures.find(f=>f.fixtureId==="401915373").home;
+ const striker=sporting.predictedXI.find(p=>p.id==="272722");
+ assert.equal(sporting.predictedXI.length,11);
+ assert.equal(striker.fullName,"Luis Javier Suárez Charris");
+
+ const window={FE_PLAYER_PHOTOS:{"por.1:2250":[["272722","Luis Suárez",old]]}};
+ vm.runInNewContext(fs.readFileSync("assets/player-photo-corrections.js","utf8"),{window});
+ const ui=fs.readFileSync("ui/part2.html","utf8");
+ const code=ui.slice(ui.indexOf("const feLiveRosterPhotos="),ui.indexOf("function fePlayerSafePhoto("));
+ const cachedPhoto=vm.runInNewContext(code+";feCachedPlayerPhoto",{window});
+ const fixture={league:"uefa.champions"};
+ assert.equal(cachedPhoto(fixture,{id:"2250"},striker),expected);
+ assert.equal(cachedPhoto(fixture,{id:"2250"},"Suárez"),expected);
+ assert.equal(cachedPhoto(fixture,{id:"2250"},{id:"157",name:"Luis Suárez"}),"");
+ assert.equal(cachedPhoto(fixture,{id:"9999"},"Luis Suárez"),"");
+});
+
 test("browser and API accept the same checked photo hosts",()=>{
  const ui=fs.readFileSync("ui/part2.html","utf8");
  const code=ui.slice(ui.indexOf("function fePlayerImageUrl("),ui.indexOf("function fePlayerSafePhoto("));

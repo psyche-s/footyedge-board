@@ -2359,6 +2359,8 @@ function feCachedPlayerPhoto(g,team,player){
  const league=String(g?.league||"");
  const name=typeof player==="string"?player:String(player?.name||"");
  const id=typeof player==="object"?String(player?.id||""):"";
+ const corrected=window.FE_CORRECTED_PLAYER_PHOTO?.(id,name,teamId);
+ if(corrected)return corrected;
  const norm=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
    .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
  const keys=[league+":"+teamId,...Object.keys(src).filter(k=>
@@ -2439,7 +2441,8 @@ function fePlayerProfileMarkup(result,fallback){
  const verified=result?.status==="verified"&&result.player?.name;
  const loading=!result;
  const player=verified?result.player:{name:fallback.name,team:fallback.teamName,headshot:fallback.photoUrl};
- const photo=fePlayerSafePhoto(player.headshot||fallback.photoUrl);
+ const corrected=window.FE_CORRECTED_PLAYER_PHOTO?.(player.id||fallback.id,player.name,fallback.club?.id);
+ const photo=fePlayerSafePhoto(corrected||player.headshot||fallback.photoUrl);
  const name=String(player.name||fallback.name||"").trim(),parts=name.split(/\s+/);
  const initials=parts.filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
  const display=x=>x!=null&&String(x).trim()?esc(String(x)):"";
@@ -2521,7 +2524,7 @@ async function feOpenPlayerProfile(g,button){
  if(!name||!g)return;
  document.querySelector(".fe-playerOverlay")?.remove();
  const focusBack=button,team=[g.home,g.away].find(x=>String(x.id)===side);
- const fallback={name,club:team,teamName:team?.name||"Club not confirmed",
+ const fallback={name,id:button.dataset.fePlayerId||"",club:team,teamName:team?.name||"Club not confirmed",
    photoUrl:feCachedPlayerPhoto(g,team,{name,id:button.dataset.fePlayerId||""})||
     button.querySelector(".fe-fieldAvatar img,.fe-squadAvatar img")?.src||"",
    position:"",jersey:""};
@@ -2705,7 +2708,7 @@ function feApplyLineupHeadshots(g,teamId,players){
  const body=document.getElementById("modalBody");
  if(!body)return;
  for(const item of players){
-  const url=String(item?.photoUrl||"");
+  const url=window.FE_CORRECTED_PLAYER_PHOTO?.(item?.id,item?.name,teamId)||String(item?.photoUrl||"");
   if(!fePlayerImageUrl(url))continue;
   const key=String(g.league)+":"+String(teamId)+":"+fePhotoNameKey(item.name);
   feLiveRosterPhotos.set(key,url);
