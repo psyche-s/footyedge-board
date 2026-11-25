@@ -2441,7 +2441,7 @@ function fePlayerProfileMarkup(result,fallback){
  const verified=result?.status==="verified"&&result.player?.name;
  const loading=!result;
  const player=verified?result.player:{name:fallback.name,team:fallback.teamName,headshot:fallback.photoUrl};
- const corrected=window.FE_CORRECTED_PLAYER_PHOTO?.(player.id||fallback.id,player.name,fallback.club?.id);
+ const corrected=globalThis.window?.FE_CORRECTED_PLAYER_PHOTO?.(player.id||fallback.id,player.name,fallback.club?.id);
  const photo=fePlayerSafePhoto(corrected||player.headshot||fallback.photoUrl);
  const name=String(player.name||fallback.name||"").trim(),parts=name.split(/\s+/);
  const initials=parts.filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
@@ -2708,7 +2708,7 @@ function feApplyLineupHeadshots(g,teamId,players){
  const body=document.getElementById("modalBody");
  if(!body)return;
  for(const item of players){
-  const url=window.FE_CORRECTED_PLAYER_PHOTO?.(item?.id,item?.name,teamId)||String(item?.photoUrl||"");
+  const url=globalThis.window?.FE_CORRECTED_PLAYER_PHOTO?.(item?.id,item?.name,teamId)||String(item?.photoUrl||"");
   if(!fePlayerImageUrl(url))continue;
   const key=String(g.league)+":"+String(teamId)+":"+fePhotoNameKey(item.name);
   feLiveRosterPhotos.set(key,url);
