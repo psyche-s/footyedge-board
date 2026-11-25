@@ -180,6 +180,10 @@ h1{font-size:clamp(31px,5vw,47px);line-height:1.05;margin:7px 0 8px;letter-spaci
   <div class="headline"><div><div class="eyebrow">Matchday selections</div><h1>Top Picks</h1><p class="subtitle">Same-game slips, player props and one cross-game parlay.</p></div>
   <div class="fe-slipActions"><button type="button" id="refreshBtn" class="fe-refreshBtn"><span aria-hidden="true">↻</span> Refresh</button></div></div>
   <div id="boardStatus" class="statusLine" aria-live="polite">Loading confidence-ranked selections…</div><div id="refreshStatus" class="fe-refreshStatus" aria-live="polite" role="status"></div>
+  <section id="straightResearch" aria-labelledby="straightResearchTitle" hidden>
+    <div class="sectionTitle"><h2 id="straightResearchTitle">Singles to Watch</h2><span>Pregame research</span></div>
+    <div id="straightResearchList" class="marketList"></div>
+  </section>
   <section class="fe-sgpPicker"><label for="sgpCompetitionSelect">SGP COMPETITION</label><select id="sgpCompetitionSelect" aria-label="Choose league for best same game parlay"><option value="all">All major competitions</option></select><span>Reference target +150 or higher.</span></section>
   <section class="grid" aria-label="FootyEdge research slips">
   <article class="slip ticketPaper" aria-labelledby="sgpTitle">
@@ -318,6 +322,15 @@ function printProps(items){
  '<div class="fixture">'+esc(matches(x.g))+'</div><p>'+esc(cleanReason(x.p.reason||"Match statistics support this selection."))+'</p></div><div class="marketConfidence">'+x.rating+'%</div></article>').join(""):
  '<div class="empty">No verified player or match prop market currently qualifies. We do not invent shots, fouls, corners or cards selections without verified player/event statistics.</div>';
 }
+function renderStraightResearch(items){
+ const section=document.getElementById("straightResearch");
+ const rows=(Array.isArray(items)?items:[]).filter(x=>x.label&&x.fixture&&x.why&&x.priceNote&&Date.parse(x.kickoff)>Date.now());
+ document.getElementById("straightResearchList").innerHTML=rows.map(x=>
+  '<article class="marketItem"><div class="marketInfo"><h3>'+esc(x.label)+'</h3>'+
+  '<div class="fixture">'+esc(x.fixture)+' · '+esc(x.priceNote)+'</div><p>'+esc(cleanReason(x.why))+'</p></div></article>'
+ ).join("");
+ section.hidden=rows.length===0;
+}
 const chosenDate=()=>localDate();
 const chosenLabel=d=>new Intl.DateTimeFormat("en-US",{timeZone:"America/Toronto",weekday:"long",month:"long",day:"numeric",year:"numeric"}).format(new Date(d+"T17:00:00Z"));
 const FE_SGP_LEAGUES=new Set(["eng.1","esp.1","ita.1","ger.1","fra.1","ned.1","por.1","tur.1","uefa.champions","uefa.europa","uefa.europa.conf","uefa.nations","concacaf.nations.league","usa.1"]);
@@ -350,6 +363,7 @@ function renderCompetitionSlips(list){
 
 function renderDesk(desk,date,live=false){
  const valid=desk?.date===date&&(desk.schema==="footyedge-odds-reviewed-slips-v1"||desk.schema==="footyedge-daily-slips-v1"||desk.schema==="footyedge-editorial-desk-v1"||live&&desk.schema==="footyedge-live-slip-check-v1");
+ renderStraightResearch(valid?desk.straightResearch:[]);
  if(!valid){
   document.getElementById("boardStatus").textContent=chosenLabel(date)+" · Research unavailable.";
   printSlip("sgpSlip",[],"No qualifying major-league ticket has been published.");
