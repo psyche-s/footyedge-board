@@ -2968,8 +2968,9 @@ async function feRefreshMatch(g){
     return candidate?{name:text,id:candidate.id||null,photoUrl:candidate.photoUrl||null,
       jersey:candidate.jersey||null,position:candidate.position||null}:name;
    };
+   const savedXI=original.confirmedXI?.length===11?original.confirmedXI:null;
    return{...original,predictedXI:(original.predictedXI||[]).map(enrich),
-     confirmedXI:match?.players||[],liveInjuries:reports};
+     confirmedXI:savedXI||match?.players||[],liveInjuries:reports};
   };
   const h=team("home"),a=team("away");
   const hasConfirmed=h.confirmedXI.length===11||a.confirmedXI.length===11;
@@ -2977,8 +2978,8 @@ async function feRefreshMatch(g){
   const hasPlayerIds=[...h.predictedXI,...a.predictedXI].some(x=>typeof x==="object"&&/^\d+$/.test(String(x.id||"")));
   if(hasConfirmed||hasPortraits||hasPlayerIds){
    g.liveIntel={...(g.teamIntel||{}),home:h,away:a,
-    source:hasConfirmed?{label:"ESPN verified starting XI",url:data.sourceUrl,checkedAt:data.checkedAt}:
-       g.teamIntel?.source};
+    source:g.teamIntel?.source||(hasConfirmed?
+       {label:"ESPN verified starting XI",url:data.sourceUrl,checkedAt:data.checkedAt}:null)};
   }else g.liveIntel=null;
  }catch(error){g.feMatchCheck={checkedAt:new Date().toISOString(),note:"The latest match source is unavailable; dated research is unchanged."};}
  const current=S.games.find(x=>String(x.id)===String(S.openGameId));
