@@ -20,7 +20,8 @@
           "referenceOdds": 100,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "1-2"
         },
         {
           "gameId": "401915516",
@@ -33,7 +34,10 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "0-0",
+          "observedStat": 0,
+          "observedUnit": "Team goals"
         },
         {
           "gameId": "401915814",
@@ -46,7 +50,10 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "4-0",
+          "observedStat": 4,
+          "observedUnit": "goals"
         }
       ],
       "verifiedCombinedPrice": false,
@@ -59,7 +66,8 @@
       "league": null,
       "signature": "401915516|ferencvaros 1 goal||401915519|afc bournemouth ml||401915814|under 4 5 goals",
       "duplicateOf": null,
-      "result": "pending"
+      "result": "miss",
+      "settledAt": "2026-11-27T05:12:04.958Z"
     },
     {
       "id": "candidate:sgp:401915504:20261126",
@@ -79,7 +87,10 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "2-1",
+          "observedStat": 1,
+          "observedUnit": "Team goals"
         },
         {
           "gameId": "401915504",
@@ -92,7 +103,17 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "2-1",
+          "observedStat": 9,
+          "observedUnit": "corners",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/summary?event=401915504",
+          "verifiedAt": "2026-11-27T05:12:05.107Z",
+          "settlementEvidence": {
+            "kind": "verified-match-count",
+            "period": null,
+            "metric": "corners"
+          }
         }
       ],
       "verifiedCombinedPrice": false,
@@ -107,7 +128,8 @@
       "type": "league_sgp",
       "signature": "401915504|over 8 5 corners||401915504|real sociedad 1 goal",
       "duplicateOf": null,
-      "result": "pending"
+      "result": "hit",
+      "settledAt": "2026-11-27T05:12:05.107Z"
     },
     {
       "id": "candidate:sgp:401915801:20261126",
@@ -127,7 +149,10 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "2-1",
+          "observedStat": 3,
+          "observedUnit": "goals"
         },
         {
           "gameId": "401915801",
@@ -140,7 +165,12 @@
           "referenceOdds": null,
           "referenceDecimal": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "hit",
+          "finalScore": "2-1",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/summary?event=401915801",
+          "verifiedAt": "2026-11-27T05:13:00.703Z",
+          "observedStat": 21,
+          "observedUnit": "Match fouls"
         }
       ],
       "verifiedCombinedPrice": false,
@@ -155,7 +185,8 @@
       "type": "league_sgp",
       "signature": "401915801|over 1 5 goals||401915801|over 19 5 match fouls",
       "duplicateOf": null,
-      "result": "pending"
+      "result": "hit",
+      "settledAt": "2026-11-27T05:13:00.703Z"
     },
     {
       "id": "research:atgs",
@@ -179,7 +210,16 @@
           "researchParticipationPolicy": "must_start",
           "odds": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "push",
+          "finalScore": "4-0",
+          "voidReason": "did_not_start",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/summary?event=401915815",
+          "verifiedAt": "2026-11-27T05:12:05.472Z",
+          "settlementEvidence": {
+            "kind": "verified-nonstarter-research",
+            "athleteId": "305372",
+            "started": false
+          }
         },
         {
           "gameId": "401915811",
@@ -193,12 +233,23 @@
           "researchParticipationPolicy": "must_start",
           "odds": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "2-3",
+          "observedStat": 0,
+          "observedUnit": "Goals",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/summary?event=401915811",
+          "verifiedAt": "2026-11-27T05:12:05.638Z",
+          "settlementEvidence": {
+            "kind": "verified-player-goal",
+            "athleteId": "405624",
+            "started": true
+          }
         }
       ],
-      "result": "pending",
+      "result": "miss",
       "verifiedCombinedPrice": false,
-      "combinedOntarioOdds": null
+      "combinedOntarioOdds": null,
+      "settledAt": "2026-11-27T05:12:05.638Z"
     },
     {
       "id": "research:scoreOrAssist",
@@ -222,7 +273,19 @@
           "researchParticipationPolicy": "must_start",
           "odds": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "0-0",
+          "observedStat": 0,
+          "observedUnit": "Goal contributions",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa/summary?event=401915516",
+          "verifiedAt": "2026-11-27T05:12:05.797Z",
+          "settlementEvidence": {
+            "kind": "verified-player-goal-or-assist",
+            "athleteId": "253991",
+            "goals": 0,
+            "assists": 0,
+            "started": true
+          }
         },
         {
           "gameId": "401915801",
@@ -236,12 +299,25 @@
           "researchParticipationPolicy": "must_start",
           "odds": null,
           "verifiedPrice": false,
-          "result": "pending"
+          "result": "miss",
+          "finalScore": "2-1",
+          "observedStat": 0,
+          "observedUnit": "Goal contributions",
+          "verifiedSource": "https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.europa.conf/summary?event=401915801",
+          "verifiedAt": "2026-11-27T05:12:05.797Z",
+          "settlementEvidence": {
+            "kind": "verified-player-goal-or-assist",
+            "athleteId": "345579",
+            "goals": 0,
+            "assists": 0,
+            "started": true
+          }
         }
       ],
-      "result": "pending",
+      "result": "miss",
       "verifiedCombinedPrice": false,
-      "combinedOntarioOdds": null
+      "combinedOntarioOdds": null,
+      "settledAt": "2026-11-27T05:12:05.797Z"
     }
   ],
   "source": "data/slips-reviewed/2026-11-26.json"
