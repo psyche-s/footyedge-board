@@ -1,3 +1,7 @@
+## November 27 fixture market review
+
+For every fixture, compare regulation ML and double chance, BTTS Yes and No, and both sides of goal totals. Check exact prices where available and retain the book, market and reference status. Prefer ML when the matchup and price support it. Apply the −500 price limit. Review corners, cards, fouls, shots and team-specific lines across the whole slate using verified match samples. Rank up to three distinct selections with a separate reason for each. Exclude nested outcomes such as BTTS Yes with Over 1.5, a team win with that team to score, and adjacent lines on the same statistic. If fewer than three qualify, record the fixture-specific reason. Verify the dated selections through the Fixtures page’s display rules before publication.
+
 ## Latest owner SGP research standard — November 5, 2026
 
 - The binding quality, exact-market and price rules are in [docs/SGP_QUALITY_STANDARD.md](docs/SGP_QUALITY_STANDARD.md). For each major men's fixture, compare realistic markets across fouls WON and COMMITTED, shots and SOT, corners, goals O/U, ML/DC and BTTS using date-gated team/player evidence, opponent allowances, expected role and lineups. Minimum five reliable player/team observations AND five opponent allowance observations for event props, preferably 8–10; otherwise PASS that event market.
